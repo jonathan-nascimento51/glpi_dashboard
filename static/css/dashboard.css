@@ -1240,36 +1240,53 @@ body {
 
 /* Advanced Levels Section */
 .levels-section {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 24px;
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-secondary) 100%);
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  padding: 32px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   transition: all var(--transition-normal);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+}
+
+.levels-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent-green), var(--accent-amber), var(--accent-purple), var(--accent-red));
 }
 
 .levels-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border-light);
+  align-items: flex-start;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--border-light);
+  position: relative;
 }
 
 .levels-title {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 28px;
+  font-weight: 800;
   color: var(--text-primary);
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .levels-subtitle {
-  font-size: 12px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 16px;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .period-selector {
@@ -1332,41 +1349,54 @@ body {
 .levels-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 24px;
   flex: 1;
 }
 
 .level-card {
-  background: var(--surface-secondary);
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
-  padding: 16px;
+  background: var(--surface);
+  border: 2px solid var(--border-light);
+  border-radius: 16px;
+  padding: 28px;
   transition: all var(--transition-normal);
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--shadow-sm);
 }
 
-.level-card::after {
+.level-card::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
-  background: var(--primary);
-  transform: scaleX(0);
-  transition: transform var(--transition-bounce);
+  height: 6px;
+  transition: all var(--transition-normal);
 }
 
 .level-card:hover {
-  border-color: var(--primary);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow-xl);
+  border-color: transparent;
 }
 
-.level-card:hover::after {
-  transform: scaleX(1);
+.level-card:hover::before {
+  height: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.level-card.n1::before { 
+  background: linear-gradient(90deg, var(--accent-green), #10b981);
+}
+.level-card.n2::before { 
+  background: linear-gradient(90deg, var(--accent-amber), #f59e0b);
+}
+.level-card.n3::before { 
+  background: linear-gradient(90deg, var(--accent-purple), #8b5cf6);
+}
+.level-card.n4::before { 
+  background: linear-gradient(90deg, var(--accent-red), #ef4444);
 }
 
 .level-card.n1::after { background: var(--primary); }
@@ -1375,46 +1405,101 @@ body {
 .level-card.n4::after { background: var(--accent-purple); }
 
 .level-header {
-  margin-bottom: 12px;
+  margin-bottom: 24px;
+  text-align: center;
 }
 
 .level-badge {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-secondary);
-  padding: 4px 8px;
-  background: var(--surface-tertiary);
-  border-radius: 6px;
   display: inline-block;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  box-shadow: var(--shadow-sm);
+  border: 2px solid transparent;
+  transition: all var(--transition-normal);
+}
+
+.level-card:hover .level-badge {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-md);
+}
+
+.level-card.n1 .level-badge { 
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.15), rgba(16, 185, 129, 0.15));
+  color: var(--accent-green);
+  border-color: rgba(5, 150, 105, 0.3);
+}
+.level-card.n2 .level-badge { 
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.15), rgba(245, 158, 11, 0.15));
+  color: var(--accent-amber);
+  border-color: rgba(217, 119, 6, 0.3);
+}
+.level-card.n3 .level-badge { 
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(139, 92, 246, 0.15));
+  color: var(--accent-purple);
+  border-color: rgba(124, 58, 237, 0.3);
+}
+.level-card.n4 .level-badge { 
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.15), rgba(239, 68, 68, 0.15));
+  color: var(--accent-red);
+  border-color: rgba(220, 38, 38, 0.3);
 }
 
 .level-metrics {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
 }
 
 .level-metric {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  padding: 4px 0;
+  gap: 8px;
+  padding: 16px;
+  background: var(--surface-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  transition: all var(--transition-normal);
+  position: relative;
+}
+
+.level-metric:hover {
+  background: var(--surface-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
 }
 
 .level-metric-label {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
+  text-align: center;
 }
 
 .level-metric-value {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 800;
   color: var(--text-primary);
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  transition: all var(--transition-normal);
 }
+
+.level-metric:hover .level-metric-value {
+  transform: scale(1.1);
+}
+
+/* Status colors for metric values */
+.level-metric:nth-child(1) .level-metric-value { color: var(--primary); }
+.level-metric:nth-child(2) .level-metric-value { color: var(--accent-amber); }
+.level-metric:nth-child(3) .level-metric-value { color: var(--accent-red); }
+.level-metric:nth-child(4) .level-metric-value { color: var(--accent-green); }
 
 /* Chart Container */
 .chart-container {
