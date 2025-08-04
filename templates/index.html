@@ -1,272 +1,260 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Centro de Comando • Departamento de Tecnologia</title>
+  <title>Centro de Comando - Departamento de Tecnologia</title>
   
-  <!-- Fonts -->
+  <!-- External CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   
-  <!-- External Libraries -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  
-  <!-- Custom Styles -->
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-  
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3e%3ctext y='.9em' font-size='90'%3e🎛️%3c/text%3e%3c/svg%3e">
 </head>
 <body>
-  <div class="dashboard-container">
-    <!-- Header -->
-    <header class="header">
-      <div class="brand">
-        <div class="brand-logo">
-          <i class="fa fa-microchip"></i>
-        </div>
-        <div class="brand-info">
-          <h1>Centro de Comando</h1>
-          <p>Departamento de Tecnologia</p>
+  <!-- Header -->
+  <header class="header">
+    <div class="brand">
+      <div class="brand-logo">
+        <i class="fas fa-microchip"></i>
+      </div>
+      <div class="brand-info">
+        <h1>Centro de Comando</h1>
+        <p>Departamento de Tecnologia</p>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <!-- Theme Switcher -->
+      <div class="theme-switcher">
+        <button class="theme-btn active" onclick="changeTheme('light', this)">Light</button>
+        <button class="theme-btn" onclick="changeTheme('dark', this)">Dark</button>
+        <button class="theme-btn" onclick="changeTheme('corporate', this)">Corp</button>
+        <button class="theme-btn" onclick="changeTheme('tech', this)">Tech</button>
+      </div>
+
+      <!-- Search Container -->
+      <div class="search-container">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" class="search-input" placeholder="Buscar chamados, técnicos..." onkeyup="handleSearch(this.value)" onfocus="showSearchResults()" onblur="hideSearchResults()">
+        <div class="search-results" id="searchResults">
+          <!-- Populated by JavaScript -->
         </div>
       </div>
 
-      <div class="header-controls">
-        <!-- Theme Switcher -->
-        <div class="theme-switcher">
-          <button class="theme-btn active" onclick="changeTheme('light', this)">Light</button>
-          <button class="theme-btn" onclick="changeTheme('dark', this)">Dark</button>
-          <button class="theme-btn" onclick="changeTheme('corporate', this)">Corp</button>
-          <button class="theme-btn" onclick="changeTheme('tech', this)">Tech</button>
-        </div>
-
-        <!-- Search Container -->
-        <div class="search-container">
-          <i class="fas fa-search search-icon"></i>
-          <input type="text" class="search-input" placeholder="Buscar chamados, técnicos..." onkeyup="handleSearch(this.value)" onfocus="showSearchResults()" onblur="hideSearchResults()">
-          <div class="search-results" id="searchResults">
-            <!-- Populated by JavaScript -->
-          </div>
-        </div>
-
-        <div class="status-live" onclick="showNotification('Sistema Online', 'Todos os serviços estão funcionando normalmente', 'success')">
-          <div class="live-indicator"></div>
-          <span>SISTEMA ATIVO</span>
-        </div>
-        
-        <button class="refresh-btn" onclick="forceRefresh()">
-          <i class="fas fa-sync-alt"></i>
-          <span>Atualizar</span>
-        </button>
-        
-        <button class="refresh-btn" onclick="toggleFilters()">
-          <i class="fas fa-filter"></i>
-          <span>Filtros</span>
-        </button>
-
-        <div class="current-time" id="currentTime"></div>
+      <div class="status-live" onclick="showNotification('Sistema Online', 'Todos os serviços estão funcionando normalmente', 'success')">
+        <div class="live-indicator"></div>
+        <span>SISTEMA ATIVO</span>
       </div>
-    </header>
+      
+      <button class="refresh-btn" onclick="forceRefresh()">
+        <i class="fas fa-sync-alt"></i>
+        <span>Atualizar</span>
+      </button>
+      
+      <button class="refresh-btn" onclick="toggleFilters()">
+        <i class="fas fa-filter"></i>
+        <span>Filtros</span>
+      </button>
 
-    <!-- Main Content -->
-    <main class="main-content" id="mainContent">
-      <div class="metrics-section">
-        <!-- Métricas principais -->
-        <div class="metrics-grid">
-          <div class="metric-card fade-in" data-type="new" onclick="filterByStatus('new')">
-            <div class="metric-header">
-              <div class="metric-icon new">
-                <i class="fas fa-plus-circle"></i>
-              </div>
-              <div class="metric-change positive">
-                <i class="fas fa-arrow-up"></i>
-                <span id="newChange">+12%</span>
-              </div>
+      <div class="current-time" id="currentTime"></div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content" id="mainContent">
+    <div class="metrics-section">
+      <!-- Métricas principais -->
+      <div class="metrics-grid">
+        <div class="metric-card fade-in" data-type="new" onclick="filterByStatus('new')">
+          <div class="metric-header">
+            <div class="metric-icon new">
+              <i class="fas fa-plus-circle"></i>
             </div>
-            <div class="metric-value" id="newTickets">42</div>
-            <div class="metric-label">Novos Chamados</div>
-            <canvas class="metric-sparkline" id="newSparkline"></canvas>
-          </div>
-          
-          <div class="metric-card fade-in" data-type="pending" onclick="filterByStatus('pending')" style="animation-delay: 0.1s">
-            <div class="metric-header">
-              <div class="metric-icon pending">
-                <i class="fas fa-clock"></i>
-              </div>
-              <div class="metric-change negative">
-                <i class="fas fa-arrow-down"></i>
-                <span id="pendingChange">-8%</span>
-              </div>
+            <div class="metric-change positive">
+              <i class="fas fa-arrow-up"></i>
+              <span id="newChange">+12%</span>
             </div>
-            <div class="metric-value" id="pendingTickets">11</div>
-            <div class="metric-label">Pendentes</div>
-            <canvas class="metric-sparkline" id="pendingSparkline"></canvas>
           </div>
-          
-          <div class="metric-card fade-in" data-type="progress" onclick="filterByStatus('progress')" style="animation-delay: 0.2s">
-            <div class="metric-header">
-              <div class="metric-icon progress">
-                <i class="fas fa-cogs"></i>
-              </div>
-              <div class="metric-change positive">
-                <i class="fas fa-arrow-up"></i>
-                <span id="progressChange">+5%</span>
-              </div>
-            </div>
-            <div class="metric-value" id="progressTickets">37</div>
-            <div class="metric-label">Em Progresso</div>
-            <canvas class="metric-sparkline" id="progressSparkline"></canvas>
-          </div>
-          
-          <div class="metric-card fade-in" data-type="resolved" onclick="filterByStatus('resolved')" style="animation-delay: 0.3s">
-            <div class="metric-header">
-              <div class="metric-icon resolved">
-                <i class="fas fa-check-circle"></i>
-              </div>
-              <div class="metric-change positive">
-                <i class="fas fa-arrow-up"></i>
-                <span id="resolvedChange">+18%</span>
-              </div>
-            </div>
-            <div class="metric-value" id="resolvedTickets">64</div>
-            <div class="metric-label">Resolvidos</div>
-            <canvas class="metric-sparkline" id="resolvedSparkline"></canvas>
-          </div>
+          <div class="metric-value" id="newTickets">42</div>
+          <div class="metric-label">Novos Chamados</div>
+          <canvas class="metric-sparkline" id="newSparkline"></canvas>
         </div>
+        
+        <div class="metric-card fade-in" data-type="pending" onclick="filterByStatus('pending')" style="animation-delay: 0.1s">
+          <div class="metric-header">
+            <div class="metric-icon pending">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="metric-change negative">
+              <i class="fas fa-arrow-down"></i>
+              <span id="pendingChange">-8%</span>
+            </div>
+          </div>
+          <div class="metric-value" id="pendingTickets">11</div>
+          <div class="metric-label">Pendentes</div>
+          <canvas class="metric-sparkline" id="pendingSparkline"></canvas>
+        </div>
+        
+        <div class="metric-card fade-in" data-type="progress" onclick="filterByStatus('progress')" style="animation-delay: 0.2s">
+          <div class="metric-header">
+            <div class="metric-icon progress">
+              <i class="fas fa-cogs"></i>
+            </div>
+            <div class="metric-change positive">
+              <i class="fas fa-arrow-up"></i>
+              <span id="progressChange">+5%</span>
+            </div>
+          </div>
+          <div class="metric-value" id="progressTickets">37</div>
+          <div class="metric-label">Em Progresso</div>
+          <canvas class="metric-sparkline" id="progressSparkline"></canvas>
+        </div>
+        
+        <div class="metric-card fade-in" data-type="resolved" onclick="filterByStatus('resolved')" style="animation-delay: 0.3s">
+          <div class="metric-header">
+            <div class="metric-icon resolved">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="metric-change positive">
+              <i class="fas fa-arrow-up"></i>
+              <span id="resolvedChange">+18%</span>
+            </div>
+          </div>
+          <div class="metric-value" id="resolvedTickets">64</div>
+          <div class="metric-label">Resolvidos</div>
+          <canvas class="metric-sparkline" id="resolvedSparkline"></canvas>
+        </div>
+      </div>
 
-        <!-- Seção inferior -->
-        <div class="bottom-section">
-          <!-- Níveis -->
-          <div class="levels-section fade-in" style="animation-delay: 0.4s">
-            <div class="levels-header">
-              <div>
-                <div class="levels-title">Distribuição por Níveis</div>
-                <div class="levels-subtitle">Visão detalhada por categoria</div>
+      <!-- Seção inferior -->
+      <div class="bottom-section">
+        <!-- Níveis -->
+        <div class="levels-section fade-in" style="animation-delay: 0.4s">
+          <div class="levels-header">
+            <div>
+              <div class="levels-title">Distribuição por Níveis</div>
+              <div class="levels-subtitle">Visão detalhada por categoria</div>
+            </div>
+            <div class="period-selector">
+              <button class="period-btn active" onclick="changePeriod('hoje', this)">Hoje</button>
+              <button class="period-btn" onclick="changePeriod('semana', this)">Semana</button>
+              <button class="period-btn" onclick="changePeriod('mes', this)">Mês</button>
+            </div>
+          </div>
+          
+          <div class="levels-grid">
+            <div class="level-card n1" onclick="showLevelDetail('N1')">
+              <div class="level-header">
+                <div class="level-badge">N1 - Básico</div>
               </div>
-              <div class="period-selector">
-                <button class="period-btn active" onclick="changePeriod('hoje', this)">Hoje</button>
-                <button class="period-btn" onclick="changePeriod('semana', this)">Semana</button>
-                <button class="period-btn" onclick="changePeriod('mes', this)">Mês</button>
+              <div class="level-metrics">
+                <div class="level-metric">
+                  <span class="level-metric-label">Novos</span>
+                  <span class="level-metric-value" id="n1-new">15</span>
+                </div>
+                <div class="level-metric">
+                  <span class="level-metric-label">Progresso</span>
+                  <span class="level-metric-value" id="n1-progress">12</span>
+                </div>
+                <div class="level-metric">
+                  <span class="level-metric-label">Pendente</span>
+                  <span class="level-metric-value" id="n1-pending">4</span>
+                </div>
+                <div class="level-metric">
+                  <span class="level-metric-label">Resolvido</span>
+                  <span class="level-metric-value" id="n1-resolved">28</span>
+                </div>
               </div>
             </div>
             
-            <div class="levels-grid">
-              <div class="level-card n1" onclick="showLevelDetail('N1')">
-                <div class="level-header">
-                  <div class="level-badge">N1 - Básico</div>
-                </div>
-                <div class="level-metrics">
-                  <div class="level-metric">
-                    <span class="level-metric-label">Novos</span>
-                    <span class="level-metric-value" id="n1-new">15</span>
-                  </div>
-                  <div class="level-metric">
-                    <span class="level-metric-label">Progresso</span>
-                    <span class="level-metric-value" id="n1-progress">12</span>
-                  </div>
-                  <div class="level-metric">
-                    <span class="level-metric-label">Pendente</span>
-                    <span class="level-metric-value" id="n1-pending">4</span>
-                  </div>
-                  <div class="level-metric">
-                    <span class="level-metric-label">Resolvido</span>
-                    <span class="level-metric-value" id="n1-resolved">28</span>
-                  </div>
-                </div>
+            <div class="level-card n2" onclick="showLevelDetail('N2')">
+              <div class="level-header">
+                <div class="level-badge">N2 - Intermediário</div>
               </div>
-              
-              <div class="level-card n2" onclick="showLevelDetail('N2')">
-                <div class="level-header">
-                  <div class="level-badge">N2 - Intermediário</div>
+              <div class="level-metrics">
+                <div class="level-metric">
+                  <span class="level-metric-label">Novos</span>
+                  <span class="level-metric-value" id="n2-new">12</span>
                 </div>
-                <div class="level-metrics">
-                  <div class="level-metric">
-                    <span class="level-metric-label">Novos</span>
-                    <span class="level-metric-value" id="n2-new">12</span>
-                  </div>
-                  <div class="level-metric">
-                    <span class="level-metric-label">Progresso</span>
-                    <span class="level-metric-value" id="n2-progress">15</span>
-                  </div>
-                  <div class="level-metric">
-                    <span class="level-metric-label">Pendente</span>
-                    <span class="level-metric-value" id="n2-pending">4</span>
-                  </div>
-                  <div class="level-metric">
-                    <span class="level-metric-label">Resolvido</span>
-                    <span class="level-metric-value" id="n2-resolved">18</span>
-                  </div>
+                <div class="level-metric">
+                  <span class="level-metric-label">Progresso</span>
+                  <span class="level-metric-value" id="n2-progress">15</span>
                 </div>
-              </div>
-              
-              <div class="level-card n3" onclick="showLevelDetail('N3')">
-                <div class="level-header">
-                  <div class="level-badge">N3 - Avançado</div>
+                <div class="level-metric">
+                  <span class="level-metric-label">Pendente</span>
+                  <span class="level-metric-value" id="n2-pending">4</span>
                 </div>
-                <div class="level-metrics">
-                  <div class="level-metric">
-                    <span class="level-metric-label">Novos</span>
-                    <span class="level-metric-value" id="n3-new">8</span>
-                  </div>
-                  <div class="level-metric">
-                    <span class="level-metric-label">Progresso</span>
-                    <span class="level-metric-value" id="n3-progress">6</span>
-                  </div>
-                  <div class="level-metric">
-                    <span class="level-metric-label">Pendente</span>
-                    <span class="level-metric-value" id="n3-pending">2</span>
-                  </div>
-                  <div class="level-metric">
-                    <span class="level-metric-label">Resolvido</span>
-                    <span class="level-metric-value" id="n3-resolved">10</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="level-card n4" onclick="showLevelDetail('N4')">
-                <div class="level-header">
-                  <div class="level-badge">N4 - Especialista</div>
-                </div>
-                <div class="level-metrics">
-                  <div class="level-metric">
-                    <span class="level-metric-label">Novos</span>
-                    <span class="level-metric-value" id="n4-new">6</span>
-                  </div>
-                  <div class="level-metric">
-                    <span class="level-metric-label">Progresso</span>
-                    <span class="level-metric-value" id="n4-progress">4</span>
-                  </div>
-                  <div class="level-metric">
-                    <span class="level-metric-label">Pendente</span>
-                    <span class="level-metric-value" id="n4-pending">1</span>
-                  </div>
-                  <div class="level-metric">
-                    <span class="level-metric-label">Resolvido</span>
-                    <span class="level-metric-value" id="n4-resolved">6</span>
-                  </div>
+                <div class="level-metric">
+                  <span class="level-metric-label">Resolvido</span>
+                  <span class="level-metric-value" id="n2-resolved">18</span>
                 </div>
               </div>
             </div>
-          </div>
-
-          <!-- Chart -->
-          <div class="chart-container fade-in" style="animation-delay: 0.5s">
-            <div class="chart-header">
-              <div class="chart-title">Tendência de Chamados</div>
+            
+            <div class="level-card n3" onclick="showLevelDetail('N3')">
+              <div class="level-header">
+                <div class="level-badge">N3 - Avançado</div>
+              </div>
+              <div class="level-metrics">
+                <div class="level-metric">
+                  <span class="level-metric-label">Novos</span>
+                  <span class="level-metric-value" id="n3-new">8</span>
+                </div>
+                <div class="level-metric">
+                  <span class="level-metric-label">Progresso</span>
+                  <span class="level-metric-value" id="n3-progress">6</span>
+                </div>
+                <div class="level-metric">
+                  <span class="level-metric-label">Pendente</span>
+                  <span class="level-metric-value" id="n3-pending">2</span>
+                </div>
+                <div class="level-metric">
+                  <span class="level-metric-label">Resolvido</span>
+                  <span class="level-metric-value" id="n3-resolved">10</span>
+                </div>
+              </div>
             </div>
-            <canvas id="trendChart"></canvas>
+            
+            <div class="level-card n4" onclick="showLevelDetail('N4')">
+              <div class="level-header">
+                <div class="level-badge">N4 - Especialista</div>
+              </div>
+              <div class="level-metrics">
+                <div class="level-metric">
+                  <span class="level-metric-label">Novos</span>
+                  <span class="level-metric-value" id="n4-new">6</span>
+                </div>
+                <div class="level-metric">
+                  <span class="level-metric-label">Progresso</span>
+                  <span class="level-metric-value" id="n4-progress">4</span>
+                </div>
+                <div class="level-metric">
+                  <span class="level-metric-label">Pendente</span>
+                  <span class="level-metric-value" id="n4-pending">1</span>
+                </div>
+                <div class="level-metric">
+                  <span class="level-metric-label">Resolvido</span>
+                  <span class="level-metric-value" id="n4-resolved">6</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </main>
 
-  </div>
+        <!-- Chart -->
+        <div class="chart-container fade-in" style="animation-delay: 0.5s">
+          <div class="chart-header">
+            <div class="chart-title">Tendência de Chamados</div>
+          </div>
+          <canvas id="trendChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </main>
 
   <!-- Scripts -->
   <script src="{{ url_for('static', filename='js/dashboard-simple.js') }}"></script>
