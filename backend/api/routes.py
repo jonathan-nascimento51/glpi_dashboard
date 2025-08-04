@@ -13,6 +13,22 @@ glpi_service = GLPIService()
 # Obtém logger configurado
 logger = logging.getLogger('api')
 
+# Estrutura de dados padrão para métricas em caso de falha ou ausência de dados
+DEFAULT_METRICS = {
+    "novos": 0,
+    "pendentes": 0,
+    "progresso": 0,
+    "resolvidos": 0,
+    "total": 0,
+    "niveis": {
+        "n1": {"novos": 0, "pendentes": 0, "progresso": 0, "resolvidos": 0},
+        "n2": {"novos": 0, "pendentes": 0, "progresso": 0, "resolvidos": 0},
+        "n3": {"novos": 0, "pendentes": 0, "progresso": 0, "resolvidos": 0},
+        "n4": {"novos": 0, "pendentes": 0, "progresso": 0, "resolvidos": 0}
+    },
+    "tendencias": {"novos": "0", "pendentes": "0", "progresso": "0", "resolvidos": "0"}
+}
+
 @api_bp.route('/metrics')
 def get_metrics():
     """Endpoint para obter métricas do dashboard do GLPI"""
@@ -20,63 +36,26 @@ def get_metrics():
         logger.info("Buscando métricas do GLPI...")
         
         # Busca métricas reais do GLPI
-        metrics_data = glpi_service.get_dashboard_metrics()
+        metrics_data = glpi_service.get_dashboard_metrics() 
         
-        if not metrics_data or metrics_data.get('total', 0) == 0:
-            logger.warning("Nenhuma métrica encontrada no GLPI, usando dados de fallback")
-            # Fallback para dados mockados em caso de erro
-            metrics_data = {
-                "novos": 0,
-                "pendentes": 0,
-                "progresso": 0,
-                "resolvidos": 0,
-                "total": 0,
-                "niveis": {
-                    "n1": {"novos": 0, "pendentes": 0, "progresso": 0, "resolvidos": 0},
-                    "n2": {"novos": 0, "pendentes": 0, "progresso": 0, "resolvidos": 0},
-                    "n3": {"novos": 0, "pendentes": 0, "progresso": 0, "resolvidos": 0},
-                    "n4": {"novos": 0, "pendentes": 0, "progresso": 0, "resolvidos": 0}
-                },
-                "tendencias": {"novos": "0", "pendentes": "0", "progresso": "0", "resolvidos": "0"},
-                "detalhes": {},
-                "error": "Não foi possível conectar ao GLPI"
-            }
-        
-        # Adiciona tendências (pode ser implementado posteriormente)
-        if "tendencias" not in metrics_data:
-            metrics_data["tendencias"] = {
-                "novos": "0",
-                "pendentes": "0",
-                "progresso": "0",
-                "resolvidos": "0"
-            }
-        
-        logger.info(f"Métricas obtidas: {metrics_data}")
-        
-        return jsonify({
-            "success": True,
-            "data": metrics_data
-        })
+        if not metrics_data:
+            logger.warning("Não foi possível obter métricas do GLPI, usando dados de fallback.")
+            fallback_data = DEFAULT_METRICS.copy()
+            fallback_data["error"] = "Não foi possível conectar ou obter dados do GLPI."
+            return jsonify({
+                "success": True, # A API funcionou, mas a fonte de dados falhou
+                "data": fallback_data
+            })
+
+        logger.info(f"Métricas obtidas com sucesso.")
+        return jsonify({"success": True, "data": metrics_data})
         
     except Exception as e:
-        logger.error(f"Erro ao buscar métricas: {str(e)}")
+        logger.error(f"Erro inesperado ao buscar métricas: {e}", exc_info=True)
         return jsonify({
             "success": False,
-            "error": str(e),
-            "data": {
-                "novos": 0,
-                "pendentes": 0,
-                "progresso": 0,
-                "resolvidos": 0,
-                "total": 0,
-                "niveis": {
-                    "n1": {"novos": 0, "pendentes": 0, "progresso": 0, "resolvidos": 0},
-                    "n2": {"novos": 0, "pendentes": 0, "progresso": 0, "resolvidos": 0},
-                    "n3": {"novos": 0, "pendentes": 0, "progresso": 0, "resolvidos": 0},
-                    "n4": {"novos": 0, "pendentes": 0, "progresso": 0, "resolvidos": 0}
-                },
-                "tendencias": {"novos": "0", "pendentes": "0", "progresso": "0", "resolvidos": "0"}
-            }
+            "error": "Erro interno no servidor.",
+            "data": DEFAULT_METRICS
         }), 500
 
 @api_bp.route('/status')
@@ -105,8 +84,8 @@ def get_status():
         })
         
     except Exception as e:
-        logger.error(f"Erro ao verificar status: {str(e)}")
+        logger.error(f"Erro ao verificar status: {e}", exc_info=True)
         return jsonify({
             "success": False,
-            "error": str(e)
+            "error": "Erro interno no servidor."
         }), 500

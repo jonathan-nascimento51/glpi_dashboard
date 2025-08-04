@@ -39,6 +39,10 @@ class GLPIService:
     
     def authenticate(self) -> bool:
         """Autentica na API do GLPI e obtém o session token"""
+        if not self.app_token or not self.user_token:
+            self.logger.error("Tokens de autenticação do GLPI (GLPI_APP_TOKEN, GLPI_USER_TOKEN) não estão configurados.")
+            return False
+            
         session_headers = {
             "Content-Type": "application/json",
             "App-Token": self.app_token,
@@ -222,67 +226,17 @@ class GLPIService:
         return status_totals
     
     def get_dashboard_metrics(self) -> Dict[str, any]:
-        """Retorna métricas formatadas para o dashboard React"""
+        """Retorna métricas formatadas para o dashboard React.
+        
+        Retorna um dicionário com as métricas ou None em caso de falha.
+        """
         # Autenticar uma única vez
         if not self.authenticate():
-            return {
-                "novos": 0,
-                "pendentes": 0,
-                "progresso": 0,
-                "resolvidos": 0,
-                "total": 0,
-                "niveis": {
-                    "n1": {
-                        "novos": 0,
-                        "progresso": 0,
-                        "pendentes": 0,
-                        "resolvidos": 0
-                    },
-                    "n2": {
-                        "novos": 0,
-                        "progresso": 0,
-                        "pendentes": 0,
-                        "resolvidos": 0
-                    },
-                    "n3": {
-                        "novos": 0,
-                        "progresso": 0,
-                        "pendentes": 0,
-                        "resolvidos": 0
-                    },
-                    "n4": {
-                        "novos": 0,
-                        "progresso": 0,
-                        "pendentes": 0,
-                        "resolvidos": 0
-                    }
-                },
-                "tendencias": {
-                    "novos": "0",
-                    "pendentes": "0",
-                    "progresso": "0",
-                    "resolvidos": "0"
-                },
-                "detalhes": {}
-            }
+            return None
         
         if not self.discover_field_ids():
             self.close_session()
-            return {
-                "novos": 0,
-                "pendentes": 0,
-                "progresso": 0,
-                "resolvidos": 0,
-                "total": 0,
-                "niveis": {
-                    "n1": {"novos": 0, "progresso": 0, "pendentes": 0, "resolvidos": 0},
-                    "n2": {"novos": 0, "progresso": 0, "pendentes": 0, "resolvidos": 0},
-                    "n3": {"novos": 0, "progresso": 0, "pendentes": 0, "resolvidos": 0},
-                    "n4": {"novos": 0, "progresso": 0, "pendentes": 0, "resolvidos": 0}
-                },
-                "tendencias": {"novos": "0", "pendentes": "0", "progresso": "0", "resolvidos": "0"},
-                "detalhes": {}
-            }
+            return None
         
         # Obter totais gerais (todos os grupos) para métricas principais
         general_totals = self._get_general_metrics_internal()
