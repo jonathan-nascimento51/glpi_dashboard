@@ -1,214 +1,261 @@
-import React from 'react';
-import { MetricsData, TechnicianRanking } from '../types';
+import React, { useEffect, useState } from 'react';
+import { MetricsData, TechnicianRanking, NewTicket } from '../types';
+import { apiService } from '../services/api';
 
 interface SimplifiedDashboardProps {
-  metrics: MetricsData;
+  metrics: MetricsData | null;
   technicianRanking: TechnicianRanking[];
-  currentTime: string;
-  lastUpdated: Date | null;
+  isLoading: boolean;
 }
 
-export const SimplifiedDashboard: React.FC<SimplifiedDashboardProps> = ({
+const SimplifiedDashboard: React.FC<SimplifiedDashboardProps> = ({
   metrics,
   technicianRanking,
-  currentTime,
-  lastUpdated,
+  isLoading
 }) => {
+  const [newTickets, setNewTickets] = useState<NewTicket[]>([]);
+  const [ticketsLoading, setTicketsLoading] = useState(false);
+
+  // Buscar tickets novos
+  useEffect(() => {
+    const fetchNewTickets = async () => {
+      setTicketsLoading(true);
+      try {
+        const tickets = await apiService.getNewTickets(5);
+        setNewTickets(tickets);
+      } catch (error) {
+        console.error('Erro ao buscar tickets novos:', error);
+      } finally {
+        setTicketsLoading(false);
+      }
+    };
+
+    fetchNewTickets();
+    // Atualizar a cada 30 segundos
+    const interval = setInterval(fetchNewTickets, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-100 flex items-center justify-center">
+        <div className="text-slate-700 text-2xl font-medium">Carregando dados...</div>
+      </div>
+    );
+  }
+
+  if (!metrics) {
+    return (
+      <div className="min-h-screen bg-slate-100 flex items-center justify-center">
+        <div className="text-slate-700 text-2xl font-medium">Erro ao carregar dados</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white p-4 overflow-hidden flex flex-col">
-      {/* Header - Compacto */}
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <h1 className="text-3xl font-bold mb-1">Dashboard de Suporte - Níveis</h1>
-          <p className="text-base text-blue-200">Monitoramento por Níveis de Atendimento</p>
-        </div>
-        <div className="text-right">
-          <div className="text-2xl font-mono font-bold">{currentTime}</div>
-          <div className="text-sm text-blue-200">
-            {new Date().toLocaleDateString('pt-BR', {
-              weekday: 'short',
-              day: 'numeric',
-              month: 'short',
-            })}
-          </div>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 text-white p-8">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h1 className="text-6xl font-bold mb-3 bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent drop-shadow-lg">Sistema de Monitoramento GLPI</h1>
+        <p className="text-2xl text-blue-200 font-medium tracking-wide">Departamento de Tecnologia do Estado</p>
+        <div className="w-40 h-1 bg-gradient-to-r from-blue-400 to-cyan-300 mx-auto mt-6 rounded-full shadow-lg"></div>
       </div>
 
-      {/* Layout Principal - 3 colunas */}
-      <div className="flex-1 grid grid-cols-3 gap-4">
-        {/* Coluna 1 - N1 e N2 */}
-        <div className="space-y-4">
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-12 gap-6 h-full">
+        {/* Left Column - N1 and N2 Levels */}
+        <div className="col-span-6 space-y-8">
           {/* N1 Level */}
-          <div className="bg-gradient-to-br from-green-500/20 to-green-600/30 backdrop-blur-sm rounded-xl p-4 border border-green-400/40 h-[calc(50%-8px)]">
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="text-xl font-bold text-green-300">N1 - BÁSICO</h2>
-              <div className="text-2xl font-bold text-green-200">
-                {metrics.niveis.n1.novos + metrics.niveis.n1.progresso + metrics.niveis.n1.pendentes + metrics.niveis.n1.resolvidos}
+          <div className="bg-gradient-to-br from-slate-800/90 to-slate-700/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-slate-600/50 p-8">
+            <h2 className="text-3xl font-bold mb-8 text-center text-white border-b border-blue-400/30 pb-4">Nível N1</h2>
+            <div className="grid grid-cols-4 gap-6">
+              <div className="bg-gradient-to-br from-emerald-500/20 to-emerald-600/30 border border-emerald-400/40 rounded-xl p-6 text-center hover:from-emerald-500/30 hover:to-emerald-600/40 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                <div className="text-4xl font-bold text-emerald-300 mb-2">{metrics.niveis.n1.novos}</div>
+                <div className="text-sm text-emerald-200 font-semibold tracking-wide">Novos</div>
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-2 h-[calc(100%-60px)]">
-              <div className="bg-blue-500/20 rounded-lg p-2 flex flex-col justify-center items-center border border-blue-400/30">
-                <div className="text-xl font-bold text-blue-300">{metrics.niveis.n1.novos}</div>
-                <div className="text-xs text-blue-200 font-semibold">NOVOS</div>
+              <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/30 border border-blue-400/40 rounded-xl p-6 text-center hover:from-blue-500/30 hover:to-blue-600/40 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                <div className="text-4xl font-bold text-blue-300 mb-2">{metrics.niveis.n1.progresso}</div>
+                <div className="text-sm text-blue-200 font-semibold tracking-wide">Em Progresso</div>
               </div>
-              <div className="bg-green-500/20 rounded-lg p-2 flex flex-col justify-center items-center border border-green-400/30">
-                <div className="text-xl font-bold text-green-300">{metrics.niveis.n1.progresso}</div>
-                <div className="text-xs text-green-200 font-semibold">PROGRESSO</div>
+              <div className="bg-gradient-to-br from-amber-500/20 to-amber-600/30 border border-amber-400/40 rounded-xl p-6 text-center hover:from-amber-500/30 hover:to-amber-600/40 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                <div className="text-4xl font-bold text-amber-300 mb-2">{metrics.niveis.n1.pendentes}</div>
+                <div className="text-sm text-amber-200 font-semibold tracking-wide">Pendentes</div>
               </div>
-              <div className="bg-orange-500/20 rounded-lg p-2 flex flex-col justify-center items-center border border-orange-400/30">
-                <div className="text-xl font-bold text-orange-300">{metrics.niveis.n1.pendentes}</div>
-                <div className="text-xs text-orange-200 font-semibold">PENDENTES</div>
-              </div>
-              <div className="bg-emerald-500/20 rounded-lg p-2 flex flex-col justify-center items-center border border-emerald-400/30">
-                <div className="text-xl font-bold text-emerald-300">{metrics.niveis.n1.resolvidos}</div>
-                <div className="text-xs text-emerald-200 font-semibold">RESOLVIDOS</div>
+              <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/30 border border-purple-400/40 rounded-xl p-6 text-center hover:from-purple-500/30 hover:to-purple-600/40 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                <div className="text-4xl font-bold text-purple-300 mb-2">{metrics.niveis.n1.resolvidos}</div>
+                <div className="text-sm text-purple-200 font-semibold tracking-wide">Resolvidos</div>
               </div>
             </div>
           </div>
 
           {/* N2 Level */}
-          <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/30 backdrop-blur-sm rounded-xl p-4 border border-blue-400/40 h-[calc(50%-8px)]">
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="text-xl font-bold text-blue-300">N2 - INTERMEDIÁRIO</h2>
-              <div className="text-2xl font-bold text-blue-200">
-                {metrics.niveis.n2.novos + metrics.niveis.n2.progresso + metrics.niveis.n2.pendentes + metrics.niveis.n2.resolvidos}
+          <div className="bg-gradient-to-br from-slate-800/90 to-slate-700/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-slate-600/50 p-8">
+            <h2 className="text-3xl font-bold mb-8 text-center text-white border-b border-blue-400/30 pb-4">Nível N2</h2>
+            <div className="grid grid-cols-4 gap-6">
+              <div className="bg-gradient-to-br from-emerald-500/20 to-emerald-600/30 border border-emerald-400/40 rounded-xl p-6 text-center hover:from-emerald-500/30 hover:to-emerald-600/40 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                <div className="text-4xl font-bold text-emerald-300 mb-2">{metrics.niveis.n2.novos}</div>
+                <div className="text-sm text-emerald-200 font-semibold tracking-wide">Novos</div>
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-2 h-[calc(100%-60px)]">
-              <div className="bg-blue-500/20 rounded-lg p-2 flex flex-col justify-center items-center border border-blue-400/30">
-                <div className="text-xl font-bold text-blue-300">{metrics.niveis.n2.novos}</div>
-                <div className="text-xs text-blue-200 font-semibold">NOVOS</div>
+              <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/30 border border-blue-400/40 rounded-xl p-6 text-center hover:from-blue-500/30 hover:to-blue-600/40 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                <div className="text-4xl font-bold text-blue-300 mb-2">{metrics.niveis.n2.progresso}</div>
+                <div className="text-sm text-blue-200 font-semibold tracking-wide">Em Progresso</div>
               </div>
-              <div className="bg-green-500/20 rounded-lg p-2 flex flex-col justify-center items-center border border-green-400/30">
-                <div className="text-xl font-bold text-green-300">{metrics.niveis.n2.progresso}</div>
-                <div className="text-xs text-green-200 font-semibold">PROGRESSO</div>
+              <div className="bg-gradient-to-br from-amber-500/20 to-amber-600/30 border border-amber-400/40 rounded-xl p-6 text-center hover:from-amber-500/30 hover:to-amber-600/40 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                <div className="text-4xl font-bold text-amber-300 mb-2">{metrics.niveis.n2.pendentes}</div>
+                <div className="text-sm text-amber-200 font-semibold tracking-wide">Pendentes</div>
               </div>
-              <div className="bg-orange-500/20 rounded-lg p-2 flex flex-col justify-center items-center border border-orange-400/30">
-                <div className="text-xl font-bold text-orange-300">{metrics.niveis.n2.pendentes}</div>
-                <div className="text-xs text-orange-200 font-semibold">PENDENTES</div>
-              </div>
-              <div className="bg-emerald-500/20 rounded-lg p-2 flex flex-col justify-center items-center border border-emerald-400/30">
-                <div className="text-xl font-bold text-emerald-300">{metrics.niveis.n2.resolvidos}</div>
-                <div className="text-xs text-emerald-200 font-semibold">RESOLVIDOS</div>
+              <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/30 border border-purple-400/40 rounded-xl p-6 text-center hover:from-purple-500/30 hover:to-purple-600/40 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                <div className="text-4xl font-bold text-purple-300 mb-2">{metrics.niveis.n2.resolvidos}</div>
+                <div className="text-sm text-purple-200 font-semibold tracking-wide">Resolvidos</div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Coluna 2 - N3 e N4 */}
-        <div className="space-y-4">
+        {/* Middle Column - N3 and N4 Levels */}
+        <div className="col-span-3 space-y-8">
           {/* N3 Level */}
-          <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/30 backdrop-blur-sm rounded-xl p-4 border border-purple-400/40 h-[calc(50%-8px)]">
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="text-xl font-bold text-purple-300">N3 - AVANÇADO</h2>
-              <div className="text-2xl font-bold text-purple-200">
-                {metrics.niveis.n3.novos + metrics.niveis.n3.progresso + metrics.niveis.n3.pendentes + metrics.niveis.n3.resolvidos}
+          <div className="bg-gradient-to-br from-slate-800/90 to-slate-700/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-slate-600/50 p-6">
+            <h2 className="text-2xl font-bold mb-6 text-center text-white border-b border-blue-400/30 pb-3">Nível N3</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-gradient-to-br from-emerald-500/20 to-emerald-600/30 border border-emerald-400/40 rounded-xl p-4 text-center hover:from-emerald-500/30 hover:to-emerald-600/40 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                <div className="text-3xl font-bold text-emerald-300 mb-1">{metrics.niveis.n3.novos}</div>
+                <div className="text-xs text-emerald-200 font-semibold tracking-wide">Novos</div>
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-2 h-[calc(100%-60px)]">
-              <div className="bg-blue-500/20 rounded-lg p-2 flex flex-col justify-center items-center border border-blue-400/30">
-                <div className="text-xl font-bold text-blue-300">{metrics.niveis.n3.novos}</div>
-                <div className="text-xs text-blue-200 font-semibold">NOVOS</div>
+              <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/30 border border-blue-400/40 rounded-xl p-4 text-center hover:from-blue-500/30 hover:to-blue-600/40 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                <div className="text-3xl font-bold text-blue-300 mb-1">{metrics.niveis.n3.progresso}</div>
+                <div className="text-xs text-blue-200 font-semibold tracking-wide">Em Progresso</div>
               </div>
-              <div className="bg-green-500/20 rounded-lg p-2 flex flex-col justify-center items-center border border-green-400/30">
-                <div className="text-xl font-bold text-green-300">{metrics.niveis.n3.progresso}</div>
-                <div className="text-xs text-green-200 font-semibold">PROGRESSO</div>
+              <div className="bg-gradient-to-br from-amber-500/20 to-amber-600/30 border border-amber-400/40 rounded-xl p-4 text-center hover:from-amber-500/30 hover:to-amber-600/40 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                <div className="text-3xl font-bold text-amber-300 mb-1">{metrics.niveis.n3.pendentes}</div>
+                <div className="text-xs text-amber-200 font-semibold tracking-wide">Pendentes</div>
               </div>
-              <div className="bg-orange-500/20 rounded-lg p-2 flex flex-col justify-center items-center border border-orange-400/30">
-                <div className="text-xl font-bold text-orange-300">{metrics.niveis.n3.pendentes}</div>
-                <div className="text-xs text-orange-200 font-semibold">PENDENTES</div>
-              </div>
-              <div className="bg-emerald-500/20 rounded-lg p-2 flex flex-col justify-center items-center border border-emerald-400/30">
-                <div className="text-xl font-bold text-emerald-300">{metrics.niveis.n3.resolvidos}</div>
-                <div className="text-xs text-emerald-200 font-semibold">RESOLVIDOS</div>
+              <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/30 border border-purple-400/40 rounded-xl p-4 text-center hover:from-purple-500/30 hover:to-purple-600/40 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                <div className="text-3xl font-bold text-purple-300 mb-1">{metrics.niveis.n3.resolvidos}</div>
+                <div className="text-xs text-purple-200 font-semibold tracking-wide">Resolvidos</div>
               </div>
             </div>
           </div>
 
           {/* N4 Level */}
-          <div className="bg-gradient-to-br from-red-500/20 to-red-600/30 backdrop-blur-sm rounded-xl p-4 border border-red-400/40 h-[calc(50%-8px)]">
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="text-xl font-bold text-red-300">N4 - ESPECIALISTA</h2>
-              <div className="text-2xl font-bold text-red-200">
-                {metrics.niveis.n4.novos + metrics.niveis.n4.progresso + metrics.niveis.n4.pendentes + metrics.niveis.n4.resolvidos}
+          <div className="bg-gradient-to-br from-slate-800/90 to-slate-700/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-slate-600/50 p-6">
+            <h2 className="text-2xl font-bold mb-6 text-center text-white border-b border-blue-400/30 pb-3">Nível N4</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-gradient-to-br from-emerald-500/20 to-emerald-600/30 border border-emerald-400/40 rounded-xl p-4 text-center hover:from-emerald-500/30 hover:to-emerald-600/40 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                <div className="text-3xl font-bold text-emerald-300 mb-1">{metrics.niveis.n4.novos}</div>
+                <div className="text-xs text-emerald-200 font-semibold tracking-wide">Novos</div>
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-2 h-[calc(100%-60px)]">
-              <div className="bg-blue-500/20 rounded-lg p-2 flex flex-col justify-center items-center border border-blue-400/30">
-                <div className="text-xl font-bold text-blue-300">{metrics.niveis.n4.novos}</div>
-                <div className="text-xs text-blue-200 font-semibold">NOVOS</div>
+              <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/30 border border-blue-400/40 rounded-xl p-4 text-center hover:from-blue-500/30 hover:to-blue-600/40 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                <div className="text-3xl font-bold text-blue-300 mb-1">{metrics.niveis.n4.progresso}</div>
+                <div className="text-xs text-blue-200 font-semibold tracking-wide">Em Progresso</div>
               </div>
-              <div className="bg-green-500/20 rounded-lg p-2 flex flex-col justify-center items-center border border-green-400/30">
-                <div className="text-xl font-bold text-green-300">{metrics.niveis.n4.progresso}</div>
-                <div className="text-xs text-green-200 font-semibold">PROGRESSO</div>
+              <div className="bg-gradient-to-br from-amber-500/20 to-amber-600/30 border border-amber-400/40 rounded-xl p-4 text-center hover:from-amber-500/30 hover:to-amber-600/40 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                <div className="text-3xl font-bold text-amber-300 mb-1">{metrics.niveis.n4.pendentes}</div>
+                <div className="text-xs text-amber-200 font-semibold tracking-wide">Pendentes</div>
               </div>
-              <div className="bg-orange-500/20 rounded-lg p-2 flex flex-col justify-center items-center border border-orange-400/30">
-                <div className="text-xl font-bold text-orange-300">{metrics.niveis.n4.pendentes}</div>
-                <div className="text-xs text-orange-200 font-semibold">PENDENTES</div>
-              </div>
-              <div className="bg-emerald-500/20 rounded-lg p-2 flex flex-col justify-center items-center border border-emerald-400/30">
-                <div className="text-xl font-bold text-emerald-300">{metrics.niveis.n4.resolvidos}</div>
-                <div className="text-xs text-emerald-200 font-semibold">RESOLVIDOS</div>
+              <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/30 border border-purple-400/40 rounded-xl p-4 text-center hover:from-purple-500/30 hover:to-purple-600/40 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                <div className="text-3xl font-bold text-purple-300 mb-1">{metrics.niveis.n4.resolvidos}</div>
+                <div className="text-xs text-purple-200 font-semibold tracking-wide">Resolvidos</div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Coluna 3 - Ranking e Resumo */}
-        <div className="space-y-4">
+        {/* Right Column - Ranking, Summary and New Tickets */}
+        <div className="col-span-3 space-y-8">
           {/* Top Técnicos */}
-          <div className="bg-gradient-to-br from-indigo-500/20 to-indigo-600/30 backdrop-blur-sm rounded-xl p-4 border border-indigo-400/40 h-[calc(70%-8px)]">
-            <h2 className="text-xl font-bold text-indigo-300 mb-3">Top Técnicos</h2>
-            <div className="space-y-2">
-              {technicianRanking.slice(0, 5).map((tech, index) => (
-                <div key={tech.id} className="flex items-center justify-between bg-white/10 rounded-lg p-2 border border-white/20">
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                      index === 0 ? 'bg-yellow-500 text-black' :
-                      index === 1 ? 'bg-gray-400 text-black' :
-                      index === 2 ? 'bg-orange-600 text-white' :
-                      'bg-blue-600 text-white'
+          <div className="bg-gradient-to-br from-slate-800/90 to-slate-700/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-slate-600/50 p-6">
+            <h2 className="text-2xl font-bold mb-6 text-center text-white border-b border-blue-400/30 pb-3">Top Técnicos</h2>
+            <div className="space-y-3 max-h-64 overflow-y-auto">
+              {technicianRanking.map((tech, index) => (
+                <div key={tech.id} className="flex items-center justify-between bg-gradient-to-r from-slate-700/50 to-slate-600/50 rounded-xl p-4 border border-slate-500/30 hover:from-slate-600/60 hover:to-slate-500/60 transition-all duration-300 transform hover:scale-105">
+                  <div className="flex items-center space-x-4">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-lg ${
+                      index === 0 ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 text-yellow-900' :
+                      index === 1 ? 'bg-gradient-to-br from-gray-300 to-gray-500 text-gray-800' :
+                      index === 2 ? 'bg-gradient-to-br from-orange-400 to-orange-600 text-orange-900' :
+                      'bg-gradient-to-br from-blue-400 to-blue-600 text-blue-900'
                     }`}>
-                      {index + 1}
+                      {tech.rank || index + 1}
                     </div>
                     <div>
-                      <div className="text-sm font-semibold text-white">{tech.name}</div>
-                      <div className="text-xs text-gray-300">{tech.level}</div>
+                      <div className="text-sm font-semibold text-white">{tech.nome || tech.name}</div>
+                      <div className="text-xs text-blue-200">Técnico</div>
                     </div>
                   </div>
-                  <div className="text-lg font-bold text-green-300">{tech.total || tech.score}</div>
+                  <div className="text-2xl font-bold text-cyan-300">{tech.total}</div>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Resumo Geral */}
-          <div className="bg-gradient-to-br from-gray-500/20 to-gray-600/30 backdrop-blur-sm rounded-xl p-4 border border-gray-400/40 h-[calc(30%-8px)]">
-            <h2 className="text-lg font-bold text-gray-300 mb-2">Resumo Geral</h2>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-300">Total Geral:</span>
-                <span className="text-lg font-bold text-yellow-300">{metrics.total}</span>
+          <div className="bg-gradient-to-br from-slate-800/90 to-slate-700/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-slate-600/50 p-6">
+            <h2 className="text-2xl font-bold mb-6 text-center text-white border-b border-blue-400/30 pb-3">Resumo Geral</h2>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center p-4 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-xl border border-blue-400/30">
+                <span className="text-sm font-semibold text-blue-200">Total Geral:</span>
+                <span className="text-2xl font-bold text-cyan-300">{metrics.total}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-300">Ativos:</span>
-                <span className="text-lg font-bold text-green-300">{metrics.novos + metrics.progresso + metrics.pendentes}</span>
+              <div className="flex justify-between items-center p-4 bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-xl border border-amber-400/30">
+                <span className="text-sm font-semibold text-amber-200">Ativos:</span>
+                <span className="text-2xl font-bold text-amber-300">{metrics.novos + metrics.progresso + metrics.pendentes}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-300">Resolvidos:</span>
-                <span className="text-lg font-bold text-emerald-300">{metrics.resolvidos}</span>
+              <div className="flex justify-between items-center p-4 bg-gradient-to-r from-emerald-500/20 to-green-500/20 rounded-xl border border-emerald-400/30">
+                <span className="text-sm font-semibold text-emerald-200">Resolvidos:</span>
+                <span className="text-2xl font-bold text-emerald-300">{metrics.resolvidos}</span>
               </div>
             </div>
+          </div>
+
+          {/* Tickets Novos */}
+          <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl shadow-lg border border-purple-200 p-6 hover:shadow-xl transition-all duration-300">
+            <h2 className="text-2xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 border-b border-purple-200 pb-3">Tickets Recentes</h2>
+            {ticketsLoading ? (
+              <div className="text-center py-4">
+                <div className="text-purple-600 font-medium">Carregando...</div>
+              </div>
+            ) : (
+              <div className="space-y-3 max-h-48 overflow-y-auto">
+                {newTickets.length > 0 ? (
+                  newTickets.map((ticket) => (
+                    <div key={ticket.id} className="bg-white/70 backdrop-blur-sm rounded-lg p-4 border border-purple-100 hover:bg-white/90 hover:border-purple-300 transition-all duration-200 hover:shadow-md">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="text-sm font-semibold text-gray-800 truncate">
+                            #{ticket.id} - {ticket.title}
+                          </div>
+                          <div className="text-xs text-purple-600 mt-1 font-medium">
+                            {ticket.requester} • {new Date(ticket.date).toLocaleString('pt-BR')}
+                          </div>
+                        </div>
+                        <div className="ml-2">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-sm">
+                            {ticket.priority}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-4 text-purple-600 font-medium">
+                    Nenhum ticket novo
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Footer - Compacto */}
-      <div className="mt-4 text-center text-blue-200">
-        <p className="text-sm">
-          Última atualização: {lastUpdated ? lastUpdated.toLocaleString('pt-BR') : 'Nunca'}
+      {/* Footer */}
+      <div className="mt-8 text-center border-t border-gradient-to-r from-blue-200 via-purple-200 to-pink-200 pt-6">
+        <p className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
+          Sistema atualizado automaticamente • {new Date().toLocaleString('pt-BR')}
         </p>
       </div>
     </div>
   );
 };
+
+export default SimplifiedDashboard;

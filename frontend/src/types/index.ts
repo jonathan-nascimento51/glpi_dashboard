@@ -76,6 +76,16 @@ export interface TechnicianRanking {
   averageResolutionTime: number;
 }
 
+export interface NewTicket {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  requester: string;
+  priority: string;
+  status: string;
+}
+
 export interface DashboardState {
   metrics: MetricsData | null;
   systemStatus: SystemStatus | null;
@@ -89,4 +99,6 @@ export interface DashboardState {
   theme: Theme;
   isSimplifiedMode: boolean;
   technicianRanking: TechnicianRanking[];
+  dataIntegrityReport: any | null; // Será tipado adequadamente quando importado
+  monitoringAlerts: any[];
 }

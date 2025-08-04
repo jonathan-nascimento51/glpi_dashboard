@@ -4,7 +4,10 @@ import { MetricsGrid } from './components/MetricsGrid';
 import { LevelsSection } from './components/LevelsSection';
 import { FilterPanel } from './components/FilterPanel';
 import { NotificationSystem } from './components/NotificationSystem';
-import { SimplifiedDashboard } from './components/SimplifiedDashboard';
+import SimplifiedDashboard from './components/SimplifiedDashboard';
+import DataIntegrityMonitor from './components/DataIntegrityMonitor';
+import MonitoringAlerts from './components/MonitoringAlerts';
+import { dataMonitor } from './utils/dataMonitor';
 import { LoadingSpinner, SkeletonMetricsGrid, SkeletonLevelsSection, ErrorState } from './components/LoadingSpinner';
 import { useDashboard } from './hooks/useDashboard';
 import { TicketStatus } from './types';
@@ -23,6 +26,8 @@ function App() {
     theme,
     isSimplifiedMode,
     technicianRanking,
+    dataIntegrityReport,
+    monitoringAlerts,
     loadData,
     forceRefresh,
     updateFilters,
@@ -34,6 +39,8 @@ function App() {
   } = useDashboard();
 
   const [showFilters, setShowFilters] = useState(false);
+  const [showIntegrityMonitor, setShowIntegrityMonitor] = useState(true);
+  const [showMonitoringAlerts, setShowMonitoringAlerts] = useState(true);
   const [currentTime, setCurrentTime] = useState('');
 
   // Update current time
@@ -197,11 +204,14 @@ function App() {
         searchQuery={searchQuery}
         searchResults={searchResults}
         isSimplifiedMode={isSimplifiedMode}
+        showMonitoringAlerts={showMonitoringAlerts}
+        alertsCount={monitoringAlerts.filter(alert => !alert.acknowledged).length}
         onThemeChange={changeTheme}
         onSearch={search}
         onRefresh={handleRefresh}
         onToggleFilters={() => setShowFilters(!showFilters)}
         onToggleSimplifiedMode={toggleSimplifiedMode}
+        onToggleMonitoringAlerts={() => setShowMonitoringAlerts(!showMonitoringAlerts)}
         onNotification={(title, message, type) => addNotification({ title, message, type, duration: 3000 })}
       />
 
@@ -289,10 +299,28 @@ function App() {
       {/* Notification System */}
       <NotificationSystem
         notifications={notifications}
-        onRemoveNotification={removeNotification}
+        onRemove={removeNotification}
       />
+      
+      {/* Data Integrity Monitor */}
+      <DataIntegrityMonitor
+        report={dataIntegrityReport}
+        isVisible={showIntegrityMonitor}
+        onToggleVisibility={() => setShowIntegrityMonitor(!showIntegrityMonitor)}
+      />
+      
+      {/* Monitoring Alerts */}
+      {showMonitoringAlerts && (
+        <MonitoringAlerts 
+          alerts={monitoringAlerts} 
+          onAcknowledge={(alertId) => {
+            dataMonitor.acknowledgeAlert(alertId);
+          }}
+          onClose={() => setShowMonitoringAlerts(false)}
+        />
+      )}
     </div>
-  );
-}
+   );
+ };
 
 export default App;

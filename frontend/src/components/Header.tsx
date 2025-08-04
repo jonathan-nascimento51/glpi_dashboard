@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, RefreshCw, Filter, Cpu, X, Monitor, Maximize } from 'lucide-react';
+import { Search, RefreshCw, Filter, Cpu, X, Monitor, Maximize, AlertTriangle } from 'lucide-react';
 import { Theme, SearchResult } from '../types';
 
 interface HeaderProps {
@@ -9,11 +9,14 @@ interface HeaderProps {
   searchQuery: string;
   searchResults: SearchResult[];
   isSimplifiedMode: boolean;
+  showMonitoringAlerts: boolean;
+  alertsCount: number;
   onThemeChange: (theme: Theme) => void;
   onSearch: (query: string) => void;
   onRefresh: () => void;
   onToggleFilters: () => void;
   onToggleSimplifiedMode: () => void;
+  onToggleMonitoringAlerts: () => void;
   onNotification: (title: string, message: string, type: 'success' | 'error' | 'warning' | 'info') => void;
 }
 
@@ -31,11 +34,14 @@ export const Header: React.FC<HeaderProps> = ({
   searchQuery,
   searchResults,
   isSimplifiedMode,
+  showMonitoringAlerts,
+  alertsCount,
   onThemeChange,
   onSearch,
   onRefresh,
   onToggleFilters,
   onToggleSimplifiedMode,
+  onToggleMonitoringAlerts,
   onNotification,
 }) => {
   const [showSearchResults, setShowSearchResults] = useState(false);
@@ -219,6 +225,29 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="text-sm">Filtros</span>
             </button>
           )}
+
+          {/* Monitoring Alerts Toggle */}
+          <button
+            onClick={onToggleMonitoringAlerts}
+            className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors duration-200 relative ${
+              showMonitoringAlerts
+                ? 'bg-blue-600 text-white hover:bg-blue-700'
+                : alertsCount > 0
+                ? 'bg-red-100 text-red-700 hover:bg-red-200 animate-pulse'
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+            }`}
+            title={showMonitoringAlerts ? 'Ocultar alertas' : `Mostrar alertas (${alertsCount} pendentes)`}
+          >
+            <AlertTriangle className="w-4 h-4" />
+            <span className="text-sm font-medium">
+              Alertas
+            </span>
+            {alertsCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {alertsCount}
+              </span>
+            )}
+          </button>
 
           {/* Simplified Mode Toggle */}
           <button

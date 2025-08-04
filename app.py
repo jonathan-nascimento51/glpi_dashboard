@@ -24,6 +24,31 @@ def create_app(config=None):
     )
     logger = logging.getLogger('app')
     
+    # Middleware para logar todas as requisições
+    @app.before_request
+    def log_request_info():
+        from flask import request
+        import sys
+        print(f"\n=== REQUISIÇÃO RECEBIDA ===", flush=True)
+        print(f"Método: {request.method}", flush=True)
+        print(f"Path: {request.path}", flush=True)
+        print(f"URL completa: {request.url}", flush=True)
+        print(f"Headers: {dict(request.headers)}", flush=True)
+        print(f"================================\n", flush=True)
+        sys.stdout.flush()
+        logger.info(f"REQUISIÇÃO RECEBIDA: {request.method} {request.path}")
+        
+    @app.after_request
+    def log_response_info(response):
+        from flask import request
+        import sys
+        print(f"\n=== RESPOSTA ENVIADA ===", flush=True)
+        print(f"Status: {response.status_code}", flush=True)
+        print(f"Para: {request.method} {request.path}", flush=True)
+        print(f"============================\n", flush=True)
+        sys.stdout.flush()
+        return response
+    
     # Registra blueprints
     app.register_blueprint(api_bp)
     

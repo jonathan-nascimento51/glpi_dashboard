@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from backend.services.api_service import APIService
 from backend.services.glpi_service import GLPIService
 from backend.config.settings import active_config
@@ -58,16 +58,30 @@ def get_metrics():
             "data": DEFAULT_METRICS
         }), 500
 
+@api_bp.route('/test')
+def test_endpoint():
+    """Endpoint de teste simples"""
+    print("\n=== ENDPOINT DE TESTE CHAMADO ===")
+    logger.info("Endpoint de teste chamado")
+    return jsonify({"message": "Teste funcionando", "success": True})
+
 @api_bp.route('/technicians/ranking')
 def get_technician_ranking():
     """Endpoint para obter ranking de técnicos por total de chamados"""
+    print("=== REQUISIÇÃO RECEBIDA: /technicians/ranking ===")
+    logger.info("=== REQUISIÇÃO RECEBIDA: /technicians/ranking ===")
+    
     try:
+        print("Iniciando busca de ranking de técnicos...")
         logger.info("Buscando ranking de técnicos do GLPI...")
         
         # Busca ranking real do GLPI
+        print("Chamando glpi_service.get_technician_ranking()...")
         ranking_data = glpi_service.get_technician_ranking()
+        print(f"Resultado: {len(ranking_data) if ranking_data else 0} técnicos")
         
         if not ranking_data:
+            print("AVISO: Nenhum dado de técnico retornado pelo GLPI")
             logger.warning("Nenhum dado de técnico retornado pelo GLPI")
             return jsonify({
                 "success": True,
@@ -75,6 +89,7 @@ def get_technician_ranking():
                 "message": "Não foi possível obter dados de técnicos do GLPI."
             })
 
+        print(f"SUCESSO: {len(ranking_data)} técnicos encontrados")
         logger.info(f"Ranking de técnicos obtido com sucesso: {len(ranking_data)} técnicos encontrados.")
         return jsonify({"success": True, "data": ranking_data})
         
@@ -83,6 +98,83 @@ def get_technician_ranking():
         return jsonify({
             "success": False,
             "error": f"Erro interno do servidor: {str(e)}"
+        }), 500
+
+@api_bp.route('/tickets/new')
+def get_new_tickets():
+    """Endpoint para obter tickets com status 'novo'"""
+    logger.info("=== REQUISIÇÃO RECEBIDA: /tickets/new ===")
+    
+    try:
+        # Obter parâmetro de limite (padrão: 5)
+        limit = request.args.get('limit', 5, type=int)
+        limit = min(limit, 20)  # Máximo de 20 tickets
+        
+        logger.info(f"Buscando {limit} tickets novos do GLPI...")
+        
+        # Busca tickets novos do GLPI
+        new_tickets = glpi_service.get_new_tickets(limit)
+        
+        if not new_tickets:
+            logger.warning("Nenhum ticket novo encontrado")
+            return jsonify({
+                "success": True,
+                "data": [],
+                "message": "Nenhum ticket novo encontrado."
+            })
+
+        logger.info(f"Tickets novos obtidos com sucesso: {len(new_tickets)} tickets encontrados.")
+        return jsonify({"success": True, "data": new_tickets})
+        
+    except Exception as e:
+        logger.error(f"Erro ao buscar tickets novos: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": f"Erro interno do servidor: {str(e)}"
+        }), 500
+
+@api_bp.route('/alerts')
+def get_alerts():
+    """Endpoint para obter alertas do sistema"""
+    try:
+        logger.info("Buscando alertas do sistema...")
+        
+        # Alertas básicos do sistema - pode ser expandido futuramente
+        alerts_data = [
+            {
+                "id": "system_001",
+                "type": "info",
+                "severity": "low",
+                "title": "Sistema Operacional",
+                "message": "Dashboard funcionando normalmente",
+                "timestamp": "2024-01-15T10:30:00Z",
+                "acknowledged": False
+            }
+        ]
+        
+        # Verifica status do GLPI para alertas dinâmicos
+        glpi_status = glpi_service.get_system_status()
+        
+        if glpi_status["status"] != "online":
+            alerts_data.append({
+                "id": "glpi_connection",
+                "type": "warning",
+                "severity": "medium",
+                "title": "Conexão GLPI",
+                "message": f"Status do GLPI: {glpi_status['message']}",
+                "timestamp": "2024-01-15T10:30:00Z",
+                "acknowledged": False
+            })
+        
+        logger.info(f"Alertas obtidos: {len(alerts_data)} alertas encontrados.")
+        return jsonify({"success": True, "data": alerts_data})
+        
+    except Exception as e:
+        logger.error(f"Erro ao buscar alertas: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": f"Erro interno do servidor: {str(e)}",
+            "data": []
         }), 500
 
 @api_bp.route('/status')
