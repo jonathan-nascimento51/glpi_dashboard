@@ -137,6 +137,25 @@ export const apiService = {
     }
   },
 
+  // Get technician ranking
+  async getTechnicianRanking(): Promise<any[]> {
+    try {
+      const response = await api.get<ApiResponse<any[]>>('/technicians/ranking');
+      
+      if (response.data.success && response.data.data) {
+        return response.data.data;
+      } else {
+        console.error('API returned unsuccessful response:', response.data);
+        // Return empty array as fallback
+        return [];
+      }
+    } catch (error) {
+      console.error('Error fetching technician ranking:', error);
+      // Return empty array instead of throwing
+      return [];
+    }
+  },
+
   // Search functionality (mock implementation)
   async search(query: string): Promise<any[]> {
     try {

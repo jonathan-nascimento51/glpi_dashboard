@@ -27,7 +27,7 @@ class Config:
     API_TIMEOUT = int(os.environ.get('API_TIMEOUT', '30'))
     
     # Logging
-    LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
+    LOG_LEVEL = os.environ.get('LOG_LEVEL', 'DEBUG')
     LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     
     # CORS

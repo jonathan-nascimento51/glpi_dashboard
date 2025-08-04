@@ -4,6 +4,7 @@ import { MetricsGrid } from './components/MetricsGrid';
 import { LevelsSection } from './components/LevelsSection';
 import { FilterPanel } from './components/FilterPanel';
 import { NotificationSystem } from './components/NotificationSystem';
+import { SimplifiedDashboard } from './components/SimplifiedDashboard';
 import { LoadingSpinner, SkeletonMetricsGrid, SkeletonLevelsSection, ErrorState } from './components/LoadingSpinner';
 import { useDashboard } from './hooks/useDashboard';
 import { TicketStatus } from './types';
@@ -20,6 +21,8 @@ function App() {
     searchResults,
     notifications,
     theme,
+    isSimplifiedMode,
+    technicianRanking,
     loadData,
     forceRefresh,
     updateFilters,
@@ -27,6 +30,7 @@ function App() {
     addNotification,
     removeNotification,
     changeTheme,
+    toggleSimplifiedMode,
   } = useDashboard();
 
   const [showFilters, setShowFilters] = useState(false);
@@ -192,15 +196,25 @@ function App() {
         theme={theme}
         searchQuery={searchQuery}
         searchResults={searchResults}
+        isSimplifiedMode={isSimplifiedMode}
         onThemeChange={changeTheme}
         onSearch={search}
         onRefresh={handleRefresh}
         onToggleFilters={() => setShowFilters(!showFilters)}
+        onToggleSimplifiedMode={toggleSimplifiedMode}
         onNotification={(title, message, type) => addNotification({ title, message, type, duration: 3000 })}
       />
 
-      {/* Main Content */}
-      <main className="p-6 space-y-8">
+      {/* Simplified Dashboard */}
+      {isSimplifiedMode && metrics ? (
+        <SimplifiedDashboard
+          metrics={metrics}
+          technicianRanking={technicianRanking}
+          currentTime={currentTime}
+          lastUpdated={lastUpdated}
+        />
+      ) : (
+        <main className="p-6 space-y-8">
         {/* Loading overlay for refresh */}
         {isLoading && metrics && (
           <div className="fixed top-20 right-6 z-40">
@@ -259,15 +273,18 @@ function App() {
             </button>
           </div>
         )}
-      </main>
+        </main>
+      )}
 
-      {/* Filter Panel */}
-      <FilterPanel
-        isOpen={showFilters}
-        filters={filters}
-        onClose={() => setShowFilters(false)}
-        onFiltersChange={updateFilters}
-      />
+      {/* Filter Panel - Only show in normal mode */}
+      {!isSimplifiedMode && (
+        <FilterPanel
+          isOpen={showFilters}
+          filters={filters}
+          onClose={() => setShowFilters(false)}
+          onFiltersChange={updateFilters}
+        />
+      )}
 
       {/* Notification System */}
       <NotificationSystem

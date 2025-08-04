@@ -58,6 +58,33 @@ def get_metrics():
             "data": DEFAULT_METRICS
         }), 500
 
+@api_bp.route('/technicians/ranking')
+def get_technician_ranking():
+    """Endpoint para obter ranking de técnicos por total de chamados"""
+    try:
+        logger.info("Buscando ranking de técnicos do GLPI...")
+        
+        # Busca ranking real do GLPI
+        ranking_data = glpi_service.get_technician_ranking()
+        
+        if not ranking_data:
+            logger.warning("Nenhum dado de técnico retornado pelo GLPI")
+            return jsonify({
+                "success": True,
+                "data": [],
+                "message": "Não foi possível obter dados de técnicos do GLPI."
+            })
+
+        logger.info(f"Ranking de técnicos obtido com sucesso: {len(ranking_data)} técnicos encontrados.")
+        return jsonify({"success": True, "data": ranking_data})
+        
+    except Exception as e:
+        logger.error(f"Erro ao buscar ranking de técnicos: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": f"Erro interno do servidor: {str(e)}"
+        }), 500
+
 @api_bp.route('/status')
 def get_status():
     """Endpoint para verificar status do sistema e conexão com GLPI"""
@@ -76,16 +103,12 @@ def get_status():
             "version": "1.0.0"
         }
         
-        logger.info(f"Status do sistema: {status_data}")
-        
-        return jsonify({
-            "success": True,
-            "data": status_data
-        })
+        logger.info(f"Status verificado: API={status_data['api']}, GLPI={status_data['glpi']}")
+        return jsonify({"success": True, "data": status_data})
         
     except Exception as e:
-        logger.error(f"Erro ao verificar status: {e}", exc_info=True)
+        logger.error(f"Erro ao verificar status: {str(e)}")
         return jsonify({
             "success": False,
-            "error": "Erro interno no servidor."
+            "error": f"Erro interno do servidor: {str(e)}"
         }), 500

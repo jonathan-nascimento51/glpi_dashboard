@@ -35,7 +35,7 @@ class GLPIService:
         self.session_token = None
         
         # Configuração de logging
-        self.logger = logging.getLogger('services')
+        self.logger = logging.getLogger('api')
     
     def authenticate(self) -> bool:
         """Autentica na API do GLPI e obtém o session token"""
@@ -338,6 +338,170 @@ class GLPIService:
         self.close_session()
         return result
     
+    def get_technician_ranking(self) -> list:
+        """Retorna ranking de técnicos por total de chamados usando dados reais da API GLPI"""
+        self.logger.info("Iniciando busca de ranking de técnicos...")
+        
+        if not self.authenticate():
+            self.logger.error("Falha na autenticação")
+            return []
+            
+        if not self.discover_field_ids():
+            self.logger.error("Falha ao descobrir field IDs")
+            self.close_session()
+            return []
+        
+        # Descobrir o field ID do técnico atribuído
+        tech_field_id = self._discover_tech_field_id()
+        if not tech_field_id:
+            self.logger.error("Falha ao descobrir field ID do técnico")
+            self.close_session()
+            return []
+        
+        self.logger.info(f"Field ID do técnico encontrado: {tech_field_id}")
+        
+        # Listar técnicos ativos
+        active_techs = self._list_active_technicians()
+        if not active_techs:
+            self.logger.error("Nenhum técnico ativo encontrado")
+            self.close_session()
+            return []
+        
+        self.logger.info(f"Encontrados {len(active_techs)} técnicos ativos")
+        
+        # Contar tickets por técnico
+        ranking = []
+        for tech_id, tech_name in active_techs:
+            total_tickets = self._count_tickets_by_technician(tech_id, tech_field_id)
+            if total_tickets is not None:
+                self.logger.info(f"Técnico {tech_name} (ID: {tech_id}): {total_tickets} tickets")
+                ranking.append({
+                    "id": str(tech_id),
+                    "nome": tech_name,
+                    "total": total_tickets
+                })
+            else:
+                self.logger.warning(f"Não foi possível contar tickets para técnico {tech_name} (ID: {tech_id})")
+        
+        # Ordenar por total de tickets (decrescente)
+        ranking.sort(key=lambda x: x["total"], reverse=True)
+        
+        self.logger.info(f"Ranking final: {len(ranking)} técnicos com dados válidos")
+        
+        self.close_session()
+        return ranking[:10]  # Retorna top 10
+    
+    def _discover_tech_field_id(self) -> Optional[str]:
+        """Descobre dinamicamente o field ID do técnico atribuído"""
+        try:
+            headers = self.get_api_headers()
+            response = requests.get(
+                f"{self.glpi_url}/listSearchOptions/Ticket", 
+                headers=headers
+            )
+            response.raise_for_status()
+            search_options = response.json()
+            
+            # Procurar por campos relacionados ao técnico atribuído
+            # Baseado no debug, o campo "5" é "Técnico" e "95" é "Técnico encarregado"
+            tech_field_mapping = {
+                "5": "Técnico",
+                "95": "Técnico encarregado"
+            }
+            
+            # Primeiro, tentar os campos conhecidos
+            for field_id, expected_name in tech_field_mapping.items():
+                if field_id in search_options:
+                    field_data = search_options[field_id]
+                    if isinstance(field_data, dict) and "name" in field_data:
+                        field_name = field_data["name"]
+                        if field_name == expected_name:
+                            self.logger.info(f"Campo de técnico encontrado: {field_name} (ID: {field_id})")
+                            return field_id
+            
+            # Fallback: procurar por nomes
+            tech_field_names = ["Técnico", "Atribuído", "Assigned to", "Technician", "Técnico encarregado"]
+            
+            for field_id, field_data in search_options.items():
+                if isinstance(field_data, dict) and "name" in field_data:
+                    field_name = field_data["name"]
+                    if field_name in tech_field_names:
+                        self.logger.info(f"Campo de técnico encontrado (fallback): {field_name} (ID: {field_id})")
+                        return field_id
+            
+            self.logger.error("Campo de técnico atribuído não encontrado")
+            return None
+            
+        except requests.exceptions.RequestException as e:
+            self.logger.error(f"Erro ao descobrir field ID do técnico: {e}")
+            return None
+    
+    def _list_active_technicians(self) -> list:
+        """Lista técnicos ativos do sistema"""
+        try:
+            headers = self.get_api_headers()
+            params = {
+                "range": "0-999",
+                "is_deleted": 0,
+                "criteria[0][field]": "is_active",
+                "criteria[0][searchtype]": "equals",
+                "criteria[0][value]": 1
+            }
+            
+            response = requests.get(
+                f"{self.glpi_url}/User",
+                headers=headers,
+                params=params
+            )
+            response.raise_for_status()
+            users = response.json()
+            
+            # Extrair ID e nome dos usuários
+            technicians = []
+            for user in users:
+                if isinstance(user, dict) and "id" in user and "name" in user:
+                    technicians.append((user["id"], user["name"]))
+            
+            self.logger.info(f"Encontrados {len(technicians)} técnicos ativos")
+            return technicians
+            
+        except requests.exceptions.RequestException as e:
+            self.logger.error(f"Erro ao listar técnicos ativos: {e}")
+            return []
+    
+    def _count_tickets_by_technician(self, tech_id: int, tech_field_id: str) -> Optional[int]:
+        """Conta o total de tickets atribuídos a um técnico específico"""
+        try:
+            headers = self.get_api_headers()
+            params = {
+                "criteria[0][field]": tech_field_id,
+                "criteria[0][searchtype]": "equals",
+                "criteria[0][value]": tech_id,
+                "is_deleted": 0,
+                "range": "0-0"
+            }
+            
+            response = requests.get(
+                f"{self.glpi_url}/search/Ticket",
+                headers=headers,
+                params=params
+            )
+            
+            # Extrair total do cabeçalho Content-Range
+            if "Content-Range" in response.headers:
+                content_range = response.headers["Content-Range"]
+                total = int(content_range.split("/")[-1])
+                return total
+            
+            return 0
+            
+        except requests.exceptions.RequestException as e:
+            self.logger.error(f"Erro ao contar tickets do técnico {tech_id}: {e}")
+            return None
+        except (ValueError, IndexError) as e:
+            self.logger.error(f"Erro ao processar Content-Range para técnico {tech_id}: {e}")
+            return None
+
     def close_session(self):
         """Encerra a sessão com a API do GLPI"""
         if self.session_token:

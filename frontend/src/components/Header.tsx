@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, RefreshCw, Filter, Cpu, X } from 'lucide-react';
+import { Search, RefreshCw, Filter, Cpu, X, Monitor, Maximize } from 'lucide-react';
 import { Theme, SearchResult } from '../types';
 
 interface HeaderProps {
@@ -8,10 +8,12 @@ interface HeaderProps {
   theme: Theme;
   searchQuery: string;
   searchResults: SearchResult[];
+  isSimplifiedMode: boolean;
   onThemeChange: (theme: Theme) => void;
   onSearch: (query: string) => void;
   onRefresh: () => void;
   onToggleFilters: () => void;
+  onToggleSimplifiedMode: () => void;
   onNotification: (title: string, message: string, type: 'success' | 'error' | 'warning' | 'info') => void;
 }
 
@@ -28,10 +30,12 @@ export const Header: React.FC<HeaderProps> = ({
   theme,
   searchQuery,
   searchResults,
+  isSimplifiedMode,
   onThemeChange,
   onSearch,
   onRefresh,
   onToggleFilters,
+  onToggleSimplifiedMode,
   onNotification,
 }) => {
   const [showSearchResults, setShowSearchResults] = useState(false);
@@ -206,12 +210,34 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           {/* Filter Button */}
+          {!isSimplifiedMode && (
+            <button
+              onClick={onToggleFilters}
+              className="btn-secondary flex items-center space-x-2"
+            >
+              <Filter className="w-4 h-4" />
+              <span className="text-sm">Filtros</span>
+            </button>
+          )}
+
+          {/* Simplified Mode Toggle */}
           <button
-            onClick={onToggleFilters}
-            className="btn-secondary flex items-center space-x-2"
+            onClick={onToggleSimplifiedMode}
+            className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors duration-200 ${
+              isSimplifiedMode
+                ? 'bg-blue-600 text-white hover:bg-blue-700'
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+            }`}
+            title={isSimplifiedMode ? 'Voltar ao modo normal' : 'Ativar modo TV (simplificado)'}
           >
-            <Filter className="w-4 h-4" />
-            <span className="text-sm">Filtros</span>
+            {isSimplifiedMode ? (
+              <Monitor className="w-4 h-4" />
+            ) : (
+              <Maximize className="w-4 h-4" />
+            )}
+            <span className="text-sm font-medium">
+              {isSimplifiedMode ? 'Modo TV' : 'Modo TV'}
+            </span>
           </button>
 
           {/* Current Time */}

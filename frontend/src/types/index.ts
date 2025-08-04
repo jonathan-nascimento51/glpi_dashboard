@@ -65,6 +65,17 @@ export interface ChartDataPoint {
   color?: string;
 }
 
+export interface TechnicianRanking {
+  id: string;
+  name: string;
+  level: string;
+  score: number;
+  total?: number; // Campo adicional para compatibilidade com API
+  ticketsResolved: number;
+  ticketsInProgress: number;
+  averageResolutionTime: number;
+}
+
 export interface DashboardState {
   metrics: MetricsData | null;
   systemStatus: SystemStatus | null;
@@ -76,4 +87,6 @@ export interface DashboardState {
   searchResults: SearchResult[];
   notifications: NotificationData[];
   theme: Theme;
+  isSimplifiedMode: boolean;
+  technicianRanking: TechnicianRanking[];
 }

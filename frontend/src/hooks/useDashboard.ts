@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { DashboardState, MetricsData, SystemStatus, FilterState, NotificationData, Theme } from '../types';
+import { DashboardState, MetricsData, SystemStatus, FilterState, NotificationData, Theme, TechnicianRanking } from '../types';
 import { apiService } from '../services/api';
 
 const initialFilterState: FilterState = {
@@ -50,11 +50,12 @@ const initialMetrics: MetricsData = {
 };
 
 const initialSystemStatus: SystemStatus = {
-  api: 'unknown',
-  database: 'unknown',
-  last_update: '',
-  version: '1.0.0'
+  status: 'offline',
+  sistema_ativo: false,
+  ultima_atualizacao: ''
 };
+
+// Dados fictícios removidos - usando apenas dados reais da API GLPI
 
 const initialState: DashboardState = {
   metrics: initialMetrics,
@@ -67,6 +68,8 @@ const initialState: DashboardState = {
   searchResults: [],
   notifications: [],
   theme: 'light',
+  isSimplifiedMode: false,
+  technicianRanking: [], // Inicializar vazio - será preenchido com dados reais da API
 };
 
 export const useDashboard = () => {
@@ -77,15 +80,29 @@ export const useDashboard = () => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
     try {
-      const [metrics, systemStatus] = await Promise.all([
+      const [metrics, systemStatus, technicianRanking] = await Promise.all([
         apiService.getMetrics(),
         apiService.getSystemStatus(),
+        apiService.getTechnicianRanking(),
       ]);
+      
+      // Transform technician ranking data to match expected format
+      const transformedRanking = technicianRanking.map((tech, index) => ({
+        id: tech.id.toString(),
+        name: tech.nome,
+        level: 'N1', // Padrão - não fornecido pela API atual
+        score: tech.total || 0,
+        total: tech.total || 0, // Adicionar campo total para compatibilidade
+        ticketsResolved: tech.total || 0, // Usar total como tickets resolvidos
+        ticketsInProgress: 0, // Não fornecido pela API atual
+        averageResolutionTime: 0, // Não fornecido pela API atual
+      }));
       
       setState(prev => ({
         ...prev,
         metrics,
         systemStatus,
+        technicianRanking: transformedRanking, // Sempre usar dados reais da API
         isLoading: false,
         lastUpdated: new Date(),
       }));
@@ -166,11 +183,22 @@ export const useDashboard = () => {
     document.documentElement.className = theme === 'dark' ? 'dark' : '';
   }, []);
 
-  // Load saved theme on mount
+  // Toggle simplified mode
+  const toggleSimplifiedMode = useCallback(() => {
+    setState(prev => ({ ...prev, isSimplifiedMode: !prev.isSimplifiedMode }));
+    localStorage.setItem('dashboard-simplified-mode', (!state.isSimplifiedMode).toString());
+  }, [state.isSimplifiedMode]);
+
+  // Load saved theme and simplified mode on mount
   useEffect(() => {
     const savedTheme = localStorage.getItem('dashboard-theme') as Theme;
     if (savedTheme) {
       changeTheme(savedTheme);
+    }
+    
+    const savedSimplifiedMode = localStorage.getItem('dashboard-simplified-mode');
+    if (savedSimplifiedMode === 'true') {
+      setState(prev => ({ ...prev, isSimplifiedMode: true }));
     }
   }, [changeTheme]);
 
@@ -215,5 +243,6 @@ export const useDashboard = () => {
     addNotification,
     removeNotification,
     changeTheme,
+    toggleSimplifiedMode,
   };
 };
