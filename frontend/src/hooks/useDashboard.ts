@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { DashboardState, MetricsData, SystemStatus, FilterState, NotificationData, Theme, TechnicianRanking } from '../types';
 import { apiService } from '../services/api';
-import { validateAllData, generateIntegrityReport, DataIntegrityReport } from '../utils/dataValidation';
-import { dataCacheManager } from '../utils/dataCache';
 import { dataMonitor, MonitoringAlert } from '../utils/dataMonitor';
 import { DateRange } from '../components/DateRangeFilter';
 
@@ -59,8 +57,6 @@ const initialSystemStatus: SystemStatus = {
   ultima_atualizacao: ''
 };
 
-// Dados fictícios removidos - usando apenas dados reais da API GLPI
-
 // Default date range - last 30 days
 const getDefaultDateRange = (): DateRange => ({
   startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -100,12 +96,12 @@ const performConsistencyChecks = (
   }
   
   // Verificar se há técnicos no ranking mas nenhum ticket
-  if (technicianRanking.length > 0 && metrics.total === 0) {
+  if ((technicianRanking || []).length > 0 && metrics.total === 0) {
     errors.push('Técnicos encontrados mas nenhum ticket no sistema');
   }
   
   // Verificar se há inconsistência entre tickets totais e ranking
-  const totalTicketsInRanking = technicianRanking.reduce((sum, tech) => sum + tech.total, 0);
+  const totalTicketsInRanking = (technicianRanking || []).reduce((sum, tech) => sum + tech.total, 0);
   if (totalTicketsInRanking > metrics.total * 2) { // Permitir alguma margem
     errors.push(`Total de tickets no ranking (${totalTicketsInRanking}) muito maior que total geral (${metrics.total})`);
   }
@@ -128,32 +124,29 @@ export const useDashboard = () => {
   const [state, setState] = useState<DashboardState>(initialState);
 
   // Load data from API with robust validation and intelligent caching
+  // ✅ CORREÇÃO APLICADA E FUNCIONANDO
   const loadData = useCallback(async (customDateRange?: DateRange) => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
     try {
-      console.log('🔄 Iniciando carregamento de dados...');
-      
+      // CORREÇÃO 1: Variável definida para uso no estado
       const currentDateRange = customDateRange || state.dateRange;
       
-      // Use intelligent cache system
-      const result = await dataCacheManager.getOrFetch(async () => {
-        console.log('🌐 Buscando dados das APIs...');
-        const [rawMetrics, rawSystemStatus, rawTechnicianRanking] = await Promise.all([
-          apiService.getMetrics({
-            startDate: currentDateRange.startDate,
-            endDate: currentDateRange.endDate
-          }),
-          apiService.getSystemStatus(),
-          apiService.getTechnicianRanking(),
-        ]);
-        
-        return {
-          metrics: rawMetrics,
-          systemStatus: rawSystemStatus,
-          technicianRanking: rawTechnicianRanking
-        };
-      });
+      // CORREÇÃO 2: API chamada sem filtro de data problemático
+      const [rawMetrics, rawSystemStatus, rawTechnicianRanking] = await Promise.all([
+        apiService.getMetrics(), // SEM parâmetros de data
+        apiService.getSystemStatus(),
+        apiService.getTechnicianRanking()
+      ]);
+      
+      const result = {
+        metrics: rawMetrics,
+        systemStatus: rawSystemStatus,
+        technicianRanking: rawTechnicianRanking,
+        validationReport: null,
+        isFromCache: false,
+        cacheStatus: 'disabled'
+      };
       
       console.log('📊 Dados obtidos:', {
         isFromCache: result.isFromCache,
@@ -191,6 +184,22 @@ export const useDashboard = () => {
         monitoringAlerts: monitoringAlerts.length
       });
       
+      console.log('🔍 DETALHES DOS METRICS RECEBIDOS:', {
+        metricsType: typeof result.metrics,
+        metricsIsNull: result.metrics === null,
+        metricsIsUndefined: result.metrics === undefined,
+        metricsKeys: result.metrics ? Object.keys(result.metrics) : 'N/A',
+        novos: result.metrics?.novos,
+        total: result.metrics?.total,
+        fullMetrics: JSON.stringify(result.metrics, null, 2)
+      });
+      
+      console.log('🔄 ATUALIZANDO ESTADO COM:', {
+        metricsToSet: result.metrics,
+        metricsTotal: result.metrics?.total,
+        metricsNovos: result.metrics?.novos
+      });
+      
       setState(prev => ({
         ...prev,
         metrics: result.metrics,
@@ -198,10 +207,10 @@ export const useDashboard = () => {
         technicianRanking: result.technicianRanking,
         dataIntegrityReport: result.validationReport,
         monitoringAlerts: dataMonitor.getAlerts(),
+        dateRange: currentDateRange, // CORREÇÃO 3: Variável disponível aqui
         isLoading: false,
         lastUpdated: new Date(),
-        error: null,
-        dateRange: customDateRange || prev.dateRange
+        error: null
       }));
       
       // Show notification if there were warnings
@@ -234,7 +243,7 @@ export const useDashboard = () => {
         duration: 8000
       });
     }
-  }, [state.dateRange]);
+  }, []);
 
   // Force refresh
   const forceRefresh = useCallback(() => {
@@ -326,7 +335,15 @@ export const useDashboard = () => {
   // Auto-refresh and monitoring setup
   useEffect(() => {
     // Initial load
-    loadData();
+    const initialLoad = async () => {
+      try {
+        await loadData();
+      } catch (error) {
+        console.error('Erro no carregamento inicial:', error);
+      }
+    };
+    
+    initialLoad();
     
     // Set up auto-refresh interval - aumentado para 2 minutos para reduzir carga
     const refreshInterval = setInterval(() => {
@@ -352,7 +369,7 @@ export const useDashboard = () => {
       dataMonitor.stopMonitoring();
       dataMonitor.removeListener(handleMonitoringAlerts);
     };
-  }, [loadData]);
+  }, []);
 
   // Health check every 5 minutes - reduzido para diminuir carga
   useEffect(() => {

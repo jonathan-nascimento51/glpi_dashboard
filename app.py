@@ -1,8 +1,12 @@
 from flask import Flask
 from flask_cors import CORS
+from flask_caching import Cache
 import logging
 from backend.config.settings import active_config
 from backend.api.routes import api_bp
+
+# Instância global do cache
+cache = Cache()
 
 def create_app(config=None):
     """Cria e configura a aplicação Flask"""
@@ -13,6 +17,14 @@ def create_app(config=None):
         app.config.from_object(active_config)
     else:
         app.config.from_object(config)
+    
+    # Configura cache
+    cache_config = {
+        'CACHE_TYPE': 'SimpleCache',
+        'CACHE_DEFAULT_TIMEOUT': 300  # 5 minutos
+    }
+    app.config.update(cache_config)
+    cache.init_app(app)
     
     # Configura CORS
     CORS(app)

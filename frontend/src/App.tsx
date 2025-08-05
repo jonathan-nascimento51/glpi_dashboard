@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { MetricsGrid } from './components/MetricsGrid';
 import { LevelsSection } from './components/LevelsSection';
@@ -6,8 +6,7 @@ import { FilterPanel } from './components/FilterPanel';
 import { NotificationSystem } from './components/NotificationSystem';
 import SimplifiedDashboard from './components/SimplifiedDashboard';
 import DataIntegrityMonitor from './components/DataIntegrityMonitor';
-import MonitoringAlerts from './components/MonitoringAlerts';
-import { dataMonitor } from './utils/dataMonitor';
+import ProfessionalDashboard from './components/ProfessionalDashboard';
 import { LoadingSpinner, SkeletonMetricsGrid, SkeletonLevelsSection, ErrorState } from './components/LoadingSpinner';
 import { useDashboard } from './hooks/useDashboard';
 import { TicketStatus } from './types';
@@ -39,6 +38,8 @@ function App() {
     toggleSimplifiedMode,
     updateDateRange,
   } = useDashboard();
+
+
 
   const [showFilters, setShowFilters] = useState(false);
   const [showIntegrityMonitor, setShowIntegrityMonitor] = useState(true);
@@ -217,8 +218,17 @@ function App() {
         onNotification={(title, message, type) => addNotification({ title, message, type, duration: 3000 })}
       />
 
-      {/* Simplified Dashboard */}
-      {isSimplifiedMode && metrics ? (
+      {/* Professional Dashboard - Default */}
+      {!isSimplifiedMode && metrics ? (
+        <ProfessionalDashboard
+          metrics={metrics}
+          technicianRanking={technicianRanking}
+          isLoading={isLoading}
+          dateRange={dateRange}
+          onDateRangeChange={updateDateRange}
+          onRefresh={handleRefresh}
+        />
+      ) : isSimplifiedMode && metrics ? (
         <SimplifiedDashboard
           metrics={metrics}
           technicianRanking={technicianRanking}

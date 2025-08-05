@@ -415,11 +415,19 @@ class GLPIService:
         
         return status_totals
     
-    def get_dashboard_metrics(self) -> Dict[str, any]:
+    def get_dashboard_metrics(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Dict[str, any]:
         """Retorna métricas formatadas para o dashboard React.
+        
+        Args:
+            start_date: Data inicial no formato YYYY-MM-DD (opcional)
+            end_date: Data final no formato YYYY-MM-DD (opcional)
         
         Retorna um dicionário com as métricas ou None em caso de falha.
         """
+        # Se parâmetros de data foram fornecidos, usar o método com filtro
+        if start_date or end_date:
+            return self.get_dashboard_metrics_with_date_filter(start_date, end_date)
+        
         # Autenticar uma única vez
         if not self._ensure_authenticated():
             return None

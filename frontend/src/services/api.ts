@@ -1,7 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { MetricsData, SystemStatus } from '../types';
-import { DateRange } from '../types/dashboard';
-import { buildTicketSearchURL, processTicketsByStatus, processTicketsByLevel } from '../utils/glpiDateFilter';
+import { DateRange } from '@/types/dashboard';
 
 const API_BASE_URL = '/api';
 
@@ -65,31 +64,10 @@ export const apiService = {
         });
         url += `?${params.toString()}`;
       }
-      const response = await api.get<ApiResponse<MetricsData>>(url);
+      const response = await api.get(url);
       
-      if (response.data.success && response.data.data) {
+      if (response.data && response.data.success && response.data.data) {
         const data = response.data.data;
-        
-        // Se há filtro de data, processar dados usando as funções do GLPI
-        if (dateRange && (data as any).rawTickets) {
-          const statusCounts = processTicketsByStatus((data as any).rawTickets);
-          const levelCounts = processTicketsByLevel((data as any).rawTickets);
-          
-          return {
-            ...data,
-            novos: statusCounts.new,
-            progresso: statusCounts.assigned + statusCounts.planned,
-            pendentes: statusCounts.waiting,
-            resolvidos: statusCounts.solved + statusCounts.closed,
-            niveis: {
-              n1: levelCounts.n1,
-              n2: levelCounts.n2,
-              n3: levelCounts.n3,
-              n4: levelCounts.n4
-            }
-          };
-        }
-        
         return data;
       } else {
         console.error('API returned unsuccessful response:', response.data);

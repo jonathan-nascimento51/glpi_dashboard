@@ -58,6 +58,14 @@ class DataMonitor {
         description: 'Verifica se os dados estão sendo atualizados regularmente',
         severity: 'high',
         check: ({ validationReport }) => {
+          if (!validationReport || !validationReport.timestamp) {
+            return {
+              passed: false,
+              message: 'Relatório de validação não disponível',
+              details: { validationReport: !!validationReport }
+            };
+          }
+          
           const now = Date.now();
           const lastUpdate = validationReport.timestamp;
           const age = now - lastUpdate;

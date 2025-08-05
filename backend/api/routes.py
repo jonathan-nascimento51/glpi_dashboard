@@ -5,6 +5,13 @@ from backend.config.settings import active_config
 import logging
 from datetime import datetime
 
+# Importar cache do app principal
+try:
+    from app import cache
+except ImportError:
+    # Fallback caso não consiga importar
+    cache = None
+
 api_bp = Blueprint('api', __name__, url_prefix='/api')
 
 # Inicializa serviços
@@ -30,19 +37,71 @@ DEFAULT_METRICS = {
     "tendencias": {"novos": "0", "pendentes": "0", "progresso": "0", "resolvidos": "0"}
 }
 
+# Função para gerar chave de cache personalizada
+def make_cache_key():
+    """Gera chave de cache baseada nos parâmetros de data da requisição"""
+    start = request.args.get('start_date', 'default')
+    end = request.args.get('end_date', 'default')
+    return f'metrics-{start}-{end}'
+
 @api_bp.route('/metrics')
+@cache.cached(timeout=300, make_cache_key=make_cache_key) if cache else lambda f: f
 def get_metrics():
-    """Endpoint para obter métricas do dashboard do GLPI"""
+    """Endpoint para obter métricas do dashboard do GLPI com suporte a filtro de data"""
     try:
-        logger.info("Buscando métricas do GLPI...")
+        # Obter parâmetros de data da query string (opcionais)
+        start_date = request.args.get('start_date')  # Formato: YYYY-MM-DD
+        end_date = request.args.get('end_date')      # Formato: YYYY-MM-DD
         
-        # Busca métricas reais do GLPI
-        metrics_data = glpi_service.get_dashboard_metrics() 
+        # Validar formato das datas se fornecidas
+        if start_date:
+            try:
+                datetime.strptime(start_date, '%Y-%m-%d')
+            except ValueError:
+                return jsonify({
+                    "success": False,
+                    "error": "Formato de data_inicio inválido. Use YYYY-MM-DD",
+                    "data": DEFAULT_METRICS
+                }), 400
+        
+        if end_date:
+            try:
+                datetime.strptime(end_date, '%Y-%m-%d')
+            except ValueError:
+                return jsonify({
+                    "success": False,
+                    "error": "Formato de data_fim inválido. Use YYYY-MM-DD",
+                    "data": DEFAULT_METRICS
+                }), 400
+        
+        # Validar que data_inicio não seja posterior a data_fim
+        if start_date and end_date:
+            start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+            end_dt = datetime.strptime(end_date, '%Y-%m-%d')
+            if start_dt > end_dt:
+                return jsonify({
+                    "success": False,
+                    "error": "Data de início não pode ser posterior à data de fim",
+                    "data": DEFAULT_METRICS
+                }), 400
+        
+        logger.info(f"Buscando métricas do GLPI com filtro de data: {start_date} até {end_date}")
+        
+        # Usar método com filtro de data se parâmetros fornecidos, senão usar método padrão
+        if start_date or end_date:
+            metrics_data = glpi_service.get_dashboard_metrics_with_date_filter(start_date, end_date)
+        else:
+            metrics_data = glpi_service.get_dashboard_metrics()
         
         if not metrics_data:
             logger.warning("Não foi possível obter métricas do GLPI, usando dados de fallback.")
             fallback_data = DEFAULT_METRICS.copy()
             fallback_data["error"] = "Não foi possível conectar ou obter dados do GLPI."
+            if start_date or end_date:
+                fallback_data["filtro_data"] = {
+                    "data_inicio": start_date,
+                    "data_fim": end_date
+                }
             return jsonify({
                 "success": True, # A API funcionou, mas a fonte de dados falhou
                 "data": fallback_data
@@ -53,10 +112,16 @@ def get_metrics():
         
     except Exception as e:
         logger.error(f"Erro inesperado ao buscar métricas: {e}", exc_info=True)
+        fallback_data = DEFAULT_METRICS.copy()
+        if request.args.get('start_date') or request.args.get('end_date'):
+            fallback_data["filtro_data"] = {
+                "data_inicio": request.args.get('start_date'),
+                "data_fim": request.args.get('end_date')
+            }
         return jsonify({
             "success": False,
             "error": "Erro interno no servidor.",
-            "data": DEFAULT_METRICS
+            "data": fallback_data
         }), 500
 
 @api_bp.route('/metrics/filtered')
