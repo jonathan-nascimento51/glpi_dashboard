@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Header } from './components/Header';
-import { MetricsGrid } from './components/MetricsGrid';
-import { LevelsSection } from './components/LevelsSection';
 import { FilterPanel } from './components/FilterPanel';
 import { NotificationSystem } from './components/NotificationSystem';
 import SimplifiedDashboard from './components/SimplifiedDashboard';
 import DataIntegrityMonitor from './components/DataIntegrityMonitor';
-import ProfessionalDashboard from './components/ProfessionalDashboard';
+import { ModernDashboard } from './components/dashboard/ModernDashboard';
 import { LoadingSpinner, SkeletonMetricsGrid, SkeletonLevelsSection, ErrorState } from './components/LoadingSpinner';
 import { useDashboard } from './hooks/useDashboard';
 import { TicketStatus } from './types';
@@ -38,8 +36,6 @@ function App() {
     toggleSimplifiedMode,
     updateDateRange,
   } = useDashboard();
-
-
 
   const [showFilters, setShowFilters] = useState(false);
   const [showIntegrityMonitor, setShowIntegrityMonitor] = useState(true);
@@ -155,21 +151,21 @@ function App() {
   // Show loading state on initial load
   if (isLoading && !metrics) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
         <div className="animate-pulse">
           {/* Header skeleton */}
-          <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+          <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200 px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+                <div className="w-10 h-10 bg-gray-200 rounded-lg" />
                 <div className="space-y-2">
-                  <div className="w-48 h-5 bg-gray-200 dark:bg-gray-700 rounded" />
-                  <div className="w-32 h-3 bg-gray-200 dark:bg-gray-700 rounded" />
+                  <div className="w-48 h-5 bg-gray-200 rounded" />
+                  <div className="w-32 h-3 bg-gray-200 rounded" />
                 </div>
               </div>
               <div className="flex items-center space-x-4">
-                <div className="w-64 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg" />
-                <div className="w-32 h-8 bg-gray-200 dark:bg-gray-700 rounded" />
+                <div className="w-64 h-10 bg-gray-200 rounded-lg" />
+                <div className="w-32 h-8 bg-gray-200 rounded" />
               </div>
             </div>
           </div>
@@ -187,7 +183,7 @@ function App() {
   // Show error state
   if (error && !metrics) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 flex items-center justify-center">
         <ErrorState
           title="Erro ao Carregar Dashboard"
           message={error}
@@ -209,6 +205,8 @@ function App() {
         isSimplifiedMode={isSimplifiedMode}
         showMonitoringAlerts={showMonitoringAlerts}
         alertsCount={monitoringAlerts.filter(alert => !alert.acknowledged).length}
+        dateRange={dateRange}
+        onDateRangeChange={updateDateRange}
         onThemeChange={changeTheme}
         onSearch={search}
         onRefresh={handleRefresh}
@@ -218,15 +216,18 @@ function App() {
         onNotification={(title, message, type) => addNotification({ title, message, type, duration: 3000 })}
       />
 
-      {/* Professional Dashboard - Default */}
+      {/* Dashboard Principal - Nova Interface Modernizada */}
       {!isSimplifiedMode && metrics ? (
-        <ProfessionalDashboard
+        <ModernDashboard
           metrics={metrics}
+          systemStatus={systemStatus}
           technicianRanking={technicianRanking}
-          isLoading={isLoading}
-          dateRange={dateRange}
-          onDateRangeChange={updateDateRange}
+          onFilterByStatus={handleFilterByStatus}
           onRefresh={handleRefresh}
+          onDateRangeChange={updateDateRange}
+          lastUpdate={lastUpdated}
+          dateRange={dateRange}
+          isLoading={isLoading}
         />
       ) : isSimplifiedMode && metrics ? (
         <SimplifiedDashboard
@@ -237,66 +238,37 @@ function App() {
           onDateRangeChange={updateDateRange}
         />
       ) : (
-        <main className="container-fluid section-spacing space-y-8">
-        {/* Loading overlay for refresh */}
-        {isLoading && metrics && (
-          <div className="fixed top-20 right-6 z-40 fade-in">
-            <div className="glass-effect rounded-xl shadow-glow p-4 backdrop-blur-md">
-              <LoadingSpinner size="sm" text="Atualizando..." />
-            </div>
-          </div>
-        )}
-
-        {/* Metrics Section */}
-        {metrics && (
-          <section>
-            <div className="mb-8">
-              <h1 className="text-gradient mb-2">
-                Dashboard de Métricas
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-2">
-                Monitoramento em tempo real dos chamados de suporte
-                {lastUpdated && (
-                  <span className="ml-2 text-sm">
-                    • Última atualização: {lastUpdated.toLocaleTimeString('pt-BR')}
-                  </span>
-                )}
-              </p>
-            </div>
-            <MetricsGrid
-              metrics={metrics}
-              onFilterByStatus={handleFilterByStatus}
-            />
-          </section>
-        )}
-
-        {/* Levels Section */}
-        {metrics && (
-          <section>
-            <LevelsSection metrics={metrics} />
-          </section>
-        )}
-
-        {/* Empty state when no data */}
-        {!metrics && !isLoading && !error && (
+        // Fallback para quando não há dados
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center">
           <div className="text-center py-12">
-            <div className="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-4 flex items-center justify-center">
+            <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
               <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
               Nenhum dado disponível
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
+            <p className="text-gray-600 mb-4">
               Não foi possível carregar os dados do dashboard.
             </p>
-            <button onClick={loadData} className="btn-primary">
+            <button 
+              onClick={loadData} 
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
               Tentar Novamente
             </button>
           </div>
-        )}
-        </main>
+        </div>
+      )}
+
+      {/* Loading overlay for refresh */}
+      {isLoading && metrics && (
+        <div className="fixed top-20 right-6 z-50">
+          <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-4">
+            <LoadingSpinner size="sm" text="Atualizando..." />
+          </div>
+        </div>
       )}
 
       {/* Filter Panel - Only show in normal mode */}
@@ -321,10 +293,8 @@ function App() {
         isVisible={showIntegrityMonitor}
         onToggleVisibility={() => setShowIntegrityMonitor(!showIntegrityMonitor)}
       />
-      
-
     </div>
-   );
- };
+  );
+};
 
 export default App;
