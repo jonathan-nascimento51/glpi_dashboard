@@ -16,6 +16,7 @@ function App() {
   const {
     metrics,
     systemStatus,
+    technicianRanking,
     isLoading,
     error,
     lastUpdated,
@@ -25,9 +26,9 @@ function App() {
     notifications,
     theme,
     isSimplifiedMode,
-    technicianRanking,
-    dataIntegrityReport,
     monitoringAlerts,
+    dataIntegrityReport,
+    dateRange,
     loadData,
     forceRefresh,
     updateFilters,
@@ -36,6 +37,7 @@ function App() {
     removeNotification,
     changeTheme,
     toggleSimplifiedMode,
+    updateDateRange,
   } = useDashboard();
 
   const [showFilters, setShowFilters] = useState(false);
@@ -220,8 +222,9 @@ function App() {
         <SimplifiedDashboard
           metrics={metrics}
           technicianRanking={technicianRanking}
-          currentTime={currentTime}
-          lastUpdated={lastUpdated}
+          isLoading={isLoading}
+          dateRange={dateRange}
+          onDateRangeChange={updateDateRange}
         />
       ) : (
         <main className="p-6 space-y-8">

@@ -4,6 +4,7 @@ import { apiService } from '../services/api';
 import { validateAllData, generateIntegrityReport, DataIntegrityReport } from '../utils/dataValidation';
 import { dataCacheManager } from '../utils/dataCache';
 import { dataMonitor, MonitoringAlert } from '../utils/dataMonitor';
+import { DateRange } from '../components/DateRangeFilter';
 
 const initialFilterState: FilterState = {
   period: 'today',
@@ -60,9 +61,17 @@ const initialSystemStatus: SystemStatus = {
 
 // Dados fictícios removidos - usando apenas dados reais da API GLPI
 
+// Default date range - last 30 days
+const getDefaultDateRange = (): DateRange => ({
+  startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+  endDate: new Date().toISOString().split('T')[0],
+  label: 'Últimos 30 dias'
+});
+
 const initialState: DashboardState = {
-  metrics: initialMetrics,
-  systemStatus: initialSystemStatus,
+  metrics: null,
+  systemStatus: null,
+  technicianRanking: [],
   isLoading: true,
   error: null,
   lastUpdated: null,
@@ -72,9 +81,9 @@ const initialState: DashboardState = {
   notifications: [],
   theme: 'light',
   isSimplifiedMode: false,
-  technicianRanking: [], // Inicializar vazio - será preenchido com dados reais da API
-  dataIntegrityReport: null, // Relatório de integridade dos dados
+  dataIntegrityReport: null,
   monitoringAlerts: [],
+  dateRange: getDefaultDateRange(),
 };
 
 // Função para verificações adicionais de consistência
@@ -119,17 +128,22 @@ export const useDashboard = () => {
   const [state, setState] = useState<DashboardState>(initialState);
 
   // Load data from API with robust validation and intelligent caching
-  const loadData = useCallback(async () => {
+  const loadData = useCallback(async (customDateRange?: DateRange) => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
     try {
       console.log('🔄 Iniciando carregamento de dados...');
       
+      const currentDateRange = customDateRange || state.dateRange;
+      
       // Use intelligent cache system
       const result = await dataCacheManager.getOrFetch(async () => {
         console.log('🌐 Buscando dados das APIs...');
         const [rawMetrics, rawSystemStatus, rawTechnicianRanking] = await Promise.all([
-          apiService.getMetrics(),
+          apiService.getMetrics({
+            startDate: currentDateRange.startDate,
+            endDate: currentDateRange.endDate
+          }),
           apiService.getSystemStatus(),
           apiService.getTechnicianRanking(),
         ]);
@@ -186,7 +200,8 @@ export const useDashboard = () => {
         monitoringAlerts: dataMonitor.getAlerts(),
         isLoading: false,
         lastUpdated: new Date(),
-        error: null
+        error: null,
+        dateRange: customDateRange || prev.dateRange
       }));
       
       // Show notification if there were warnings
@@ -219,7 +234,7 @@ export const useDashboard = () => {
         duration: 8000
       });
     }
-  }, []);
+  }, [state.dateRange]);
 
   // Force refresh
   const forceRefresh = useCallback(() => {
@@ -357,6 +372,12 @@ export const useDashboard = () => {
     return () => clearInterval(healthCheckInterval);
   }, []);
 
+  // Update date range
+  const updateDateRange = useCallback((dateRange: DateRange) => {
+    setState(prev => ({ ...prev, dateRange }));
+    loadData(dateRange);
+  }, [loadData]);
+
   return {
     ...state,
     loadData,
@@ -367,5 +388,6 @@ export const useDashboard = () => {
     removeNotification,
     changeTheme,
     toggleSimplifiedMode,
+    updateDateRange,
   };
 };
