@@ -86,7 +86,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   return (
     <div
       className={`
-        metric-card fade-in cursor-pointer
+        metric-card fade-in cursor-pointer group
         ${config.bgColor} ${config.borderColor}
         hover:shadow-lg hover:scale-105
         transition-all duration-300
@@ -102,12 +102,12 @@ export const MetricCard: React.FC<MetricCardProps> = ({
       }}
     >
       <div className="flex items-center justify-between mb-4">
-        <div className={`p-3 rounded-lg ${config.bgColor}`}>
+        <div className={`p-3 rounded-lg ${config.bgColor} float`}>
           <Icon className={`w-6 h-6 ${config.iconColor}`} />
         </div>
-        <div className="flex items-center space-x-1">
+        <div className="flex items-center space-x-1 min-w-0">
           <TrendIcon 
-            className={`w-4 h-4 ${
+            className={`w-4 h-4 flex-shrink-0 ${
               changeData.isPositive 
                 ? 'text-green-500' 
                 : changeData.isNegative 
@@ -116,7 +116,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
             }`} 
           />
           <span 
-            className={`text-sm font-medium ${
+            className={`text-xs lg:text-sm font-medium truncate ${
               changeData.isPositive 
                 ? 'text-green-600 dark:text-green-400' 
                 : changeData.isNegative 
@@ -130,14 +130,14 @@ export const MetricCard: React.FC<MetricCardProps> = ({
       </div>
       
       <div className="space-y-2">
-        <h3 className={`text-sm font-medium ${config.textColor}`}>
+        <h3 className={`text-sm font-medium ${config.textColor} truncate`}>
           {config.title}
         </h3>
-        <div className="flex items-baseline space-x-2">
-          <span className={`text-3xl font-bold ${config.textColor}`}>
+        <div className="flex items-baseline space-x-2 min-w-0">
+          <span className={`text-2xl lg:text-3xl font-bold ${config.textColor} truncate flex-shrink-0`}>
             {value.toLocaleString('pt-BR')}
           </span>
-          <span className="text-sm text-gray-500 dark:text-gray-400">
+          <span className="text-xs lg:text-sm text-gray-500 dark:text-gray-400 truncate flex-shrink">
             chamados
           </span>
         </div>

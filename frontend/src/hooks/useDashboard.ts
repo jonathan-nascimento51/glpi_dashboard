@@ -330,9 +330,7 @@ export const useDashboard = () => {
     
     // Set up auto-refresh interval - aumentado para 2 minutos para reduzir carga
     const refreshInterval = setInterval(() => {
-      if (!state.isLoading) {
-        loadData();
-      }
+      loadData();
     }, 120000); // 2 minutos (120 segundos)
     
     // Start continuous monitoring - reduzido para 1 minuto
@@ -354,7 +352,7 @@ export const useDashboard = () => {
       dataMonitor.stopMonitoring();
       dataMonitor.removeListener(handleMonitoringAlerts);
     };
-  }, [loadData, state.isLoading]);
+  }, [loadData]);
 
   // Health check every 5 minutes - reduzido para diminuir carga
   useEffect(() => {

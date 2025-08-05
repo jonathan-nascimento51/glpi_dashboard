@@ -197,7 +197,7 @@ function App() {
   }
 
   return (
-    <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200 ${theme}`}>
+    <div className={`min-h-screen transition-all duration-300 ${theme}`}>
       {/* Header */}
       <Header
         currentTime={currentTime}
@@ -227,11 +227,11 @@ function App() {
           onDateRangeChange={updateDateRange}
         />
       ) : (
-        <main className="p-6 space-y-8">
+        <main className="container-fluid section-spacing space-y-8">
         {/* Loading overlay for refresh */}
         {isLoading && metrics && (
-          <div className="fixed top-20 right-6 z-40">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-3">
+          <div className="fixed top-20 right-6 z-40 fade-in">
+            <div className="glass-effect rounded-xl shadow-glow p-4 backdrop-blur-md">
               <LoadingSpinner size="sm" text="Atualizando..." />
             </div>
           </div>
@@ -240,8 +240,8 @@ function App() {
         {/* Metrics Section */}
         {metrics && (
           <section>
-            <div className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            <div className="mb-8">
+              <h1 className="text-gradient mb-2">
                 Dashboard de Métricas
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-2">
@@ -312,16 +312,7 @@ function App() {
         onToggleVisibility={() => setShowIntegrityMonitor(!showIntegrityMonitor)}
       />
       
-      {/* Monitoring Alerts */}
-      {showMonitoringAlerts && (
-        <MonitoringAlerts 
-          alerts={monitoringAlerts} 
-          onAcknowledge={(alertId) => {
-            dataMonitor.acknowledgeAlert(alertId);
-          }}
-          onClose={() => setShowMonitoringAlerts(false)}
-        />
-      )}
+
     </div>
    );
  };

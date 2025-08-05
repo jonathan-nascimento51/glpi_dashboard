@@ -213,10 +213,7 @@ const SimplifiedDashboard: React.FC<SimplifiedDashboardProps> = ({
           <div className="bg-slate-800/80 backdrop-blur-sm rounded-lg shadow-lg border border-slate-700/60 p-4 h-full">
             <h2 className="text-lg font-medium mb-4 text-center text-slate-200 border-b border-slate-600/40 pb-2">Resumo Geral</h2>
             <div className="space-y-2">
-               <div className="flex justify-between items-center p-3 bg-slate-700/40 rounded-lg border border-slate-600/50">
-                 <span className="text-sm font-medium text-slate-300">Total Geral:</span>
-                 <span className="text-xl font-bold text-slate-200">{metrics.total}</span>
-               </div>
+
                <div className="flex justify-between items-center p-3 bg-slate-700/40 rounded-lg border border-slate-600/50">
                  <span className="text-sm font-medium text-slate-300">Ativos:</span>
                  <span className="text-xl font-bold text-amber-400">{metrics.novos + metrics.progresso + metrics.pendentes}</span>

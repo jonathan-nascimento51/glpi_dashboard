@@ -171,17 +171,7 @@ export const LevelsSection: React.FC<LevelsSectionProps> = ({ metrics }) => {
           </p>
         </div>
         
-        {/* Quick Overview */}
-        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">
-              {overallTotal}
-            </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              Total Geral
-            </div>
-          </div>
-        </div>
+
       </div>
 
       {/* Levels Grid */}

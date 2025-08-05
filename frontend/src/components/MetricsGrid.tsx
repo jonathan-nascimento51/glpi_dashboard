@@ -49,7 +49,7 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
   return (
     <div className="space-y-6">
       {/* Main Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         {metricCards.map((metric) => (
           <MetricCard
             key={metric.type}
@@ -62,37 +62,37 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
       </div>
 
       {/* Total Summary Card */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 lg:p-6">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+          <div className="min-w-0 flex-1">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 truncate">
               Total de Chamados
             </h3>
-            <div className="flex items-baseline space-x-2">
-              <span className="text-4xl font-bold text-gray-900 dark:text-white">
+            <div className="flex items-baseline space-x-2 min-w-0">
+              <span className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white truncate flex-shrink-0">
                 {total.toLocaleString('pt-BR')}
               </span>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
+              <span className="text-xs lg:text-sm text-gray-500 dark:text-gray-400 truncate flex-shrink">
                 chamados registrados
               </span>
             </div>
           </div>
           
           {/* Quick Stats */}
-          <div className="grid grid-cols-2 gap-4 text-center">
-            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
-              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-4 text-center lg:min-w-0 lg:flex-shrink-0">
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 min-w-0">
+              <div className="text-xl lg:text-2xl font-bold text-blue-600 dark:text-blue-400 truncate">
                 {total > 0 ? (((metrics.resolvidos || 0) / total) * 100).toFixed(1) : '0.0'}%
               </div>
-              <div className="text-xs text-blue-700 dark:text-blue-300">
+              <div className="text-xs text-blue-700 dark:text-blue-300 truncate">
                 Taxa de Resolução
               </div>
             </div>
-            <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3">
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                {total > 0 ? (((metrics.progresso || 0) / total) * 100).toFixed(1) : '0.0'}%
+            <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 min-w-0">
+              <div className="text-xl lg:text-2xl font-bold text-green-600 dark:text-green-400 truncate">
+                {total > 0 ? ((((metrics.novos || 0) + (metrics.pendentes || 0) + (metrics.progresso || 0)) / total) * 100).toFixed(1) : '0.0'}%
               </div>
-              <div className="text-xs text-green-700 dark:text-green-300">
+              <div className="text-xs text-green-700 dark:text-green-300 truncate">
                 Em Andamento
               </div>
             </div>

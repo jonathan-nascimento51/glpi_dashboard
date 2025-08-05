@@ -107,7 +107,7 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   return (
-    <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+    <header className="glass-effect border-b border-gray-200/50 dark:border-gray-700/50 px-6 py-4 sticky top-0 z-50">
       <div className="flex items-center justify-between">
         {/* Brand */}
         <div className="flex items-center space-x-4">
@@ -116,7 +116,7 @@ export const Header: React.FC<HeaderProps> = ({
               <Cpu className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-xl font-bold text-gradient">
                 Centro de Comando
               </h1>
               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -128,21 +128,28 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Controls */}
         <div className="flex items-center space-x-4">
-          {/* Theme Switcher */}
+          {/* Theme Switcher - Dark/Light only */}
           <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-            {themes.map((themeOption) => (
-              <button
-                key={themeOption.value}
-                onClick={() => onThemeChange(themeOption.value)}
-                className={`px-3 py-1 text-sm font-medium rounded-md transition-colors duration-200 ${
-                  theme === themeOption.value
-                    ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-                }`}
-              >
-                {themeOption.label}
-              </button>
-            ))}
+            <button
+              onClick={() => onThemeChange('light')}
+              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors duration-200 ${
+                theme === 'light'
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
+              Light
+            </button>
+            <button
+              onClick={() => onThemeChange('dark')}
+              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors duration-200 ${
+                theme === 'dark'
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
+              Dark
+            </button>
           </div>
 
           {/* Search */}
@@ -195,15 +202,18 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </div>
 
-          {/* System Status */}
+
+
+          {/* TV Mode Button */}
           <button
-            onClick={handleSystemStatusClick}
-            className="flex items-center space-x-2 px-3 py-2 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors duration-200"
+            onClick={onToggleSimplifiedMode}
+            className={`btn-secondary flex items-center space-x-2 ${
+              isSimplifiedMode ? 'bg-primary-600 text-white' : ''
+            }`}
+            title={isSimplifiedMode ? 'Sair do Modo TV' : 'Ativar Modo TV'}
           >
-            <div className="live-indicator" />
-            <span className="text-sm font-medium">
-              {systemActive ? 'SISTEMA ATIVO' : 'SISTEMA INATIVO'}
-            </span>
+            <Monitor className="w-4 h-4" />
+            <span className="text-sm">{isSimplifiedMode ? 'Sair TV' : 'Modo TV'}</span>
           </button>
 
           {/* Refresh Button */}
@@ -215,59 +225,9 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="text-sm">Atualizar</span>
           </button>
 
-          {/* Filter Button */}
-          {!isSimplifiedMode && (
-            <button
-              onClick={onToggleFilters}
-              className="btn-secondary flex items-center space-x-2"
-            >
-              <Filter className="w-4 h-4" />
-              <span className="text-sm">Filtros</span>
-            </button>
-          )}
 
-          {/* Monitoring Alerts Toggle */}
-          <button
-            onClick={onToggleMonitoringAlerts}
-            className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors duration-200 relative ${
-              showMonitoringAlerts
-                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                : alertsCount > 0
-                ? 'bg-red-100 text-red-700 hover:bg-red-200 animate-pulse'
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-            }`}
-            title={showMonitoringAlerts ? 'Ocultar alertas' : `Mostrar alertas (${alertsCount} pendentes)`}
-          >
-            <AlertTriangle className="w-4 h-4" />
-            <span className="text-sm font-medium">
-              Alertas
-            </span>
-            {alertsCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                {alertsCount}
-              </span>
-            )}
-          </button>
 
-          {/* Simplified Mode Toggle */}
-          <button
-            onClick={onToggleSimplifiedMode}
-            className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors duration-200 ${
-              isSimplifiedMode
-                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-            }`}
-            title={isSimplifiedMode ? 'Voltar ao modo normal' : 'Ativar modo TV (simplificado)'}
-          >
-            {isSimplifiedMode ? (
-              <Monitor className="w-4 h-4" />
-            ) : (
-              <Maximize className="w-4 h-4" />
-            )}
-            <span className="text-sm font-medium">
-              {isSimplifiedMode ? 'Modo TV' : 'Modo TV'}
-            </span>
-          </button>
+
 
           {/* Current Time */}
           <div className="text-sm font-mono text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-3 py-2 rounded-lg">

@@ -14,6 +14,7 @@ class GLPIService:
         self.glpi_url = active_config.GLPI_URL
         self.app_token = active_config.GLPI_APP_TOKEN
         self.user_token = active_config.GLPI_USER_TOKEN
+        self.logger = logging.getLogger('glpi_service')
         
         # Mapeamento de status dos tickets
         self.status_map = {
@@ -41,15 +42,63 @@ class GLPIService:
         self.retry_delay_base = 2  # Base para backoff exponencial
         self.session_timeout = 3600  # 1 hora em segundos
         
-        # Configuração de logging
-        self.logger = logging.getLogger('api')
-        
         # Sistema de cache para evitar consultas repetitivas
         self._cache = {
             'technician_ranking': {'data': None, 'timestamp': None, 'ttl': 300},  # 5 minutos
             'active_technicians': {'data': None, 'timestamp': None, 'ttl': 600},  # 10 minutos
-            'field_ids': {'data': None, 'timestamp': None, 'ttl': 3600},  # 1 hora
+            'field_ids': {'data': None, 'timestamp': None, 'ttl': 1800},  # 30 minutos
+            'dashboard_metrics': {'data': None, 'timestamp': None, 'ttl': 180},  # 3 minutos
+            'dashboard_metrics_filtered': {}  # Cache dinâmico para filtros de data
         }
+    
+    def _is_cache_valid(self, cache_key: str, sub_key: str = None) -> bool:
+        """Verifica se o cache é válido"""
+        try:
+            if sub_key:
+                cache_data = self._cache.get(cache_key, {}).get(sub_key)
+            else:
+                cache_data = self._cache.get(cache_key)
+            
+            if not cache_data or cache_data.get('timestamp') is None:
+                return False
+            
+            current_time = time.time()
+            cache_time = cache_data['timestamp']
+            ttl = cache_data.get('ttl', 300)  # Default 5 minutos
+            
+            return (current_time - cache_time) < ttl
+        except Exception as e:
+            self.logger.error(f"Erro ao verificar cache: {e}")
+            return False
+    
+    def _get_cache_data(self, cache_key: str, sub_key: str = None):
+        """Obtém dados do cache"""
+        try:
+            if sub_key:
+                return self._cache.get(cache_key, {}).get(sub_key, {}).get('data')
+            else:
+                return self._cache.get(cache_key, {}).get('data')
+        except Exception as e:
+            self.logger.error(f"Erro ao obter dados do cache: {e}")
+            return None
+    
+    def _set_cache_data(self, cache_key: str, data, ttl: int = 300, sub_key: str = None):
+        """Define dados no cache"""
+        try:
+            cache_entry = {
+                'data': data,
+                'timestamp': time.time(),
+                'ttl': ttl
+            }
+            
+            if sub_key:
+                if cache_key not in self._cache:
+                    self._cache[cache_key] = {}
+                self._cache[cache_key][sub_key] = cache_entry
+            else:
+                self._cache[cache_key] = cache_entry
+        except Exception as e:
+            self.logger.error(f"Erro ao definir dados do cache: {e}")
     
     def _is_token_expired(self) -> bool:
         """Verifica se o token de sessão está expirado"""
@@ -190,9 +239,11 @@ class GLPIService:
             
             group_field_name = "Grupo técnico"
             status_field_name = "Status"
+            date_field_name = "Data de criação"
             
             group_id_found = False
             status_id_found = False
+            date_id_found = False
             
             for item_id, item_data in search_options.items():
                 if isinstance(item_data, dict) and "name" in item_data:
@@ -207,18 +258,23 @@ class GLPIService:
                         self.field_ids["STATUS"] = item_id
                         self.logger.info(f"ID do campo '{status_field_name}' encontrado: {item_id}")
                         status_id_found = True
+                    
+                    if field_name == date_field_name and not date_id_found:
+                        self.field_ids["DATE_CREATION"] = item_id
+                        self.logger.info(f"ID do campo '{date_field_name}' encontrado: {item_id}")
+                        date_id_found = True
                 
-                if group_id_found and status_id_found:
+                if group_id_found and status_id_found and date_id_found:
                     break
             
-            return group_id_found and status_id_found
+            return group_id_found and status_id_found and date_id_found
             
         except Exception as e:
             self.logger.error(f"Erro ao descobrir IDs dos campos: {e}")
             return False
     
-    def get_ticket_count(self, group_id: int, status_id: int) -> Optional[int]:
-        """Busca o total de tickets para um grupo e status específicos"""
+    def get_ticket_count(self, group_id: int, status_id: int, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Optional[int]:
+        """Busca o total de tickets para um grupo e status específicos, com filtro de data opcional"""
         if not self.field_ids:
             if not self.discover_field_ids():
                 return None
@@ -234,6 +290,21 @@ class GLPIService:
             "criteria[1][searchtype]": "equals",
             "criteria[1][value]": status_id,
         }
+        
+        # Adicionar filtros de data se fornecidos
+        criteria_index = 2
+        if start_date:
+            search_params[f"criteria[{criteria_index}][link]"] = "AND"
+            search_params[f"criteria[{criteria_index}][field]"] = self.field_ids["DATE_CREATION"]
+            search_params[f"criteria[{criteria_index}][searchtype]"] = "morethan"
+            search_params[f"criteria[{criteria_index}][value]"] = f"{start_date} 00:00:00"
+            criteria_index += 1
+            
+        if end_date:
+            search_params[f"criteria[{criteria_index}][link]"] = "AND"
+            search_params[f"criteria[{criteria_index}][field]"] = self.field_ids["DATE_CREATION"]
+            search_params[f"criteria[{criteria_index}][searchtype]"] = "lessthan"
+            search_params[f"criteria[{criteria_index}][value]"] = f"{end_date} 23:59:59"
         
         try:
             response = self._make_authenticated_request(
@@ -270,7 +341,7 @@ class GLPIService:
         
         return self._get_metrics_by_level_internal()
     
-    def _get_metrics_by_level_internal(self) -> Dict[str, Dict[str, int]]:
+    def _get_metrics_by_level_internal(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Dict[str, Dict[str, int]]:
         """Método interno para obter métricas por nível (sem autenticação/fechamento)"""
         metrics = {}
         
@@ -278,7 +349,7 @@ class GLPIService:
             level_metrics = {}
             
             for status_name, status_id in self.status_map.items():
-                count = self.get_ticket_count(group_id, status_id)
+                count = self.get_ticket_count(group_id, status_id, start_date, end_date)
                 level_metrics[status_name] = count if count is not None else 0
             
             metrics[level_name] = level_metrics
@@ -296,7 +367,7 @@ class GLPIService:
         result = self._get_general_metrics_internal()
         return result
     
-    def _get_general_metrics_internal(self) -> Dict[str, int]:
+    def _get_general_metrics_internal(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Dict[str, int]:
         """Método interno para obter métricas gerais (sem autenticação/fechamento)"""
         status_totals = {}
         
@@ -309,6 +380,21 @@ class GLPIService:
                 "criteria[0][searchtype]": "equals",
                 "criteria[0][value]": status_id,
             }
+            
+            # Adicionar filtros de data se fornecidos
+            criteria_index = 1
+            if start_date:
+                search_params[f"criteria[{criteria_index}][link]"] = "AND"
+                search_params[f"criteria[{criteria_index}][field]"] = self.field_ids["DATE_CREATION"]
+                search_params[f"criteria[{criteria_index}][searchtype]"] = "morethan"
+                search_params[f"criteria[{criteria_index}][value]"] = f"{start_date} 00:00:00"
+                criteria_index += 1
+                
+            if end_date:
+                search_params[f"criteria[{criteria_index}][link]"] = "AND"
+                search_params[f"criteria[{criteria_index}][field]"] = self.field_ids["DATE_CREATION"]
+                search_params[f"criteria[{criteria_index}][searchtype]"] = "lessthan"
+                search_params[f"criteria[{criteria_index}][value]"] = f"{end_date} 23:59:59"
             
             try:
                 response = self._make_authenticated_request(
@@ -438,6 +524,139 @@ class GLPIService:
         }
         
         self.logger.info(f"Métricas formatadas: {result}")
+        return result
+    
+    def get_dashboard_metrics_with_date_filter(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Dict[str, any]:
+        """Retorna métricas formatadas para o dashboard React com filtro de data.
+        
+        Args:
+            start_date: Data inicial no formato YYYY-MM-DD (opcional)
+            end_date: Data final no formato YYYY-MM-DD (opcional)
+        
+        Retorna um dicionário com as métricas ou None em caso de falha.
+        """
+        # Criar chave de cache baseada nos parâmetros de data
+        cache_key = f"{start_date or 'none'}_{end_date or 'none'}"
+        
+        # Verificar se existe cache válido para este filtro
+        if self._is_cache_valid('dashboard_metrics_filtered', cache_key):
+            cached_data = self._get_cache_data('dashboard_metrics_filtered', cache_key)
+            if cached_data:
+                self.logger.info(f"Retornando métricas do cache para filtro: {cache_key}")
+                return cached_data
+        
+        # Autenticar uma única vez
+        if not self._ensure_authenticated():
+            return None
+        
+        if not self.discover_field_ids():
+            return None
+        
+        # Obter totais gerais (todos os grupos) para métricas principais com filtro de data
+        general_totals = self._get_general_metrics_internal(start_date, end_date)
+        self.logger.info(f"Totais gerais obtidos com filtro de data: {general_totals}")
+        
+        # Obter métricas por nível (grupos N1-N4) com filtro de data
+        raw_metrics = self._get_metrics_by_level_internal(start_date, end_date)
+        
+        # Agregação dos totais por status (apenas para níveis)
+        totals = {
+            "novos": 0,
+            "pendentes": 0,
+            "progresso": 0,
+            "resolvidos": 0
+        }
+        
+        # Métricas por nível
+        level_metrics = {
+            "n1": {
+                "novos": 0,
+                "progresso": 0,
+                "pendentes": 0,
+                "resolvidos": 0
+            },
+            "n2": {
+                "novos": 0,
+                "progresso": 0,
+                "pendentes": 0,
+                "resolvidos": 0
+            },
+            "n3": {
+                "novos": 0,
+                "progresso": 0,
+                "pendentes": 0,
+                "resolvidos": 0
+            },
+            "n4": {
+                "novos": 0,
+                "progresso": 0,
+                "pendentes": 0,
+                "resolvidos": 0
+            }
+        }
+        
+        for level_name, level_data in raw_metrics.items():
+            level_key = level_name.lower()
+            
+            # Novo
+            level_metrics[level_key]["novos"] = level_data.get("Novo", 0)
+            totals["novos"] += level_metrics[level_key]["novos"]
+            
+            # Progresso (soma de Processando atribuído e planejado)
+            processando_atribuido = level_data.get("Processando (atribuído)", 0)
+            processando_planejado = level_data.get("Processando (planejado)", 0)
+            level_metrics[level_key]["progresso"] = processando_atribuido + processando_planejado
+            totals["progresso"] += level_metrics[level_key]["progresso"]
+            
+            # Pendente
+            level_metrics[level_key]["pendentes"] = level_data.get("Pendente", 0)
+            totals["pendentes"] += level_metrics[level_key]["pendentes"]
+            
+            # Resolvidos (soma de Solucionado e Fechado)
+            solucionado = level_data.get("Solucionado", 0)
+            fechado = level_data.get("Fechado", 0)
+            level_metrics[level_key]["resolvidos"] = solucionado + fechado
+            totals["resolvidos"] += level_metrics[level_key]["resolvidos"]
+        
+        # Usar totais gerais para métricas principais
+        general_novos = general_totals.get("Novo", 0)
+        general_pendentes = general_totals.get("Pendente", 0)
+        general_progresso = general_totals.get("Processando (atribuído)", 0) + general_totals.get("Processando (planejado)", 0)
+        general_resolvidos = general_totals.get("Solucionado", 0) + general_totals.get("Fechado", 0)
+        general_total = general_novos + general_pendentes + general_progresso + general_resolvidos
+        
+        self.logger.info(f"Métricas gerais calculadas com filtro: novos={general_novos}, pendentes={general_pendentes}, progresso={general_progresso}, resolvidos={general_resolvidos}, total={general_total}")
+        
+        result = {
+            "novos": general_novos,
+            "pendentes": general_pendentes,
+            "progresso": general_progresso,
+            "resolvidos": general_resolvidos,
+            "total": general_total,
+            "niveis": {
+                "n1": level_metrics["n1"],
+                "n2": level_metrics["n2"],
+                "n3": level_metrics["n3"],
+                "n4": level_metrics["n4"]
+            },
+            "tendencias": {
+                "novos": "0",
+                "pendentes": "0",
+                "progresso": "0",
+                "resolvidos": "0"
+            },
+            "detalhes": raw_metrics,
+            "filtro_data": {
+                "data_inicio": start_date,
+                "data_fim": end_date
+            }
+        }
+        
+        self.logger.info(f"Métricas formatadas com filtro de data: {result}")
+        
+        # Salvar no cache com TTL de 3 minutos
+        self._set_cache_data('dashboard_metrics_filtered', result, ttl=180, sub_key=cache_key)
+        
         return result
     
     def get_technician_ranking(self) -> list:
