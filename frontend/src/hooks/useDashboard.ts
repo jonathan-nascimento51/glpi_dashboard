@@ -332,7 +332,7 @@ export const useDashboard = () => {
     }
   }, [changeTheme]);
 
-  // Auto-refresh and monitoring setup
+  // Auto-refresh and monitoring setup - OTIMIZADO PARA EVITAR RECARREGAMENTOS FREQUENTES
   useEffect(() => {
     // Initial load
     const initialLoad = async () => {
@@ -345,13 +345,31 @@ export const useDashboard = () => {
     
     initialLoad();
     
-    // Set up auto-refresh interval - aumentado para 2 minutos para reduzir carga
+    // CORREÇÃO: Aumentado intervalo para 5 minutos para reduzir recarregamentos
     const refreshInterval = setInterval(() => {
-      loadData();
-    }, 120000); // 2 minutos (120 segundos)
+      // Verificar se auto-refresh está habilitado
+      const autoRefreshEnabled = localStorage.getItem('autoRefreshEnabled');
+      if (autoRefreshEnabled === 'false') {
+        console.log('⏸️ Auto-refresh desabilitado pelo usuário');
+        return;
+      }
+
+      // Só recarrega se não houver interação recente do usuário
+      const lastInteraction = localStorage.getItem('lastUserInteraction');
+      const now = Date.now();
+      const timeSinceInteraction = lastInteraction ? now - parseInt(lastInteraction) : Infinity;
+      
+      // Se o usuário interagiu nos últimos 2 minutos, não recarrega automaticamente
+      if (timeSinceInteraction > 120000) {
+        console.log('🔄 Auto-refresh executado (sem interação recente)');
+        loadData();
+      } else {
+        console.log('⏸️ Auto-refresh pausado (interação recente do usuário)');
+      }
+    }, 300000); // 5 minutos (300 segundos)
     
-    // Start continuous monitoring - reduzido para 1 minuto
-    dataMonitor.startMonitoring(60000); // Check every 1 minute
+    // CORREÇÃO: Reduzido monitoramento para 5 minutos também
+    dataMonitor.startMonitoring(300000); // Check every 5 minutes
     
     // Listen for monitoring alerts
     const handleMonitoringAlerts = (alerts: MonitoringAlert[]) => {
@@ -371,7 +389,7 @@ export const useDashboard = () => {
     };
   }, []);
 
-  // Health check every 5 minutes - reduzido para diminuir carga
+  // Health check every 10 minutes - OTIMIZADO para reduzir carga
   useEffect(() => {
     const healthCheckInterval = setInterval(async () => {
       try {
@@ -382,9 +400,28 @@ export const useDashboard = () => {
       } catch (error) {
         console.error('Health check error:', error);
       }
-    }, 300000); // 5 minutos
+    }, 600000); // 10 minutos
     
     return () => clearInterval(healthCheckInterval);
+  }, []);
+
+  // Rastrear interações do usuário para pausar auto-refresh
+  useEffect(() => {
+    const trackUserInteraction = () => {
+      localStorage.setItem('lastUserInteraction', Date.now().toString());
+    };
+
+    // Eventos que indicam interação do usuário
+    const events = ['click', 'keydown', 'scroll', 'touchstart'];
+    events.forEach(event => {
+      document.addEventListener(event, trackUserInteraction, { passive: true });
+    });
+
+    return () => {
+      events.forEach(event => {
+        document.removeEventListener(event, trackUserInteraction);
+      });
+    };
   }, []);
 
   // Update date range

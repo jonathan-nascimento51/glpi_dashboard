@@ -214,6 +214,8 @@ function App() {
         onToggleSimplifiedMode={toggleSimplifiedMode}
         onToggleMonitoringAlerts={() => setShowMonitoringAlerts(!showMonitoringAlerts)}
         onNotification={(title, message, type) => addNotification({ title, message, type, duration: 3000 })}
+        isLoading={isLoading}
+        lastUpdated={lastUpdated}
       />
 
       {/* Dashboard Principal - Nova Interface Modernizada */}

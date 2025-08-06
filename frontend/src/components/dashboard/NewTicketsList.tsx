@@ -63,8 +63,28 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
   useEffect(() => {
     fetchTickets()
     
-    // Auto-refresh a cada 2 minutos
-    const interval = setInterval(fetchTickets, 120000)
+    // CORREÇÃO: Auto-refresh otimizado para 5 minutos com controle de interação
+    const interval = setInterval(() => {
+      // Verificar se auto-refresh está habilitado
+      const autoRefreshEnabled = localStorage.getItem('autoRefreshEnabled')
+      if (autoRefreshEnabled === 'false') {
+        console.log('⏸️ Auto-refresh de tickets desabilitado pelo usuário')
+        return
+      }
+
+      const lastInteraction = localStorage.getItem('lastUserInteraction')
+      const now = Date.now()
+      const timeSinceInteraction = lastInteraction ? now - parseInt(lastInteraction) : Infinity
+      
+      // Só atualiza se não houver interação recente (últimos 2 minutos)
+      if (timeSinceInteraction > 120000) {
+        console.log('🎫 Atualizando lista de tickets novos')
+        fetchTickets()
+      } else {
+        console.log('⏸️ Atualização da lista de tickets pausada (interação recente)')
+      }
+    }, 300000) // 5 minutos
+    
     return () => clearInterval(interval)
   }, [limit])
 

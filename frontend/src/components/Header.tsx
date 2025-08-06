@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { Search, RefreshCw, Filter, X, Monitor, Maximize, AlertTriangle, Clock, Wifi, WifiOff, Calendar, ChevronDown } from 'lucide-react';
 import { Theme, SearchResult } from '../types';
 import { SimpleTechIcon } from './SimpleTechIcon';
+import { RefreshControl } from './RefreshControl';
 
 interface HeaderProps {
   currentTime: string;
@@ -21,6 +22,8 @@ interface HeaderProps {
   onToggleMonitoringAlerts: () => void;
   onNotification: (title: string, message: string, type: 'success' | 'error' | 'warning' | 'info') => void;
   onDateRangeChange?: (dateRange: { startDate: string; endDate: string; label: string }) => void;
+  isLoading?: boolean;
+  lastUpdated?: Date | null;
 }
 
 const themes: { value: Theme; label: string; icon: string }[] = [
@@ -57,6 +60,8 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleMonitoringAlerts,
   onNotification,
   onDateRangeChange,
+  isLoading = false,
+  lastUpdated = null,
 }) => {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [showThemeSelector, setShowThemeSelector] = useState(false);
@@ -412,15 +417,13 @@ export const Header: React.FC<HeaderProps> = ({
               <span>{isSimplifiedMode ? 'Sair TV' : 'Modo TV'}</span>
             </button>
             
-            {/* Refresh */}
-            <button 
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-              className="flex items-center space-x-2 px-3 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-medium transition-all backdrop-blur-sm border border-white/20 disabled:opacity-50"
-            >
-              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-              <span>Atualizar</span>
-            </button>
+            {/* Refresh Control */}
+            <RefreshControl
+              onRefresh={handleRefresh}
+              isLoading={isRefreshing || isLoading}
+              lastUpdated={lastUpdated}
+              className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-3 py-2"
+            />
             
             {/* Current Time */}
             <div className="flex items-center space-x-2 text-sm text-blue-100 bg-white/10 px-3 py-2 rounded-xl backdrop-blur-sm border border-white/20 font-mono">

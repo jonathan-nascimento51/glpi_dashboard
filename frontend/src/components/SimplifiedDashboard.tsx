@@ -26,7 +26,7 @@ const SimplifiedDashboard: React.FC<SimplifiedDashboardProps> = ({
     const fetchNewTickets = async () => {
       setTicketsLoading(true);
       try {
-        const tickets = await apiService.getNewTickets(5);
+        const tickets = await apiService.getNewTickets(8);
         setNewTickets(tickets);
       } catch (error) {
         console.error('Erro ao buscar tickets novos:', error);
@@ -36,8 +36,29 @@ const SimplifiedDashboard: React.FC<SimplifiedDashboardProps> = ({
     };
 
     fetchNewTickets();
-    // Atualizar a cada 30 segundos
-    const interval = setInterval(fetchNewTickets, 30000);
+    
+    // CORREÇÃO: Aumentado para 5 minutos e adicionado controle de interação
+    const interval = setInterval(() => {
+      // Verificar se auto-refresh está habilitado
+      const autoRefreshEnabled = localStorage.getItem('autoRefreshEnabled');
+      if (autoRefreshEnabled === 'false') {
+        console.log('⏸️ Auto-refresh de tickets desabilitado pelo usuário');
+        return;
+      }
+
+      const lastInteraction = localStorage.getItem('lastUserInteraction');
+      const now = Date.now();
+      const timeSinceInteraction = lastInteraction ? now - parseInt(lastInteraction) : Infinity;
+      
+      // Só atualiza se não houver interação recente (últimos 2 minutos)
+      if (timeSinceInteraction > 120000) {
+        console.log('🎫 Atualizando tickets novos (sem interação recente)');
+        fetchNewTickets();
+      } else {
+        console.log('⏸️ Atualização de tickets pausada (interação recente)');
+      }
+    }, 300000); // 5 minutos
+    
     return () => clearInterval(interval);
   }, []);
 

@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { MetricsData, SystemStatus } from '../types';
 import { DateRange } from '@/types/dashboard';
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = 'http://localhost:5000/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
