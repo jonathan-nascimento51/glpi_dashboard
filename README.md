@@ -1,12 +1,12 @@
-# GLPI Dashboard API
+# GLPI Dashboard
 
-API para integração com o GLPI e fornecimento de métricas para o dashboard.
+Aplicação completa para dashboard de métricas do GLPI, com backend Flask e frontend React.
 
 ## Estrutura do Projeto
 
 ```
 .
-├── backend/                # Backend da aplicação
+├── backend/                # Backend Flask
 │   ├── api/               # Endpoints da API
 │   │   ├── __init__.py    # Inicializador do módulo API
 │   │   └── routes.py      # Rotas da API
@@ -18,8 +18,14 @@ API para integração com o GLPI e fornecimento de métricas para o dashboard.
 │   │   ├── api_service.py # Serviço para APIs externas
 │   │   └── glpi_service.py # Serviço para integração com GLPI
 │   └── __init__.py        # Inicializador do pacote backend
-├── frontend/              # Frontend React
-└── app.py                 # Ponto de entrada da aplicação
+├── frontend/              # Frontend React + TypeScript
+│   ├── src/               # Código fonte do frontend
+│   ├── package.json       # Dependências Node.js
+│   └── vite.config.ts     # Configuração do Vite
+├── app.py                 # Ponto de entrada do backend
+├── pyproject.toml         # Configuração e dependências Python
+├── .env.example           # Exemplo de variáveis de ambiente
+└── README.md              # Este arquivo
 ```
 
 ## Configuração
@@ -48,11 +54,70 @@ Edite o arquivo `.env` com suas configurações específicas.
 - `GLPI_APP_TOKEN`: Token de aplicação do GLPI.
 - `LOG_LEVEL`: Nível de log (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`). Padrão: `INFO`
 
-## Execução
+## Instalação e Execução
+
+### Pré-requisitos
+
+- Python 3.11+
+- Node.js 16+
+- npm ou yarn
+
+### 1. Configuração do Backend (Flask)
 
 ```bash
+# Criar e ativar ambiente virtual
+python -m venv venv
+
+# Windows
+.\venv\Scripts\Activate.ps1
+
+# Linux/Mac
+source venv/bin/activate
+
+# Instalar dependências
+pip install flask flask-cors flask-caching flask-sqlalchemy gunicorn psycopg2-binary python-dotenv requests email-validator
+```
+
+### 2. Configuração das Variáveis de Ambiente
+
+```bash
+# Copiar arquivo de exemplo
+copy .env.example .env  # Windows
+cp .env.example .env    # Linux/Mac
+```
+
+Edite o arquivo `.env` com suas configurações específicas do GLPI.
+
+### 3. Executar o Backend
+
+```bash
+# Com o ambiente virtual ativado
 python app.py
 ```
+
+O backend será executado em `http://localhost:5000`
+
+### 4. Configurar e Executar o Frontend
+
+Em um novo terminal:
+
+```bash
+# Navegar para a pasta frontend
+cd frontend
+
+# Instalar dependências
+npm install
+
+# Executar servidor de desenvolvimento
+npm run dev
+```
+
+O frontend será executado em `http://localhost:3000` (ou próxima porta disponível)
+
+### 5. Acessar a Aplicação
+
+- **Frontend (Interface)**: `http://localhost:3000`
+- **Backend (API)**: `http://localhost:5000`
 
 ## Endpoints da API
 
