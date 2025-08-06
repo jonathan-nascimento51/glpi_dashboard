@@ -202,7 +202,7 @@ export function validateTechnicianRanking(data: any): ValidationResult<Technicia
 /**
  * Valida um número, retornando 0 se inválido
  */
-function validateNumber(value: any, fieldName: string, errors: string[], warnings: string[]): number {
+function validateNumber(value: any, fieldName: string, _errors: string[], warnings: string[]): number {
   if (value === null || value === undefined) {
     warnings.push(`Campo '${fieldName}' é null/undefined, usando 0`);
     return 0;
@@ -225,7 +225,7 @@ function validateNumber(value: any, fieldName: string, errors: string[], warning
 /**
  * Valida dados de níveis
  */
-function validateLevels(data: any, errors: string[], warnings: string[]): MetricsData['niveis'] {
+function validateLevels(data: any, _errors: string[], warnings: string[]): MetricsData['niveis'] {
   const defaultLevel: LevelMetrics = {
     novos: 0,
     pendentes: 0,
@@ -280,7 +280,7 @@ function validateLevel(data: any, levelName: string, warnings: string[]): LevelM
 /**
  * Valida dados de tendências
  */
-function validateTrends(data: any, errors: string[], warnings: string[]): MetricsData['tendencias'] {
+function validateTrends(data: any, _errors: string[], warnings: string[]): MetricsData['tendencias'] {
   const defaultTrends = {
     novos: '0',
     pendentes: '0',

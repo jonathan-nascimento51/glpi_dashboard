@@ -76,7 +76,7 @@ const initialState: DashboardState = {
   searchResults: [],
   notifications: [],
   theme: 'light',
-  isSimplifiedMode: false,
+
   dataIntegrityReport: null,
   monitoringAlerts: [],
   dateRange: getDefaultDateRange(),
@@ -139,6 +139,13 @@ export const useDashboard = () => {
         apiService.getTechnicianRanking()
       ]);
       
+      // Validar dados do ranking de técnicos
+      if (rawTechnicianRanking && Array.isArray(rawTechnicianRanking)) {
+        console.log('✅ useDashboard - Ranking de técnicos carregado:', rawTechnicianRanking.length, 'técnicos');
+      } else {
+        console.warn('⚠️ useDashboard - Resposta do ranking inválida:', rawTechnicianRanking);
+      }
+      
       const result = {
         metrics: rawMetrics,
         systemStatus: rawSystemStatus,
@@ -200,18 +207,28 @@ export const useDashboard = () => {
         metricsNovos: result.metrics?.novos
       });
       
-      setState(prev => ({
-        ...prev,
-        metrics: result.metrics,
-        systemStatus: result.systemStatus,
-        technicianRanking: result.technicianRanking,
-        dataIntegrityReport: result.validationReport,
-        monitoringAlerts: dataMonitor.getAlerts(),
-        dateRange: currentDateRange, // CORREÇÃO 3: Variável disponível aqui
-        isLoading: false,
-        lastUpdated: new Date(),
-        error: null
-      }));
+      console.log('🔄 ANTES DE ATUALIZAR ESTADO - technicianRanking:', result.technicianRanking);
+      console.log('🔄 ANTES DE ATUALIZAR ESTADO - technicianRanking length:', result.technicianRanking?.length);
+      
+      setState(prev => {
+        const newState = {
+          ...prev,
+          metrics: result.metrics,
+          systemStatus: result.systemStatus,
+          technicianRanking: result.technicianRanking,
+          dataIntegrityReport: result.validationReport,
+          monitoringAlerts: dataMonitor.getAlerts(),
+          dateRange: currentDateRange, // CORREÇÃO 3: Variável disponível aqui
+          isLoading: false,
+          lastUpdated: new Date(),
+          error: null
+        };
+        
+        console.log('🔄 NOVO ESTADO - technicianRanking:', newState.technicianRanking);
+        console.log('🔄 NOVO ESTADO - technicianRanking length:', newState.technicianRanking?.length);
+        
+        return newState;
+      });
       
       // Show notification if there were warnings
       if (result.validationReport && result.validationReport.warnings && result.validationReport.warnings.length > 0) {
@@ -313,11 +330,7 @@ export const useDashboard = () => {
     document.documentElement.className = theme === 'dark' ? 'dark' : '';
   }, []);
 
-  // Toggle simplified mode
-  const toggleSimplifiedMode = useCallback(() => {
-    setState(prev => ({ ...prev, isSimplifiedMode: !prev.isSimplifiedMode }));
-    localStorage.setItem('dashboard-simplified-mode', (!state.isSimplifiedMode).toString());
-  }, [state.isSimplifiedMode]);
+
 
   // Load saved theme and simplified mode on mount
   useEffect(() => {
@@ -326,10 +339,7 @@ export const useDashboard = () => {
       changeTheme(savedTheme);
     }
     
-    const savedSimplifiedMode = localStorage.getItem('dashboard-simplified-mode');
-    if (savedSimplifiedMode === 'true') {
-      setState(prev => ({ ...prev, isSimplifiedMode: true }));
-    }
+
   }, [changeTheme]);
 
   // Auto-refresh and monitoring setup - OTIMIZADO PARA EVITAR RECARREGAMENTOS FREQUENTES
@@ -439,7 +449,7 @@ export const useDashboard = () => {
     addNotification,
     removeNotification,
     changeTheme,
-    toggleSimplifiedMode,
+
     updateDateRange,
   };
 };

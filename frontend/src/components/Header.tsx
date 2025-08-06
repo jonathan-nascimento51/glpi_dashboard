@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { Search, RefreshCw, Filter, X, Monitor, Maximize, Clock, Calendar, ChevronDown } from 'lucide-react';
+import { Search, X, Clock, Calendar, ChevronDown } from 'lucide-react';
 import { Theme, SearchResult } from '../types';
 import { SimpleTechIcon } from './SimpleTechIcon';
-import { RefreshControl } from './RefreshControl';
 
 interface HeaderProps {
   currentTime: string;
@@ -10,27 +9,16 @@ interface HeaderProps {
   theme: Theme;
   searchQuery: string;
   searchResults: SearchResult[];
-  isSimplifiedMode: boolean;
-  showMonitoringAlerts: boolean;
-  alertsCount: number;
   dateRange: { startDate: string; endDate: string };
   onThemeChange: (theme: Theme) => void;
   onSearch: (query: string) => void;
-  onRefresh: () => void;
-  onToggleFilters: () => void;
-  onToggleSimplifiedMode: () => void;
-  onToggleMonitoringAlerts: () => void;
   onNotification: (title: string, message: string, type: 'success' | 'error' | 'warning' | 'info') => void;
   onDateRangeChange?: (dateRange: { startDate: string; endDate: string; label: string }) => void;
-  isLoading?: boolean;
-  lastUpdated?: Date | null;
 }
 
 const themes: { value: Theme; label: string; icon: string }[] = [
   { value: 'light', label: 'Claro', icon: '☀️' },
   { value: 'dark', label: 'Escuro', icon: '🌙' },
-  { value: 'corporate', label: 'Corporativo', icon: '🏢' },
-  { value: 'tech', label: 'Tech', icon: '⚡' },
 ];
 
 // Predefined date ranges
@@ -48,25 +36,16 @@ export const Header: React.FC<HeaderProps> = ({
   theme,
   searchQuery,
   searchResults,
-  isSimplifiedMode,
-  showMonitoringAlerts,
-  alertsCount,
   dateRange,
   onThemeChange,
   onSearch,
-  onRefresh,
-  onToggleFilters,
-  onToggleSimplifiedMode,
-  onToggleMonitoringAlerts,
   onNotification,
   onDateRangeChange,
-  isLoading = false,
-  lastUpdated = null,
 }) => {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [showThemeSelector, setShowThemeSelector] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
   
@@ -149,18 +128,7 @@ export const Header: React.FC<HeaderProps> = ({
     setTimeout(() => setShowSearchResults(false), 200);
   }, []);
 
-  // Enhanced refresh with loading state
-  const handleRefresh = useCallback(async () => {
-    setIsRefreshing(true);
-    try {
-      await onRefresh();
-      onNotification('Sucesso', 'Dados atualizados', 'success');
-    } catch {
-      onNotification('Erro', 'Falha na atualização', 'error');
-    } finally {
-      setTimeout(() => setIsRefreshing(false), 1000);
-    }
-  }, [onRefresh, onNotification]);
+
 
   // Theme change handler
   const handleThemeChange = useCallback((newTheme: Theme) => {
@@ -182,15 +150,12 @@ export const Header: React.FC<HeaderProps> = ({
         setShowThemeSelector(false);
         setShowDatePicker(false);
       }
-      if (e.key === 'F5') {
-        e.preventDefault();
-        handleRefresh();
-      }
+
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [handleRefresh]);
+  }, []);
 
   // Click outside handlers
   useEffect(() => {
@@ -341,15 +306,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* ========== SEÇÃO DIREITA: CONTROLES + STATUS ========== */}
           <div className="flex items-center space-x-4 flex-shrink-0">
             
-            {/* Filters */}
-            <button 
-              onClick={onToggleFilters}
-              className="flex items-center space-x-2 px-3 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-medium transition-all backdrop-blur-sm border border-white/20"
-            >
-              <Filter className="w-4 h-4" />
-              <span>Filtros</span>
-            </button>
-            
+
             {/* Theme Selector */}
             <div className="relative" ref={themeRef}>
               <button
@@ -381,27 +338,8 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </div>
             
-            {/* Mode Toggle */}
-            <button 
-              onClick={onToggleSimplifiedMode}
-              className={`flex items-center space-x-2 px-3 py-2 rounded-xl text-sm font-medium transition-all backdrop-blur-sm ${
-                isSimplifiedMode 
-                  ? 'bg-white/20 text-white border border-white/30' 
-                  : 'bg-white/10 hover:bg-white/20 border border-white/20'
-              }`}
-            >
-              {isSimplifiedMode ? <Maximize className="w-4 h-4" /> : <Monitor className="w-4 h-4" />}
-              <span>{isSimplifiedMode ? 'Sair TV' : 'Modo TV'}</span>
-            </button>
-            
-            {/* Refresh Control */}
-            <RefreshControl
-              onRefresh={handleRefresh}
-              isLoading={isRefreshing || isLoading}
-              lastUpdated={lastUpdated}
-              className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-3 py-2"
-            />
-            
+
+
             {/* Current Time */}
             <div className="flex items-center space-x-2 text-sm text-slate-200 bg-white/10 px-3 py-2 rounded-xl backdrop-blur-sm border border-white/20 font-mono">
               <Clock className="w-4 h-4" />

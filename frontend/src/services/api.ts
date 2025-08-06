@@ -153,18 +153,19 @@ export const apiService = {
   // Get technician ranking
   async getTechnicianRanking(): Promise<any[]> {
     try {
+      console.log('🔍 API - Fazendo requisição para /technicians/ranking');
       const response = await api.get<ApiResponse<any[]>>('/technicians/ranking');
+      console.log('🔍 API - Resposta recebida - success:', response.data?.success, 'data length:', response.data?.data?.length);
       
       if (response.data.success && response.data.data) {
+        console.log('🔍 API - Retornando', response.data.data.length, 'técnicos');
         return response.data.data;
       } else {
-        console.error('API returned unsuccessful response:', response.data);
-        // Return empty array as fallback
+        console.error('🔍 API - API returned unsuccessful response:', response.data);
         return [];
       }
     } catch (error) {
-      console.error('Error fetching technician ranking:', error);
-      // Return empty array instead of throwing
+      console.error('🔍 API - Error fetching technician ranking:', error);
       return [];
     }
   },

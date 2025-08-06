@@ -198,7 +198,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
     );
   }
 
-  // Renderização clássica (para SimplifiedDashboard e useDashboard)
+  // Renderização clássica
   return (
     <div className="relative">
       {/* Filter Button */}

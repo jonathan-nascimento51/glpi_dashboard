@@ -175,24 +175,19 @@ export function ModernDashboard({
         <motion.div variants={itemVariants}>
           <RankingTable 
             data={(() => {
-              // Usar os níveis reais vindos do backend
-              const sortedTechs = [...technicianRanking].sort((a, b) => (b.total || 0) - (a.total || 0))
+              console.log('📊 ModernDashboard - Processando ranking de', technicianRanking?.length || 0, 'técnicos');
               
-              return sortedTechs.map((tech) => {
-                const resolved = tech.total || tech.ticketsResolved || 0
-                const pending = tech.ticketsInProgress || 0
-                const total = resolved + pending
-                
-                return {
-                  id: tech.id || String(tech.name),
-                  name: tech.name || tech.nome || 'Técnico',
-                  resolved,
-                  pending,
-                  efficiency: total > 0 ? Math.round((resolved / total) * 100) : 0,
-                  status: 'active' as const,
-                  level: tech.level || 'N1' // Usar o nível real do backend ou N1 como padrão
-                }
-              })
+              // Usar os dados diretamente da API sem transformação desnecessária
+              const result = technicianRanking.map((tech) => ({
+                id: tech.id || String(tech.name),
+                name: tech.name || tech.nome || 'Técnico',
+                level: tech.level || 'N1',
+                total: tech.total || 0,
+                rank: tech.rank || 0
+              }))
+              
+              console.log('✅ ModernDashboard - Ranking processado:', result.length, 'técnicos');
+              return result;
             })()
             }
             title="Ranking de Técnicos"

@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Header } from './components/Header';
-import { FilterPanel } from './components/FilterPanel';
 import { NotificationSystem } from './components/NotificationSystem';
-import SimplifiedDashboard from './components/SimplifiedDashboard';
 import DataIntegrityMonitor from './components/DataIntegrityMonitor';
 import { ModernDashboard } from './components/dashboard/ModernDashboard';
 import { LoadingSpinner, SkeletonMetricsGrid, SkeletonLevelsSection, ErrorState } from './components/LoadingSpinner';
@@ -16,16 +14,11 @@ function App() {
     technicianRanking,
     isLoading,
     error,
-    lastUpdated,
     filters,
     searchQuery,
-    searchResults,
     notifications,
     theme,
-    isSimplifiedMode,
-    monitoringAlerts,
     dataIntegrityReport,
-    dateRange,
     loadData,
     forceRefresh,
     updateFilters,
@@ -33,35 +26,13 @@ function App() {
     addNotification,
     removeNotification,
     changeTheme,
-    toggleSimplifiedMode,
-    updateDateRange,
   } = useDashboard();
 
-  const [showFilters, setShowFilters] = useState(false);
   const [showIntegrityMonitor, setShowIntegrityMonitor] = useState(true);
-  const [showMonitoringAlerts, setShowMonitoringAlerts] = useState(true);
-  const [currentTime, setCurrentTime] = useState('');
-
-  // Update current time
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      setCurrentTime(now.toLocaleTimeString('pt-BR', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      }));
-    };
-
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   // Handle filter by status
   const handleFilterByStatus = (status: TicketStatus) => {
     updateFilters({ status: [status] });
-    setShowFilters(true);
     addNotification({
       title: 'Filtro Aplicado',
       message: `Exibindo apenas chamados com status: ${getStatusLabel(status)}`,
@@ -81,72 +52,7 @@ function App() {
     return labels[status] || status;
   };
 
-  // Handle refresh with notification
-  const handleRefresh = () => {
-    forceRefresh();
-    addNotification({
-      title: 'Dados Atualizados',
-      message: 'Dashboard atualizado com sucesso',
-      type: 'success',
-      duration: 2000,
-    });
-  };
 
-  // Handle search with debouncing
-  useEffect(() => {
-    const debounceTimer = setTimeout(() => {
-      if (searchQuery.trim()) {
-        search(searchQuery);
-      }
-    }, 300);
-
-    return () => clearTimeout(debounceTimer);
-  }, [searchQuery, search]);
-
-  // Handle keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Escape to close panels
-      if (e.key === 'Escape') {
-        setShowFilters(false);
-      }
-      
-      // F5 or Ctrl/Cmd + R for refresh
-      if (e.key === 'F5' || ((e.ctrlKey || e.metaKey) && e.key === 'r')) {
-        e.preventDefault();
-        handleRefresh();
-      }
-      
-      // Number keys for quick period filters
-      if (e.key >= '1' && e.key <= '3') {
-        e.preventDefault();
-        const periods = ['today', 'week', 'month'] as const;
-        const periodIndex = parseInt(e.key) - 1;
-        if (periods[periodIndex]) {
-          updateFilters({ period: periods[periodIndex] });
-          addNotification({
-            title: 'Período Alterado',
-            message: `Filtro alterado para: ${getPeriodLabel(periods[periodIndex])}`,
-            type: 'info',
-            duration: 2000,
-          });
-        }
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [updateFilters, addNotification]);
-
-  // Get period label
-  const getPeriodLabel = (period: string): string => {
-    const labels = {
-      today: 'Hoje',
-      week: 'Esta Semana',
-      month: 'Este Mês',
-    };
-    return labels[period as keyof typeof labels] || period;
-  };
 
   // Show loading state on initial load
   if (isLoading && !metrics) {
@@ -197,44 +103,27 @@ function App() {
     <div className={`h-screen overflow-hidden transition-all duration-300 ${theme}`}>
       {/* Header */}
       <Header
-        currentTime={currentTime}
-        systemActive={systemStatus?.sistema_ativo ?? false}
-        theme={theme}
+        currentTime={new Date().toLocaleTimeString('pt-BR')}
+        systemActive={true}
         searchQuery={searchQuery}
-        searchResults={searchResults}
-        isSimplifiedMode={isSimplifiedMode}
-        showMonitoringAlerts={showMonitoringAlerts}
-        alertsCount={monitoringAlerts.filter(alert => !alert.acknowledged).length}
-        dateRange={dateRange}
-        onDateRangeChange={updateDateRange}
-        onThemeChange={changeTheme}
+        searchResults={[]}
+        dateRange={{ startDate: '', endDate: '' }}
         onSearch={search}
-        onRefresh={handleRefresh}
-        onToggleFilters={() => setShowFilters(!showFilters)}
-        onToggleSimplifiedMode={toggleSimplifiedMode}
-        onToggleMonitoringAlerts={() => setShowMonitoringAlerts(!showMonitoringAlerts)}
+        theme={theme}
+        onThemeChange={changeTheme}
         onNotification={(title, message, type) => addNotification({ title, message, type, duration: 3000 })}
-        isLoading={isLoading}
-        lastUpdated={lastUpdated}
+        onDateRangeChange={() => {}}
       />
 
-      {/* Dashboard Principal - Interface Fixa para TV */}
+      {/* Dashboard Principal */}
       <div className="flex-1 overflow-hidden">
-        {!isSimplifiedMode && metrics ? (
+        {metrics ? (
           <ModernDashboard
             metrics={metrics}
             systemStatus={systemStatus}
             technicianRanking={technicianRanking}
             onFilterByStatus={handleFilterByStatus}
             isLoading={isLoading}
-          />
-        ) : isSimplifiedMode && metrics ? (
-          <SimplifiedDashboard
-            metrics={metrics}
-            technicianRanking={technicianRanking}
-            isLoading={isLoading}
-            dateRange={dateRange}
-            onDateRangeChange={updateDateRange}
           />
         ) : (
           // Fallback para quando não há dados
@@ -271,15 +160,7 @@ function App() {
         </div>
       )}
 
-      {/* Filter Panel - Only show in normal mode */}
-      {!isSimplifiedMode && (
-        <FilterPanel
-          isOpen={showFilters}
-          filters={filters}
-          onClose={() => setShowFilters(false)}
-          onFiltersChange={updateFilters}
-        />
-      )}
+
 
       {/* Notification System */}
       <NotificationSystem

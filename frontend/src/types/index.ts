@@ -41,7 +41,7 @@ export interface SearchResult {
 
 export type TicketStatus = 'new' | 'progress' | 'pending' | 'resolved';
 
-export type Theme = 'light' | 'dark' | 'corporate' | 'tech';
+export type Theme = 'light' | 'dark';
 
 export interface FilterState {
   period: 'today' | 'week' | 'month';
@@ -68,12 +68,14 @@ export interface ChartDataPoint {
 export interface TechnicianRanking {
   id: string;
   name: string;
+  nome?: string; // Campo alternativo da API
   level: string;
-  score: number;
-  total?: number; // Campo adicional para compatibilidade com API
-  ticketsResolved: number;
-  ticketsInProgress: number;
-  averageResolutionTime: number;
+  rank: number;
+  total: number; // Total de tickets do técnico
+  score?: number; // Campo opcional para compatibilidade
+  ticketsResolved?: number; // Campo opcional para compatibilidade
+  ticketsInProgress?: number; // Campo opcional para compatibilidade
+  averageResolutionTime?: number; // Campo opcional para compatibilidade
 }
 
 export interface NewTicket {
@@ -97,7 +99,7 @@ export interface DashboardState {
   searchResults: SearchResult[];
   notifications: NotificationData[];
   theme: Theme;
-  isSimplifiedMode: boolean;
+
   technicianRanking: TechnicianRanking[];
   dataIntegrityReport: any | null; // Será tipado adequadamente quando importado
   monitoringAlerts: any[];

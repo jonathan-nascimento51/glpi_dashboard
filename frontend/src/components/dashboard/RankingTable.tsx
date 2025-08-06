@@ -8,11 +8,9 @@ import { useRef, useEffect } from "react"
 interface TechnicianRanking {
   id: string
   name: string
-  resolved: number
-  pending: number
-  efficiency: number
-  status: 'active' | 'inactive' | 'busy'
-  level?: string
+  level: string
+  total: number
+  rank: number
 }
 
 interface RankingTableProps {
@@ -30,7 +28,7 @@ export function RankingTable({
   
   // Pegar todos os técnicos e ordenar por número de chamados
   const topTechnicians = data
-    .sort((a, b) => b.resolved - a.resolved)
+    .sort((a, b) => b.total - a.total)
 
   // Configuração de cores e estilos por nível com gradientes similares ao StatusCard
   const getLevelStyle = (level?: string) => {
@@ -223,7 +221,7 @@ export function RankingTable({
                 
                 <div className="text-center space-y-1 relative z-10">
                   <div className="text-lg font-bold text-gray-900">
-                    {formatNumber(technician.resolved)}
+                    {formatNumber(technician.total)}
                   </div>
                 </div>
               </motion.div>
