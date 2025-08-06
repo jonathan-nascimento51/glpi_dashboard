@@ -223,10 +223,6 @@ function App() {
           systemStatus={systemStatus}
           technicianRanking={technicianRanking}
           onFilterByStatus={handleFilterByStatus}
-          onRefresh={handleRefresh}
-          onDateRangeChange={updateDateRange}
-          lastUpdate={lastUpdated}
-          dateRange={dateRange}
           isLoading={isLoading}
         />
       ) : isSimplifiedMode && metrics ? (
