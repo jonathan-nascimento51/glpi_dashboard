@@ -138,53 +138,55 @@ export function ModernDashboard({
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className={cn("space-y-6 p-6 min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50", className)}
+      className={cn("h-full overflow-hidden flex flex-col bg-gradient-to-br from-blue-50 via-white to-purple-50", className)}
     >
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
 
 
-      {/* Cards de métricas principais */}
-      <motion.div variants={itemVariants}>
-        <MetricsGrid 
-          metrics={metrics}
-          onFilterByStatus={onFilterByStatus}
-          className="mb-6"
-        />
-      </motion.div>
-      
-      {/* Métricas por nível e Lista de tickets novos */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Métricas por nível de atendimento */}
-        <motion.div variants={itemVariants} className="xl:col-span-2">
-          <LevelMetricsGrid 
+        {/* Cards de métricas principais */}
+        <motion.div variants={itemVariants}>
+          <MetricsGrid 
             metrics={metrics}
-            className="h-full"
+            onFilterByStatus={onFilterByStatus}
+            className="mb-4"
           />
         </motion.div>
+        
+        {/* Métricas por nível e Lista de tickets novos */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+          {/* Métricas por nível de atendimento */}
+          <motion.div variants={itemVariants} className="xl:col-span-2">
+            <LevelMetricsGrid 
+              metrics={metrics}
+              className="h-full"
+            />
+          </motion.div>
 
-        {/* Lista de tickets novos */}
+          {/* Lista de tickets novos */}
+          <motion.div variants={itemVariants}>
+            <NewTicketsList 
+              className="h-full"
+              limit={8}
+            />
+          </motion.div>
+        </div>
+
+        {/* Ranking de técnicos */}
         <motion.div variants={itemVariants}>
-          <NewTicketsList 
-            className="h-full"
-            limit={10}
+          <RankingTable 
+            data={technicianRanking.map(tech => ({
+              id: tech.id || String(tech.name),
+              name: tech.name || tech.nome || 'Técnico',
+              resolved: tech.total || tech.ticketsResolved || 0,
+              pending: tech.ticketsInProgress || 0,
+              efficiency: Math.round((tech.total || 0) * 100 / Math.max(tech.total || 1, 1)),
+              status: 'active' as const
+            }))}
+            title="Ranking de Técnicos"
+            className="max-w-full"
           />
         </motion.div>
       </div>
-
-      {/* Ranking de técnicos */}
-      <motion.div variants={itemVariants}>
-        <RankingTable 
-          data={technicianRanking.map(tech => ({
-            id: tech.id || String(tech.name),
-            name: tech.name || tech.nome || 'Técnico',
-            resolved: tech.total || tech.ticketsResolved || 0,
-            pending: tech.ticketsInProgress || 0,
-            efficiency: Math.round((tech.total || 0) * 100 / Math.max(tech.total || 1, 1)),
-            status: 'active' as const
-          }))}
-          title="Ranking de Técnicos"
-          className="max-w-full"
-        />
-      </motion.div>
     </motion.div>
   )
 }

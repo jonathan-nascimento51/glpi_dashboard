@@ -1109,8 +1109,8 @@ class GLPIService:
                     try:
                         # Construir nome de exibição a partir dos dados da API
                         display_name = ""
-                        if "realname" in user and "firstname" in user:  # Sobrenome e Primeiro nome
-                            display_name = f"{user['realname']}, {user['firstname']}"
+                        if "realname" in user and "firstname" in user:  # Nome e Sobrenome
+                            display_name = f"{user['firstname']} {user['realname']}"
                         elif "realname" in user:  # Apenas sobrenome
                             display_name = user["realname"]
                         elif "name" in user:  # Nome de usuário
@@ -1275,7 +1275,7 @@ class GLPIService:
                                 # Construir nome de exibição
                                 display_name = ""
                                 if user_data.get("realname") and user_data.get("firstname"):
-                                    display_name = f"{user_data['realname']}, {user_data['firstname']}"
+                                    display_name = f"{user_data['firstname']} {user_data['realname']}"
                                 elif user_data.get("realname"):
                                     display_name = user_data["realname"]
                                 elif user_data.get("name"):
@@ -1427,7 +1427,7 @@ class GLPIService:
             display_name = "Usuário desconhecido"
             if isinstance(user_data, dict):
                 if user_data.get("realname") and user_data.get("firstname"):
-                    display_name = f"{user_data['realname']}, {user_data['firstname']}"
+                    display_name = f"{user_data['firstname']} {user_data['realname']}"
                 elif user_data.get("realname"):
                     display_name = user_data["realname"]
                 elif user_data.get("name"):

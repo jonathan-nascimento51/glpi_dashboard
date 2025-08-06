@@ -153,37 +153,7 @@ export function LevelMetricsGrid({ metrics, className }: LevelMetricsGridProps) 
                   })}
                 </div>
                 
-                {/* Barra de progresso visual */}
-                <div className="mt-4 space-y-2">
-                  <div className="flex justify-between text-xs text-gray-500">
-                    <span>Distribuição</span>
-                    <span>{total} tickets</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                    <div className="h-full flex">
-                      {total > 0 && (
-                        <>
-                          <div 
-                            className="bg-blue-500 transition-all duration-500"
-                            style={{ width: `${(levelData.novos / total) * 100}%` }}
-                          />
-                          <div 
-                            className="bg-yellow-500 transition-all duration-500"
-                            style={{ width: `${(levelData.progresso / total) * 100}%` }}
-                          />
-                          <div 
-                            className="bg-red-500 transition-all duration-500"
-                            style={{ width: `${(levelData.pendentes / total) * 100}%` }}
-                          />
-                          <div 
-                            className="bg-green-500 transition-all duration-500"
-                            style={{ width: `${(levelData.resolvidos / total) * 100}%` }}
-                          />
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
+
               </CardContent>
             </Card>
           </motion.div>

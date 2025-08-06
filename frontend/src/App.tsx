@@ -194,7 +194,7 @@ function App() {
   }
 
   return (
-    <div className={`min-h-screen transition-all duration-300 ${theme}`}>
+    <div className={`h-screen overflow-hidden transition-all duration-300 ${theme}`}>
       {/* Header */}
       <Header
         currentTime={currentTime}
@@ -218,47 +218,49 @@ function App() {
         lastUpdated={lastUpdated}
       />
 
-      {/* Dashboard Principal - Nova Interface Modernizada */}
-      {!isSimplifiedMode && metrics ? (
-        <ModernDashboard
-          metrics={metrics}
-          systemStatus={systemStatus}
-          technicianRanking={technicianRanking}
-          onFilterByStatus={handleFilterByStatus}
-          isLoading={isLoading}
-        />
-      ) : isSimplifiedMode && metrics ? (
-        <SimplifiedDashboard
-          metrics={metrics}
-          technicianRanking={technicianRanking}
-          isLoading={isLoading}
-          dateRange={dateRange}
-          onDateRangeChange={updateDateRange}
-        />
-      ) : (
-        // Fallback para quando não há dados
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center">
-          <div className="text-center py-12">
-            <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
+      {/* Dashboard Principal - Interface Fixa para TV */}
+      <div className="flex-1 overflow-hidden">
+        {!isSimplifiedMode && metrics ? (
+          <ModernDashboard
+            metrics={metrics}
+            systemStatus={systemStatus}
+            technicianRanking={technicianRanking}
+            onFilterByStatus={handleFilterByStatus}
+            isLoading={isLoading}
+          />
+        ) : isSimplifiedMode && metrics ? (
+          <SimplifiedDashboard
+            metrics={metrics}
+            technicianRanking={technicianRanking}
+            isLoading={isLoading}
+            dateRange={dateRange}
+            onDateRangeChange={updateDateRange}
+          />
+        ) : (
+          // Fallback para quando não há dados
+          <div className="h-full bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center">
+            <div className="text-center py-12">
+              <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Nenhum dado disponível
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Não foi possível carregar os dados do dashboard.
+              </p>
+              <button 
+                onClick={loadData} 
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Tentar Novamente
+              </button>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Nenhum dado disponível
-            </h3>
-            <p className="text-gray-600 mb-4">
-              Não foi possível carregar os dados do dashboard.
-            </p>
-            <button 
-              onClick={loadData} 
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Tentar Novamente
-            </button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Loading overlay for refresh */}
       {isLoading && metrics && (

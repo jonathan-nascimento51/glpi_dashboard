@@ -79,7 +79,8 @@ const SimplifiedDashboard: React.FC<SimplifiedDashboardProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 p-6">
+    <div className="h-full overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 flex flex-col">
+      <div className="flex-1 overflow-y-auto p-4">
       {/* Header */}
       <div className="mb-6">
         <div className="text-center mb-4">
@@ -202,17 +203,17 @@ const SimplifiedDashboard: React.FC<SimplifiedDashboardProps> = ({
           </div>
         </div>
 
-        {/* Third Row - Top Técnicos, Resumo Geral and Tickets Recentes */}
-        <div className="col-span-4">
-          <div className="bg-slate-800/80 backdrop-blur-sm rounded-lg shadow-lg border border-slate-700/60 p-4 h-full">
-            <h2 className="text-lg font-medium mb-4 text-center text-slate-200 border-b border-slate-600/40 pb-2">Top Técnicos</h2>
-            <div className="space-y-3 max-h-80 overflow-y-auto">
-              {technicianRanking.map((tech, index) => (
-                <div key={tech.id} className="flex items-center justify-between bg-slate-700/40 rounded-lg p-3 border border-slate-600/50 hover:bg-slate-700/60 transition-all duration-200">
-                  <div className="flex items-center space-x-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                      index === 0 ? 'bg-yellow-500/80 text-yellow-100' :
-                      index === 1 ? 'bg-gray-500/80 text-gray-100' :
+          {/* Third Row - Top Técnicos, Resumo Geral and Tickets Recentes */}
+          <div className="col-span-4">
+            <div className="bg-slate-800/80 backdrop-blur-sm rounded-lg shadow-lg border border-slate-700/60 p-4 h-full">
+              <h2 className="text-lg font-medium mb-4 text-center text-slate-200 border-b border-slate-600/40 pb-2">Top Técnicos</h2>
+              <div className="space-y-3 max-h-64 overflow-y-auto">
+                {technicianRanking.slice(0, 6).map((tech, index) => (
+                  <div key={tech.id} className="flex items-center justify-between bg-slate-700/40 rounded-lg p-3 border border-slate-600/50 hover:bg-slate-700/60 transition-all duration-200">
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                        index === 0 ? 'bg-yellow-500/80 text-yellow-100' :
+                        index === 1 ? 'bg-gray-500/80 text-gray-100' :
                       index === 2 ? 'bg-orange-500/80 text-orange-100' :
                       'bg-blue-500/80 text-blue-100'
                     }`}>
@@ -300,6 +301,7 @@ const SimplifiedDashboard: React.FC<SimplifiedDashboardProps> = ({
         <p className="text-sm text-slate-400 font-medium">
           Atualização automática a cada 30 segundos
         </p>
+        </div>
       </div>
     </div>
   );
