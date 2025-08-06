@@ -117,10 +117,10 @@ export function RankingTable({
   }
 
   return (
-    <Card className={cn("w-full bg-white/80 backdrop-blur-xl border-0 shadow-xl rounded-2xl", className)}>
+    <Card className={cn("figma-ranking-tecnicos w-full rounded-2xl", className)}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg text-gray-700 font-semibold">
+          <CardTitle className="figma-heading-large flex items-center gap-2">
             <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 shadow-lg">
               <Users className="h-5 w-5 text-white" />
             </div>
@@ -154,7 +154,7 @@ export function RankingTable({
         >
           <div 
             ref={scrollContainerRef}
-            className="flex w-full h-32 bg-gray-50/50 backdrop-blur-sm rounded-lg shadow-inner overflow-x-auto overflow-y-hidden border border-gray-200/50 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+            className="flex w-full h-32 figma-glass-card rounded-lg shadow-inner overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
           >
           {topTechnicians.map((technician, index) => {
             const levelStyle = getLevelStyle(technician.level)
@@ -168,7 +168,7 @@ export function RankingTable({
                 className={cn(
                   "flex-shrink-0 w-36 flex flex-col justify-between p-3 border-r border-white/10 last:border-r-0",
                   "transition-all duration-300 hover:scale-105 relative group overflow-hidden",
-                  "bg-white/80 backdrop-blur-xl shadow-xl hover:shadow-2xl rounded-2xl border-0",
+                  "figma-glass-card shadow-xl hover:shadow-2xl rounded-2xl border-0",
                   "border-l-4",
                   "hover:shadow-lg", levelStyle.hoverShadow
                 )}
@@ -190,7 +190,7 @@ export function RankingTable({
                 <div className="flex items-center justify-between mb-2 relative z-10">
                   <div className={cn(
                     "w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold",
-                    isTopThree ? "bg-white/90 backdrop-blur-sm border border-gray-200 text-gray-700 shadow-md" : "bg-white/70 backdrop-blur-sm border border-gray-200 text-gray-600"
+                    isTopThree ? "figma-glass-card figma-body shadow-md" : "figma-glass-card figma-body"
                   )}>
                     {position <= 3 && position === 1 && <Trophy className="w-3 h-3" />}
                     {position <= 3 && position === 2 && <Medal className="w-3 h-3" />}
@@ -209,7 +209,7 @@ export function RankingTable({
                 </div>
 
                 <div className="text-center mb-2 relative z-10">
-                  <div className="text-xs font-medium text-gray-700 leading-tight">
+                  <div className="figma-body leading-tight">
                     {(() => {
                       const nameParts = technician.name.split(' ');
                       const firstName = nameParts[0] || '';
@@ -220,7 +220,7 @@ export function RankingTable({
                 </div>
                 
                 <div className="text-center space-y-1 relative z-10">
-                  <div className="text-lg font-bold text-gray-900">
+                  <div className="figma-numeric">
                     {formatNumber(technician.total)}
                   </div>
                 </div>

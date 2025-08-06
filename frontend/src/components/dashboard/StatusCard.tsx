@@ -97,7 +97,7 @@ export function StatusCard({
       whileHover="hover"
       className={cn("cursor-pointer", className)}
     >
-      <Card className="relative overflow-hidden border-0 bg-white/80 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all duration-300 rounded-2xl">
+      <Card className="figma-glass-card relative overflow-hidden rounded-2xl">
         {/* Gradient Background */}
         <div className={cn(
           "absolute inset-0 bg-gradient-to-br opacity-5",
@@ -113,7 +113,7 @@ export function StatusCard({
         </div>
         
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 relative z-10">
-          <CardTitle className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+          <CardTitle className="figma-subheading uppercase tracking-wide">
             {title}
           </CardTitle>
           {StatusIcon && (
@@ -134,7 +134,7 @@ export function StatusCard({
             <div className="space-y-2">
               <motion.div 
                 variants={numberVariants}
-                className="text-3xl font-bold text-gray-900"
+                className="figma-numeric"
               >
                 {title === 'Sistema' ? (value > 0 ? 'Online' : 'Offline') : formatNumber(value)}
               </motion.div>
@@ -146,7 +146,7 @@ export function StatusCard({
                     getTrendColor(trend.direction),
                     trend.direction === 'up' && "bg-green-100 text-green-700",
                     trend.direction === 'down' && "bg-red-100 text-red-700",
-                    trend.direction === 'stable' && "bg-gray-100 text-gray-700"
+                    trend.direction === 'stable' && "figma-glass-card figma-body"
                   )}
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.2 }}

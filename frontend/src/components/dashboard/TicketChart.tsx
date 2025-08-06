@@ -67,8 +67,8 @@ export function TicketChart({
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg p-3 shadow-lg">
-          <p className="font-medium text-gray-900">{label}</p>
+        <div className="figma-glass-card rounded-lg p-3 shadow-lg">
+          <p className="figma-body font-medium">{label}</p>
           {payload.map((entry: any, index: number) => (
             <p key={index} className="text-sm" style={{ color: entry.color }}>
               {entry.name}: <span className="font-semibold">{entry.value}</span>
@@ -231,10 +231,10 @@ export function TicketChart({
       animate="visible"
       className={className}
     >
-      <Card className="border-0 shadow-sm bg-white/50 backdrop-blur-sm">
+      <Card className="figma-glass-card border-0 shadow-sm">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
+            <CardTitle className="figma-heading-large flex items-center gap-2">
               {getChartIcon()}
               {title}
             </CardTitle>

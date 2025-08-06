@@ -129,10 +129,10 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
   }
 
   return (
-    <Card className={cn("border-0 shadow-lg bg-white/95 h-full flex flex-col", className)}>
+    <Card className={cn("figma-tickets-recentes h-full flex flex-col", className)}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg">
+          <CardTitle className="figma-heading-large flex items-center gap-2">
             <div className="p-2 rounded-xl bg-gradient-to-br shadow-lg from-slate-600 to-slate-700">
               <AlertCircle className="h-5 w-5 text-white" />
             </div>
@@ -156,7 +156,7 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
         </div>
         
         {lastUpdate && (
-          <div className="flex items-center gap-1 text-xs text-gray-500">
+          <div className="flex items-center gap-1 figma-body">
             <Clock className="h-3 w-3" />
             Atualizado {formatRelativeTime(lastUpdate)}
           </div>
@@ -168,7 +168,7 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
           <div className="space-y-3">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="animate-pulse">
-                <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-start gap-3 p-3 figma-glass-card rounded-lg">
                   <div className="w-8 h-8 bg-gray-200 rounded-full" />
                   <div className="flex-1 space-y-2">
                     <div className="h-4 bg-gray-200 rounded w-3/4" />
@@ -194,9 +194,9 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
           </div>
         ) : tickets.length === 0 ? (
           <div className="text-center py-8">
-            <AlertCircle className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-            <div className="text-sm text-gray-500 font-medium">Nenhum ticket novo encontrado</div>
-            <div className="text-xs text-gray-400 mt-1">Todos os tickets foram processados</div>
+            <AlertCircle className="w-12 h-12 mx-auto mb-4 figma-body" />
+            <div className="figma-body font-medium">Nenhum ticket novo encontrado</div>
+            <div className="figma-body mt-1">Todos os tickets foram processados</div>
           </div>
         ) : (
           <motion.div 
@@ -212,7 +212,7 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
                 <motion.div
                   key={ticket.id}
                   variants={itemVariants}
-                  className="group p-3 bg-gray-50/80 hover:bg-gray-100/80 rounded-lg transition-all duration-200 border border-transparent hover:border-gray-200"
+                  className="group p-3 figma-glass-card rounded-lg transition-all duration-200 border border-transparent"
                 >
                   <div className="flex items-start gap-3">
                     {/* Ícone de prioridade */}
@@ -227,7 +227,7 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2 mb-2">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-gray-900">
+                          <span className="figma-subheading">
                             #{ticket.id}
                           </span>
                           <Badge variant="secondary" className="text-xs">
@@ -243,17 +243,17 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
                         </Button>
                       </div>
                       
-                      <h4 className="text-sm font-medium text-gray-900 mb-2 line-clamp-2 leading-tight">
+                      <h4 className="figma-body mb-2 line-clamp-2 leading-tight">
                         {ticket.title}
                       </h4>
                       
                       {ticket.description && (
-                        <p className="text-xs text-gray-600 mb-2 line-clamp-2 leading-relaxed">
+                        <p className="figma-body mb-2 line-clamp-2 leading-relaxed opacity-75">
                           {ticket.description}
                         </p>
                       )}
                       
-                      <div className="flex items-center justify-between text-xs text-gray-500">
+                      <div className="flex items-center justify-between figma-body">
                         <div className="flex items-center gap-1">
                           <User className="h-3 w-3" />
                           <span className="truncate max-w-24">{ticket.requester}</span>

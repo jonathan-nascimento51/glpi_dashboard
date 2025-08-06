@@ -74,11 +74,11 @@ export function LevelMetricsGrid({ metrics, className }: LevelMetricsGridProps) 
   // Verificação de segurança para evitar erros
   if (!metrics || !metrics.niveis) {
     return (
-      <Card className={cn("border-0 shadow-lg bg-white/95 h-full", className)}>
+      <Card className={cn("figma-glass-card h-full", className)}>
         <CardContent className="flex items-center justify-center h-48">
           <div className="text-center">
-            <div className="text-gray-400 mb-2">📊</div>
-            <div className="text-sm text-gray-500">Carregando métricas por nível...</div>
+            <div className="figma-body mb-2">📊</div>
+        <div className="figma-body">Carregando métricas por nível...</div>
           </div>
         </CardContent>
       </Card>
@@ -111,10 +111,10 @@ export function LevelMetricsGrid({ metrics, className }: LevelMetricsGridProps) 
             initial="hidden"
             animate="visible"
           >
-            <Card className="border-0 shadow-lg bg-white/95 hover:shadow-xl transition-all duration-300">
+            <Card className="figma-level-card">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2 text-lg">
+                  <CardTitle className="figma-heading-large flex items-center gap-2">
                     <div className={`p-2 rounded-xl bg-gradient-to-br shadow-lg ${config.color}`}>
                       <TrendingUp className="h-5 w-5 text-white" />
                     </div>
@@ -135,17 +135,17 @@ export function LevelMetricsGrid({ metrics, className }: LevelMetricsGridProps) 
                     return (
                       <div
                         key={status}
-                        className="flex items-center justify-between p-3 rounded-lg bg-gray-50/80 hover:bg-gray-100/80 transition-colors duration-200"
+                        className="flex items-center justify-between p-3 rounded-lg figma-glass-card transition-colors duration-200"
                       >
                         <div className="flex items-center gap-2">
                           <div className={`p-1.5 rounded-md ${statusConf.bgColor}`}>
                             <Icon className={`h-4 w-4 ${statusConf.color}`} />
                           </div>
-                          <span className="text-sm font-medium text-gray-700">
+                          <span className="figma-body">
                             {statusConf.label}
                           </span>
                         </div>
-                        <span className="text-lg font-bold text-gray-900">
+                        <span className="figma-numeric">
                           {value}
                         </span>
                       </div>

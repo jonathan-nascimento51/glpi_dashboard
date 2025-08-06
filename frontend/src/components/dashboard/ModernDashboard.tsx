@@ -50,17 +50,17 @@ export function ModernDashboard({
 
   // Componente de Skeleton melhorado
   const SkeletonCard = () => (
-    <Card className="bg-white/50 backdrop-blur-sm border-0 shadow-sm">
+    <Card className="figma-glass-card">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <div className="h-4 bg-gray-200 rounded animate-pulse w-20" />
-          <div className="h-8 w-8 bg-gray-200 rounded-full animate-pulse" />
+          <div className="h-4 figma-glass-card rounded animate-pulse w-20" />
+          <div className="h-8 w-8 figma-glass-card rounded-full animate-pulse" />
         </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          <div className="h-8 bg-gray-200 rounded animate-pulse w-16" />
-          <div className="h-3 bg-gray-200 rounded animate-pulse w-24" />
+          <div className="h-8 figma-glass-card rounded animate-pulse w-16" />
+          <div className="h-3 figma-glass-card rounded animate-pulse w-24" />
         </div>
       </CardContent>
     </Card>
@@ -69,16 +69,16 @@ export function ModernDashboard({
   // Loading state
   if (isLoading) {
     return (
-      <div className="space-y-6 p-6 min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="space-y-6 p-6 min-h-screen">
         {/* Header skeleton */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div className="space-y-2">
-            <div className="h-8 bg-gray-200 rounded animate-pulse w-64" />
-            <div className="h-4 bg-gray-200 rounded animate-pulse w-48" />
+            <div className="h-8 figma-glass-card rounded animate-pulse w-64" />
+          <div className="h-4 figma-glass-card rounded animate-pulse w-48" />
           </div>
           <div className="flex items-center gap-3">
-            <div className="h-10 bg-gray-200 rounded animate-pulse w-32" />
-            <div className="h-10 bg-gray-200 rounded animate-pulse w-24" />
+            <div className="h-10 figma-glass-card rounded animate-pulse w-32" />
+          <div className="h-10 figma-glass-card rounded animate-pulse w-24" />
           </div>
         </div>
         
@@ -92,12 +92,12 @@ export function ModernDashboard({
         {/* Charts skeleton */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           <div className="xl:col-span-2">
-            <Card className="bg-white/50 backdrop-blur-sm border-0 shadow-sm">
+            <Card className="figma-glass-card">
               <CardHeader>
-                <div className="h-6 bg-gray-200 rounded animate-pulse w-40" />
+                <div className="h-6 figma-glass-card rounded animate-pulse w-40" />
               </CardHeader>
               <CardContent>
-                <div className="h-64 bg-gray-200 rounded animate-pulse" />
+                <div className="h-64 figma-glass-card rounded animate-pulse" />
               </CardContent>
             </Card>
           </div>
@@ -138,7 +138,7 @@ export function ModernDashboard({
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className={cn("h-full overflow-hidden flex flex-col bg-gradient-to-br from-blue-50 via-white to-purple-50", className)}
+      className={cn("h-full overflow-hidden flex flex-col", className)}
     >
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
 

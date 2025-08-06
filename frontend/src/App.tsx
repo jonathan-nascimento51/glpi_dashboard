@@ -30,6 +30,11 @@ function App() {
 
   const [showIntegrityMonitor, setShowIntegrityMonitor] = useState(true);
 
+  // Apply theme to body element
+  useEffect(() => {
+    document.body.className = theme === 'dark' ? 'dark' : '';
+  }, [theme]);
+
   // Handle filter by status
   const handleFilterByStatus = (status: TicketStatus) => {
     updateFilters({ status: [status] });
