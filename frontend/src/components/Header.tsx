@@ -20,7 +20,7 @@ interface HeaderProps {
   onToggleSimplifiedMode: () => void;
   onToggleMonitoringAlerts: () => void;
   onNotification: (title: string, message: string, type: 'success' | 'error' | 'warning' | 'info') => void;
-  onDateRangeChange?: (startDate: string, endDate: string) => void;
+  onDateRangeChange?: (dateRange: { startDate: string; endDate: string; label: string }) => void;
 }
 
 const themes: { value: Theme; label: string; icon: string }[] = [
@@ -107,17 +107,25 @@ export const Header: React.FC<HeaderProps> = ({
     const startStr = startDate.toISOString().split('T')[0];
     const endStr = endDate.toISOString().split('T')[0];
     
-    onDateRangeChange?.(startStr, endStr);
+    const range = dateRanges.find(r => r.days === days);
+    onDateRangeChange?.({
+      startDate: startStr,
+      endDate: endStr,
+      label: range?.label || 'Período personalizado'
+    });
     setShowDatePicker(false);
     
-    const range = dateRanges.find(r => r.days === days);
     onNotification('Período Atualizado', `Filtro alterado para: ${range?.label}`, 'info');
   }, [onDateRangeChange, onNotification]);
 
   // Handle custom date range
   const handleCustomDateRange = useCallback(() => {
     if (customStartDate && customEndDate && onDateRangeChange) {
-      onDateRangeChange(customStartDate, customEndDate);
+      onDateRangeChange({
+        startDate: customStartDate,
+        endDate: customEndDate,
+        label: 'Período personalizado'
+      });
       setShowDatePicker(false);
       onNotification('Período Personalizado', 'Período customizado aplicado', 'success');
     }

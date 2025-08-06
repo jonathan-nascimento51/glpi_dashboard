@@ -132,9 +132,9 @@ export const useDashboard = () => {
       // CORREÇÃO 1: Variável definida para uso no estado
       const currentDateRange = customDateRange || state.dateRange;
       
-      // CORREÇÃO 2: API chamada sem filtro de data problemático
+      // CORREÇÃO 2: API chamada COM filtro de data
       const [rawMetrics, rawSystemStatus, rawTechnicianRanking] = await Promise.all([
-        apiService.getMetrics(), // SEM parâmetros de data
+        apiService.getMetrics(currentDateRange), // COM parâmetros de data
         apiService.getSystemStatus(),
         apiService.getTechnicianRanking()
       ]);

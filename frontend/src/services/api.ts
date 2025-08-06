@@ -57,12 +57,15 @@ export const apiService = {
   async getMetrics(dateRange?: DateRange): Promise<MetricsData> {
     try {
       let url = '/metrics';
-      if (dateRange) {
+      if (dateRange && dateRange.startDate && dateRange.endDate) {
         const params = new URLSearchParams({
           start_date: dateRange.startDate,
           end_date: dateRange.endDate
         });
         url += `?${params.toString()}`;
+        console.log('🔍 Chamando API com filtro de data:', { start_date: dateRange.startDate, end_date: dateRange.endDate });
+      } else {
+        console.log('🔍 Chamando API sem filtro de data');
       }
       const response = await api.get(url);
       

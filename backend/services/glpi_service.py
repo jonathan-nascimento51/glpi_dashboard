@@ -260,8 +260,9 @@ class GLPIService:
                         status_id_found = True
                     
                     if field_name == date_field_name and not date_id_found:
-                        self.field_ids["DATE_CREATION"] = item_id
-                        self.logger.info(f"ID do campo '{date_field_name}' encontrado: {item_id}")
+                        # Forçar uso do campo 15 que é o correto para data de criação
+                        self.field_ids["DATE_CREATION"] = "15"
+                        self.logger.info(f"ID do campo '{date_field_name}' forçado para: 15 (campo correto)")
                         date_id_found = True
                 
                 if group_id_found and status_id_found and date_id_found:
@@ -291,20 +292,22 @@ class GLPIService:
             "criteria[1][value]": status_id,
         }
         
-        # Adicionar filtros de data se fornecidos
+        # Adicionar filtros de data se fornecidos (formato ISO funciona melhor)
         criteria_index = 2
         if start_date:
+            # Usar formato ISO (YYYY-MM-DD) que funciona corretamente
             search_params[f"criteria[{criteria_index}][link]"] = "AND"
-            search_params[f"criteria[{criteria_index}][field]"] = self.field_ids["DATE_CREATION"]
+            search_params[f"criteria[{criteria_index}][field]"] = "15"  # Campo 15 é o correto para data de criação
             search_params[f"criteria[{criteria_index}][searchtype]"] = "morethan"
-            search_params[f"criteria[{criteria_index}][value]"] = f"{start_date} 00:00:00"
+            search_params[f"criteria[{criteria_index}][value]"] = start_date
             criteria_index += 1
             
         if end_date:
+            # Usar formato ISO (YYYY-MM-DD) que funciona corretamente
             search_params[f"criteria[{criteria_index}][link]"] = "AND"
-            search_params[f"criteria[{criteria_index}][field]"] = self.field_ids["DATE_CREATION"]
+            search_params[f"criteria[{criteria_index}][field]"] = "15"  # Campo 15 é o correto para data de criação
             search_params[f"criteria[{criteria_index}][searchtype]"] = "lessthan"
-            search_params[f"criteria[{criteria_index}][value]"] = f"{end_date} 23:59:59"
+            search_params[f"criteria[{criteria_index}][value]"] = end_date
         
         try:
             response = self._make_authenticated_request(
@@ -381,20 +384,22 @@ class GLPIService:
                 "criteria[0][value]": status_id,
             }
             
-            # Adicionar filtros de data se fornecidos
+            # Adicionar filtros de data se fornecidos (formato ISO funciona melhor)
             criteria_index = 1
             if start_date:
+                # Usar formato ISO (YYYY-MM-DD) que funciona corretamente
                 search_params[f"criteria[{criteria_index}][link]"] = "AND"
-                search_params[f"criteria[{criteria_index}][field]"] = self.field_ids["DATE_CREATION"]
+                search_params[f"criteria[{criteria_index}][field]"] = "15"  # Campo 15 é o correto para data de criação
                 search_params[f"criteria[{criteria_index}][searchtype]"] = "morethan"
-                search_params[f"criteria[{criteria_index}][value]"] = f"{start_date} 00:00:00"
+                search_params[f"criteria[{criteria_index}][value]"] = start_date
                 criteria_index += 1
                 
             if end_date:
+                # Usar formato ISO (YYYY-MM-DD) que funciona corretamente
                 search_params[f"criteria[{criteria_index}][link]"] = "AND"
-                search_params[f"criteria[{criteria_index}][field]"] = self.field_ids["DATE_CREATION"]
+                search_params[f"criteria[{criteria_index}][field]"] = "15"  # Campo 15 é o correto para data de criação
                 search_params[f"criteria[{criteria_index}][searchtype]"] = "lessthan"
-                search_params[f"criteria[{criteria_index}][value]"] = f"{end_date} 23:59:59"
+                search_params[f"criteria[{criteria_index}][value]"] = end_date
             
             try:
                 response = self._make_authenticated_request(
