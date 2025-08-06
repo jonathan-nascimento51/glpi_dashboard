@@ -110,19 +110,19 @@ const SimplifiedDashboard: React.FC<SimplifiedDashboardProps> = ({
             <h2 className="text-lg font-medium mb-4 text-center text-slate-200 border-b border-slate-600/40 pb-2">Nível N1</h2>
             <div className="grid grid-cols-4 gap-3">
               <div className="bg-slate-700/40 border border-slate-600/50 rounded-lg p-4 text-center hover:bg-slate-700/60 transition-all duration-200">
-                <div className="text-2xl font-semibold text-emerald-400 mb-1">{metrics.niveis.n1.novos}</div>
+                <div className="text-2xl font-semibold text-slate-300 mb-1">{metrics.niveis.n1.novos}</div>
                 <div className="text-xs text-slate-300 font-medium uppercase tracking-wide">Novos</div>
               </div>
               <div className="bg-slate-700/40 border border-slate-600/50 rounded-lg p-4 text-center hover:bg-slate-700/60 transition-all duration-200">
-                <div className="text-2xl font-semibold text-blue-400 mb-1">{metrics.niveis.n1.progresso}</div>
+                <div className="text-2xl font-semibold text-slate-300 mb-1">{metrics.niveis.n1.progresso}</div>
                 <div className="text-xs text-slate-300 font-medium uppercase tracking-wide">Em Progresso</div>
               </div>
               <div className="bg-slate-700/40 border border-slate-600/50 rounded-lg p-4 text-center hover:bg-slate-700/60 transition-all duration-200">
-                <div className="text-2xl font-semibold text-amber-400 mb-1">{metrics.niveis.n1.pendentes}</div>
+                <div className="text-2xl font-semibold text-slate-300 mb-1">{metrics.niveis.n1.pendentes}</div>
                 <div className="text-xs text-slate-300 font-medium uppercase tracking-wide">Pendentes</div>
               </div>
               <div className="bg-slate-700/40 border border-slate-600/50 rounded-lg p-4 text-center hover:bg-slate-700/60 transition-all duration-200">
-                <div className="text-2xl font-semibold text-purple-400 mb-1">{metrics.niveis.n1.resolvidos}</div>
+                <div className="text-2xl font-semibold text-slate-300 mb-1">{metrics.niveis.n1.resolvidos}</div>
                 <div className="text-xs text-slate-300 font-medium uppercase tracking-wide">Resolvidos</div>
               </div>
             </div>
@@ -134,19 +134,19 @@ const SimplifiedDashboard: React.FC<SimplifiedDashboardProps> = ({
             <h2 className="text-lg font-medium mb-4 text-center text-slate-200 border-b border-slate-600/40 pb-2">Nível N2</h2>
             <div className="grid grid-cols-4 gap-3">
               <div className="bg-slate-700/40 border border-slate-600/50 rounded-lg p-4 text-center hover:bg-slate-700/60 transition-all duration-200">
-                <div className="text-2xl font-semibold text-emerald-400 mb-1">{metrics.niveis.n2.novos}</div>
+                <div className="text-2xl font-semibold text-slate-300 mb-1">{metrics.niveis.n2.novos}</div>
                 <div className="text-xs text-slate-300 font-medium uppercase tracking-wide">Novos</div>
               </div>
               <div className="bg-slate-700/40 border border-slate-600/50 rounded-lg p-4 text-center hover:bg-slate-700/60 transition-all duration-200">
-                <div className="text-2xl font-semibold text-blue-400 mb-1">{metrics.niveis.n2.progresso}</div>
+                <div className="text-2xl font-semibold text-slate-300 mb-1">{metrics.niveis.n2.progresso}</div>
                 <div className="text-xs text-slate-300 font-medium uppercase tracking-wide">Em Progresso</div>
               </div>
               <div className="bg-slate-700/40 border border-slate-600/50 rounded-lg p-4 text-center hover:bg-slate-700/60 transition-all duration-200">
-                <div className="text-2xl font-semibold text-amber-400 mb-1">{metrics.niveis.n2.pendentes}</div>
+                <div className="text-2xl font-semibold text-slate-300 mb-1">{metrics.niveis.n2.pendentes}</div>
                 <div className="text-xs text-slate-300 font-medium uppercase tracking-wide">Pendentes</div>
               </div>
               <div className="bg-slate-700/40 border border-slate-600/50 rounded-lg p-4 text-center hover:bg-slate-700/60 transition-all duration-200">
-                <div className="text-2xl font-semibold text-purple-400 mb-1">{metrics.niveis.n2.resolvidos}</div>
+                <div className="text-2xl font-semibold text-slate-300 mb-1">{metrics.niveis.n2.resolvidos}</div>
                 <div className="text-xs text-slate-300 font-medium uppercase tracking-wide">Resolvidos</div>
               </div>
             </div>
@@ -159,19 +159,19 @@ const SimplifiedDashboard: React.FC<SimplifiedDashboardProps> = ({
             <h2 className="text-lg font-medium mb-4 text-center text-slate-200 border-b border-slate-600/40 pb-2">Nível N3</h2>
             <div className="grid grid-cols-4 gap-3">
               <div className="bg-slate-700/40 border border-slate-600/50 rounded-lg p-4 text-center hover:bg-slate-700/60 transition-all duration-200">
-                <div className="text-2xl font-semibold text-emerald-400 mb-1">{metrics.niveis.n3.novos}</div>
+                <div className="text-2xl font-semibold text-slate-300 mb-1">{metrics.niveis.n3.novos}</div>
                 <div className="text-xs text-slate-300 font-medium uppercase tracking-wide">Novos</div>
               </div>
               <div className="bg-slate-700/40 border border-slate-600/50 rounded-lg p-4 text-center hover:bg-slate-700/60 transition-all duration-200">
-                <div className="text-2xl font-semibold text-blue-400 mb-1">{metrics.niveis.n3.progresso}</div>
+                <div className="text-2xl font-semibold text-slate-300 mb-1">{metrics.niveis.n3.progresso}</div>
                 <div className="text-xs text-slate-300 font-medium uppercase tracking-wide">Em Progresso</div>
               </div>
               <div className="bg-slate-700/40 border border-slate-600/50 rounded-lg p-4 text-center hover:bg-slate-700/60 transition-all duration-200">
-                <div className="text-2xl font-semibold text-amber-400 mb-1">{metrics.niveis.n3.pendentes}</div>
+                <div className="text-2xl font-semibold text-slate-300 mb-1">{metrics.niveis.n3.pendentes}</div>
                 <div className="text-xs text-slate-300 font-medium uppercase tracking-wide">Pendentes</div>
               </div>
               <div className="bg-slate-700/40 border border-slate-600/50 rounded-lg p-4 text-center hover:bg-slate-700/60 transition-all duration-200">
-                <div className="text-2xl font-semibold text-purple-400 mb-1">{metrics.niveis.n3.resolvidos}</div>
+                <div className="text-2xl font-semibold text-slate-300 mb-1">{metrics.niveis.n3.resolvidos}</div>
                 <div className="text-xs text-slate-300 font-medium uppercase tracking-wide">Resolvidos</div>
               </div>
             </div>
@@ -183,19 +183,19 @@ const SimplifiedDashboard: React.FC<SimplifiedDashboardProps> = ({
             <h2 className="text-lg font-medium mb-4 text-center text-slate-200 border-b border-slate-600/40 pb-2">Nível N4</h2>
             <div className="grid grid-cols-4 gap-3">
               <div className="bg-slate-700/40 border border-slate-600/50 rounded-lg p-4 text-center hover:bg-slate-700/60 transition-all duration-200">
-                <div className="text-2xl font-semibold text-emerald-400 mb-1">{metrics.niveis.n4.novos}</div>
+                <div className="text-2xl font-semibold text-slate-300 mb-1">{metrics.niveis.n4.novos}</div>
                 <div className="text-xs text-slate-300 font-medium uppercase tracking-wide">Novos</div>
               </div>
               <div className="bg-slate-700/40 border border-slate-600/50 rounded-lg p-4 text-center hover:bg-slate-700/60 transition-all duration-200">
-                <div className="text-2xl font-semibold text-blue-400 mb-1">{metrics.niveis.n4.progresso}</div>
+                <div className="text-2xl font-semibold text-slate-300 mb-1">{metrics.niveis.n4.progresso}</div>
                 <div className="text-xs text-slate-300 font-medium uppercase tracking-wide">Em Progresso</div>
               </div>
               <div className="bg-slate-700/40 border border-slate-600/50 rounded-lg p-4 text-center hover:bg-slate-700/60 transition-all duration-200">
-                <div className="text-2xl font-semibold text-amber-400 mb-1">{metrics.niveis.n4.pendentes}</div>
+                <div className="text-2xl font-semibold text-slate-300 mb-1">{metrics.niveis.n4.pendentes}</div>
                 <div className="text-xs text-slate-300 font-medium uppercase tracking-wide">Pendentes</div>
               </div>
               <div className="bg-slate-700/40 border border-slate-600/50 rounded-lg p-4 text-center hover:bg-slate-700/60 transition-all duration-200">
-                <div className="text-2xl font-semibold text-purple-400 mb-1">{metrics.niveis.n4.resolvidos}</div>
+                <div className="text-2xl font-semibold text-slate-300 mb-1">{metrics.niveis.n4.resolvidos}</div>
                 <div className="text-xs text-slate-300 font-medium uppercase tracking-wide">Resolvidos</div>
               </div>
             </div>
@@ -237,19 +237,19 @@ const SimplifiedDashboard: React.FC<SimplifiedDashboardProps> = ({
 
                <div className="flex justify-between items-center p-3 bg-slate-700/40 rounded-lg border border-slate-600/50">
                  <span className="text-sm font-medium text-slate-300">Ativos:</span>
-                 <span className="text-xl font-bold text-amber-400">{metrics.novos + metrics.progresso + metrics.pendentes}</span>
+                 <span className="text-xl font-bold text-slate-300">{metrics.novos + metrics.progresso + metrics.pendentes}</span>
                </div>
                <div className="flex justify-between items-center p-3 bg-slate-700/40 rounded-lg border border-slate-600/50">
                  <span className="text-sm font-medium text-slate-300">Resolvidos:</span>
-                 <span className="text-xl font-bold text-emerald-400">{metrics.resolvidos}</span>
+                 <span className="text-xl font-bold text-slate-300">{metrics.resolvidos}</span>
                </div>
                <div className="flex justify-between items-center p-3 bg-slate-700/40 rounded-lg border border-slate-600/50">
                  <span className="text-sm font-medium text-slate-300">Tempo Médio:</span>
-                 <span className="text-sm font-semibold text-blue-400">2.5h</span>
+                 <span className="text-sm font-semibold text-slate-300">2.5h</span>
                </div>
                <div className="flex justify-between items-center p-3 bg-slate-700/40 rounded-lg border border-slate-600/50">
                  <span className="text-sm font-medium text-slate-300">SLA Cumprido:</span>
-                 <span className="text-sm font-semibold text-green-400">94%</span>
+                 <span className="text-sm font-semibold text-slate-300">94%</span>
                </div>
              </div>
           </div>

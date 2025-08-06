@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { Search, RefreshCw, Filter, X, Monitor, Maximize, AlertTriangle, Clock, Wifi, WifiOff, Calendar, ChevronDown } from 'lucide-react';
+import { Search, RefreshCw, Filter, X, Monitor, Maximize, Clock, Calendar, ChevronDown } from 'lucide-react';
 import { Theme, SearchResult } from '../types';
 import { SimpleTechIcon } from './SimpleTechIcon';
 import { RefreshControl } from './RefreshControl';
@@ -213,7 +213,7 @@ export const Header: React.FC<HeaderProps> = ({
   const currentTheme = themes.find(t => t.value === theme) || themes[0];
 
   return (
-    <header className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 text-white shadow-xl border-b border-white/10 relative z-50">
+    <header className="w-full bg-gradient-to-r from-slate-800 via-slate-700 to-slate-900 text-white shadow-xl border-b border-white/10 relative z-50">
       <div className="w-full px-6 py-4">
         <div className="flex items-center justify-between w-full">
           
@@ -226,7 +226,7 @@ export const Header: React.FC<HeaderProps> = ({
               <h1 className="text-xl font-bold text-white truncate">
                 Dashboard GLPI
               </h1>
-              <p className="text-blue-100 text-sm font-medium truncate">
+              <p className="text-slate-300 text-sm font-medium truncate">
                 Departamento de Tecnologia do Estado
               </p>
             </div>
@@ -339,31 +339,8 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
           
           {/* ========== SEÇÃO DIREITA: CONTROLES + STATUS ========== */}
-          <div className="flex items-center space-x-3 flex-shrink-0">
+          <div className="flex items-center space-x-4 flex-shrink-0">
             
-            {/* System Status */}
-            <div className={`flex items-center space-x-2 px-3 py-2 rounded-xl text-sm font-medium backdrop-blur-sm border ${
-              systemActive
-                ? 'bg-green-500/20 text-green-100 border-green-400/30'
-                : 'bg-red-500/20 text-red-100 border-red-400/30'
-            }`}>
-              {systemActive ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
-              <span>{systemActive ? 'Online' : 'Offline'}</span>
-            </div>
-
-            {/* Monitoring Alerts */}
-            {alertsCount > 0 && (
-              <button
-                onClick={onToggleMonitoringAlerts}
-                className="relative px-3 py-2 rounded-xl text-sm font-medium transition-all backdrop-blur-sm border bg-red-500/20 text-red-100 border-red-400/30 hover:bg-red-500/30"
-              >
-                <AlertTriangle className="w-4 h-4" />
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {alertsCount > 9 ? '9+' : alertsCount}
-                </span>
-              </button>
-            )}
-
             {/* Filters */}
             <button 
               onClick={onToggleFilters}
@@ -426,7 +403,7 @@ export const Header: React.FC<HeaderProps> = ({
             />
             
             {/* Current Time */}
-            <div className="flex items-center space-x-2 text-sm text-blue-100 bg-white/10 px-3 py-2 rounded-xl backdrop-blur-sm border border-white/20 font-mono">
+            <div className="flex items-center space-x-2 text-sm text-slate-200 bg-white/10 px-3 py-2 rounded-xl backdrop-blur-sm border border-white/20 font-mono">
               <Clock className="w-4 h-4" />
               <span>{currentTime}</span>
             </div>

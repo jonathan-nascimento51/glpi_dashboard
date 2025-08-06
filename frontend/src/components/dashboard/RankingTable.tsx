@@ -114,7 +114,7 @@ export function RankingTable({
     >
       <motion.div variants={cardVariants}>
         <Card className="border-0 shadow-2xl bg-white/80 backdrop-blur-xl rounded-2xl overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white">
+          <CardHeader className="bg-gradient-to-r from-slate-700 via-slate-800 to-slate-900 text-white">
             <CardTitle className="flex items-center gap-3 text-xl font-bold">
               <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
                 <Trophy className="h-6 w-6" />
@@ -183,10 +183,10 @@ export function RankingTable({
                               whileHover={{ scale: 1.1 }}
                               transition={{ duration: 0.2 }}
                             >
-                              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-500 to-indigo-600 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-lg">
+                              <div className="w-12 h-12 bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-lg">
                                 {technician.name.charAt(0).toUpperCase()}
                               </div>
-                              <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm"></div>
+                              <div className="absolute -top-1 -right-1 w-4 h-4 bg-slate-500 rounded-full border-2 border-white shadow-sm"></div>
                             </motion.div>
                             <div>
                               <div className="font-semibold text-gray-900 text-lg">
@@ -204,7 +204,7 @@ export function RankingTable({
                             whileHover={{ scale: 1.05 }}
                             transition={{ duration: 0.2 }}
                           >
-                            <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 shadow-lg px-4 py-2 text-sm font-semibold">
+                            <Badge className="bg-gradient-to-r from-slate-600 to-slate-700 text-white border-0 shadow-lg px-4 py-2 text-sm font-semibold">
                               {formatNumber(technician.resolved)}
                             </Badge>
                           </motion.div>
@@ -215,7 +215,7 @@ export function RankingTable({
                             whileHover={{ scale: 1.05 }}
                             transition={{ duration: 0.2 }}
                           >
-                            <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 shadow-lg px-4 py-2 text-sm font-semibold">
+                            <Badge className="bg-gradient-to-r from-slate-500 to-slate-600 text-white border-0 shadow-lg px-4 py-2 text-sm font-semibold">
                               {formatNumber(technician.pending)}
                             </Badge>
                           </motion.div>
@@ -225,7 +225,7 @@ export function RankingTable({
                           <div className="flex items-center justify-center gap-3">
                             <div className="relative w-16 h-3 bg-gray-200 rounded-full overflow-hidden shadow-inner">
                               <motion.div 
-                                className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-600 rounded-full shadow-sm"
+                                className="h-full bg-gradient-to-r from-slate-600 via-slate-700 to-slate-800 rounded-full shadow-sm"
                                 initial={{ width: 0 }}
                                 animate={{ width: `${Math.min(technician.efficiency, 100)}%` }}
                                 transition={{ duration: 1, ease: "easeOut", delay: index * 0.1 }}
@@ -249,9 +249,9 @@ export function RankingTable({
                             <Badge 
                               className={cn(
                                 "capitalize font-semibold px-4 py-2 border-0 shadow-lg",
-                                technician.status === 'active' && "bg-gradient-to-r from-green-500 to-emerald-600 text-white",
-                                technician.status === 'busy' && "bg-gradient-to-r from-yellow-500 to-orange-500 text-white",
-                                technician.status === 'inactive' && "bg-gradient-to-r from-gray-400 to-gray-500 text-white"
+                                technician.status === 'active' && "bg-gradient-to-r from-slate-600 to-slate-700 text-white",
+                                technician.status === 'busy' && "bg-gradient-to-r from-slate-500 to-slate-600 text-white",
+                                technician.status === 'inactive' && "bg-gradient-to-r from-slate-400 to-slate-500 text-white"
                               )}
                             >
                               <motion.div 

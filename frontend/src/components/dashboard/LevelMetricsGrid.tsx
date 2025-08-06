@@ -19,27 +19,27 @@ interface LevelMetricsGridProps {
 const levelConfig = {
   n1: {
     title: "Nível N1",
-    color: "from-blue-500 to-cyan-600",
-    bgColor: "bg-blue-50",
-    textColor: "text-blue-700"
+    color: "from-slate-600 to-slate-700",
+    bgColor: "bg-slate-50",
+    textColor: "text-slate-700"
   },
   n2: {
     title: "Nível N2",
-    color: "from-green-500 to-emerald-600",
-    bgColor: "bg-green-50",
-    textColor: "text-green-700"
+    color: "from-slate-700 to-slate-800",
+    bgColor: "bg-slate-50",
+    textColor: "text-slate-700"
   },
   n3: {
     title: "Nível N3",
-    color: "from-purple-500 to-violet-600",
-    bgColor: "bg-purple-50",
-    textColor: "text-purple-700"
+    color: "from-slate-500 to-slate-600",
+    bgColor: "bg-slate-50",
+    textColor: "text-slate-700"
   },
   n4: {
     title: "Nível N4",
-    color: "from-orange-500 to-red-600",
-    bgColor: "bg-orange-50",
-    textColor: "text-orange-700"
+    color: "from-slate-800 to-slate-900",
+    bgColor: "bg-slate-50",
+    textColor: "text-slate-700"
   }
 }
 

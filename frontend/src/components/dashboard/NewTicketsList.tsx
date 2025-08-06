@@ -22,19 +22,19 @@ interface NewTicketsListProps {
 
 const priorityConfig = {
   'Alta': {
-    color: 'bg-red-100 text-red-800 border-red-200',
+    color: 'bg-slate-100 text-slate-800 border-slate-200',
     icon: '🔴'
   },
   'Média': {
-    color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    color: 'bg-slate-100 text-slate-700 border-slate-200',
     icon: '🟡'
   },
   'Baixa': {
-    color: 'bg-green-100 text-green-800 border-green-200',
+    color: 'bg-slate-50 text-slate-600 border-slate-200',
     icon: '🟢'
   },
   'Normal': {
-    color: 'bg-blue-100 text-blue-800 border-blue-200',
+    color: 'bg-slate-100 text-slate-700 border-slate-200',
     icon: '🔵'
   }
 }
@@ -133,14 +133,14 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
-            <div className="p-2 rounded-xl bg-gradient-to-br shadow-lg from-blue-500 to-cyan-600">
+            <div className="p-2 rounded-xl bg-gradient-to-br shadow-lg from-slate-600 to-slate-700">
               <AlertCircle className="h-5 w-5 text-white" />
             </div>
             Tickets Novos
           </CardTitle>
           
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+            <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200">
               {tickets.length} tickets
             </Badge>
             <Button

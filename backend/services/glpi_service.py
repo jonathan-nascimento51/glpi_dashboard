@@ -1399,6 +1399,51 @@ class GLPIService:
             if ttl is not None:
                 self._cache[cache_key]['ttl'] = ttl
     
+    def _get_user_name_by_id(self, user_id: str) -> str:
+        """Busca o nome do usuário pelo ID"""
+        if not user_id or user_id == 'Não informado':
+            return 'Não informado'
+            
+        try:
+            # Verificar cache primeiro
+            cache_key = f'user_name_{user_id}'
+            cached_name = self._get_cache_data('user_names', cache_key)
+            if cached_name:
+                return cached_name
+                
+            # Buscar usuário por ID
+            response = self._make_authenticated_request(
+                'GET',
+                f"{self.glpi_url}/User/{user_id}"
+            )
+            
+            if not response or not response.ok:
+                self.logger.warning(f"Falha ao buscar usuário {user_id}")
+                return f"Usuário {user_id}"
+                
+            user_data = response.json()
+            
+            # Construir nome de exibição
+            display_name = "Usuário desconhecido"
+            if isinstance(user_data, dict):
+                if user_data.get("realname") and user_data.get("firstname"):
+                    display_name = f"{user_data['realname']}, {user_data['firstname']}"
+                elif user_data.get("realname"):
+                    display_name = user_data["realname"]
+                elif user_data.get("name"):
+                    display_name = user_data["name"]
+                elif user_data.get("firstname"):
+                    display_name = user_data["firstname"]
+                    
+            # Armazenar no cache por 1 hora
+            self._set_cache_data('user_names', display_name, 3600, cache_key)
+            
+            return display_name
+            
+        except Exception as e:
+            self.logger.error(f"Erro ao buscar nome do usuário {user_id}: {e}")
+            return f"Usuário {user_id}"
+    
     def get_new_tickets(self, limit: int = 10) -> List[Dict[str, any]]:
         """Busca tickets com status 'novo' com detalhes completos"""
         if not self._ensure_authenticated():
@@ -1437,13 +1482,17 @@ class GLPIService:
             
             if 'data' in data and data['data']:
                 for ticket_data in data['data']:
+                    # Extrair ID do requerente e buscar o nome
+                    requester_id = ticket_data.get('4', '')
+                    requester_name = self._get_user_name_by_id(str(requester_id)) if requester_id else 'Não informado'
+                    
                     # Extrair informações do ticket
                     ticket_info = {
                         'id': str(ticket_data.get('2', '')),  # ID do ticket
                         'title': ticket_data.get('1', 'Sem título'),  # Título
                         'description': ticket_data.get('21', '')[:100] + '...' if len(ticket_data.get('21', '')) > 100 else ticket_data.get('21', ''),  # Descrição truncada
                         'date': ticket_data.get('15', ''),  # Data de abertura
-                        'requester': ticket_data.get('4', 'Não informado'),  # Solicitante
+                        'requester': requester_name,  # Nome do solicitante
                         'priority': ticket_data.get('3', 'Normal'),  # Prioridade
                         'status': 'Novo'
                     }

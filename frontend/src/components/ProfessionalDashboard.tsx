@@ -243,7 +243,7 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
               <button
                 onClick={onRefresh}
                 disabled={isLoading}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center space-x-2"
+                className="bg-slate-700 text-white px-4 py-2 rounded-lg hover:bg-slate-800 disabled:opacity-50 transition-colors flex items-center space-x-2"
               >
                 <Settings className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
                 <span>Atualizar</span>
@@ -261,31 +261,31 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
             title="Chamados Ativos"
             value={totalActive}
             icon={AlertTriangle}
-            color="text-orange-600"
-            bgColor="bg-orange-100"
+            color="text-slate-700"
+            bgColor="bg-slate-100"
             trend={5}
           />
           <StatusCard
             title="Resolvidos"
             value={metrics.resolvidos}
             icon={CheckCircle}
-            color="text-green-600"
-            bgColor="bg-green-100"
+            color="text-slate-700"
+            bgColor="bg-slate-100"
             trend={12}
           />
           <StatusCard
             title="Taxa de Resolução"
             value={parseFloat(resolutionRate)}
             icon={BarChart3}
-            color="text-blue-600"
-            bgColor="bg-blue-100"
+            color="text-slate-700"
+            bgColor="bg-slate-100"
           />
           <StatusCard
             title="Técnicos Ativos"
             value={technicianRanking.length}
             icon={Users}
-            color="text-purple-600"
-            bgColor="bg-purple-100"
+            color="text-slate-700"
+            bgColor="bg-slate-100"
           />
         </div>
 
@@ -307,10 +307,10 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
                 <div key={tech.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                   <div className="flex items-center space-x-4">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white ${
-                      index === 0 ? 'bg-yellow-500' :
-                      index === 1 ? 'bg-gray-400' :
-                      index === 2 ? 'bg-orange-500' :
-                      'bg-blue-500'
+                      index === 0 ? 'bg-slate-600' :
+                      index === 1 ? 'bg-slate-500' :
+                      index === 2 ? 'bg-slate-700' :
+                      'bg-slate-800'
                     }`}>
                       {index + 1}
                     </div>
@@ -333,7 +333,7 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
             <h3 className="text-lg font-semibold text-gray-900 mb-6">Chamados Recentes</h3>
             {ticketsLoading ? (
               <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-600 mx-auto mb-2"></div>
                 <div className="text-sm text-gray-500">Carregando...</div>
               </div>
             ) : (
@@ -345,7 +345,7 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
                         <div className="text-sm font-medium text-gray-900 truncate flex-1 mr-2">
                           #{ticket.id}
                         </div>
-                        <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                        <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-slate-100 text-slate-700">
                           {ticket.priority}
                         </span>
                       </div>
@@ -378,7 +378,7 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
             <div className="flex items-center space-x-4">
               <span>Última atualização: {currentTime}</span>
               <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-slate-500 rounded-full animate-pulse"></div>
                 <span>Sistema Online</span>
               </div>
             </div>

@@ -80,47 +80,63 @@ export const RefreshControl: React.FC<RefreshControlProps> = ({
   };
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
-      {/* Status do Auto-refresh */}
-      <Badge 
-        variant={isAutoRefreshEnabled ? "default" : "secondary"}
-        className="flex items-center gap-1"
-      >
-        {isAutoRefreshEnabled ? (
-          <>
-            <Play className="w-3 h-3" />
-            Auto
-          </>
-        ) : (
-          <>
-            <Pause className="w-3 h-3" />
-            Pausado
-          </>
-        )}
-      </Badge>
-
-      {/* Countdown */}
-      {isAutoRefreshEnabled && timeUntilNextRefresh > 0 && (
-        <Badge variant="outline" className="flex items-center gap-1">
-          <Clock className="w-3 h-3" />
-          {formatTime(timeUntilNextRefresh)}
+    <div className={`flex items-center gap-3 ${className}`}>
+      {/* Status do Auto-refresh com design melhorado */}
+      <div className="flex items-center gap-2">
+        <Badge 
+           variant={isAutoRefreshEnabled ? "default" : "secondary"}
+           className={`flex items-center gap-1.5 px-3 py-1.5 font-medium transition-all duration-200 rounded-md border-0 ${
+             isAutoRefreshEnabled 
+               ? 'bg-white/20 hover:bg-white/30 text-white shadow-sm backdrop-blur-sm' 
+               : 'bg-white/10 hover:bg-white/20 text-white/70 backdrop-blur-sm'
+           }`}
+        >
+          {isAutoRefreshEnabled ? (
+            <>
+              <Play className="w-3.5 h-3.5" />
+              <span className="text-xs font-semibold">Auto</span>
+            </>
+          ) : (
+            <>
+              <Pause className="w-3.5 h-3.5" />
+              <span className="text-xs font-semibold">Pausado</span>
+            </>
+          )}
         </Badge>
-      )}
 
-      {/* Última atualização */}
+        {/* Countdown com melhor visual */}
+        {isAutoRefreshEnabled && timeUntilNextRefresh > 0 && (
+           <Badge 
+             variant="outline" 
+             className="flex items-center gap-1.5 px-2.5 py-1 bg-white/15 border-white/30 text-white font-mono text-xs backdrop-blur-sm rounded-md"
+           >
+            <Clock className="w-3 h-3" />
+            <span className="font-semibold">{formatTime(timeUntilNextRefresh)}</span>
+          </Badge>
+        )}
+      </div>
+
+      {/* Última atualização com design aprimorado */}
       {lastUpdated && (
-        <Badge variant="outline" className="text-xs">
+        <Badge 
+          variant="outline" 
+          className="px-2.5 py-1 bg-white/10 border-white/20 text-white/80 text-xs font-medium backdrop-blur-sm rounded-md"
+        >
           {formatLastUpdated(lastUpdated)}
         </Badge>
       )}
 
-      {/* Controles */}
-      <div className="flex items-center gap-1">
+      {/* Controles com visual moderno */}
+      <div className="flex items-center gap-1.5">
         <Button
           variant="outline"
           size="sm"
           onClick={toggleAutoRefresh}
-          className="h-8 w-8 p-0"
+          className={`h-8 w-8 p-0 transition-all duration-200 hover:scale-105 rounded-md border-0 ${
+             isAutoRefreshEnabled 
+               ? 'bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm' 
+               : 'bg-white/5 hover:bg-white/15 text-white/70 backdrop-blur-sm'
+           }`}
           title={isAutoRefreshEnabled ? 'Pausar auto-refresh' : 'Ativar auto-refresh'}
         >
           {isAutoRefreshEnabled ? (
@@ -135,7 +151,7 @@ export const RefreshControl: React.FC<RefreshControlProps> = ({
           size="sm"
           onClick={handleManualRefresh}
           disabled={isLoading}
-          className="h-8 w-8 p-0"
+          className="h-8 w-8 p-0 bg-white/10 hover:bg-white/20 text-white transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 rounded-md border-0 backdrop-blur-sm"
           title="Atualizar agora"
         >
           <RotateCcw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
