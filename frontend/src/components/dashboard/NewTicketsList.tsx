@@ -129,7 +129,7 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
   }
 
   return (
-    <Card className={cn("border-0 shadow-lg bg-white/95 h-full", className)}>
+    <Card className={cn("border-0 shadow-lg bg-white/95 h-full flex flex-col", className)}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
@@ -163,7 +163,7 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
         )}
       </CardHeader>
       
-      <CardContent className="pt-0">
+      <CardContent className="pt-0 flex-1 overflow-hidden">
         {isLoading ? (
           <div className="space-y-3">
             {[...Array(4)].map((_, i) => (
@@ -203,7 +203,7 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="space-y-3 max-h-96 overflow-y-auto pr-2"
+            className="space-y-3 h-80 overflow-y-auto pr-2"
           >
             {tickets.map((ticket, index) => {
               const priorityConf = getPriorityConfig(ticket.priority)

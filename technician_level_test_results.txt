@@ -1,0 +1,58 @@
+RESULTADO DO TESTE DE CLASSIFICAÇÃO DE TÉCNICOS
+==================================================
+
+MAPEAMENTO ESPERADO:
+N1: 2 técnicos
+  - Gabriel Andrade Da Conceicao
+  - Nicolas Fernando Muniz Nunez
+
+N2: 6 técnicos
+  - Alessandro Carbonera Vieira
+  - Edson Joel Dos Santos Silva
+  - Luciano Marcelino Da Silva
+  - Jonathan Nascimento Moletta
+  - Leonardo Trojan Repiso Riela
+  - Thales Vinicius Paz Leite
+
+N3: 5 técnicos
+  - Jorge Antonio Vicente Junior
+  - Anderson Da Silva Morim De Oliveira
+  - Miguelangelo Ferreira
+  - Silvio Godinho Valim
+  - Pablo Hebling Guimaraes
+
+N4: 5 técnicos
+  - Paulo Cesar Pedo Nunes
+  - Luciano De Araujo Silva
+  - Wagner Mengue
+  - Alexandre Rovinski Almoarqueg
+  - Gabriel Silva Machado
+
+RESULTADO ATUAL:
+N4: 5 técnicos
+  - Anderson da Silva Morim de Oliveira (ID: ID não encontrado, Tickets: 0)
+  - Silvio Godinho Valim (ID: ID não encontrado, Tickets: 0)
+  - Jorge Antonio Vicente Júnior (ID: ID não encontrado, Tickets: 0)
+  - Pablo Hebling Guimaraes (ID: ID não encontrado, Tickets: 0)
+  - Miguelangelo Ferreira (ID: ID não encontrado, Tickets: 0)
+
+N3: 5 técnicos
+  - Alessandro Carbonera Vieira (ID: ID não encontrado, Tickets: 0)
+  - Jonathan Nascimento Moletta (ID: ID não encontrado, Tickets: 0)
+  - Thales Vinicius Paz Leite (ID: ID não encontrado, Tickets: 0)
+  - Leonardo Trojan Repiso Riela (ID: ID não encontrado, Tickets: 0)
+  - Edson Joel dos Santos Silva (ID: ID não encontrado, Tickets: 0)
+
+N2: 4 técnicos
+  - Gabriel Silva Machado (ID: ID não encontrado, Tickets: 0)
+  - Luciano Marcelino da Silva (ID: ID não encontrado, Tickets: 0)
+  - Gabriel Andrade da Conceicao (ID: ID não encontrado, Tickets: 0)
+  - Luciano de Araujo Silva (ID: ID não encontrado, Tickets: 0)
+
+N1: 4 técnicos
+  - Nicolas Fernando Muniz Nunez (ID: ID não encontrado, Tickets: 0)
+  - Wagner Mengue (ID: ID não encontrado, Tickets: 0)
+  - Paulo César Pedó Nunes (ID: ID não encontrado, Tickets: 0)
+  - Alexandre Rovinski Almoarqueg (ID: ID não encontrado, Tickets: 0)
+
+Total de técnicos: 18

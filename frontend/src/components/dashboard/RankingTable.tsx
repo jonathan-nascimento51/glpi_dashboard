@@ -12,6 +12,7 @@ interface TechnicianRanking {
   pending: number
   efficiency: number
   status: 'active' | 'inactive' | 'busy'
+  level?: string
 }
 
 interface RankingTableProps {
@@ -30,13 +31,54 @@ export function RankingTable({
   // Pegar todos os técnicos e ordenar por número de chamados
   const topTechnicians = data
     .sort((a, b) => b.resolved - a.resolved)
-  
-  // Função para calcular a intensidade do cinza baseada na posição
-  const getGrayIntensity = (index: number, total: number) => {
-    // Quanto menor o índice (melhor posição), mais escuro o cinza
-    const intensity = Math.round(((total - index - 1) / (total - 1)) * 60 + 20) // 20-80% de intensidade
-    return `rgb(${intensity}, ${intensity}, ${intensity})`
+
+  // Configuração de cores e estilos por nível com gradientes similares ao StatusCard
+  const getLevelStyle = (level?: string) => {
+    switch (level) {
+      case 'N4':
+        return {
+          bgGradient: 'bg-gradient-to-br from-blue-500 to-cyan-600',
+          accentColor: '#2D9CDB',
+          shadowColor: 'shadow-blue-500/10',
+          hoverShadow: 'hover:shadow-blue-500/20'
+        }
+      case 'N3':
+        return {
+          bgGradient: 'bg-gradient-to-br from-green-500 to-emerald-600',
+          accentColor: '#27AE60',
+          shadowColor: 'shadow-green-500/10',
+          hoverShadow: 'hover:shadow-green-500/20'
+        }
+      case 'N2':
+        return {
+          bgGradient: 'bg-gradient-to-br from-yellow-500 to-orange-600',
+          accentColor: '#F2994A',
+          shadowColor: 'shadow-orange-500/10',
+          hoverShadow: 'hover:shadow-orange-500/20'
+        }
+      case 'N1':
+        return {
+          bgGradient: 'bg-gradient-to-br from-purple-500 to-pink-600',
+          accentColor: '#9B51E0',
+          shadowColor: 'shadow-purple-500/10',
+          hoverShadow: 'hover:shadow-purple-500/20'
+        }
+      default:
+        return {
+          bgGradient: 'bg-gradient-to-br from-gray-500 to-slate-600',
+          accentColor: '#6B7280',
+          shadowColor: 'shadow-gray-500/10',
+          hoverShadow: 'hover:shadow-gray-500/20'
+        }
+    }
   }
+
+  // Estatísticas por nível para o cabeçalho
+  const levelStats = topTechnicians.reduce((acc, tech) => {
+    const level = tech.level || 'Outros'
+    acc[level] = (acc[level] || 0) + 1
+    return acc
+  }, {} as Record<string, number>)
 
   // Adicionar scroll horizontal com roda do mouse
   useEffect(() => {
@@ -44,10 +86,7 @@ export function RankingTable({
     if (!container) return
 
     const handleWheel = (e: WheelEvent) => {
-      // Prevenir o scroll vertical padrão
       e.preventDefault()
-      
-      // Converter movimento vertical da roda em horizontal
       container.scrollLeft += e.deltaY
     }
 
@@ -58,35 +97,17 @@ export function RankingTable({
     }
   }, [])
 
-  const getRankColor = (position: number) => {
-    switch (position) {
-      case 1: return "bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-white shadow-lg shadow-yellow-500/25"
-      case 2: return "bg-gradient-to-r from-gray-300 via-gray-400 to-gray-500 text-white shadow-lg shadow-gray-400/25"
-      case 3: return "bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/25"
-      default: return "bg-gradient-to-r from-blue-50 to-indigo-50 text-gray-700 border border-gray-200/50"
-    }
-  }
-
-  const getRowHoverEffect = (position: number) => {
-    switch (position) {
-      case 1: return "hover:shadow-xl hover:shadow-yellow-500/20 hover:scale-[1.02]"
-      case 2: return "hover:shadow-xl hover:shadow-gray-400/20 hover:scale-[1.02]"
-      case 3: return "hover:shadow-xl hover:shadow-amber-500/20 hover:scale-[1.02]"
-      default: return "hover:shadow-lg hover:shadow-blue-500/10 hover:scale-[1.01]"
-    }
-  }
-
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.05
+        staggerChildren: 0.1
       }
     }
   }
 
-  const tileVariants = {
+  const cardVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
@@ -98,18 +119,31 @@ export function RankingTable({
   }
 
   return (
-    <Card className={cn("w-full bg-white/50 backdrop-blur-sm border-0 shadow-sm", className)}>
+    <Card className={cn("w-full bg-white/80 backdrop-blur-xl border-0 shadow-xl rounded-2xl", className)}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-slate-500 to-slate-700 shadow-lg">
+          <CardTitle className="flex items-center gap-2 text-lg text-gray-700 font-semibold">
+            <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 shadow-lg">
               <Users className="h-5 w-5 text-white" />
             </div>
             Ranking de Técnicos
           </CardTitle>
-          <Badge variant="outline" className="bg-slate-100 text-slate-700 border-0">
-            Total: {topTechnicians.length}
-          </Badge>
+          <div className="flex items-center gap-2">
+            {Object.entries(levelStats).map(([level, count]) => {
+              const style = getLevelStyle(level)
+              return (
+                <Badge 
+                  key={level} 
+                  className={cn(
+                    "text-xs px-2 py-1 border-0 shadow-sm text-white font-medium bg-gradient-to-r",
+                    style.bgGradient
+                  )}
+                >
+                  {level}: {count}
+                </Badge>
+              )
+            })}
+          </div>
         </div>
       </CardHeader>
       
@@ -120,26 +154,64 @@ export function RankingTable({
           animate="visible"
           className="space-y-4"
         >
-          {/* Layout horizontal contínuo */}
           <div 
             ref={scrollContainerRef}
-            className="flex w-full h-32 bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg shadow-inner overflow-x-auto overflow-y-hidden border border-slate-200 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100"
+            className="flex w-full h-32 bg-gray-50/50 backdrop-blur-sm rounded-lg shadow-inner overflow-x-auto overflow-y-hidden border border-gray-200/50 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
           >
           {topTechnicians.map((technician, index) => {
-             const intensity = Math.round(((topTechnicians.length - index - 1) / (topTechnicians.length - 1)) * 40 + 10) // 10-50% de intensidade
-             const backgroundColor = `hsl(215, ${20 + intensity}%, ${85 - intensity}%)` // Tons de azul-acinzentado
-             const textColor = index < topTechnicians.length / 3 ? 'text-white' : 'text-slate-700'
+            const levelStyle = getLevelStyle(technician.level)
+            const position = index + 1
+            const isTopThree = position <= 3
             
             return (
               <motion.div
-                 key={technician.id}
-                 variants={tileVariants}
-                 className="flex-shrink-0 w-32 flex flex-col justify-center items-center p-2 border-r border-slate-200 last:border-r-0 transition-all duration-300 hover:scale-105 hover:shadow-md"
-                 style={{ backgroundColor }}
-               >
-                {/* Nome do técnico - parte superior */}
-                <div className={cn("text-xs font-medium text-center leading-tight mb-2 px-1", textColor)}>
-                  <div className="truncate max-w-full">
+                key={technician.id}
+                variants={cardVariants}
+                className={cn(
+                  "flex-shrink-0 w-36 flex flex-col justify-between p-3 border-r border-white/10 last:border-r-0",
+                  "transition-all duration-300 hover:scale-105 relative group overflow-hidden",
+                  "bg-white/80 backdrop-blur-xl shadow-xl hover:shadow-2xl rounded-2xl border-0",
+                  "border-l-4",
+                  "hover:shadow-lg", levelStyle.hoverShadow
+                )}
+                style={{ borderLeftColor: levelStyle.accentColor }}
+              >
+                {/* Gradient Background - Opacidade mais suave */}
+                <div className={cn(
+                  "absolute inset-0 bg-gradient-to-br opacity-5 rounded-2xl",
+                  levelStyle.bgGradient
+                )} />
+                
+                {/* Animated Border com blur para suavizar */}
+                <div className="absolute inset-0 rounded-2xl">
+                  <div className={cn(
+                    "absolute inset-0 rounded-2xl bg-gradient-to-r opacity-20 blur-sm",
+                    levelStyle.bgGradient
+                  )} />
+                </div>
+                <div className="flex items-center justify-between mb-2 relative z-10">
+                  <div className={cn(
+                    "w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold",
+                    isTopThree ? "bg-white/90 backdrop-blur-sm border border-gray-200 text-gray-700 shadow-md" : "bg-white/70 backdrop-blur-sm border border-gray-200 text-gray-600"
+                  )}>
+                    {position <= 3 && position === 1 && <Trophy className="w-3 h-3" />}
+                    {position <= 3 && position === 2 && <Medal className="w-3 h-3" />}
+                    {position <= 3 && position === 3 && <Award className="w-3 h-3" />}
+                    {position > 3 && position}
+                  </div>
+                  
+                  {technician.level && (
+                    <div className={cn(
+                      "px-2 py-0.5 rounded-full text-xs font-medium shadow-sm text-white bg-gradient-to-r",
+                      levelStyle.bgGradient
+                    )}>
+                      {technician.level}
+                    </div>
+                  )}
+                </div>
+
+                <div className="text-center mb-2 relative z-10">
+                  <div className="text-xs font-medium text-gray-700 leading-tight">
                     {(() => {
                       const nameParts = technician.name.split(' ');
                       const firstName = nameParts[0] || '';
@@ -149,9 +221,10 @@ export function RankingTable({
                   </div>
                 </div>
                 
-                {/* Número de chamados - centro */}
-                <div className={cn("text-lg font-bold", textColor)}>
-                  {formatNumber(technician.resolved)}
+                <div className="text-center space-y-1 relative z-10">
+                  <div className="text-lg font-bold text-gray-900">
+                    {formatNumber(technician.resolved)}
+                  </div>
                 </div>
               </motion.div>
             )

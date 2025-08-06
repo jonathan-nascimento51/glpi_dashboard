@@ -284,7 +284,7 @@ function App() {
       {/* Notification System */}
       <NotificationSystem
         notifications={notifications}
-        onRemove={removeNotification}
+        onRemoveNotification={removeNotification}
       />
       
       {/* Data Integrity Monitor */}

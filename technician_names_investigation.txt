@@ -1,0 +1,88 @@
+INVESTIGAÇÃO DOS NOMES DOS TÉCNICOS NO GLPI
+==================================================
+
+NOMES EXATOS NO GLPI:
+ 1. Anderson da Silva Morim de Oliveira (ID: ID não encontrado)
+ 2. Silvio Godinho Valim (ID: ID não encontrado)
+ 3. Jorge Antonio Vicente Júnior (ID: ID não encontrado)
+ 4. Pablo Hebling Guimaraes (ID: ID não encontrado)
+ 5. Miguelangelo Ferreira (ID: ID não encontrado)
+ 6. Alessandro Carbonera Vieira (ID: ID não encontrado)
+ 7. Jonathan Nascimento Moletta (ID: ID não encontrado)
+ 8. Thales Vinicius Paz Leite (ID: ID não encontrado)
+ 9. Leonardo Trojan Repiso Riela (ID: ID não encontrado)
+10. Edson Joel dos Santos Silva (ID: ID não encontrado)
+11. Gabriel Silva Machado (ID: ID não encontrado)
+12. Luciano Marcelino da Silva (ID: ID não encontrado)
+13. Gabriel Andrade da Conceicao (ID: ID não encontrado)
+14. Luciano de Araujo Silva (ID: ID não encontrado)
+15. Nicolas Fernando Muniz Nunez (ID: ID não encontrado)
+16. Wagner Mengue (ID: ID não encontrado)
+17. Paulo César Pedó Nunes (ID: ID não encontrado)
+18. Alexandre Rovinski Almoarqueg (ID: ID não encontrado)
+
+CORRESPONDÊNCIAS ENCONTRADAS:
+N1: gabriel andrade da conceicao
+  → Gabriel Andrade da Conceicao (ID: ID não encontrado, Similaridade: 1.00)
+N1: nicolas fernando muniz nunez
+  → Nicolas Fernando Muniz Nunez (ID: ID não encontrado, Similaridade: 1.00)
+N2: alessandro carbonera vieira
+  → Alessandro Carbonera Vieira (ID: ID não encontrado, Similaridade: 1.00)
+N2: edson joel dos santos silva
+  → Edson Joel dos Santos Silva (ID: ID não encontrado, Similaridade: 1.00)
+N2: luciano marcelino da silva
+  → Luciano Marcelino da Silva (ID: ID não encontrado, Similaridade: 1.00)
+N2: jonathan nascimento moletta
+  → Jonathan Nascimento Moletta (ID: ID não encontrado, Similaridade: 1.00)
+N2: leonardo trojan repiso riela
+  → Leonardo Trojan Repiso Riela (ID: ID não encontrado, Similaridade: 1.00)
+N2: thales vinicius paz leite
+  → Thales Vinicius Paz Leite (ID: ID não encontrado, Similaridade: 1.00)
+N3: jorge antonio vicente junior
+  → Jorge Antonio Vicente Júnior (ID: ID não encontrado, Similaridade: 0.96)
+N3: anderson da silva morim de oliveira
+  → Anderson da Silva Morim de Oliveira (ID: ID não encontrado, Similaridade: 1.00)
+N3: miguelangelo ferreira
+  → Miguelangelo Ferreira (ID: ID não encontrado, Similaridade: 1.00)
+N3: silvio godinho valim
+  → Silvio Godinho Valim (ID: ID não encontrado, Similaridade: 1.00)
+N3: pablo hebling guimaraes
+  → Pablo Hebling Guimaraes (ID: ID não encontrado, Similaridade: 1.00)
+N4: paulo cesar pedo nunes
+  → Paulo César Pedó Nunes (ID: ID não encontrado, Similaridade: 0.91)
+N4: luciano de araujo silva
+  → Luciano de Araujo Silva (ID: ID não encontrado, Similaridade: 1.00)
+N4: wagner mengue
+  → Wagner Mengue (ID: ID não encontrado, Similaridade: 1.00)
+N4: alexandre rovinski almoarqueg
+  → Alexandre Rovinski Almoarqueg (ID: ID não encontrado, Similaridade: 1.00)
+N4: gabriel silva machado
+  → Gabriel Silva Machado (ID: ID não encontrado, Similaridade: 1.00)
+
+MAPEAMENTO CORRIGIDO:
+N1: 2 técnicos
+  - Gabriel Andrade da Conceicao
+  - Nicolas Fernando Muniz Nunez
+
+N2: 6 técnicos
+  - Alessandro Carbonera Vieira
+  - Edson Joel dos Santos Silva
+  - Luciano Marcelino da Silva
+  - Jonathan Nascimento Moletta
+  - Leonardo Trojan Repiso Riela
+  - Thales Vinicius Paz Leite
+
+N3: 5 técnicos
+  - Jorge Antonio Vicente Júnior
+  - Anderson da Silva Morim de Oliveira
+  - Miguelangelo Ferreira
+  - Silvio Godinho Valim
+  - Pablo Hebling Guimaraes
+
+N4: 5 técnicos
+  - Paulo César Pedó Nunes
+  - Luciano de Araujo Silva
+  - Wagner Mengue
+  - Alexandre Rovinski Almoarqueg
+  - Gabriel Silva Machado
+

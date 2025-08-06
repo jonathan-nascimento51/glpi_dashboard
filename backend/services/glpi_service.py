@@ -1136,7 +1136,8 @@ class GLPIService:
                                 "id": str(user_id),
                                 "nome": display_name.strip(),
                                 "name": display_name.strip(),
-                                "total": total_tickets
+                                "total": total_tickets,
+                                "level": "N1"  # Temporário, será atualizado após ordenação
                             })
                             self.logger.info(f"Técnico {display_name} (ID: {user_id}): {total_tickets} tickets")
                         
@@ -1147,9 +1148,20 @@ class GLPIService:
             # Ordenar por total de tickets (decrescente)
             ranking.sort(key=lambda x: x["total"], reverse=True)
             
-            # Atribuir posição no ranking
-            for idx, item in enumerate(ranking, start=1):
-                item["rank"] = idx
+            # Atribuir níveis baseados no mapeamento manual dos grupos
+            total_count = len(ranking)
+            self.logger.info(f"Atribuindo níveis para {total_count} técnicos baseado no mapeamento manual")
+            
+            for idx, item in enumerate(ranking):
+                user_id = int(item['id'])
+                
+                # Usar o método _get_technician_level para determinar o nível correto
+                level = self._get_technician_level(user_id, item['total'], ranking)
+                
+                item["level"] = level
+                item["rank"] = idx + 1
+                
+                self.logger.info(f"Técnico {item['name']} (Rank {idx + 1}): {item['total']} tickets - Nível: {level}")
             
             self.logger.info(f"=== RANKING FINALIZADO: {len(ranking)} técnicos processados ===")
             
@@ -1173,6 +1185,99 @@ class GLPIService:
                 f.flush()
             
             return []
+    
+    def _get_technician_level(self, user_id: int, total_tickets: int = 0, all_technicians_data: list = None) -> str:
+        """Atribui nível do técnico baseado nos grupos do GLPI
+        
+        Mapeamento correto dos técnicos por grupos:
+        - N1 (ID 89): Gabriel Andrade da Conceicao, Nicolas Fernando Muniz Nunez
+        - N2 (ID 90): Alessandro Carbonera Vieira, Edson Joel dos Santos Silva, Luciano Marcelino da Silva, 
+                      Jonathan Nascimento Moletta, Leonardo Trojan Repiso Riela, Thales Vinicius Paz Leite
+        - N3 (ID 91): Jorge Antonio Vicente Junior, Anderson da Silva Morim de Oliveira, Miguelangelo Ferreira,
+                      Silvio Godinho Valim, Pablo Hebling Guimaraes
+        - N4 (ID 92): Paulo Cesar Pedo Nunes, Luciano de Araujo Silva, Wagner Mengue, 
+                      Alexandre Rovinski Almoarqueg, Gabriel Silva Machado
+        """
+        try:
+            # Buscar grupos do usuário
+            response = self._make_authenticated_request(
+                'GET',
+                f"{self.glpi_url}/search/Group_User",
+                params={
+                    "range": "0-99",
+                    "criteria[0][field]": "4",  # Campo users_id
+                    "criteria[0][searchtype]": "equals",
+                    "criteria[0][value]": str(user_id),
+                    "forcedisplay[0]": "3",  # groups_id
+                    "forcedisplay[1]": "4",  # users_id
+                }
+            )
+            
+            if response and response.ok:
+                group_data = response.json()
+                
+                if group_data.get('data'):
+                    for group_entry in group_data['data']:
+                        if isinstance(group_entry, dict) and "3" in group_entry:
+                            group_id = int(group_entry["3"])
+                            
+                            # Verificar se o grupo corresponde aos service_levels
+                            for level, level_group_id in self.service_levels.items():
+                                if group_id == level_group_id:
+                                    self.logger.info(f"Técnico {user_id} encontrado no grupo {group_id} -> {level}")
+                                    return level
+            
+            # Se não encontrou nos grupos configurados, usar fallback baseado no nome do usuário
+            # (para casos onde o técnico não está nos grupos mas está na lista fornecida)
+            try:
+                user_response = self._make_authenticated_request(
+                    'GET',
+                    f"{self.glpi_url}/User/{user_id}"
+                )
+                
+                if user_response and user_response.ok:
+                    user_data = user_response.json()
+                    # Construir nome completo como no método get_technician_ranking
+                    display_name = ""
+                    if "realname" in user_data and "firstname" in user_data:
+                        display_name = f"{user_data['firstname']} {user_data['realname']}"
+                    elif "realname" in user_data:
+                        display_name = user_data["realname"]
+                    elif "name" in user_data:
+                        display_name = user_data["name"]
+                    elif "1" in user_data:
+                        display_name = user_data["1"]
+                    
+                    user_name = display_name.lower().strip()
+                    
+                    # Mapeamento manual baseado nos nomes exatos do GLPI
+                    n1_names = ['gabriel andrade da conceicao', 'nicolas fernando muniz nunez']
+                    n2_names = ['alessandro carbonera vieira', 'jonathan nascimento moletta', 'thales vinicius paz leite', 'leonardo trojan repiso riela', 'edson joel dos santos silva', 'luciano marcelino da silva']
+                    n3_names = ['anderson da silva morim de oliveira', 'silvio godinho valim', 'jorge antonio vicente júnior', 'pablo hebling guimaraes', 'miguelangelo ferreira']
+                    n4_names = ['gabriel silva machado', 'luciano de araujo silva', 'wagner mengue', 'paulo césar pedó nunes', 'alexandre rovinski almoarqueg']
+                    
+                    if user_name in n4_names:
+                        self.logger.info(f"Técnico {user_id} ({user_name}) mapeado para N4 por nome")
+                        return "N4"
+                    elif user_name in n3_names:
+                        self.logger.info(f"Técnico {user_id} ({user_name}) mapeado para N3 por nome")
+                        return "N3"
+                    elif user_name in n2_names:
+                        self.logger.info(f"Técnico {user_id} ({user_name}) mapeado para N2 por nome")
+                        return "N2"
+                    elif user_name in n1_names:
+                        self.logger.info(f"Técnico {user_id} ({user_name}) mapeado para N1 por nome")
+                        return "N1"
+            except Exception as e:
+                self.logger.warning(f"Erro ao buscar nome do usuário {user_id}: {e}")
+            
+            # Fallback final
+            self.logger.warning(f"Técnico {user_id} não encontrado nos grupos ou mapeamento - usando N1 como padrão")
+            return "N1"
+                
+        except Exception as e:
+            self.logger.error(f"Erro ao determinar nível do técnico {user_id}: {e}")
+            return "N1"  # Nível padrão em caso de erro
     
     def _get_technician_ranking_fallback(self) -> list:
         """Método de fallback usando a implementação original mais robusta"""

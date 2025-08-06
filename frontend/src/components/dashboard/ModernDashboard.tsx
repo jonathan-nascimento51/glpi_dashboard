@@ -174,14 +174,27 @@ export function ModernDashboard({
         {/* Ranking de técnicos */}
         <motion.div variants={itemVariants}>
           <RankingTable 
-            data={technicianRanking.map(tech => ({
-              id: tech.id || String(tech.name),
-              name: tech.name || tech.nome || 'Técnico',
-              resolved: tech.total || tech.ticketsResolved || 0,
-              pending: tech.ticketsInProgress || 0,
-              efficiency: Math.round((tech.total || 0) * 100 / Math.max(tech.total || 1, 1)),
-              status: 'active' as const
-            }))}
+            data={(() => {
+              // Usar os níveis reais vindos do backend
+              const sortedTechs = [...technicianRanking].sort((a, b) => (b.total || 0) - (a.total || 0))
+              
+              return sortedTechs.map((tech) => {
+                const resolved = tech.total || tech.ticketsResolved || 0
+                const pending = tech.ticketsInProgress || 0
+                const total = resolved + pending
+                
+                return {
+                  id: tech.id || String(tech.name),
+                  name: tech.name || tech.nome || 'Técnico',
+                  resolved,
+                  pending,
+                  efficiency: total > 0 ? Math.round((resolved / total) * 100) : 0,
+                  status: 'active' as const,
+                  level: tech.level || 'N1' // Usar o nível real do backend ou N1 como padrão
+                }
+              })
+            })()
+            }
             title="Ranking de Técnicos"
             className="max-w-full"
           />
