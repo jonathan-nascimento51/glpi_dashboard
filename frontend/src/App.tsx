@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { NotificationSystem } from './components/NotificationSystem';
 import DataIntegrityMonitor from './components/DataIntegrityMonitor';
 import PerformanceDashboard from './components/PerformanceDashboard';
+import CacheManager from './components/CacheManager';
 import { ModernDashboard } from './components/dashboard/ModernDashboard';
 import { LoadingSpinner, SkeletonMetricsGrid, SkeletonLevelsSection, ErrorState } from './components/LoadingSpinner';
 import { useDashboard } from './hooks/useDashboard';
@@ -35,6 +36,7 @@ function App() {
 
   const [showIntegrityMonitor, setShowIntegrityMonitor] = useState(true);
   const [showPerformanceDashboard, setShowPerformanceDashboard] = useState(false);
+  const [showCacheManager, setShowCacheManager] = useState(false);
   
   // Performance monitoring hooks
   const { onRenderCallback } = usePerformanceProfiler();
@@ -136,6 +138,7 @@ function App() {
         onNotification={(title, message, type) => addNotification({ title, message, type, duration: 3000 })}
         onDateRangeChange={updateDateRange}
         onPerformanceDashboard={() => setShowPerformanceDashboard(true)}
+        onCacheManager={() => setShowCacheManager(true)}
       />
 
       {/* Dashboard Principal */}
@@ -205,6 +208,28 @@ function App() {
         isVisible={showPerformanceDashboard}
         onClose={() => setShowPerformanceDashboard(false)}
       />
+      
+      {/* Cache Manager */}
+      {showCacheManager && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900">Gerenciador de Cache</h2>
+              <button
+                onClick={() => setShowCacheManager(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+              <CacheManager />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

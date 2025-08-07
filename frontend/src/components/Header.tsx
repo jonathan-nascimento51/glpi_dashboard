@@ -15,6 +15,7 @@ interface HeaderProps {
   onNotification: (title: string, message: string, type: 'success' | 'error' | 'warning' | 'info') => void;
   onDateRangeChange?: (dateRange: { startDate: string; endDate: string; label: string }) => void;
   onPerformanceDashboard?: () => void;
+  onCacheManager?: () => void;
 }
 
 const themes: { value: Theme; label: string; icon: string }[] = [
@@ -43,6 +44,7 @@ export const Header: React.FC<HeaderProps> = ({
   onNotification,
   onDateRangeChange,
   onPerformanceDashboard,
+  onCacheManager,
 }) => {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [showThemeSelector, setShowThemeSelector] = useState(false);
@@ -319,6 +321,20 @@ export const Header: React.FC<HeaderProps> = ({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
                 <span>Performance</span>
+              </button>
+            )}
+
+            {/* Cache Manager Button */}
+            {onCacheManager && (
+              <button
+                onClick={onCacheManager}
+                className="btn-secondary flex items-center space-x-2 px-3 py-2 rounded-xl text-sm font-medium hover:bg-green-50 hover:text-green-600 transition-colors"
+                title="Gerenciador de Cache"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                </svg>
+                <span>Cache</span>
               </button>
             )}
 
