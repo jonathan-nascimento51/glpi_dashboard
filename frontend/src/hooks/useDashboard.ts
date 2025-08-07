@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { DashboardState, MetricsData, SystemStatus, FilterState, NotificationData, Theme, TechnicianRanking, DateRange } from '../types';
 import { apiService } from '../services/api';
 import { dataMonitor, MonitoringAlert } from '../utils/dataMonitor';
+import { performanceMonitor } from '../utils/performanceMonitor';
+import { useApiPerformance } from './usePerformanceMonitoring';
 
 const initialFilterState: FilterState = {
   period: 'today',
@@ -121,6 +123,7 @@ const performConsistencyChecks = (
 
 export const useDashboard = () => {
   const [state, setState] = useState<DashboardState>(initialState);
+  const { measureApiCall } = useApiPerformance();
 
   // Load data from API with robust validation and intelligent caching
   // ✅ CORREÇÃO APLICADA E FUNCIONANDO
@@ -131,12 +134,16 @@ export const useDashboard = () => {
       // CORREÇÃO 1: Variável definida para uso no estado
       const currentDateRange = customDateRange || state.dateRange;
       
-      // CORREÇÃO 2: API chamada COM filtro de data
+      // CORREÇÃO 2: API chamada COM filtro de data - instrumentada com performance monitoring
+      performanceMonitor.startMeasure('api-load-all-data');
+      
       const [rawMetrics, rawSystemStatus, rawTechnicianRanking] = await Promise.all([
-        apiService.getMetrics(currentDateRange), // COM parâmetros de data
-        apiService.getSystemStatus(),
-        apiService.getTechnicianRanking()
+        measureApiCall('getMetrics', () => apiService.getMetrics(currentDateRange)), // COM parâmetros de data
+        measureApiCall('getSystemStatus', () => apiService.getSystemStatus()),
+        measureApiCall('getTechnicianRanking', () => apiService.getTechnicianRanking())
       ]);
+      
+      performanceMonitor.endMeasure('api-load-all-data', 'Load All Dashboard Data');
       
       // Validar dados do ranking de técnicos
       if (rawTechnicianRanking && Array.isArray(rawTechnicianRanking)) {

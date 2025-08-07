@@ -16,6 +16,8 @@ import {
 } from "lucide-react"
 import { MetricsData, TicketStatus, SystemStatus, TechnicianRanking } from "@/types"
 import { cn, formatRelativeTime } from "@/lib/utils"
+import { usePerformanceMonitoring, useRenderTracker } from "../../hooks/usePerformanceMonitoring"
+import { performanceMonitor } from "../../utils/performanceMonitor"
 
 interface ModernDashboardProps {
   metrics: MetricsData
@@ -34,8 +36,24 @@ export function ModernDashboard({
   isLoading = false,
   className
 }: ModernDashboardProps) {
+  // Performance monitoring hooks
+  const { measureRender } = usePerformanceMonitoring('ModernDashboard')
+  const { trackRender } = useRenderTracker('ModernDashboard')
+  
   // Corrigir o estado inicial para incluir a propriedade 'label' obrigatória
   const [chartType, setChartType] = useState<'area' | 'bar' | 'pie'>('area')
+  
+  // Track component renders
+  useEffect(() => {
+    trackRender()
+    measureRender(() => {
+      performanceMonitor.markComponentRender('ModernDashboard', {
+        metricsCount: Object.keys(metrics || {}).length,
+        technicianCount: technicianRanking.length,
+        isLoading
+      })
+    })
+  }, [metrics, technicianRanking, isLoading, trackRender, measureRender])
 
   // Gerar dados para o gráfico
   const chartData = [

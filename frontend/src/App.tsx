@@ -1,10 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Profiler } from 'react';
 import { Header } from './components/Header';
 import { NotificationSystem } from './components/NotificationSystem';
 import DataIntegrityMonitor from './components/DataIntegrityMonitor';
+import PerformanceDashboard from './components/PerformanceDashboard';
 import { ModernDashboard } from './components/dashboard/ModernDashboard';
 import { LoadingSpinner, SkeletonMetricsGrid, SkeletonLevelsSection, ErrorState } from './components/LoadingSpinner';
 import { useDashboard } from './hooks/useDashboard';
+import { useFilterPerformance } from './hooks/usePerformanceMonitoring';
+import { usePerformanceProfiler } from './utils/performanceMonitor';
+import { performanceMonitor } from './utils/performanceMonitor';
 import { TicketStatus } from './types';
 
 function App() {
@@ -30,20 +34,32 @@ function App() {
   } = useDashboard();
 
   const [showIntegrityMonitor, setShowIntegrityMonitor] = useState(true);
+  const [showPerformanceDashboard, setShowPerformanceDashboard] = useState(false);
+  
+  // Performance monitoring hooks
+  const { onRenderCallback } = usePerformanceProfiler();
+  const { measureFilterOperation } = useFilterPerformance();
 
   // Apply theme to body element
   useEffect(() => {
     document.body.className = theme === 'dark' ? 'dark' : '';
   }, [theme]);
 
-  // Handle filter by status
-  const handleFilterByStatus = (status: TicketStatus) => {
-    updateFilters({ status: [status] });
-    addNotification({
-      title: 'Filtro Aplicado',
-      message: `Exibindo apenas chamados com status: ${getStatusLabel(status)}`,
-      type: 'info',
-      duration: 3000,
+  // Handle filter by status with performance monitoring
+  const handleFilterByStatus = async (status: TicketStatus) => {
+    await measureFilterOperation(`status-${status}`, async () => {
+      performanceMonitor.startMeasure('filter-ui-update');
+      
+      updateFilters({ status: [status] });
+      
+      addNotification({
+        title: 'Filtro Aplicado',
+        message: `Exibindo apenas chamados com status: ${getStatusLabel(status)}`,
+        type: 'info',
+        duration: 3000,
+      });
+      
+      performanceMonitor.endMeasure('filter-ui-update');
     });
   };
 
@@ -119,18 +135,21 @@ function App() {
         onThemeChange={changeTheme}
         onNotification={(title, message, type) => addNotification({ title, message, type, duration: 3000 })}
         onDateRangeChange={updateDateRange}
+        onPerformanceDashboard={() => setShowPerformanceDashboard(true)}
       />
 
       {/* Dashboard Principal */}
       <div className="flex-1 overflow-hidden">
         {metrics ? (
-          <ModernDashboard
-            metrics={metrics}
-            systemStatus={systemStatus}
-            technicianRanking={technicianRanking}
-            onFilterByStatus={handleFilterByStatus}
-            isLoading={isLoading}
-          />
+          <Profiler id="ModernDashboard" onRender={onRenderCallback}>
+            <ModernDashboard
+              metrics={metrics}
+              systemStatus={systemStatus}
+              technicianRanking={technicianRanking}
+              onFilterByStatus={handleFilterByStatus}
+              isLoading={isLoading}
+            />
+          </Profiler>
         ) : (
           // Fallback para quando não há dados
           <div className="h-full bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center">
@@ -179,6 +198,12 @@ function App() {
         report={dataIntegrityReport}
         isVisible={showIntegrityMonitor}
         onToggleVisibility={() => setShowIntegrityMonitor(!showIntegrityMonitor)}
+      />
+      
+      {/* Performance Dashboard */}
+      <PerformanceDashboard
+        isVisible={showPerformanceDashboard}
+        onClose={() => setShowPerformanceDashboard(false)}
       />
     </div>
   );

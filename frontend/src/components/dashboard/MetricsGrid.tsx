@@ -2,6 +2,9 @@ import { motion } from "framer-motion"
 import { StatusCard } from "./StatusCard"
 import { MetricsData, TicketStatus } from "@/types"
 import { Ticket, Clock, AlertTriangle, CheckCircle } from "lucide-react"
+import { useEffect } from "react"
+import { usePerformanceMonitoring, useRenderTracker } from "../../hooks/usePerformanceMonitoring"
+import { performanceMonitor } from "../../utils/performanceMonitor"
 
 interface MetricsGridProps {
   metrics: MetricsData
@@ -14,6 +17,21 @@ export function MetricsGrid({
   onFilterByStatus,
   className
 }: MetricsGridProps) {
+  // Performance monitoring hooks
+  const { measureRender } = usePerformanceMonitoring('MetricsGrid')
+  const { trackRender } = useRenderTracker('MetricsGrid')
+  
+  // Track component renders
+  useEffect(() => {
+    trackRender()
+    measureRender(() => {
+      performanceMonitor.markComponentRender('MetricsGrid', {
+        hasMetrics: !!metrics,
+        metricsKeys: metrics ? Object.keys(metrics).length : 0
+      })
+    })
+  }, [metrics, trackRender, measureRender])
+  
   // Verificação de segurança
   if (!metrics) {
     return (
@@ -37,7 +55,11 @@ export function MetricsGrid({
         value: parseTrendValue(metrics.tendencias?.novos),
         label: "vs. período anterior"
       },
-      onClick: () => onFilterByStatus?.("new")
+      onClick: () => {
+        performanceMonitor.startMeasure('filter-click-new')
+        onFilterByStatus?.("new")
+        performanceMonitor.endMeasure('filter-click-new', 'Filter by New Status')
+      }
     },
     {
       title: "Em Progresso",
@@ -49,7 +71,11 @@ export function MetricsGrid({
         value: parseTrendValue(metrics.tendencias?.progresso),
         label: "vs. período anterior"
       },
-      onClick: () => onFilterByStatus?.("progress")
+      onClick: () => {
+        performanceMonitor.startMeasure('filter-click-progress')
+        onFilterByStatus?.("progress")
+        performanceMonitor.endMeasure('filter-click-progress', 'Filter by Progress Status')
+      }
     },
     {
       title: "Pendentes",
@@ -61,7 +87,11 @@ export function MetricsGrid({
         value: parseTrendValue(metrics.tendencias?.pendentes),
         label: "vs. período anterior"
       },
-      onClick: () => onFilterByStatus?.("pending")
+      onClick: () => {
+        performanceMonitor.startMeasure('filter-click-pending')
+        onFilterByStatus?.("pending")
+        performanceMonitor.endMeasure('filter-click-pending', 'Filter by Pending Status')
+      }
     },
     {
       title: "Resolvidos",
@@ -73,7 +103,11 @@ export function MetricsGrid({
         value: parseTrendValue(metrics.tendencias?.resolvidos),
         label: "vs. período anterior"
       },
-      onClick: () => onFilterByStatus?.("resolved")
+      onClick: () => {
+        performanceMonitor.startMeasure('filter-click-resolved')
+        onFilterByStatus?.("resolved")
+        performanceMonitor.endMeasure('filter-click-resolved', 'Filter by Resolved Status')
+      }
     }
   ]
 

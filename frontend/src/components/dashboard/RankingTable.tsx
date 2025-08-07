@@ -2,8 +2,10 @@ import { motion } from "framer-motion"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn, formatNumber } from "@/lib/utils"
-import { Trophy, Medal, Award, Star, Users } from "lucide-react"
+import { Trophy, Medal, Award, Star, Users, Zap, Shield, Wrench, Settings } from "lucide-react"
 import { useRef, useEffect } from "react"
+import { usePerformanceMonitoring, useRenderTracker } from "../../hooks/usePerformanceMonitoring"
+import { performanceMonitor } from "../../utils/performanceMonitor"
 
 interface TechnicianRanking {
   id: string
@@ -26,57 +28,77 @@ export function RankingTable({
 }: RankingTableProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   
+  // Performance monitoring hooks
+  const { measureRender } = usePerformanceMonitoring('RankingTable')
+  const { trackRender } = useRenderTracker('RankingTable')
+  
+  // Track component renders
+  useEffect(() => {
+    trackRender()
+    measureRender(() => {
+      performanceMonitor.markComponentRender('RankingTable', {
+        technicianCount: data.length,
+        hasData: data.length > 0
+      })
+    })
+  }, [data, trackRender, measureRender])
+  
   // Pegar todos os técnicos e ordenar por número de chamados
   const topTechnicians = data
     .sort((a, b) => b.total - a.total)
 
-  // Configuração de cores e estilos por nível com gradientes sutis como os StatusCards
+  // Design system profissional com cores equilibradas
   const getLevelStyle = (level?: string) => {
     switch (level) {
-      case 'N4':
+      case 'N4': // Expert - Azul profissional
         return {
-          bgGradient: 'bg-gradient-to-br from-slate-500 to-slate-600',
-          accentColor: '#64748B',
-          shadowColor: 'shadow-slate-500/5',
-          hoverShadow: 'hover:shadow-slate-500/10',
-          backgroundOpacity: 'opacity-5',
-          borderOpacity: 'opacity-20'
+          bgColor: 'bg-blue-50',
+          borderColor: 'border-blue-200',
+          accentColor: 'bg-blue-500',
+          textColor: 'text-blue-700',
+          icon: Zap,
+          iconBg: 'bg-blue-100',
+          iconColor: 'text-blue-600'
         }
-      case 'N3':
+      case 'N3': // Sênior - Verde confiável
         return {
-          bgGradient: 'bg-gradient-to-br from-emerald-500 to-emerald-600',
-          accentColor: '#10B981',
-          shadowColor: 'shadow-emerald-500/5',
-          hoverShadow: 'hover:shadow-emerald-500/10',
-          backgroundOpacity: 'opacity-5',
-          borderOpacity: 'opacity-20'
+          bgColor: 'bg-emerald-50',
+          borderColor: 'border-emerald-200',
+          accentColor: 'bg-emerald-500',
+          textColor: 'text-emerald-700',
+          icon: Shield,
+          iconBg: 'bg-emerald-100',
+          iconColor: 'text-emerald-600'
         }
-      case 'N2':
+      case 'N2': // Pleno - Laranja equilibrado
         return {
-          bgGradient: 'bg-gradient-to-br from-amber-500 to-orange-600',
-          accentColor: '#F59E0B',
-          shadowColor: 'shadow-amber-500/5',
-          hoverShadow: 'hover:shadow-amber-500/10',
-          backgroundOpacity: 'opacity-5',
-          borderOpacity: 'opacity-20'
+          bgColor: 'bg-orange-50',
+          borderColor: 'border-orange-200',
+          accentColor: 'bg-orange-500',
+          textColor: 'text-orange-700',
+          icon: Wrench,
+          iconBg: 'bg-orange-100',
+          iconColor: 'text-orange-600'
         }
-      case 'N1':
+      case 'N1': // Júnior - Roxo motivacional
         return {
-          bgGradient: 'bg-gradient-to-br from-blue-500 to-cyan-600',
-          accentColor: '#3B82F6',
-          shadowColor: 'shadow-blue-500/5',
-          hoverShadow: 'hover:shadow-blue-500/10',
-          backgroundOpacity: 'opacity-5',
-          borderOpacity: 'opacity-20'
+          bgColor: 'bg-purple-50',
+          borderColor: 'border-purple-200',
+          accentColor: 'bg-purple-500',
+          textColor: 'text-purple-700',
+          icon: Settings,
+          iconBg: 'bg-purple-100',
+          iconColor: 'text-purple-600'
         }
-      default:
+      default: // Outros - Cinza neutro
         return {
-          bgGradient: 'bg-gradient-to-br from-gray-500 to-slate-600',
-          accentColor: '#6B7280',
-          shadowColor: 'shadow-gray-500/5',
-          hoverShadow: 'hover:shadow-gray-500/10',
-          backgroundOpacity: 'opacity-5',
-          borderOpacity: 'opacity-20'
+          bgColor: 'bg-gray-50',
+          borderColor: 'border-gray-200',
+          accentColor: 'bg-gray-500',
+          textColor: 'text-gray-700',
+          icon: Star,
+          iconBg: 'bg-gray-100',
+          iconColor: 'text-gray-600'
         }
     }
   }
@@ -163,14 +185,14 @@ export function RankingTable({
               const style = getLevelStyle(level)
               return (
                 <Badge 
-                  key={level} 
-                  className={cn(
-                    "text-xs px-2 py-1 border-0 shadow-sm text-white font-medium bg-gradient-to-r",
-                    style.bgGradient
-                  )}
-                >
-                  {level}: {count}
-                </Badge>
+              key={level} 
+              className={cn(
+                "text-xs px-2 py-1 border text-white font-medium",
+                style.accentColor
+              )}
+            >
+              {level}: {count}
+            </Badge>
               )
             })}
           </div>
@@ -186,8 +208,7 @@ export function RankingTable({
         >
           <div 
             ref={scrollContainerRef}
-            className="flex w-full flex-1 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
-            style={{ zIndex: 1, overflowY: 'visible' }}
+            className="flex w-full flex-1 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent px-2 space-x-3"
           >
           {topTechnicians.map((technician, index) => {
             const levelStyle = getLevelStyle(technician.level)
@@ -200,66 +221,55 @@ export function RankingTable({
                 variants={cardVariants}
                 whileHover="hover"
                 className={cn(
-                  "flex-shrink-0 w-36 flex flex-col justify-between p-6 border-r border-white/10 last:border-r-0",
-                  "cursor-pointer relative group overflow-visible",
-                  "figma-glass-card rounded-xl border-0 shadow-none",
-                  "border-l-4",
-                  levelStyle.shadowColor,
-                  levelStyle.hoverShadow
+                  "flex-shrink-0 w-48 flex flex-col p-4 rounded-lg border transition-all duration-200",
+                  "cursor-pointer relative group hover:shadow-md",
+                  levelStyle.bgColor,
+                  levelStyle.borderColor,
+                  isTopThree && "ring-2 ring-opacity-20",
+                  isTopThree && position === 1 && "ring-yellow-400",
+                  isTopThree && position === 2 && "ring-gray-400",
+                  isTopThree && position === 3 && "ring-amber-400"
                 )}
-                style={{ 
-                  borderLeftColor: levelStyle.accentColor,
-                  position: 'relative',
-                  zIndex: 2
-                }}
               >
-                {/* Gradient Background - Seguindo padrão dos StatusCards */}
-                <div className={cn(
-                  "absolute inset-0 bg-gradient-to-br rounded-xl transition-opacity duration-300",
-                  levelStyle.bgGradient,
-                  levelStyle.backgroundOpacity,
-                  "group-hover:opacity-10"
-                )} />
-                
-                {/* Animated Border - Seguindo padrão dos StatusCards */}
-                <div className="absolute inset-0 rounded-xl">
+                {/* Header - Posição e Nível */}
+                <div className="flex items-center justify-between mb-3">
+                  {/* Indicador de posição */}
                   <div className={cn(
-                    "absolute inset-0 rounded-xl bg-gradient-to-r blur-sm transition-opacity duration-300",
-                    levelStyle.bgGradient,
-                    levelStyle.borderOpacity,
-                    "group-hover:opacity-30"
-                  )} />
-                </div>
-                <div className="flex items-center justify-between mb-1.5 relative z-10">
-                  <motion.div 
-                    variants={iconVariants}
-                    className={cn(
-                      "w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold",
-                      isTopThree ? "figma-glass-card figma-body shadow-md" : "figma-glass-card figma-body"
-                    )}
-                  >
-                    {position <= 3 && position === 1 && <Trophy className="w-3 h-3" />}
-                    {position <= 3 && position === 2 && <Medal className="w-3 h-3" />}
-                    {position <= 3 && position === 3 && <Award className="w-3 h-3" />}
+                    "w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm",
+                    isTopThree ? "text-white" : "text-gray-600 bg-gray-100",
+                    position === 1 && "bg-yellow-500",
+                    position === 2 && "bg-gray-400",
+                    position === 3 && "bg-amber-500",
+                    position > 3 && "bg-gray-100"
+                  )}>
+                    {position <= 3 && position === 1 && <Trophy className="w-4 h-4" />}
+                    {position <= 3 && position === 2 && <Medal className="w-4 h-4" />}
+                    {position <= 3 && position === 3 && <Award className="w-4 h-4" />}
                     {position > 3 && position}
-                  </motion.div>
+                  </div>
                   
+                  {/* Nível */}
                   {technician.level && (
-                    <motion.div 
-                      className={cn(
-                        "px-2 py-0.5 rounded-full text-xs font-medium shadow-sm text-white bg-gradient-to-r",
-                        levelStyle.bgGradient
-                      )}
-                      whileHover={{ scale: 1.05 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      {technician.level}
-                    </motion.div>
+                    <div className="flex items-center space-x-1">
+                      <div className={cn(
+                        "p-1 rounded-full",
+                        levelStyle.iconBg
+                      )}>
+                        <levelStyle.icon className={cn("w-3 h-3", levelStyle.iconColor)} />
+                      </div>
+                      <Badge className={cn(
+                        "text-xs font-medium text-white border-0 px-1.5 py-0.5",
+                        levelStyle.accentColor
+                      )}>
+                        {technician.level}
+                      </Badge>
+                    </div>
                   )}
                 </div>
 
-                <div className="text-center mb-1.5 relative z-10">
-                  <div className="figma-body leading-tight">
+                {/* Nome do técnico */}
+                <div className="text-center mb-3">
+                  <div className="font-medium text-gray-900 text-sm leading-tight">
                     {(() => {
                       const nameParts = technician.name.split(' ');
                       const firstName = nameParts[0] || '';
@@ -268,31 +278,36 @@ export function RankingTable({
                     })()}
                   </div>
                 </div>
-                
-                <div className="text-center space-y-0.5 relative z-10">
-                  <motion.div 
-                    className="figma-numeric"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
-                  >
+
+                {/* Total de chamados */}
+                <div className="text-center">
+                  <div className={cn(
+                    "text-2xl font-bold mb-1",
+                    levelStyle.textColor
+                  )}>
                     {formatNumber(technician.total)}
-                  </motion.div>
+                  </div>
+                  <div className="text-xs text-gray-500 mb-2">
+                    chamados
+                  </div>
+                  
+                  {/* Indicador de performance */}
+                  <div className="flex justify-center space-x-1">
+                    {Array.from({ length: Math.min(3, Math.max(1, 4 - Math.ceil(position/3))) }).map((_, i) => (
+                      <div
+                        key={i}
+                        className={cn(
+                          "w-1.5 h-1.5 rounded-full",
+                          levelStyle.accentColor
+                        )}
+                      />
+                    ))}
+                  </div>
                 </div>
-                
-                {/* Enhanced Shine Effect */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 opacity-0 pointer-events-none"
-                  whileHover={{
-                    opacity: [0, 1, 0],
-                    x: [-150, 350]
-                  }}
-                  transition={{ duration: 0.4, ease: "easeOut" }}
-                />
               </motion.div>
             )
           })}
-          </div>
+            </div>
         </motion.div>
       </CardContent>
     </Card>
