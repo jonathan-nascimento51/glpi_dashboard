@@ -98,67 +98,68 @@ export function LevelMetricsGrid({ metrics, className }: LevelMetricsGridProps) 
   }
 
   return (
-    <div className={cn("grid grid-cols-1 lg:grid-cols-2 gap-6", className)}>
-      {Object.entries(metrics.niveis || {}).map(([level, levelData]) => {
-        const config = levelConfig[level as keyof typeof levelConfig]
-        if (!config || !levelData) return null
-        const total = levelData.novos + levelData.progresso + levelData.pendentes + levelData.resolvidos
-        
-        return (
-          <motion.div
-            key={level}
-            variants={itemVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <Card className="figma-level-card">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="figma-heading-large flex items-center gap-2">
-                    <div className={`p-2 rounded-xl bg-gradient-to-br shadow-lg ${config.color}`}>
-                      <TrendingUp className="h-5 w-5 text-white" />
-                    </div>
-                    {config.title}
-                  </CardTitle>
-                  <Badge variant="outline" className={`${config.bgColor} ${config.textColor} border-0`}>
-                    Total: {total}
-                  </Badge>
-                </div>
-              </CardHeader>
-              
-              <CardContent>
-                <div className="grid grid-cols-2 gap-3">
-                  {Object.entries(statusConfig).map(([status, statusConf]) => {
-                    const Icon = statusConf.icon
-                    const value = levelData[status as keyof typeof levelData]
-                    
-                    return (
-                      <div
-                        key={status}
-                        className="flex items-center justify-between p-3 rounded-lg figma-glass-card transition-colors duration-200"
-                      >
-                        <div className="flex items-center gap-2">
-                          <div className={`p-1.5 rounded-md ${statusConf.bgColor}`}>
-                            <Icon className={`h-4 w-4 ${statusConf.color}`} />
+    <div className={cn("h-full flex flex-col overflow-hidden", className)}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 grid-rows-1 sm:grid-rows-2 gap-2 sm:gap-3 h-full overflow-hidden p-1">
+        {Object.entries(metrics.niveis || {}).map(([level, levelData]) => {
+          const config = levelConfig[level as keyof typeof levelConfig]
+          if (!config || !levelData) return null
+          const total = Object.values(levelData).reduce((sum, value) => sum + (value || 0), 0)
+          
+          return (
+            <motion.div
+              key={level}
+              variants={itemVariants}
+              initial="hidden"
+              animate="visible"
+              className="h-full flex"
+            >
+              <Card className="figma-glass-card border-0 shadow-sm hover:shadow-md transition-all duration-300 h-full w-full flex flex-col">
+                <CardHeader className="pb-2 px-4 pt-4 flex-shrink-0">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-base font-semibold flex items-center gap-2">
+                      <div className={`p-1.5 rounded-lg bg-gradient-to-br shadow-sm ${config.color}`}>
+                        <TrendingUp className="h-4 w-4 text-white" />
+                      </div>
+                      <span className="whitespace-nowrap">{config.title}</span>
+                    </CardTitle>
+                    <Badge variant="outline" className={`${config.bgColor} ${config.textColor} border-0 text-xs px-2 py-1`}>
+                      {total}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                
+                <CardContent className="px-4 pb-4 flex-1">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
+                    {Object.entries(statusConfig).map(([status, statusConf]) => {
+                      const Icon = statusConf.icon
+                      const value = levelData[status as keyof typeof levelData]
+                      
+                      return (
+                        <div
+                          key={status}
+                          className="flex items-center justify-between p-3 rounded-lg figma-glass-card transition-all duration-200 hover:scale-[1.02] hover:shadow-md min-h-[50px] border border-gray-100/50 dark:border-gray-800/50"
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className={`p-1.5 rounded-lg ${statusConf.bgColor} shadow-sm`}>
+                              <Icon className={`h-3.5 w-3.5 ${statusConf.color}`} />
+                            </div>
+                            <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                              {statusConf.label}
+                            </span>
                           </div>
-                          <span className="figma-body">
-                            {statusConf.label}
+                          <span className={`text-sm font-bold ${statusConf.color} tabular-nums`}>
+                            {value || 0}
                           </span>
                         </div>
-                        <span className="figma-numeric">
-                          {value}
-                        </span>
-                      </div>
-                    )
-                  })}
-                </div>
-                
-
-              </CardContent>
-            </Card>
-          </motion.div>
-        )
-      })}
+                      )
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )
+        })}
+      </div>
     </div>
   )
 }

@@ -130,7 +130,7 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
 
   return (
     <Card className={cn("figma-tickets-recentes h-full flex flex-col", className)}>
-      <CardHeader className="pb-3">
+      <CardHeader className="px-5 pt-5 pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="figma-heading-large flex items-center gap-2">
             <div className="p-2 rounded-xl bg-gradient-to-br shadow-lg from-slate-600 to-slate-700">
@@ -163,9 +163,9 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
         )}
       </CardHeader>
       
-      <CardContent className="pt-0 flex-1 overflow-hidden">
+      <CardContent className="px-5 pb-5 pt-0 flex-1 flex flex-col overflow-hidden">
         {isLoading ? (
-          <div className="space-y-3">
+          <div className="space-y-3 flex-1 overflow-y-auto">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="animate-pulse">
                 <div className="flex items-start gap-3 p-3 figma-glass-card rounded-lg">
@@ -180,30 +180,34 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
             ))}
           </div>
         ) : error ? (
-          <div className="text-center py-8">
-            <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-400" />
-            <div className="text-sm text-red-600 font-medium">{error}</div>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={fetchTickets}
-              className="mt-3"
-            >
-              Tentar novamente
-            </Button>
+          <div className="text-center py-8 flex-1 flex items-center justify-center">
+            <div>
+              <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-400" />
+              <div className="text-sm text-red-600 font-medium">{error}</div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={fetchTickets}
+                className="mt-3"
+              >
+                Tentar novamente
+              </Button>
+            </div>
           </div>
         ) : tickets.length === 0 ? (
-          <div className="text-center py-8">
-            <AlertCircle className="w-12 h-12 mx-auto mb-4 figma-body" />
-            <div className="figma-body font-medium">Nenhum ticket novo encontrado</div>
-            <div className="figma-body mt-1">Todos os tickets foram processados</div>
+          <div className="text-center py-8 flex-1 flex items-center justify-center">
+            <div>
+              <AlertCircle className="w-12 h-12 mx-auto mb-4 figma-body" />
+              <div className="figma-body font-medium">Nenhum ticket novo encontrado</div>
+              <div className="figma-body mt-1">Todos os tickets foram processados</div>
+            </div>
           </div>
         ) : (
           <motion.div 
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="space-y-3 h-80 overflow-y-auto pr-2"
+            className="space-y-3 flex-1 overflow-y-auto pr-2"
           >
             {tickets.map((ticket, index) => {
               const priorityConf = getPriorityConfig(ticket.priority)
@@ -212,9 +216,9 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
                 <motion.div
                   key={ticket.id}
                   variants={itemVariants}
-                  className="group p-3 figma-glass-card rounded-lg transition-all duration-200 border border-transparent"
+                  className="group p-5 figma-glass-card rounded-lg transition-all duration-200 border border-transparent"
                 >
-                  <div className="flex items-start gap-3">
+                  <div className="flex items-start gap-4">
                     {/* Ícone de prioridade */}
                     <div className="flex-shrink-0 mt-0.5">
                       <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${priorityConf.color}`}>

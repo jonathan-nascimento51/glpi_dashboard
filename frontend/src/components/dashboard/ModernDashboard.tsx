@@ -138,63 +138,58 @@ export function ModernDashboard({
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className={cn("h-full overflow-hidden flex flex-col", className)}
+      className={cn("dashboard-fullscreen-container", className)}
     >
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-
-
-        {/* Cards de métricas principais */}
-        <motion.div variants={itemVariants}>
-          <MetricsGrid 
+      {/* Cards de métricas principais */}
+      <motion.div variants={itemVariants} className="dashboard-metrics-section">
+        <MetricsGrid 
+          metrics={metrics}
+          onFilterByStatus={onFilterByStatus}
+        />
+      </motion.div>
+      
+      {/* Layout principal com métricas por nível e tickets novos */}
+      <div className="dashboard-main-grid">
+        {/* Métricas por nível de atendimento - ocupando 2 colunas */}
+        <motion.div variants={itemVariants} className="dashboard-levels-section">
+          <LevelMetricsGrid 
             metrics={metrics}
-            onFilterByStatus={onFilterByStatus}
-            className="mb-4"
+            className="h-full"
           />
         </motion.div>
-        
-        {/* Métricas por nível e Lista de tickets novos */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-          {/* Métricas por nível de atendimento */}
-          <motion.div variants={itemVariants} className="xl:col-span-2">
-            <LevelMetricsGrid 
-              metrics={metrics}
-              className="h-full"
-            />
-          </motion.div>
 
-          {/* Lista de tickets novos */}
-          <motion.div variants={itemVariants}>
-            <NewTicketsList 
-              className="h-full"
-              limit={8}
-            />
-          </motion.div>
-        </div>
-
-        {/* Ranking de técnicos */}
-        <motion.div variants={itemVariants}>
-          <RankingTable 
-            data={(() => {
-              console.log('📊 ModernDashboard - Processando ranking de', technicianRanking?.length || 0, 'técnicos');
-              
-              // Usar os dados diretamente da API sem transformação desnecessária
-              const result = technicianRanking.map((tech) => ({
-                id: tech.id || String(tech.name),
-                name: tech.name || tech.nome || 'Técnico',
-                level: tech.level || 'N1',
-                total: tech.total || 0,
-                rank: tech.rank || 0
-              }))
-              
-              console.log('✅ ModernDashboard - Ranking processado:', result.length, 'técnicos');
-              return result;
-            })()
-            }
-            title="Ranking de Técnicos"
-            className="max-w-full"
+        {/* Lista de tickets novos - ocupando 1 coluna */}
+        <motion.div variants={itemVariants} className="dashboard-tickets-section">
+          <NewTicketsList 
+            className="h-full"
+            limit={6}
           />
         </motion.div>
       </div>
+
+      {/* Ranking de técnicos - ocupando toda a largura na parte inferior */}
+      <motion.div variants={itemVariants} className="dashboard-ranking-section">
+        <RankingTable 
+          data={(() => {
+            console.log('📊 ModernDashboard - Processando ranking de', technicianRanking?.length || 0, 'técnicos');
+            
+            // Usar os dados diretamente da API sem transformação desnecessária
+            const result = technicianRanking.map((tech) => ({
+              id: tech.id || String(tech.name),
+              name: tech.name || tech.nome || 'Técnico',
+              level: tech.level || 'N1',
+              total: tech.total || 0,
+              rank: tech.rank || 0
+            }))
+            
+            console.log('✅ ModernDashboard - Ranking processado:', result.length, 'técnicos');
+            return result;
+          })()
+          }
+          title="Ranking de Técnicos"
+          className="w-full h-full"
+        />
+      </motion.div>
     </motion.div>
   )
 }

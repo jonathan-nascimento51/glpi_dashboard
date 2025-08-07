@@ -117,8 +117,8 @@ export function RankingTable({
   }
 
   return (
-    <Card className={cn("figma-ranking-tecnicos w-full rounded-2xl", className)}>
-      <CardHeader className="pb-3">
+    <Card className={cn("figma-ranking-tecnicos w-full h-full flex flex-col rounded-2xl", className)}>
+      <CardHeader className="px-5 pt-4 pb-2 flex-shrink-0">
         <div className="flex items-center justify-between">
           <CardTitle className="figma-heading-large flex items-center gap-2">
             <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 shadow-lg">
@@ -145,16 +145,16 @@ export function RankingTable({
         </div>
       </CardHeader>
       
-      <CardContent>
+      <CardContent className="px-5 pb-4 pt-0 flex-1 flex flex-col overflow-hidden">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="space-y-4"
+          className="flex-1 flex flex-col"
         >
           <div 
             ref={scrollContainerRef}
-            className="flex w-full h-32 figma-glass-card rounded-lg shadow-inner overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+            className="flex w-full flex-1 figma-glass-card rounded-lg shadow-inner overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
           >
           {topTechnicians.map((technician, index) => {
             const levelStyle = getLevelStyle(technician.level)
@@ -166,7 +166,7 @@ export function RankingTable({
                 key={technician.id}
                 variants={cardVariants}
                 className={cn(
-                  "flex-shrink-0 w-36 flex flex-col justify-between p-3 border-r border-white/10 last:border-r-0",
+                  "flex-shrink-0 w-36 flex flex-col justify-between p-4 border-r border-white/10 last:border-r-0",
                   "transition-all duration-300 hover:scale-105 relative group overflow-hidden",
                   "figma-glass-card shadow-xl hover:shadow-2xl rounded-2xl border-0",
                   "border-l-4",
