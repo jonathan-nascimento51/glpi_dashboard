@@ -4,6 +4,7 @@ import { MetricsGrid } from "./MetricsGrid"
 import { LevelMetricsGrid } from "./LevelMetricsGrid"
 import { NewTicketsList } from "./NewTicketsList"
 import { RankingTable } from "./RankingTable"
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 import { MetricsData, TicketStatus, SystemStatus, TechnicianRanking } from "@/types"
@@ -13,6 +14,7 @@ import { performanceMonitor } from "../../utils/performanceMonitor"
 
 interface ModernDashboardProps {
   metrics: MetricsData
+  levelMetrics?: any
   systemStatus?: SystemStatus | null
   technicianRanking?: TechnicianRanking[]
   onFilterByStatus?: (status: TicketStatus) => void
@@ -65,12 +67,18 @@ const SkeletonCard = React.memo(function SkeletonCard() {
 
 export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernDashboard({
   metrics,
+  levelMetrics,
   systemStatus,
   technicianRanking = [],
   onFilterByStatus,
   isLoading = false,
   className
 }) {
+  // Sistema funcionando corretamente
+    // console.log('✅ ModernDashboard carregado - correção dos níveis aplicada');
+
+
+  
   // Performance monitoring hooks
   const { measureRender } = usePerformanceMonitoring('ModernDashboard')
   
@@ -87,7 +95,7 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
 
   // Memoizar dados do ranking processados
   const processedRankingData = useMemo(() => {
-    console.log('📊 ModernDashboard - Processando ranking de', technicianRanking?.length || 0, 'técnicos')
+    // console.log('📊 ModernDashboard - Processando ranking de', technicianRanking?.length || 0, 'técnicos')
     
     const result = technicianRanking.map((tech) => ({
       id: tech.id || String(tech.name),
@@ -97,7 +105,7 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
       rank: tech.rank || 0
     }))
     
-    console.log('✅ ModernDashboard - Ranking processado:', result.length, 'técnicos')
+    // console.log('✅ ModernDashboard - Ranking processado:', result.length, 'técnicos')
     return result
   }, [technicianRanking])
 
@@ -153,10 +161,12 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
       animate="visible"
       className={cn("dashboard-fullscreen-container", className)}
     >
+
+      
       {/* Cards de métricas principais */}
       <motion.div variants={itemVariants} className="dashboard-metrics-section">
         <MetricsGrid 
-          metrics={metrics}
+          metrics={metrics.geral || metrics}
           onFilterByStatus={onFilterByStatus}
         />
       </motion.div>
@@ -166,7 +176,7 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
         {/* Métricas por nível de atendimento - ocupando 2 colunas */}
         <motion.div variants={itemVariants} className="dashboard-levels-section">
           <LevelMetricsGrid 
-            metrics={metrics}
+            metrics={levelMetrics}
             className="h-full"
           />
         </motion.div>

@@ -16,6 +16,9 @@ interface CacheEntry<T> {
 interface CacheConfig {
   ttl: number; // Time to live em milissegundos
   maxSize: number; // Tamanho máximo do cache
+  autoActivate?: boolean;
+  performanceThreshold?: number; // ms - tempo mínimo de resposta para ativar cache
+  usageThreshold?: number; // número de chamadas repetidas para ativar cache
 }
 
 /**
@@ -24,12 +27,26 @@ interface CacheConfig {
 class LocalCache<T> {
   private cache = new Map<string, CacheEntry<T>>();
   private config: CacheConfig;
+  private stats = {
+    hits: 0,
+    misses: 0,
+    sets: 0,
+    deletes: 0,
+    clears: 0
+  };
+  private requestTimes = new Map<string, number[]>(); // Armazena tempos de resposta por chave
+  private requestCounts = new Map<string, number>(); // Conta requisições por chave
+  private isActive = false; // Cache ativo ou não
 
   constructor(config: Partial<CacheConfig> = {}) {
     this.config = {
       ttl: config.ttl || 5 * 60 * 1000, // 5 minutos por padrão
-      maxSize: config.maxSize || 100 // Máximo 100 entradas
+      maxSize: config.maxSize || 100, // Máximo 100 entradas
+      autoActivate: config.autoActivate !== undefined ? config.autoActivate : true,
+      performanceThreshold: config.performanceThreshold || 500, // 500ms
+      usageThreshold: config.usageThreshold || 3 // 3 chamadas repetidas
     };
+    this.isActive = !this.config.autoActivate; // Se não é auto, fica sempre ativo
 
     // Limpar cache expirado a cada minuto
     setInterval(() => this.cleanExpired(), 60 * 1000);
@@ -64,6 +81,46 @@ class LocalCache<T> {
     }
   }
 
+  // Monitora performance de uma requisição
+  recordRequestTime(key: string, responseTime: number): void {
+    if (!this.config.autoActivate) return;
+
+    // Registra tempo de resposta
+    if (!this.requestTimes.has(key)) {
+      this.requestTimes.set(key, []);
+    }
+    const times = this.requestTimes.get(key)!;
+    times.push(responseTime);
+    
+    // Mantém apenas os últimos 10 tempos
+    if (times.length > 10) {
+      times.shift();
+    }
+
+    // Conta requisições
+    const count = (this.requestCounts.get(key) || 0) + 1;
+    this.requestCounts.set(key, count);
+
+    // Verifica se deve ativar o cache
+    this.checkActivation(key, responseTime, count);
+  }
+
+  private checkActivation(key: string, responseTime: number, requestCount: number): void {
+    if (this.isActive) return;
+
+    const { performanceThreshold, usageThreshold } = this.config;
+    
+    // Ativa se a resposta for lenta OU se houver muitas requisições repetidas
+    const shouldActivate = 
+      responseTime >= performanceThreshold! || 
+      requestCount >= usageThreshold!;
+
+    if (shouldActivate) {
+      this.isActive = true;
+      console.log(`🚀 Cache ativado automaticamente para padrão detectado: ${responseTime}ms, ${requestCount} requisições`);
+    }
+  }
+
   /**
    * Remove a entrada mais antiga se o cache estiver cheio
    */
@@ -80,6 +137,12 @@ class LocalCache<T> {
    * Armazena dados no cache
    */
   set(params: Record<string, any>, data: T): void {
+    console.log(`📦 Cache: Tentando armazenar - ativo: ${this.isActive}, dados:`, data);
+    if (!this.isActive) {
+      console.log(`📦 Cache: Não armazenado - cache inativo`);
+      return; // Não armazena se cache não estiver ativo
+    }
+    
     const key = this.generateKey(params);
     const now = Date.now();
     
@@ -91,27 +154,33 @@ class LocalCache<T> {
       expiresAt: now + this.config.ttl
     });
 
-    console.log(`📦 Cache: Armazenado dados para chave: ${key}`);
+    this.stats.sets++;
+    console.log(`📦 Cache: Armazenado dados para chave: ${key}`, data);
   }
 
   /**
    * Recupera dados do cache se válidos
    */
   get(params: Record<string, any>): T | null {
+    if (!this.isActive) return null; // Não recupera se cache não estiver ativo
+    
     const key = this.generateKey(params);
     const entry = this.cache.get(key);
 
     if (!entry) {
+      this.stats.misses++;
       console.log(`📦 Cache: Miss para chave: ${key}`);
       return null;
     }
 
     if (this.isExpired(entry)) {
       this.cache.delete(key);
+      this.stats.misses++;
       console.log(`📦 Cache: Expirado para chave: ${key}`);
       return null;
     }
 
+    this.stats.hits++;
     console.log(`📦 Cache: Hit para chave: ${key}`);
     return entry.data;
   }
@@ -124,23 +193,27 @@ class LocalCache<T> {
   }
 
   /**
+   * Limpa todo o cache
+   */
+  clear(): void {
+    this.cache.clear();
+    this.requestTimes.clear();
+    this.requestCounts.clear();
+    this.stats.clears++;
+    console.log('🧹 Cache: Todos os dados foram limpos');
+  }
+
+  /**
    * Remove uma entrada específica do cache
    */
   delete(params: Record<string, any>): boolean {
     const key = this.generateKey(params);
     const deleted = this.cache.delete(key);
     if (deleted) {
+      this.stats.deletes++;
       console.log(`📦 Cache: Removido dados para chave: ${key}`);
     }
     return deleted;
-  }
-
-  /**
-   * Limpa todo o cache
-   */
-  clear(): void {
-    this.cache.clear();
-    console.log('📦 Cache: Todos os dados foram limpos');
   }
 
   /**
@@ -151,6 +224,15 @@ class LocalCache<T> {
     maxSize: number;
     ttl: number;
     entries: Array<{ key: string; timestamp: number; expiresAt: number }>;
+    hits: number;
+    misses: number;
+    sets: number;
+    deletes: number;
+    clears: number;
+    hitRate: number;
+    isActive: boolean;
+    totalRequests: number;
+    avgResponseTime: number;
   } {
     const entries = Array.from(this.cache.entries()).map(([key, entry]) => ({
       key,
@@ -159,11 +241,37 @@ class LocalCache<T> {
     }));
 
     return {
+      ...this.stats,
       size: this.cache.size,
       maxSize: this.config.maxSize,
       ttl: this.config.ttl,
-      entries
+      entries,
+      hitRate: this.stats.hits / (this.stats.hits + this.stats.misses) || 0,
+      isActive: this.isActive,
+      totalRequests: Array.from(this.requestCounts.values()).reduce((sum, count) => sum + count, 0),
+      avgResponseTime: this.getAverageResponseTime()
     };
+  }
+
+  private getAverageResponseTime(): number {
+    const allTimes = Array.from(this.requestTimes.values()).flat();
+    if (allTimes.length === 0) return 0;
+    return allTimes.reduce((sum, time) => sum + time, 0) / allTimes.length;
+  }
+
+  isActivated(): boolean {
+    return this.isActive;
+  }
+
+  forceActivate(): void {
+    this.isActive = true;
+    console.log('🔧 Cache ativado manualmente');
+  }
+
+  forceDeactivate(): void {
+    this.isActive = false;
+    this.clear();
+    console.log('🔧 Cache desativado manualmente');
   }
 
   /**

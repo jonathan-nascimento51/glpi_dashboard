@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react"
+import React, { useState, useEffect, useCallback, useMemo, useTransition } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -166,6 +166,7 @@ TicketItem.displayName = 'TicketItem'
 export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limit = 8 }) => {
   const [tickets, setTickets] = useState<NewTicket[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
 
@@ -173,13 +174,16 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
     try {
       setIsLoading(true)
       setError(null)
-      const newTickets = await apiService.getNewTickets(limit)
-      setTickets(newTickets)
-      setLastUpdate(new Date())
+      
+      startTransition(async () => {
+        const newTickets = await apiService.getNewTickets(limit)
+        setTickets(newTickets)
+        setLastUpdate(new Date())
+        setIsLoading(false)
+      })
     } catch (err) {
       console.error('Erro ao buscar tickets novos:', err)
       setError('Erro ao carregar tickets')
-    } finally {
       setIsLoading(false)
     }
   }, [limit])

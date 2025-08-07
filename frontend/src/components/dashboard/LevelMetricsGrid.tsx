@@ -232,7 +232,10 @@ const LevelCard = React.memo<{
   )
 })
 
-export const LevelMetricsGrid = React.memo<LevelMetricsGridProps>(function LevelMetricsGrid({ metrics, className }) {
+export const LevelMetricsGrid = React.memo<LevelMetricsGridProps>(function LevelMetricsGrid({
+  metrics,
+  className
+}) {
   // Verificação de segurança para evitar erros
   if (!metrics || !metrics.niveis) {
     return (

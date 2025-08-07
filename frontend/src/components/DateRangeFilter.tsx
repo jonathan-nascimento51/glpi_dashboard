@@ -13,6 +13,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { DateRange } from '../types';
+import { useThrottledCallback } from '../hooks/useDebounce';
 
 interface DateRangeFilterProps {
   // Props da versão antiga
@@ -78,15 +79,20 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
     }
   ];
 
-  const handlePredefinedRangeSelect = (range: DateRange) => {
+  // Throttle range changes to prevent rapid API calls
+  const throttledRangeChange = useThrottledCallback((range: DateRange) => {
     if (handleRangeChange) {
       handleRangeChange(range);
     }
+  }, 300);
+
+  const handlePredefinedRangeSelect = (range: DateRange) => {
+    throttledRangeChange(range);
     setIsOpen(false);
   };
 
   const handleCustomRangeApply = () => {
-    if (customStartDate && customEndDate && handleRangeChange) {
+    if (customStartDate && customEndDate) {
       const customRange: DateRange = {
         startDate: customStartDate,
         endDate: customEndDate,
@@ -94,7 +100,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
         end: new Date(customEndDate),
         label: `${new Date(customStartDate).toLocaleDateString('pt-BR')} - ${new Date(customEndDate).toLocaleDateString('pt-BR')}`
       };
-      handleRangeChange(customRange);
+      throttledRangeChange(customRange);
       setIsOpen(false);
     }
   };
@@ -158,8 +164,8 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                 value={currentRange?.label || ''}
                 onValueChange={(value) => {
                   const preset = predefinedRanges.find(p => p.label === value);
-                  if (preset && handleRangeChange) {
-                    handleRangeChange(preset);
+                  if (preset) {
+                    throttledRangeChange(preset);
                   }
                 }}
               >

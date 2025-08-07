@@ -5,6 +5,7 @@ import requests
 import time
 from datetime import datetime, timedelta
 from backend.config.settings import active_config
+from backend.utils.response_formatter import ResponseFormatter
 
 
 class GLPIService:
@@ -422,123 +423,49 @@ class GLPIService:
         return status_totals
     
     def get_dashboard_metrics(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Dict[str, any]:
-        """Retorna métricas formatadas para o dashboard React.
+        """Retorna métricas formatadas para o dashboard React usando o sistema unificado.
         
         Args:
             start_date: Data inicial no formato YYYY-MM-DD (opcional)
             end_date: Data final no formato YYYY-MM-DD (opcional)
         
-        Retorna um dicionário com as métricas ou None em caso de falha.
+        Retorna um dicionário com as métricas formatadas ou erro.
         """
-        # Se parâmetros de data foram fornecidos, usar o método com filtro
-        if start_date or end_date:
-            return self.get_dashboard_metrics_with_date_filter(start_date, end_date)
+        start_time = time.time()
         
-        # Autenticar uma única vez
-        if not self._ensure_authenticated():
-            return None
-        
-        if not self.discover_field_ids():
-            return None
-        
-        # Obter totais gerais (todos os grupos) para métricas principais
-        general_totals = self._get_general_metrics_internal()
-        self.logger.info(f"Totais gerais obtidos: {general_totals}")
-        
-        # Obter métricas por nível (grupos N1-N4)
-        raw_metrics = self._get_metrics_by_level_internal()
-        
-        # Agregação dos totais por status (apenas para níveis)
-        totals = {
-            "novos": 0,
-            "pendentes": 0,
-            "progresso": 0,
-            "resolvidos": 0
-        }
-        
-        # Métricas por nível
-        level_metrics = {
-            "n1": {
-                "novos": 0,
-                "progresso": 0,
-                "pendentes": 0,
-                "resolvidos": 0
-            },
-            "n2": {
-                "novos": 0,
-                "progresso": 0,
-                "pendentes": 0,
-                "resolvidos": 0
-            },
-            "n3": {
-                "novos": 0,
-                "progresso": 0,
-                "pendentes": 0,
-                "resolvidos": 0
-            },
-            "n4": {
-                "novos": 0,
-                "progresso": 0,
-                "pendentes": 0,
-                "resolvidos": 0
+        try:
+            # Se parâmetros de data foram fornecidos, usar o método com filtro
+            if start_date or end_date:
+                return self.get_dashboard_metrics_with_date_filter(start_date, end_date)
+            
+            # Autenticar uma única vez
+            if not self._ensure_authenticated():
+                return ResponseFormatter.format_error_response("Falha na autenticação com GLPI", ["Erro de autenticação"])
+            
+            if not self.discover_field_ids():
+                return ResponseFormatter.format_error_response("Falha ao descobrir IDs dos campos", ["Erro ao obter configuração"])
+            
+            # Obter totais gerais (todos os grupos) para métricas principais
+            general_totals = self._get_general_metrics_internal()
+            self.logger.info(f"Totais gerais obtidos: {general_totals}")
+            
+            # Obter métricas por nível (grupos N1-N4)
+            raw_metrics = self._get_metrics_by_level_internal()
+            
+            # Usar o formatador unificado
+            execution_time = time.time() - start_time
+            raw_data = {
+                'by_level': raw_metrics,
+                'general': general_totals
             }
-        }
-        
-        for level_name, level_data in raw_metrics.items():
-            level_key = level_name.lower()
+            return ResponseFormatter.format_dashboard_response(
+                raw_data,
+                start_time=start_time
+            )
             
-            # Novo
-            level_metrics[level_key]["novos"] = level_data.get("Novo", 0)
-            totals["novos"] += level_metrics[level_key]["novos"]
-            
-            # Progresso (soma de Processando atribuído e planejado)
-            processando_atribuido = level_data.get("Processando (atribuído)", 0)
-            processando_planejado = level_data.get("Processando (planejado)", 0)
-            level_metrics[level_key]["progresso"] = processando_atribuido + processando_planejado
-            totals["progresso"] += level_metrics[level_key]["progresso"]
-            
-            # Pendente
-            level_metrics[level_key]["pendentes"] = level_data.get("Pendente", 0)
-            totals["pendentes"] += level_metrics[level_key]["pendentes"]
-            
-            # Resolvidos (soma de Solucionado e Fechado)
-            solucionado = level_data.get("Solucionado", 0)
-            fechado = level_data.get("Fechado", 0)
-            level_metrics[level_key]["resolvidos"] = solucionado + fechado
-            totals["resolvidos"] += level_metrics[level_key]["resolvidos"]
-        
-        # Usar totais gerais para métricas principais
-        general_novos = general_totals.get("Novo", 0)
-        general_pendentes = general_totals.get("Pendente", 0)
-        general_progresso = general_totals.get("Processando (atribuído)", 0) + general_totals.get("Processando (planejado)", 0)
-        general_resolvidos = general_totals.get("Solucionado", 0) + general_totals.get("Fechado", 0)
-        general_total = general_novos + general_pendentes + general_progresso + general_resolvidos
-        
-        self.logger.info(f"Métricas gerais calculadas: novos={general_novos}, pendentes={general_pendentes}, progresso={general_progresso}, resolvidos={general_resolvidos}, total={general_total}")
-        
-        result = {
-            "novos": general_novos,
-            "pendentes": general_pendentes,
-            "progresso": general_progresso,
-            "resolvidos": general_resolvidos,
-            "total": general_total,
-            "niveis": {
-                "n1": level_metrics["n1"],
-                "n2": level_metrics["n2"],
-                "n3": level_metrics["n3"],
-                "n4": level_metrics["n4"]
-            },
-            "tendencias": {
-                "novos": "0",
-                "pendentes": "0",
-                "progresso": "0",
-                "resolvidos": "0"
-            },
-            "detalhes": raw_metrics
-        }
-        
-        self.logger.info(f"Métricas formatadas: {result}")
-        return result
+        except Exception as e:
+            self.logger.error(f"Erro ao obter métricas do dashboard: {e}")
+            return ResponseFormatter.format_error_response(f"Erro interno: {str(e)}", [str(e)])
     
     def get_dashboard_metrics_with_date_filter(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Dict[str, any]:
         """Retorna métricas formatadas para o dashboard React com filtro de data.
@@ -673,7 +600,7 @@ class GLPIService:
         
         return result
     
-    def get_technician_ranking(self) -> list:
+    def get_technician_ranking(self, limit: int = None) -> list:
         """Retorna ranking de técnicos por total de chamados seguindo a base de conhecimento
         
         Implementação otimizada que:
@@ -721,6 +648,12 @@ class GLPIService:
                 self.logger.info("Dados armazenados no cache")
             
             self.logger.info(f"=== RANKING FINAL: {len(ranking)} técnicos encontrados (sem iteração extensa) ===")
+            
+            # Aplicar limite se especificado
+            if limit and len(ranking) > limit:
+                ranking = ranking[:limit]
+                self.logger.info(f"Ranking limitado a {limit} técnicos")
+            
             return ranking
             
         except Exception as e:
@@ -1679,3 +1612,302 @@ class GLPIService:
                 "response_time": None,
                 "token_valid": False
             }
+    
+    def get_dashboard_metrics_with_filters(self, start_date: str = None, end_date: str = None, 
+                                         status: str = None, priority: str = None, 
+                                         level: str = None, technician: str = None, 
+                                         category: str = None) -> Dict[str, any]:
+        """Obtém métricas do dashboard com filtros avançados usando o sistema unificado"""
+        start_time = time.time()
+        
+        try:
+            if not self._ensure_authenticated():
+                return ResponseFormatter.format_error_response("Falha na autenticação com GLPI", ["Erro de autenticação"])
+                
+            if not self.discover_field_ids():
+                return ResponseFormatter.format_error_response("Falha ao descobrir IDs dos campos", ["Erro ao obter configuração"])
+            
+            # Combinar métricas por nível e gerais com filtros
+            level_metrics = self._get_metrics_by_level_internal(start_date, end_date)
+            general_metrics = self._get_general_metrics_internal(start_date, end_date)
+            
+            # Aplicar filtros adicionais se especificados
+            if status or priority or level or technician or category:
+                level_metrics = self._apply_additional_filters(
+                    level_metrics, status, priority, level, technician, category
+                )
+            
+            # Usar o formatador unificado
+            execution_time = time.time() - start_time
+            raw_data = {
+                'by_level': level_metrics,
+                'general': general_metrics
+            }
+            filters_data = {
+                "start_date": start_date,
+                "end_date": end_date,
+                "status": status,
+                "priority": priority,
+                "level": level,
+                "technician": technician,
+                "category": category
+            }
+            result = ResponseFormatter.format_dashboard_response(
+                raw_data,
+                filters=filters_data,
+                start_time=start_time
+            )
+            
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"Erro ao obter métricas com filtros: {e}")
+            return ResponseFormatter.format_error_response(f"Erro interno: {str(e)}", [str(e)])
+    
+    def get_technician_ranking_with_filters(self, start_date: str = None, end_date: str = None,
+                                           level: str = None, limit: int = 10) -> List[Dict[str, any]]:
+        """Obtém ranking de técnicos com filtros avançados"""
+        if not self._ensure_authenticated():
+            return []
+            
+        try:
+            # Obter lista de técnicos ativos
+            technicians = self.get_active_technicians()
+            if not technicians:
+                return []
+            
+            # Filtrar por nível se especificado
+            if level and level in self.service_levels:
+                group_id = self.service_levels[level]
+                technicians = [t for t in technicians if t.get('group_id') == group_id]
+            
+            ranking = []
+            
+            for tech in technicians:
+                tech_id = tech['id']
+                tech_name = tech['name']
+                
+                # Contar tickets com filtros de data
+                ticket_count = self._count_tickets_with_date_filter(
+                    tech_id, start_date, end_date
+                )
+                
+                if ticket_count is not None:
+                    ranking.append({
+                        'id': tech_id,
+                        'name': tech_name,
+                        'ticket_count': ticket_count,
+                        'level': level if level else 'Todos'
+                    })
+            
+            # Ordenar por contagem de tickets (decrescente)
+            ranking.sort(key=lambda x: x['ticket_count'], reverse=True)
+            
+            return ranking[:limit]
+            
+        except Exception as e:
+            self.logger.error(f"Erro ao obter ranking com filtros: {e}")
+            return []
+    
+    def get_new_tickets_with_filters(self, limit: int = 10, priority: str = None,
+                                   category: str = None, technician: str = None,
+                                   start_date: str = None, end_date: str = None) -> List[Dict[str, any]]:
+        """Obtém tickets novos com filtros avançados"""
+        if not self._ensure_authenticated():
+            return []
+            
+        if not self.discover_field_ids():
+            return []
+        
+        try:
+            # Construir critérios de busca
+            criteria = []
+            criteria_index = 0
+            
+            # Status = Novo (sempre aplicado)
+            criteria.append({
+                f"criteria[{criteria_index}][field]": self.field_ids["STATUS"],
+                f"criteria[{criteria_index}][searchtype]": "equals",
+                f"criteria[{criteria_index}][value]": self.status_map.get('Novo', 1)
+            })
+            criteria_index += 1
+            
+            # Filtro de prioridade
+            if priority:
+                priority_id = self._get_priority_id_by_name(priority)
+                if priority_id:
+                    criteria.append({
+                        f"criteria[{criteria_index}][link]": "AND",
+                        f"criteria[{criteria_index}][field]": "3",  # Campo prioridade
+                        f"criteria[{criteria_index}][searchtype]": "equals",
+                        f"criteria[{criteria_index}][value]": priority_id
+                    })
+                    criteria_index += 1
+            
+            # Filtro de técnico
+            if technician:
+                criteria.append({
+                    f"criteria[{criteria_index}][link]": "AND",
+                    f"criteria[{criteria_index}][field]": "5",  # Campo técnico
+                    f"criteria[{criteria_index}][searchtype]": "equals",
+                    f"criteria[{criteria_index}][value]": technician
+                })
+                criteria_index += 1
+            
+            # Filtros de data
+            if start_date:
+                criteria.append({
+                    f"criteria[{criteria_index}][link]": "AND",
+                    f"criteria[{criteria_index}][field]": "15",  # Data de criação
+                    f"criteria[{criteria_index}][searchtype]": "morethan",
+                    f"criteria[{criteria_index}][value]": start_date
+                })
+                criteria_index += 1
+                
+            if end_date:
+                criteria.append({
+                    f"criteria[{criteria_index}][link]": "AND",
+                    f"criteria[{criteria_index}][field]": "15",  # Data de criação
+                    f"criteria[{criteria_index}][searchtype]": "lessthan",
+                    f"criteria[{criteria_index}][value]": end_date
+                })
+                criteria_index += 1
+            
+            # Construir parâmetros de busca
+            search_params = {
+                "is_deleted": 0,
+                "range": f"0-{limit-1}",
+                "sort": "19",  # Ordenar por data de criação
+                "order": "DESC"
+            }
+            
+            # Adicionar critérios aos parâmetros
+            for criterion in criteria:
+                search_params.update(criterion)
+            
+            response = self._make_authenticated_request(
+                'GET',
+                f"{self.glpi_url}/search/Ticket",
+                params=search_params
+            )
+            
+            if not response or not response.ok:
+                self.logger.error("Falha ao buscar tickets novos com filtros")
+                return []
+            
+            data = response.json()
+            tickets = []
+            
+            if 'data' in data and data['data']:
+                for ticket_data in data['data']:
+                    # Processar dados do ticket
+                    requester_id = ticket_data.get('4', '')
+                    requester_name = self._get_user_name_by_id(str(requester_id)) if requester_id else 'Não informado'
+                    
+                    priority_id = ticket_data.get('3', '3')
+                    priority_name = self._get_priority_name_by_id(str(priority_id))
+                    
+                    ticket_info = {
+                        'id': str(ticket_data.get('2', '')),
+                        'title': ticket_data.get('1', 'Sem título'),
+                        'description': ticket_data.get('21', '')[:100] + '...' if len(ticket_data.get('21', '')) > 100 else ticket_data.get('21', ''),
+                        'date': ticket_data.get('15', ''),
+                        'requester': requester_name,
+                        'priority': priority_name,
+                        'status': 'Novo',
+                        'filters_applied': {
+                            'priority': priority,
+                            'category': category,
+                            'technician': technician,
+                            'start_date': start_date,
+                            'end_date': end_date
+                        }
+                    }
+                    tickets.append(ticket_info)
+            
+            self.logger.info(f"Encontrados {len(tickets)} tickets novos com filtros")
+            return tickets
+            
+        except Exception as e:
+            self.logger.error(f"Erro ao buscar tickets novos com filtros: {e}")
+            return []
+    
+    def _apply_additional_filters(self, metrics: Dict, status: str = None, priority: str = None,
+                                level: str = None, technician: str = None, category: str = None) -> Dict:
+        """Aplica filtros adicionais às métricas"""
+        # Por enquanto, retorna as métricas sem modificação
+        # Implementação completa requereria consultas adicionais à API
+        return metrics
+    
+    def _count_tickets_with_date_filter(self, tech_id: int, start_date: str = None, end_date: str = None) -> Optional[int]:
+        """Conta tickets de um técnico com filtro de data"""
+        try:
+            criteria = []
+            criteria_index = 0
+            
+            # Filtro por técnico
+            criteria.append({
+                f"criteria[{criteria_index}][field]": "5",  # Campo técnico
+                f"criteria[{criteria_index}][searchtype]": "equals",
+                f"criteria[{criteria_index}][value]": tech_id
+            })
+            criteria_index += 1
+            
+            # Filtros de data
+            if start_date:
+                criteria.append({
+                    f"criteria[{criteria_index}][link]": "AND",
+                    f"criteria[{criteria_index}][field]": "15",  # Data de criação
+                    f"criteria[{criteria_index}][searchtype]": "morethan",
+                    f"criteria[{criteria_index}][value]": start_date
+                })
+                criteria_index += 1
+                
+            if end_date:
+                criteria.append({
+                    f"criteria[{criteria_index}][link]": "AND",
+                    f"criteria[{criteria_index}][field]": "15",  # Data de criação
+                    f"criteria[{criteria_index}][searchtype]": "lessthan",
+                    f"criteria[{criteria_index}][value]": end_date
+                })
+            
+            # Construir parâmetros
+            search_params = {
+                "is_deleted": 0,
+                "range": "0-0"  # Apenas contagem
+            }
+            
+            # Adicionar critérios
+            for criterion in criteria:
+                search_params.update(criterion)
+            
+            response = self._make_authenticated_request(
+                'GET',
+                f"{self.glpi_url}/search/Ticket",
+                params=search_params
+            )
+            
+            if not response:
+                return None
+            
+            if "Content-Range" in response.headers:
+                total = int(response.headers["Content-Range"].split("/")[-1])
+                return total
+            
+            return 0
+            
+        except Exception as e:
+            self.logger.error(f"Erro ao contar tickets com filtro de data: {e}")
+            return None
+    
+    def _get_priority_id_by_name(self, priority_name: str) -> Optional[str]:
+        """Converte nome de prioridade para ID do GLPI"""
+        priority_reverse_map = {
+            'Muito Baixa': '1',
+            'Baixa': '2',
+            'Média': '3',
+            'Alta': '4',
+            'Muito Alta': '5',
+            'Crítica': '6'
+        }
+        return priority_reverse_map.get(priority_name)

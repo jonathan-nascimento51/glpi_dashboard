@@ -33,6 +33,16 @@ class Config:
     # CORS
     CORS_ORIGINS = ['*']
     
+    # Redis Cache
+    REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+    CACHE_TYPE = os.environ.get('CACHE_TYPE', 'RedisCache')
+    CACHE_REDIS_URL = os.environ.get('CACHE_REDIS_URL', REDIS_URL)
+    CACHE_DEFAULT_TIMEOUT = int(os.environ.get('CACHE_DEFAULT_TIMEOUT', '300'))  # 5 minutos
+    CACHE_KEY_PREFIX = os.environ.get('CACHE_KEY_PREFIX', 'glpi_dashboard:')
+    
+    # Performance Settings
+    PERFORMANCE_TARGET_P95 = int(os.environ.get('PERFORMANCE_TARGET_P95', '300'))  # 300ms target
+    
     @classmethod
     def configure_logging(cls):
         """Configura o sistema de logging"""

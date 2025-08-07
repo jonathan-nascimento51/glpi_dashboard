@@ -11,8 +11,22 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
   metrics,
   onFilterByStatus,
 }) => {
-  // Verificação de segurança para evitar erros
+  console.log('🔍 MetricsGrid - DADOS RECEBIDOS:', {
+    metrics,
+    'metrics.novos': metrics.novos,
+    'metrics.progresso': metrics.progresso,
+    'metrics.pendentes': metrics.pendentes,
+    'metrics.resolvidos': metrics.resolvidos,
+    'metrics.total': metrics.total,
+    'typeof metrics.novos': typeof metrics.novos,
+    'metrics === null': metrics === null,
+    'metrics === undefined': metrics === undefined
+  });
+
+    
+    // Verificação de segurança para evitar erros
   if (!metrics) {
+    console.log('⚠️ MetricsGrid - Métricas não disponíveis');
     return <div>Carregando métricas...</div>;
   }
 
@@ -45,6 +59,8 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
       change: metrics.tendencias?.resolvidos || '0',
     },
   ];
+  
+  console.log('🔍 MetricsGrid - METRIC CARDS CRIADOS:', metricCards);
 
   return (
     <div className="space-y-6">

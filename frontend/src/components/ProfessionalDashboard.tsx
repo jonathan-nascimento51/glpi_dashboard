@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useTransition } from 'react';
 import { MetricsData, TechnicianRanking, NewTicket } from '../types';
 import { DateRange } from '../types/dashboard';
 import { apiService } from '../services/api';
@@ -130,6 +130,7 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
   });
   const [newTickets, setNewTickets] = useState<NewTicket[]>([]);
   const [ticketsLoading, setTicketsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [currentTime, setCurrentTime] = useState('');
 
   // Update current time
@@ -156,11 +157,13 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
     const fetchNewTickets = async () => {
       setTicketsLoading(true);
       try {
-        const tickets = await apiService.getNewTickets(8);
-        setNewTickets(tickets);
+        startTransition(async () => {
+          const tickets = await apiService.getNewTickets(8);
+          setNewTickets(tickets);
+          setTicketsLoading(false);
+        });
       } catch (error) {
         console.error('Erro ao buscar tickets novos:', error);
-      } finally {
         setTicketsLoading(false);
       }
     };

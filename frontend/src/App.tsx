@@ -3,25 +3,33 @@ import { Header } from './components/Header';
 import { NotificationSystem } from './components/NotificationSystem';
 import DataIntegrityMonitor from './components/DataIntegrityMonitor';
 import PerformanceDashboard from './components/PerformanceDashboard';
-import CacheManager from './components/CacheManager';
+import CacheNotification from './components/CacheNotification';
 import { ModernDashboard } from './components/dashboard/ModernDashboard';
 import { LoadingSpinner, SkeletonMetricsGrid, SkeletonLevelsSection, ErrorState } from './components/LoadingSpinner';
+
 import { useDashboard } from './hooks/useDashboard';
+
+
+
 import { useFilterPerformance } from './hooks/usePerformanceMonitoring';
+import { useCacheNotifications } from './hooks/useCacheNotifications';
 import { usePerformanceProfiler } from './utils/performanceMonitor';
 import { performanceMonitor } from './utils/performanceMonitor';
 import { TicketStatus } from './types';
+import { clearAllCaches } from './services/api';
 
 function App() {
   const {
     metrics,
+    levelMetrics,
     systemStatus,
     technicianRanking,
     isLoading,
+    isPending,
     error,
-    filters,
-    searchQuery,
     notifications,
+    searchQuery,
+    filters,
     theme,
     dataIntegrityReport,
     loadData,
@@ -34,13 +42,24 @@ function App() {
     updateDateRange,
   } = useDashboard();
 
+
+
+
+
   const [showIntegrityMonitor, setShowIntegrityMonitor] = useState(true);
   const [showPerformanceDashboard, setShowPerformanceDashboard] = useState(false);
-  const [showCacheManager, setShowCacheManager] = useState(false);
   
   // Performance monitoring hooks
   const { onRenderCallback } = usePerformanceProfiler();
   const { measureFilterOperation } = useFilterPerformance();
+  
+  // Cache notifications
+  const { notifications: cacheNotifications, removeNotification: removeCacheNotification } = useCacheNotifications();
+
+  // Load data on mount
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   // Apply theme to body element
   useEffect(() => {
@@ -79,7 +98,7 @@ function App() {
 
 
   // Show loading state on initial load
-  if (isLoading && !metrics) {
+  if (isLoading && !levelMetrics) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
         <div className="animate-pulse">
@@ -111,7 +130,7 @@ function App() {
   }
 
   // Show error state
-  if (error && !metrics) {
+  if (error && !levelMetrics) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 flex items-center justify-center">
         <ErrorState
@@ -138,15 +157,17 @@ function App() {
         onNotification={(title, message, type) => addNotification({ title, message, type, duration: 3000 })}
         onDateRangeChange={updateDateRange}
         onPerformanceDashboard={() => setShowPerformanceDashboard(true)}
-        onCacheManager={() => setShowCacheManager(true)}
       />
 
+
+      
       {/* Dashboard Principal */}
       <div className="flex-1 overflow-hidden">
-        {metrics ? (
+        {levelMetrics ? (
           <Profiler id="ModernDashboard" onRender={onRenderCallback}>
             <ModernDashboard
               metrics={metrics}
+              levelMetrics={levelMetrics}
               systemStatus={systemStatus}
               technicianRanking={technicianRanking}
               onFilterByStatus={handleFilterByStatus}
@@ -180,10 +201,22 @@ function App() {
       </div>
 
       {/* Loading overlay for refresh */}
-      {isLoading && metrics && (
+      {(isLoading && levelMetrics) && (
         <div className="fixed top-20 right-6 z-50">
           <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-4">
             <LoadingSpinner size="sm" text="Atualizando..." />
+          </div>
+        </div>
+      )}
+      
+      {/* Pending overlay for transitions */}
+      {isPending && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50">
+          <div className="bg-blue-500/90 backdrop-blur-sm rounded-xl shadow-lg p-3 text-white">
+            <div className="flex items-center space-x-2">
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+              <span className="text-sm font-medium">Processando...</span>
+            </div>
           </div>
         </div>
       )}
@@ -209,27 +242,18 @@ function App() {
         onClose={() => setShowPerformanceDashboard(false)}
       />
       
-      {/* Cache Manager */}
-      {showCacheManager && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">Gerenciador de Cache</h2>
-              <button
-                onClick={() => setShowCacheManager(false)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-              <CacheManager />
-            </div>
-          </div>
+      {/* Cache Notifications */}
+      {cacheNotifications.map((notification, index) => (
+        <div key={notification.id} style={{ top: `${4 + index * 80}px` }} className="fixed right-4 z-50">
+          <CacheNotification
+            message={notification.message}
+            isVisible={true}
+            onClose={() => removeCacheNotification(notification.id)}
+          />
         </div>
-      )}
+      ))}
+      
+
     </div>
   );
 };

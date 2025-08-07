@@ -21,7 +21,7 @@ const getMetricConfig = (type: TicketStatus) => {
         iconColor: 'text-blue-600 dark:text-blue-400',
         textColor: 'text-blue-900 dark:text-blue-100',
         borderColor: 'border-blue-200 dark:border-blue-800',
-      });
+      };
     case 'progress':
       return {
         title: 'Em Progresso',
@@ -125,6 +125,19 @@ export const MetricCard = React.memo<MetricCardProps>(function MetricCard({
   change,
   onClick,
 }) {
+  console.log('🔍 MetricCard - PROPS RECEBIDAS:', {
+    type,
+    value,
+    change,
+    'typeof value': typeof value,
+    'value === 0': value === 0,
+    'value == 0': value == 0,
+    'Number(value)': Number(value),
+    'value === null': value === null,
+    'value === undefined': value === undefined
+  });
+
+  
   // Memoizar configuração do tipo
   const config = useMemo(() => getMetricConfig(type), [type]);
   

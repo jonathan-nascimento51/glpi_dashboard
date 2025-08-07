@@ -104,8 +104,8 @@ export const StatusCard = memo<StatusCardProps>(function StatusCard({
   
   // Memoizar valor formatado
   const formattedValue = useMemo(() => {
-    return title === 'Sistema' ? (value > 0 ? 'Online' : 'Offline') : formatNumber(value)
-  }, [title, value])
+    return formatNumber(value);
+  }, [value])
 
 
   return (

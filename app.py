@@ -2,6 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask_caching import Cache
 import logging
+import redis
 from backend.config.settings import active_config
 from backend.api.routes import api_bp
 
@@ -18,11 +19,28 @@ def create_app(config=None):
     else:
         app.config.from_object(config)
     
-    # Configura cache
-    cache_config = {
-        'CACHE_TYPE': 'SimpleCache',
-        'CACHE_DEFAULT_TIMEOUT': 300  # 5 minutos
-    }
+    # Configura cache com Redis e fallback
+    try:
+        # Tenta conectar ao Redis
+        redis_client = redis.from_url(app.config.get('REDIS_URL', 'redis://localhost:6379/0'))
+        redis_client.ping()  # Testa conexão
+        
+        cache_config = {
+            'CACHE_TYPE': 'RedisCache',
+            'CACHE_REDIS_URL': app.config.get('CACHE_REDIS_URL', 'redis://localhost:6379/0'),
+            'CACHE_DEFAULT_TIMEOUT': app.config.get('CACHE_DEFAULT_TIMEOUT', 300),
+            'CACHE_KEY_PREFIX': app.config.get('CACHE_KEY_PREFIX', 'glpi_dashboard:')
+        }
+        print("✓ Redis cache configurado com sucesso")
+        
+    except (redis.ConnectionError, redis.TimeoutError, Exception) as e:
+        # Fallback para SimpleCache se Redis não estiver disponível
+        print(f"⚠ Redis não disponível ({e}), usando SimpleCache como fallback")
+        cache_config = {
+            'CACHE_TYPE': 'SimpleCache',
+            'CACHE_DEFAULT_TIMEOUT': app.config.get('CACHE_DEFAULT_TIMEOUT', 300)
+        }
+    
     app.config.update(cache_config)
     cache.init_app(app)
     
