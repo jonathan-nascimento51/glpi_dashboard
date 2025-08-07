@@ -21,52 +21,56 @@ const levelConfig = {
   n1: {
     title: "Nível N1",
     color: "from-slate-600 to-slate-700",
-    bgColor: "figma-level-badge",
-    textColor: "text-slate-700 dark:text-slate-300"
+    bgColor: "bg-slate-100 dark:bg-slate-800",
+    textColor: "text-slate-900 dark:text-slate-100 font-bold"
   },
   n2: {
     title: "Nível N2",
     color: "from-slate-700 to-slate-800",
-    bgColor: "figma-level-badge",
-    textColor: "text-slate-700 dark:text-slate-300"
+    bgColor: "bg-slate-100 dark:bg-slate-800",
+    textColor: "text-slate-900 dark:text-slate-100 font-bold"
   },
   n3: {
     title: "Nível N3",
     color: "from-slate-500 to-slate-600",
-    bgColor: "figma-level-badge",
-    textColor: "text-slate-700 dark:text-slate-300"
+    bgColor: "bg-slate-100 dark:bg-slate-800",
+    textColor: "text-slate-900 dark:text-slate-100 font-bold"
   },
   n4: {
     title: "Nível N4",
     color: "from-slate-800 to-slate-900",
-    bgColor: "figma-level-badge",
-    textColor: "text-slate-700 dark:text-slate-300"
+    bgColor: "bg-slate-100 dark:bg-slate-800",
+    textColor: "text-slate-900 dark:text-slate-100 font-bold"
   }
 }
 
 const statusConfig = {
   novos: {
     icon: AlertCircle,
-    color: "text-blue-600 dark:text-blue-400",
-    bgColor: "figma-status-badge-blue border-0",
+    color: "text-gray-900 dark:text-gray-100",
+    bgColor: "bg-blue-100 dark:bg-blue-900/30 border-0",
+    iconColor: "text-blue-600 dark:text-blue-400",
     label: "Novos"
   },
   progresso: {
     icon: Clock,
-    color: "text-yellow-600 dark:text-yellow-400",
-    bgColor: "figma-status-badge-yellow border-0",
+    color: "text-gray-900 dark:text-gray-100",
+    bgColor: "bg-yellow-100 dark:bg-yellow-900/30 border-0",
+    iconColor: "text-yellow-600 dark:text-yellow-400",
     label: "Em Progresso"
   },
   pendentes: {
     icon: Users,
-    color: "text-red-600 dark:text-red-400",
-    bgColor: "figma-status-badge-red border-0",
+    color: "text-gray-900 dark:text-gray-100",
+    bgColor: "bg-red-100 dark:bg-red-900/30 border-0",
+    iconColor: "text-red-600 dark:text-red-400",
     label: "Pendentes"
   },
   resolvidos: {
     icon: CheckCircle,
-    color: "text-green-600 dark:text-green-400",
-    bgColor: "figma-status-badge-green border-0",
+    color: "text-gray-900 dark:text-gray-100",
+    bgColor: "bg-green-100 dark:bg-green-900/30 border-0",
+    iconColor: "text-green-600 dark:text-green-400",
     label: "Resolvidos"
   }
 }
@@ -135,7 +139,7 @@ const StatusItem = React.memo<{
           whileHover={{ scale: 1.1 }}
           transition={{ duration: 0.2 }}
         >
-          <Icon className={`h-4 w-4 ${statusConf.color}`} />
+          <Icon className={`h-4 w-4 ${statusConf.iconColor}`} />
         </motion.div>
         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
           {statusConf.label}

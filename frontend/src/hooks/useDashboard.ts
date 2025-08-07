@@ -97,7 +97,7 @@ const initialState: DashboardState = {
   searchQuery: '',
   searchResults: [],
   notifications: [],
-  theme: 'light',
+  theme: (localStorage.getItem('theme') as Theme) || 'light',
 
   dataIntegrityReport: null,
   monitoringAlerts: [],
@@ -152,6 +152,7 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
   const [performance, setPerformance] = useState<PerformanceMetrics | null>(null);
   const [cacheStatus, setCacheStatus] = useState<CacheConfig | null>(null);
   const [filters, setFilters] = useState<FilterParams>(initialFilters);
+  const [theme, setTheme] = useState<Theme>((localStorage.getItem('theme') as Theme) || 'light');
   const [isPending, startTransition] = useTransition();
   const { measureApiCall } = useApiPerformance();
 
@@ -254,7 +255,7 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     searchQuery: '',
     searchResults: [],
     filters,
-    theme: 'light',
+    theme,
     dataIntegrityReport: null,
     monitoringAlerts: [],
     loadData,
@@ -267,7 +268,10 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     search: () => {},
     addNotification: () => {},
     removeNotification: () => {},
-    changeTheme: () => {},
+    changeTheme: (newTheme: Theme) => {
+      setTheme(newTheme);
+      localStorage.setItem('theme', newTheme);
+    },
     updateDateRange: (dateRange: any) => {
       console.log('🔄 updateDateRange chamado com:', dateRange);
       const updatedFilters = { ...filters, dateRange };
