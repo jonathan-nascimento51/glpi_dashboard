@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Filtros de Data - Frontend</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .filter-inputs {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            align-items: end;
+        }
+        .filter-inputs input, .filter-inputs select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .filter-inputs label {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Teste de Filtros de Data - Frontend Dashboard GLPI</h1>
+    
+    <div class="test-section">
+        <h2>Teste Interativo de Filtros</h2>
+        <div class="filter-inputs">
+            <div>
+                <label>Data Início:</label>
+                <input type="date" id="startDate" value="2024-01-01">
+            </div>
+            <div>
+                <label>Data Fim:</label>
+                <input type="date" id="endDate" value="2024-01-31">
+            </div>
+            <div>
+                <label>Status:</label>
+                <select id="status">
+                    <option value="">Todos</option>
+                    <option value="aberto">Aberto</option>
+                    <option value="fechado">Fechado</option>
+                    <option value="pendente">Pendente</option>
+                </select>
+            </div>
+            <div>
+                <button onclick="testWithCurrentFilters()">Testar Filtros</button>
+                <button onclick="testWithoutFilters()">Sem Filtros</button>
+                <button onclick="clearResults()">Limpar</button>
+            </div>
+        </div>
+        <div id="interactive-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Testes Pré-definidos</h2>
+        <button onclick="testJanuary2024()">Janeiro 2024</button>
+        <button onclick="testJune2024()">Junho 2024</button>
+        <button onclick="testCurrentMonth()">Mês Atual</button>
+        <button onclick="compareAllTests()">Comparar Todos</button>
+        <div id="predefined-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Debug - Logs da Aplicação</h2>
+        <button onclick="showConsoleLogs()">Mostrar Logs do Console</button>
+        <button onclick="testFrontendFunction()">Testar Função Frontend</button>
+        <div id="debug-result" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        let testResults = {};
+        let consoleLogs = [];
+        
+        // Capturar logs do console
+        const originalLog = console.log;
+        const originalError = console.error;
+        
+        console.log = function(...args) {
+            consoleLogs.push({ type: 'log', time: new Date().toLocaleTimeString(), args });
+            originalLog.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            consoleLogs.push({ type: 'error', time: new Date().toLocaleTimeString(), args });
+            originalError.apply(console, args);
+        };
+
+        async function makeApiRequest(filters = {}) {
+            try {
+                const queryParams = new URLSearchParams();
+                
+                // Mapear filtros para os nomes esperados pela API
+                const filterMapping = {
+                    startDate: 'start_date',
+                    endDate: 'end_date',
+                    status: 'status',
+                    priority: 'priority',
+                    level: 'level'
+                };
+                
+                Object.entries(filters).forEach(([key, value]) => {
+                    if (value !== null && value !== undefined && value !== '') {
+                        const apiKey = filterMapping[key] || key;
+                        queryParams.append(apiKey, value.toString());
+                    }
+                });
+                
+                const url = queryParams.toString() 
+                    ? `${API_BASE}/metrics?${queryParams.toString()}`
+                    : `${API_BASE}/metrics`;
+                
+                console.log('🔍 Filtros originais:', filters);
+                console.log('🔍 Query params construídos:', queryParams.toString());
+                console.log('🔍 Fazendo requisição para:', url);
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('✅ Resposta recebida:', data);
+                
+                return data;
+            } catch (error) {
+                console.error('❌ Erro na requisição:', error);
+                throw error;
+            }
+        }
+
+        async function testWithCurrentFilters() {
+            const resultDiv = document.getElementById('interactive-result');
+            resultDiv.textContent = 'Carregando...';
+            
+            try {
+                const filters = {
+                    startDate: document.getElementById('startDate').value,
+                    endDate: document.getElementById('endDate').value,
+                    status: document.getElementById('status').value
+                };
+                
+                const data = await makeApiRequest(filters);
+                const summary = extractSummary(data);
+                
+                resultDiv.className = 'result success';
+                resultDiv.textContent = `✅ Sucesso com filtros!\n\nFiltros aplicados:\n${JSON.stringify(filters, null, 2)}\n\nResultado:\n${summary}`;
+                
+                testResults['current'] = { filters, data };
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ Erro: ${error.message}`;
+            }
+        }
+
+        async function testWithoutFilters() {
+            const resultDiv = document.getElementById('interactive-result');
+            resultDiv.textContent = 'Carregando...';
+            
+            try {
+                const data = await makeApiRequest({});
+                const summary = extractSummary(data);
+                
+                resultDiv.className = 'result success';
+                resultDiv.textContent = `✅ Sucesso sem filtros!\n\nResultado:\n${summary}`;
+                
+                testResults['no_filters'] = { filters: {}, data };
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ Erro: ${error.message}`;
+            }
+        }
+
+        async function testJanuary2024() {
+            const resultDiv = document.getElementById('predefined-result');
+            resultDiv.textContent = 'Testando Janeiro 2024...';
+            
+            try {
+                const filters = { startDate: '2024-01-01', endDate: '2024-01-31' };
+                const data = await makeApiRequest(filters);
+                const summary = extractSummary(data);
+                
+                resultDiv.className = 'result success';
+                resultDiv.textContent = `✅ Janeiro 2024:\n${summary}`;
+                
+                testResults['january'] = { filters, data };
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ Erro Janeiro 2024: ${error.message}`;
+            }
+        }
+
+        async function testJune2024() {
+            const resultDiv = document.getElementById('predefined-result');
+            resultDiv.textContent = 'Testando Junho 2024...';
+            
+            try {
+                const filters = { startDate: '2024-06-01', endDate: '2024-06-30' };
+                const data = await makeApiRequest(filters);
+                const summary = extractSummary(data);
+                
+                resultDiv.className = 'result success';
+                resultDiv.textContent = `✅ Junho 2024:\n${summary}`;
+                
+                testResults['june'] = { filters, data };
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ Erro Junho 2024: ${error.message}`;
+            }
+        }
+
+        async function testCurrentMonth() {
+            const resultDiv = document.getElementById('predefined-result');
+            resultDiv.textContent = 'Testando mês atual...';
+            
+            try {
+                const now = new Date();
+                const startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+                const endDate = now.toISOString().split('T')[0];
+                
+                const filters = { startDate, endDate };
+                const data = await makeApiRequest(filters);
+                const summary = extractSummary(data);
+                
+                resultDiv.className = 'result success';
+                resultDiv.textContent = `✅ Mês Atual (${startDate} a ${endDate}):\n${summary}`;
+                
+                testResults['current_month'] = { filters, data };
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ Erro mês atual: ${error.message}`;
+            }
+        }
+
+        async function compareAllTests() {
+            const resultDiv = document.getElementById('predefined-result');
+            
+            if (Object.keys(testResults).length < 2) {
+                resultDiv.className = 'result warning';
+                resultDiv.textContent = '⚠️ Execute pelo menos 2 testes primeiro!';
+                return;
+            }
+            
+            let comparison = 'COMPARAÇÃO DE RESULTADOS:\n\n';
+            
+            Object.entries(testResults).forEach(([testName, result]) => {
+                const summary = extractSummary(result.data);
+                const total = getTotalTickets(result.data);
+                comparison += `${testName.toUpperCase()}: ${total} tickets\n`;
+                comparison += `Filtros: ${JSON.stringify(result.filters)}\n`;
+                comparison += `Detalhes: ${summary}\n\n`;
+            });
+            
+            // Verificar se os filtros estão funcionando
+            const totals = Object.values(testResults).map(result => getTotalTickets(result.data));
+            const uniqueTotals = [...new Set(totals)];
+            
+            if (uniqueTotals.length > 1) {
+                comparison += '✅ FILTROS FUNCIONANDO! Totais diferentes encontrados.';
+                resultDiv.className = 'result success';
+            } else {
+                comparison += '❌ POSSÍVEL PROBLEMA! Todos os totais são iguais.';
+                resultDiv.className = 'result error';
+            }
+            
+            resultDiv.textContent = comparison;
+        }
+
+        function showConsoleLogs() {
+            const resultDiv = document.getElementById('debug-result');
+            
+            if (consoleLogs.length === 0) {
+                resultDiv.className = 'result warning';
+                resultDiv.textContent = '⚠️ Nenhum log capturado ainda.';
+                return;
+            }
+            
+            let logsText = 'LOGS DO CONSOLE:\n\n';
+            consoleLogs.slice(-20).forEach(log => {
+                logsText += `[${log.time}] ${log.type.toUpperCase()}: ${log.args.join(' ')}\n`;
+            });
+            
+            resultDiv.className = 'result';
+            resultDiv.textContent = logsText;
+        }
+
+        async function testFrontendFunction() {
+            const resultDiv = document.getElementById('debug-result');
+            resultDiv.textContent = 'Testando função do frontend...';
+            
+            try {
+                // Tentar acessar a função fetchDashboardMetrics se estiver disponível
+                if (typeof window.fetchDashboardMetrics === 'function') {
+                    const filters = { startDate: '2024-01-01', endDate: '2024-01-31' };
+                    const data = await window.fetchDashboardMetrics(filters);
+                    
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = `✅ Função frontend funcionando!\n${JSON.stringify(data, null, 2)}`;
+                } else {
+                    resultDiv.className = 'result warning';
+                    resultDiv.textContent = '⚠️ Função fetchDashboardMetrics não encontrada no window.\nIsso é normal se não estiver na página principal da aplicação.';
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ Erro ao testar função frontend: ${error.message}`;
+            }
+        }
+
+        function clearResults() {
+            document.getElementById('interactive-result').textContent = '';
+            document.getElementById('predefined-result').textContent = '';
+            document.getElementById('debug-result').textContent = '';
+            testResults = {};
+            consoleLogs = [];
+        }
+
+        function extractSummary(data) {
+            if (!data || !data.data) return 'Dados inválidos';
+            
+            const metrics = data.data;
+            let summary = '';
+            
+            if (metrics.niveis && metrics.niveis.geral) {
+                const geral = metrics.niveis.geral;
+                summary += `Total: ${geral.total || 0}\n`;
+                summary += `Resolvidos: ${geral.resolvidos || 0}\n`;
+                summary += `Pendentes: ${geral.pendentes || 0}\n`;
+                summary += `Novos: ${geral.novos || 0}\n`;
+                summary += `Progresso: ${geral.progresso || 0}`;
+            } else {
+                summary = 'Estrutura de dados não reconhecida';
+            }
+            
+            return summary;
+        }
+
+        function getTotalTickets(data) {
+            if (!data || !data.data) return 0;
+            
+            const metrics = data.data;
+            if (metrics.niveis && metrics.niveis.geral) {
+                return metrics.niveis.geral.total || 0;
+            }
+            
+            return 0;
+        }
+        
+        // Inicializar com data atual
+        document.getElementById('endDate').value = new Date().toISOString().split('T')[0];
+    </script>
+</body>
+</html>

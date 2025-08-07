@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Filtros de Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 3px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <h1>Teste de Filtros de Data - GLPI Dashboard</h1>
+    
+    <div class="test-section">
+        <h2>Teste 1: Sem Filtros</h2>
+        <button onclick="testNoFilters()">Testar sem filtros</button>
+        <div id="result1" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Teste 2: Filtro Janeiro 2024</h2>
+        <button onclick="testJanuaryFilter()">Testar Janeiro 2024</button>
+        <div id="result2" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Teste 3: Filtro Junho 2024</h2>
+        <button onclick="testJuneFilter()">Testar Junho 2024</button>
+        <div id="result3" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Teste 4: Comparação de Resultados</h2>
+        <button onclick="compareResults()">Comparar Todos os Resultados</button>
+        <div id="result4" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000/api';
+        
+        let testResults = {
+            noFilters: null,
+            january: null,
+            june: null
+        };
+
+        async function fetchWithFilters(filters = {}) {
+            try {
+                const queryParams = new URLSearchParams();
+                
+                Object.entries(filters).forEach(([key, value]) => {
+                    if (value !== null && value !== undefined && value !== '') {
+                        queryParams.append(key, value.toString());
+                    }
+                });
+                
+                const url = queryParams.toString() 
+                    ? `${API_BASE_URL}/metrics?${queryParams.toString()}`
+                    : `${API_BASE_URL}/metrics`;
+                
+                console.log('Fazendo requisição para:', url);
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                return result;
+                
+            } catch (error) {
+                console.error('Erro ao buscar métricas:', error);
+                throw error;
+            }
+        }
+
+        async function testNoFilters() {
+            const resultDiv = document.getElementById('result1');
+            resultDiv.textContent = 'Carregando...';
+            resultDiv.className = 'result';
+            
+            try {
+                const result = await fetchWithFilters();
+                testResults.noFilters = result;
+                
+                const summary = {
+                    total_resolvidos: result.data?.geral?.resolvidos || 0,
+                    total_geral: result.data?.geral?.total || 0,
+                    tempo_execucao: result.tempo_execucao,
+                    success: result.success
+                };
+                
+                resultDiv.textContent = JSON.stringify(summary, null, 2);
+                resultDiv.className = 'result success';
+                
+            } catch (error) {
+                resultDiv.textContent = `Erro: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        async function testJanuaryFilter() {
+            const resultDiv = document.getElementById('result2');
+            resultDiv.textContent = 'Carregando...';
+            resultDiv.className = 'result';
+            
+            try {
+                const filters = {
+                    start_date: '2024-01-01',
+                    end_date: '2024-01-31'
+                };
+                
+                const result = await fetchWithFilters(filters);
+                testResults.january = result;
+                
+                const summary = {
+                    filtros_aplicados: filters,
+                    total_resolvidos: result.data?.geral?.resolvidos || 0,
+                    total_geral: result.data?.geral?.total || 0,
+                    tempo_execucao: result.tempo_execucao,
+                    success: result.success
+                };
+                
+                resultDiv.textContent = JSON.stringify(summary, null, 2);
+                resultDiv.className = 'result success';
+                
+            } catch (error) {
+                resultDiv.textContent = `Erro: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        async function testJuneFilter() {
+            const resultDiv = document.getElementById('result3');
+            resultDiv.textContent = 'Carregando...';
+            resultDiv.className = 'result';
+            
+            try {
+                const filters = {
+                    start_date: '2024-06-01',
+                    end_date: '2024-06-30'
+                };
+                
+                const result = await fetchWithFilters(filters);
+                testResults.june = result;
+                
+                const summary = {
+                    filtros_aplicados: filters,
+                    total_resolvidos: result.data?.geral?.resolvidos || 0,
+                    total_geral: result.data?.geral?.total || 0,
+                    tempo_execucao: result.tempo_execucao,
+                    success: result.success
+                };
+                
+                resultDiv.textContent = JSON.stringify(summary, null, 2);
+                resultDiv.className = 'result success';
+                
+            } catch (error) {
+                resultDiv.textContent = `Erro: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        async function compareResults() {
+            const resultDiv = document.getElementById('result4');
+            
+            if (!testResults.noFilters || !testResults.january || !testResults.june) {
+                resultDiv.textContent = 'Execute todos os testes anteriores primeiro!';
+                resultDiv.className = 'result error';
+                return;
+            }
+            
+            const comparison = {
+                sem_filtros: {
+                    resolvidos: testResults.noFilters.data?.geral?.resolvidos || 0,
+                    total: testResults.noFilters.data?.geral?.total || 0
+                },
+                janeiro_2024: {
+                    resolvidos: testResults.january.data?.geral?.resolvidos || 0,
+                    total: testResults.january.data?.geral?.total || 0
+                },
+                junho_2024: {
+                    resolvidos: testResults.june.data?.geral?.resolvidos || 0,
+                    total: testResults.june.data?.geral?.total || 0
+                },
+                conclusao: {
+                    filtros_funcionando: (
+                        testResults.noFilters.data?.geral?.resolvidos !== testResults.january.data?.geral?.resolvidos &&
+                        testResults.january.data?.geral?.resolvidos !== testResults.june.data?.geral?.resolvidos
+                    ),
+                    diferenca_jan_jun: Math.abs(
+                        (testResults.january.data?.geral?.resolvidos || 0) - 
+                        (testResults.june.data?.geral?.resolvidos || 0)
+                    )
+                }
+            };
+            
+            resultDiv.textContent = JSON.stringify(comparison, null, 2);
+            resultDiv.className = comparison.conclusao.filtros_funcionando ? 'result success' : 'result error';
+        }
+    </script>
+</body>
+</html>

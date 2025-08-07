@@ -23,6 +23,7 @@ interface UseDashboardReturn {
   lastUpdated: Date | null;
   performance: PerformanceMetrics | null;
   cacheStatus: CacheConfig | null;
+  updateFilters: (newFilters: FilterParams) => void;
 }
 
 const initialFilterState: FilterState = {
@@ -258,16 +259,21 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     monitoringAlerts: [],
     loadData,
     forceRefresh,
-    updateFilters: (newFilters: any) => {
-      setFilters(prev => ({ ...prev, ...newFilters }));
-      loadData(newFilters);
+    updateFilters: (newFilters: FilterParams) => {
+      const updatedFilters = { ...filters, ...newFilters };
+      setFilters(updatedFilters);
+      loadData(updatedFilters);
     },
     search: () => {},
     addNotification: () => {},
     removeNotification: () => {},
     changeTheme: () => {},
     updateDateRange: (dateRange: any) => {
-      loadData({ ...filters, dateRange });
+      console.log('🔄 updateDateRange chamado com:', dateRange);
+      const updatedFilters = { ...filters, dateRange };
+      console.log('🔄 Filtros atualizados:', updatedFilters);
+      setFilters(updatedFilters);
+      loadData(updatedFilters);
     },
     refreshData: loadData,
     lastUpdated,

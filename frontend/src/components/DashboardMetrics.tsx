@@ -29,7 +29,8 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
     refreshData,
     lastUpdated,
     performance,
-    cacheStatus
+    cacheStatus,
+    updateFilters
   } = useDashboard(initialFilters);
 
   const [filters, setFilters] = useState<FilterParams>(initialFilters);
@@ -61,8 +62,12 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
 
   const handleFilterChange = (newFilters: Partial<FilterParams>) => {
     const updatedFilters = { ...filters, ...newFilters };
+    console.log('🔍 DashboardMetrics - Filtros atuais:', filters);
+    console.log('🔍 DashboardMetrics - Novos filtros:', newFilters);
+    console.log('🔍 DashboardMetrics - Filtros combinados:', updatedFilters);
     setFilters(updatedFilters);
-    // Note: In a real implementation, you'd trigger a new data fetch here
+    // Aplicar os filtros imediatamente
+    updateFilters(updatedFilters);
   };
 
   const renderMetricsCard = (title: string, value: number, trend?: number) => (

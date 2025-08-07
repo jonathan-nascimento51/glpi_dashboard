@@ -503,10 +503,30 @@ export const fetchDashboardMetrics = async (
   try {
     const queryParams = new URLSearchParams();
     
+    // Mapear filtros para os nomes esperados pela API
+    const filterMapping: Record<string, string> = {
+      startDate: 'start_date',
+      endDate: 'end_date',
+      status: 'status',
+      priority: 'priority',
+      level: 'level'
+    };
+    
+    // Processar dateRange se presente
+    if (filters.dateRange && filters.dateRange.startDate && filters.dateRange.endDate) {
+      console.log('📅 Processando dateRange:', filters.dateRange);
+      queryParams.append('start_date', filters.dateRange.startDate);
+      queryParams.append('end_date', filters.dateRange.endDate);
+    } else {
+      console.log('⚠️ dateRange não encontrado ou incompleto:', filters.dateRange);
+    }
+    
     // Adicionar filtros como parâmetros de query com validação de tipos
     Object.entries(filters).forEach(([key, value]) => {
+      if (key === 'dateRange') return; // Já processado acima
       if (value !== null && value !== undefined && value !== '') {
-        queryParams.append(key, value.toString());
+        const apiKey = filterMapping[key] || key;
+        queryParams.append(apiKey, value.toString());
       }
     });
     
@@ -514,7 +534,9 @@ export const fetchDashboardMetrics = async (
       ? `${API_BASE_URL}/metrics?${queryParams.toString()}`
       : `${API_BASE_URL}/metrics`;
     
-    console.log('Fazendo requisição para:', url);
+    console.log('🔍 Filtros originais:', filters);
+    console.log('🔍 Query params construídos:', queryParams.toString());
+    console.log('🔍 Fazendo requisição para:', url);
     
     const startTime = performance.now();
     
