@@ -438,6 +438,13 @@ class GLPIService:
             if start_date or end_date:
                 return self.get_dashboard_metrics_with_date_filter(start_date, end_date)
             
+            # Verificar cache primeiro
+            if self._is_cache_valid('dashboard_metrics'):
+                cached_data = self._get_cache_data('dashboard_metrics')
+                if cached_data:
+                    self.logger.info("Retornando métricas do cache")
+                    return cached_data
+            
             # Autenticar uma única vez
             if not self._ensure_authenticated():
                 return ResponseFormatter.format_error_response("Falha na autenticação com GLPI", ["Erro de autenticação"])
@@ -452,16 +459,61 @@ class GLPIService:
             # Obter métricas por nível (grupos N1-N4)
             raw_metrics = self._get_metrics_by_level_internal()
             
-            # Usar o formatador unificado
-            execution_time = time.time() - start_time
-            raw_data = {
-                'by_level': raw_metrics,
-                'general': general_totals
+            # Usar o mesmo formato da função com filtros para consistência
+            # Calcular totais gerais
+            general_novos = general_totals.get("Novo", 0)
+            general_pendentes = general_totals.get("Pendente", 0)
+            general_progresso = general_totals.get("Processando (atribuído)", 0) + general_totals.get("Processando (planejado)", 0)
+            general_resolvidos = general_totals.get("Solucionado", 0) + general_totals.get("Fechado", 0)
+            general_total = general_novos + general_pendentes + general_progresso + general_resolvidos
+            
+            # Métricas por nível
+            level_metrics = {
+                "n1": {"novos": 0, "progresso": 0, "pendentes": 0, "resolvidos": 0},
+                "n2": {"novos": 0, "progresso": 0, "pendentes": 0, "resolvidos": 0},
+                "n3": {"novos": 0, "progresso": 0, "pendentes": 0, "resolvidos": 0},
+                "n4": {"novos": 0, "progresso": 0, "pendentes": 0, "resolvidos": 0}
             }
-            return ResponseFormatter.format_dashboard_response(
-                raw_data,
-                start_time=start_time
-            )
+            
+            for level_name, level_data in raw_metrics.items():
+                level_key = level_name.lower()
+                if level_key in level_metrics:
+                    level_metrics[level_key]["novos"] = level_data.get("Novo", 0)
+                    level_metrics[level_key]["progresso"] = level_data.get("Processando (atribuído)", 0) + level_data.get("Processando (planejado)", 0)
+                    level_metrics[level_key]["pendentes"] = level_data.get("Pendente", 0)
+                    level_metrics[level_key]["resolvidos"] = level_data.get("Solucionado", 0) + level_data.get("Fechado", 0)
+            
+            result = {
+                "success": True,
+                "data": {
+                    "niveis": {
+                        "geral": {
+                            "novos": general_novos,
+                            "pendentes": general_pendentes,
+                            "progresso": general_progresso,
+                            "resolvidos": general_resolvidos,
+                            "total": general_total
+                        },
+                        "n1": level_metrics["n1"],
+                        "n2": level_metrics["n2"],
+                        "n3": level_metrics["n3"],
+                        "n4": level_metrics["n4"]
+                    },
+                    "tendencias": {
+                        "novos_hoje": 0,
+                        "resolvidos_hoje": 0,
+                        "pendencias_ontem": 0,
+                        "variacao_pendentes": 0
+                    }
+                },
+                "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
+                "tempo_execucao": (time.time() - start_time) * 1000
+            }
+            
+            # Salvar no cache
+            self._set_cache_data('dashboard_metrics', result, ttl=180)
+            
+            return result
             
         except Exception as e:
             self.logger.error(f"Erro ao obter métricas do dashboard: {e}")
@@ -569,28 +621,33 @@ class GLPIService:
         self.logger.info(f"Métricas gerais calculadas com filtro: novos={general_novos}, pendentes={general_pendentes}, progresso={general_progresso}, resolvidos={general_resolvidos}, total={general_total}")
         
         result = {
-            "novos": general_novos,
-            "pendentes": general_pendentes,
-            "progresso": general_progresso,
-            "resolvidos": general_resolvidos,
-            "total": general_total,
-            "niveis": {
-                "n1": level_metrics["n1"],
-                "n2": level_metrics["n2"],
-                "n3": level_metrics["n3"],
-                "n4": level_metrics["n4"]
+            "success": True,
+            "data": {
+                "niveis": {
+                    "geral": {
+                        "novos": general_novos,
+                        "pendentes": general_pendentes,
+                        "progresso": general_progresso,
+                        "resolvidos": general_resolvidos,
+                        "total": general_total
+                    },
+                    "n1": level_metrics["n1"],
+                    "n2": level_metrics["n2"],
+                    "n3": level_metrics["n3"],
+                    "n4": level_metrics["n4"]
+                },
+                "tendencias": {
+                    "novos_hoje": 0,
+                    "resolvidos_hoje": 0,
+                    "pendencias_ontem": 0,
+                    "variacao_pendentes": 0
+                },
+                "filtros_aplicados": {
+                    "data_inicio": start_date,
+                    "data_fim": end_date
+                }
             },
-            "tendencias": {
-                "novos": "0",
-                "pendentes": "0",
-                "progresso": "0",
-                "resolvidos": "0"
-            },
-            "detalhes": raw_metrics,
-            "filtro_data": {
-                "data_inicio": start_date,
-                "data_fim": end_date
-            }
+            "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
         }
         
         self.logger.info(f"Métricas formatadas com filtro de data: {result}")

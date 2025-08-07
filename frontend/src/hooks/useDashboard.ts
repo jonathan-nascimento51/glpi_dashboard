@@ -275,14 +275,8 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     cacheStatus
   };
   
-  // console.log('🔍 useDashboard - Retornando dados:', {
-  //   'data completo': data,
-  //   'metrics retornado': returnData.metrics,
-  //   'levelMetrics retornado': returnData.levelMetrics,
-  //   'data?.niveis': data?.niveis,
-  //   'data?.niveis?.geral': data?.niveis?.geral,
-  //   'initialMetrics': initialMetrics
-  // });
+  // Debug logs comentados para evitar erros de sintaxe
+  // console.log('useDashboard - Retornando dados:', returnData);
   
   return returnData;
 };
