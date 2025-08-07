@@ -124,14 +124,14 @@
 
   /* Dark theme glass card */
   body.dark .figma-glass-card {
-    background: rgba(30, 41, 59, 0.8);
-    border: 1px solid rgba(71, 85, 105, 0.3);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   }
 
   body.dark .figma-glass-card:hover {
-    background: rgba(30, 41, 59, 0.9);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     transform: translateY(-2px);
   }
   
@@ -251,15 +251,15 @@
   }
 
   body.dark .figma-summary-card {
-    background: rgba(30, 41, 59, 0.8);
-    border: 1px solid rgba(71, 85, 105, 0.3);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
   body.dark .figma-summary-card:hover {
-    background: rgba(30, 41, 59, 0.9);
+    background: rgba(255, 255, 255, 0.08);
     transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   }
   
   .figma-level-card {
@@ -288,15 +288,15 @@
   }
 
   body.dark .figma-level-card {
-    background: rgba(30, 41, 59, 0.8);
-    border: 1px solid rgba(71, 85, 105, 0.3);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
   body.dark .figma-level-card:hover {
-    background: rgba(30, 41, 59, 0.9);
+    background: rgba(255, 255, 255, 0.08);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   }
   
   .figma-ranking-tecnicos {
@@ -324,14 +324,14 @@
   }
 
   body.dark .figma-ranking-tecnicos {
-    background: rgba(30, 41, 59, 0.8);
-    border: 1px solid rgba(71, 85, 105, 0.3);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
   body.dark .figma-ranking-tecnicos:hover {
-    background: rgba(30, 41, 59, 0.9);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   }
   
   .figma-tickets-recentes {
@@ -359,14 +359,14 @@
   }
 
   body.dark .figma-tickets-recentes {
-    background: rgba(30, 41, 59, 0.8);
-    border: 1px solid rgba(71, 85, 105, 0.3);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
   body.dark .figma-tickets-recentes:hover {
-    background: rgba(30, 41, 59, 0.9);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   }
   
   /* Color Tokens */
@@ -976,4 +976,76 @@ h3 {
 
 .shine-effect:hover::before {
   animation: shine 0.6s ease-in-out;
+}
+
+/* Classes personalizadas para substituir backgrounds muito brancos */
+.figma-badge-subtle {
+  @apply bg-white/20 text-gray-700 border-white/30;
+  backdrop-filter: blur(8px);
+}
+
+.dark .figma-badge-subtle {
+  @apply bg-white/10 text-gray-300 border-white/20;
+  backdrop-filter: blur(8px);
+}
+
+.figma-level-badge {
+  @apply bg-white/15 text-gray-700 border-white/25;
+  backdrop-filter: blur(10px);
+}
+
+.dark .figma-level-badge {
+  @apply bg-white/5 text-gray-300 border-white/20;
+  backdrop-filter: blur(10px);
+}
+
+.figma-priority-badge {
+  @apply bg-white/20 border-white/30;
+  backdrop-filter: blur(8px);
+}
+
+.dark .figma-priority-badge {
+  @apply bg-white/10 border-white/20;
+  backdrop-filter: blur(8px);
+}
+
+/* Status badges com glassmorphism */
+.figma-status-badge-blue {
+  @apply bg-blue-500/20 text-blue-700 border-blue-500/30;
+  backdrop-filter: blur(8px);
+}
+
+.dark .figma-status-badge-blue {
+  @apply bg-blue-400/20 text-blue-300 border-blue-400/30;
+  backdrop-filter: blur(8px);
+}
+
+.figma-status-badge-yellow {
+  @apply bg-yellow-500/20 text-yellow-700 border-yellow-500/30;
+  backdrop-filter: blur(8px);
+}
+
+.dark .figma-status-badge-yellow {
+  @apply bg-yellow-400/20 text-yellow-300 border-yellow-400/30;
+  backdrop-filter: blur(8px);
+}
+
+.figma-status-badge-red {
+  @apply bg-red-500/20 text-red-700 border-red-500/30;
+  backdrop-filter: blur(8px);
+}
+
+.dark .figma-status-badge-red {
+  @apply bg-red-400/20 text-red-300 border-red-400/30;
+  backdrop-filter: blur(8px);
+}
+
+.figma-status-badge-green {
+  @apply bg-green-500/20 text-green-700 border-green-500/30;
+  backdrop-filter: blur(8px);
+}
+
+.dark .figma-status-badge-green {
+  @apply bg-green-400/20 text-green-300 border-green-400/30;
+  backdrop-filter: blur(8px);
 }

@@ -261,31 +261,31 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
             title="Chamados Ativos"
             value={totalActive}
             icon={AlertTriangle}
-            color="text-slate-700"
-            bgColor="bg-slate-100"
+            color="text-slate-700 dark:text-slate-300"
+            bgColor="figma-level-badge"
             trend={5}
           />
           <StatusCard
             title="Resolvidos"
             value={metrics.resolvidos}
             icon={CheckCircle}
-            color="text-slate-700"
-            bgColor="bg-slate-100"
+            color="text-slate-700 dark:text-slate-300"
+            bgColor="figma-level-badge"
             trend={12}
           />
           <StatusCard
             title="Taxa de Resolução"
             value={parseFloat(resolutionRate)}
             icon={BarChart3}
-            color="text-slate-700"
-            bgColor="bg-slate-100"
+            color="text-slate-700 dark:text-slate-300"
+            bgColor="figma-level-badge"
           />
           <StatusCard
             title="Técnicos Ativos"
             value={technicianRanking.length}
             icon={Users}
-            color="text-slate-700"
-            bgColor="bg-slate-100"
+            color="text-slate-700 dark:text-slate-300"
+            bgColor="figma-level-badge"
           />
         </div>
 
@@ -345,7 +345,7 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
                         <div className="text-sm font-medium text-gray-900 truncate flex-1 mr-2">
                           #{ticket.id}
                         </div>
-                        <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-slate-100 text-slate-700">
+                        <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium figma-badge-subtle">
                           {ticket.priority}
                         </span>
                       </div>

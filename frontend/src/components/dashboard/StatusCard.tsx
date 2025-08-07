@@ -97,7 +97,7 @@ export function StatusCard({
       whileHover="hover"
       className={cn("cursor-pointer", className)}
     >
-      <Card className="figma-glass-card relative overflow-hidden rounded-2xl">
+      <Card className="figma-glass-card relative overflow-hidden rounded-2xl shadow-none">
         {/* Gradient Background */}
         <div className={cn(
           "absolute inset-0 bg-gradient-to-br opacity-5",

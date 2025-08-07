@@ -20,52 +20,52 @@ const levelConfig = {
   n1: {
     title: "Nível N1",
     color: "from-slate-600 to-slate-700",
-    bgColor: "bg-slate-50",
-    textColor: "text-slate-700"
+    bgColor: "figma-level-badge",
+    textColor: "text-slate-700 dark:text-slate-300"
   },
   n2: {
     title: "Nível N2",
     color: "from-slate-700 to-slate-800",
-    bgColor: "bg-slate-50",
-    textColor: "text-slate-700"
+    bgColor: "figma-level-badge",
+    textColor: "text-slate-700 dark:text-slate-300"
   },
   n3: {
     title: "Nível N3",
     color: "from-slate-500 to-slate-600",
-    bgColor: "bg-slate-50",
-    textColor: "text-slate-700"
+    bgColor: "figma-level-badge",
+    textColor: "text-slate-700 dark:text-slate-300"
   },
   n4: {
     title: "Nível N4",
     color: "from-slate-800 to-slate-900",
-    bgColor: "bg-slate-50",
-    textColor: "text-slate-700"
+    bgColor: "figma-level-badge",
+    textColor: "text-slate-700 dark:text-slate-300"
   }
 }
 
 const statusConfig = {
   novos: {
     icon: AlertCircle,
-    color: "text-blue-600",
-    bgColor: "bg-blue-100",
+    color: "text-blue-600 dark:text-blue-400",
+    bgColor: "figma-status-badge-blue border-0",
     label: "Novos"
   },
   progresso: {
     icon: Clock,
-    color: "text-yellow-600",
-    bgColor: "bg-yellow-100",
+    color: "text-yellow-600 dark:text-yellow-400",
+    bgColor: "figma-status-badge-yellow border-0",
     label: "Em Progresso"
   },
   pendentes: {
     icon: Users,
-    color: "text-red-600",
-    bgColor: "bg-red-100",
+    color: "text-red-600 dark:text-red-400",
+    bgColor: "figma-status-badge-red border-0",
     label: "Pendentes"
   },
   resolvidos: {
     icon: CheckCircle,
-    color: "text-green-600",
-    bgColor: "bg-green-100",
+    color: "text-green-600 dark:text-green-400",
+    bgColor: "figma-status-badge-green border-0",
     label: "Resolvidos"
   }
 }
@@ -74,7 +74,7 @@ export function LevelMetricsGrid({ metrics, className }: LevelMetricsGridProps) 
   // Verificação de segurança para evitar erros
   if (!metrics || !metrics.niveis) {
     return (
-      <Card className={cn("figma-glass-card h-full", className)}>
+      <Card className={cn("figma-glass-card h-full shadow-none", className)}>
         <CardContent className="flex items-center justify-center h-48">
           <div className="text-center">
             <div className="figma-body mb-2">📊</div>
@@ -144,7 +144,7 @@ export function LevelMetricsGrid({ metrics, className }: LevelMetricsGridProps) 
               whileHover="hover"
               className="h-full flex cursor-pointer"
             >
-              <Card className="figma-glass-card border-0 shadow-sm hover:shadow-md h-full w-full flex flex-col relative overflow-hidden">
+              <Card className="figma-glass-card border-0 shadow-none h-full w-full flex flex-col relative overflow-hidden">
                 <CardHeader className="pb-3 px-4 pt-4 flex-shrink-0">
                   <div className="flex items-center justify-between relative z-10">
                     <CardTitle className="text-lg font-semibold flex items-center gap-3">

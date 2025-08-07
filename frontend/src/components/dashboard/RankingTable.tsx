@@ -30,43 +30,53 @@ export function RankingTable({
   const topTechnicians = data
     .sort((a, b) => b.total - a.total)
 
-  // Configuração de cores e estilos por nível com tons corporativos suaves
+  // Configuração de cores e estilos por nível com gradientes sutis como os StatusCards
   const getLevelStyle = (level?: string) => {
     switch (level) {
       case 'N4':
         return {
-          bgGradient: 'bg-gradient-to-br from-slate-400 to-slate-500',
+          bgGradient: 'bg-gradient-to-br from-slate-500 to-slate-600',
           accentColor: '#64748B',
-          shadowColor: 'shadow-slate-500/10',
-          hoverShadow: 'hover:shadow-slate-500/20'
+          shadowColor: 'shadow-slate-500/5',
+          hoverShadow: 'hover:shadow-slate-500/10',
+          backgroundOpacity: 'opacity-5',
+          borderOpacity: 'opacity-20'
         }
       case 'N3':
         return {
-          bgGradient: 'bg-gradient-to-br from-emerald-400 to-emerald-500',
+          bgGradient: 'bg-gradient-to-br from-emerald-500 to-emerald-600',
           accentColor: '#10B981',
-          shadowColor: 'shadow-emerald-500/10',
-          hoverShadow: 'hover:shadow-emerald-500/20'
+          shadowColor: 'shadow-emerald-500/5',
+          hoverShadow: 'hover:shadow-emerald-500/10',
+          backgroundOpacity: 'opacity-5',
+          borderOpacity: 'opacity-20'
         }
       case 'N2':
         return {
-          bgGradient: 'bg-gradient-to-br from-amber-400 to-amber-500',
+          bgGradient: 'bg-gradient-to-br from-amber-500 to-orange-600',
           accentColor: '#F59E0B',
-          shadowColor: 'shadow-amber-500/10',
-          hoverShadow: 'hover:shadow-amber-500/20'
+          shadowColor: 'shadow-amber-500/5',
+          hoverShadow: 'hover:shadow-amber-500/10',
+          backgroundOpacity: 'opacity-5',
+          borderOpacity: 'opacity-20'
         }
       case 'N1':
         return {
-          bgGradient: 'bg-gradient-to-br from-indigo-400 to-indigo-500',
-          accentColor: '#6366F1',
-          shadowColor: 'shadow-indigo-500/10',
-          hoverShadow: 'hover:shadow-indigo-500/20'
+          bgGradient: 'bg-gradient-to-br from-blue-500 to-cyan-600',
+          accentColor: '#3B82F6',
+          shadowColor: 'shadow-blue-500/5',
+          hoverShadow: 'hover:shadow-blue-500/10',
+          backgroundOpacity: 'opacity-5',
+          borderOpacity: 'opacity-20'
         }
       default:
         return {
-          bgGradient: 'bg-gradient-to-br from-gray-400 to-gray-500',
+          bgGradient: 'bg-gradient-to-br from-gray-500 to-slate-600',
           accentColor: '#6B7280',
-          shadowColor: 'shadow-gray-500/10',
-          hoverShadow: 'hover:shadow-gray-500/20'
+          shadowColor: 'shadow-gray-500/5',
+          hoverShadow: 'hover:shadow-gray-500/10',
+          backgroundOpacity: 'opacity-5',
+          borderOpacity: 'opacity-20'
         }
     }
   }
@@ -139,7 +149,7 @@ export function RankingTable({
   }
 
   return (
-    <Card className={cn("figma-ranking-tecnicos w-full h-full flex flex-col rounded-2xl", className)}>
+    <Card className={cn("figma-ranking-tecnicos w-full h-full flex flex-col rounded-2xl shadow-none", className)}>
       <CardHeader className="px-5 pt-4 pb-2 flex-shrink-0">
         <div className="flex items-center justify-between">
           <CardTitle className="figma-heading-large flex items-center gap-2">
@@ -192,8 +202,9 @@ export function RankingTable({
                 className={cn(
                   "flex-shrink-0 w-36 flex flex-col justify-between p-6 border-r border-white/10 last:border-r-0",
                   "cursor-pointer relative group overflow-visible",
-                  "figma-glass-card shadow-lg hover:shadow-xl rounded-xl border-0",
+                  "figma-glass-card rounded-xl border-0 shadow-none",
                   "border-l-4",
+                  levelStyle.shadowColor,
                   levelStyle.hoverShadow
                 )}
                 style={{ 
@@ -202,17 +213,23 @@ export function RankingTable({
                   zIndex: 2
                 }}
               >
-                {/* Gradient Background - Opacidade mais suave */}
+                {/* Gradient Background - Seguindo padrão dos StatusCards */}
                 <div className={cn(
-                  "absolute inset-0 bg-gradient-to-br opacity-3 rounded-xl group-hover:opacity-8 transition-opacity duration-300",
-                  levelStyle.bgGradient
+                  "absolute inset-0 bg-gradient-to-br rounded-xl transition-opacity duration-300",
+                  levelStyle.bgGradient,
+                  levelStyle.backgroundOpacity,
+                  "group-hover:opacity-10"
                 )} />
                 
-                {/* Enhanced Glow Effect on Hover */}
-                <div className={cn(
-                  "absolute -inset-1 rounded-xl opacity-0 group-hover:opacity-40 transition-all duration-300 blur-md",
-                  levelStyle.bgGradient
-                )} />
+                {/* Animated Border - Seguindo padrão dos StatusCards */}
+                <div className="absolute inset-0 rounded-xl">
+                  <div className={cn(
+                    "absolute inset-0 rounded-xl bg-gradient-to-r blur-sm transition-opacity duration-300",
+                    levelStyle.bgGradient,
+                    levelStyle.borderOpacity,
+                    "group-hover:opacity-30"
+                  )} />
+                </div>
                 <div className="flex items-center justify-between mb-1.5 relative z-10">
                   <motion.div 
                     variants={iconVariants}

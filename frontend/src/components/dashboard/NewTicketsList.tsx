@@ -21,20 +21,24 @@ interface NewTicketsListProps {
 }
 
 const priorityConfig = {
-  'Alta': {
-    color: 'bg-slate-100 text-slate-800 border-slate-200',
+  'Muito Alta': {
+    color: 'figma-status-badge-red',
     icon: '🔴'
   },
+  'Alta': {
+    color: 'figma-priority-badge text-orange-700 dark:text-orange-300',
+    icon: '🟠'
+  },
   'Média': {
-    color: 'bg-slate-100 text-slate-700 border-slate-200',
+    color: 'figma-status-badge-yellow',
     icon: '🟡'
   },
   'Baixa': {
-    color: 'bg-slate-50 text-slate-600 border-slate-200',
+    color: 'figma-status-badge-green',
     icon: '🟢'
   },
   'Normal': {
-    color: 'bg-slate-100 text-slate-700 border-slate-200',
+    color: 'figma-status-badge-blue',
     icon: '🔵'
   }
 }
@@ -129,7 +133,7 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
   }
 
   return (
-    <Card className={cn("figma-tickets-recentes h-full flex flex-col", className)}>
+    <Card className={cn("figma-tickets-recentes h-full flex flex-col shadow-none", className)}>
       <CardHeader className="px-5 pt-5 pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="figma-heading-large flex items-center gap-2">
@@ -140,7 +144,7 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
           </CardTitle>
           
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200">
+            <Badge variant="outline" className="figma-badge-subtle">
               {tickets.length} tickets
             </Badge>
             <Button
@@ -216,7 +220,7 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
                 <motion.div
                   key={ticket.id}
                   variants={itemVariants}
-                  className="group p-5 figma-glass-card rounded-lg transition-all duration-200 border border-transparent"
+                  className="group p-5 figma-glass-card rounded-lg transition-all duration-200 border border-transparent shadow-none"
                 >
                   <div className="flex items-start gap-4">
                     {/* Ícone de prioridade */}

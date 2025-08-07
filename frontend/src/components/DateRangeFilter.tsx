@@ -154,7 +154,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
         animate="visible"
         className={cn("flex items-center gap-3", className)}
       >
-        <Card className="border-0 shadow-sm bg-white/50 backdrop-blur-sm">
+        <Card className="border-0 shadow-none bg-white/50 backdrop-blur-sm">
           <CardContent className="p-3">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 text-sm text-gray-600">

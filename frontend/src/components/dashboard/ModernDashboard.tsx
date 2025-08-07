@@ -50,7 +50,7 @@ export function ModernDashboard({
 
   // Componente de Skeleton melhorado
   const SkeletonCard = () => (
-    <Card className="figma-glass-card">
+    <Card className="figma-glass-card shadow-none">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div className="h-4 figma-glass-card rounded animate-pulse w-20" />
@@ -92,7 +92,7 @@ export function ModernDashboard({
         {/* Charts skeleton */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           <div className="xl:col-span-2">
-            <Card className="figma-glass-card">
+            <Card className="figma-glass-card shadow-none">
               <CardHeader>
                 <div className="h-6 figma-glass-card rounded animate-pulse w-40" />
               </CardHeader>
