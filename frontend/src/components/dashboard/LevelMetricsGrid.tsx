@@ -114,22 +114,22 @@ export function LevelMetricsGrid({ metrics, className }: LevelMetricsGridProps) 
               className="h-full flex"
             >
               <Card className="figma-glass-card border-0 shadow-sm hover:shadow-md transition-all duration-300 h-full w-full flex flex-col">
-                <CardHeader className="pb-2 px-4 pt-4 flex-shrink-0">
+                <CardHeader className="pb-3 px-4 pt-4 flex-shrink-0">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-base font-semibold flex items-center gap-2">
-                      <div className={`p-1.5 rounded-lg bg-gradient-to-br shadow-sm ${config.color}`}>
-                        <TrendingUp className="h-4 w-4 text-white" />
+                    <CardTitle className="text-lg font-semibold flex items-center gap-3">
+                      <div className={`p-2 rounded-lg bg-gradient-to-br shadow-sm ${config.color}`}>
+                        <TrendingUp className="h-5 w-5 text-white" />
                       </div>
                       <span className="whitespace-nowrap">{config.title}</span>
                     </CardTitle>
-                    <Badge variant="outline" className={`${config.bgColor} ${config.textColor} border-0 text-xs px-2 py-1`}>
+                    <Badge variant="outline" className={`${config.bgColor} ${config.textColor} border-0 text-sm px-3 py-1.5 font-bold`}>
                       {total}
                     </Badge>
                   </div>
                 </CardHeader>
                 
                 <CardContent className="px-4 pb-4 flex-1">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full h-full">
                     {Object.entries(statusConfig).map(([status, statusConf]) => {
                       const Icon = statusConf.icon
                       const value = levelData[status as keyof typeof levelData]
@@ -137,17 +137,17 @@ export function LevelMetricsGrid({ metrics, className }: LevelMetricsGridProps) 
                       return (
                         <div
                           key={status}
-                          className="flex items-center justify-between p-3 rounded-lg figma-glass-card transition-all duration-200 hover:scale-[1.02] hover:shadow-md min-h-[50px] border border-gray-100/50 dark:border-gray-800/50"
+                          className="flex items-center justify-between p-4 rounded-lg figma-glass-card transition-all duration-200 hover:scale-[1.02] hover:shadow-md min-h-[60px] border border-gray-100/50 dark:border-gray-800/50"
                         >
-                          <div className="flex items-center gap-2">
-                            <div className={`p-1.5 rounded-lg ${statusConf.bgColor} shadow-sm`}>
-                              <Icon className={`h-3.5 w-3.5 ${statusConf.color}`} />
+                          <div className="flex items-center gap-3">
+                            <div className={`p-2 rounded-lg ${statusConf.bgColor} shadow-sm`}>
+                              <Icon className={`h-4 w-4 ${statusConf.color}`} />
                             </div>
-                            <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                               {statusConf.label}
                             </span>
                           </div>
-                          <span className={`text-sm font-bold ${statusConf.color} tabular-nums`}>
+                          <span className={`text-lg font-bold ${statusConf.color} tabular-nums`}>
                             {value || 0}
                           </span>
                         </div>
