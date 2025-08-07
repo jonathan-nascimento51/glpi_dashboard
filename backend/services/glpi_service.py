@@ -48,7 +48,8 @@ class GLPIService:
             'active_technicians': {'data': None, 'timestamp': None, 'ttl': 600},  # 10 minutos
             'field_ids': {'data': None, 'timestamp': None, 'ttl': 1800},  # 30 minutos
             'dashboard_metrics': {'data': None, 'timestamp': None, 'ttl': 180},  # 3 minutos
-            'dashboard_metrics_filtered': {}  # Cache dinâmico para filtros de data
+            'dashboard_metrics_filtered': {},  # Cache dinâmico para filtros de data
+            'priority_names': {}  # Cache para nomes de prioridade
         }
     
     def _is_cache_valid(self, cache_key: str, sub_key: str = None) -> bool:
@@ -1549,6 +1550,40 @@ class GLPIService:
             self.logger.error(f"Erro ao buscar nome do usuário {user_id}: {e}")
             return f"Usuário {user_id}"
     
+    def _get_priority_name_by_id(self, priority_id: str) -> str:
+        """Converte ID de prioridade do GLPI para nome legível"""
+        if not priority_id:
+            return 'Média'
+            
+        try:
+            # Verificar cache primeiro
+            cache_key = f'priority_name_{priority_id}'
+            if self._is_cache_valid('priority_names', cache_key):
+                cached_name = self._get_cache_data('priority_names', cache_key)
+                if cached_name:
+                    return cached_name
+                
+            # Mapeamento padrão de prioridades do GLPI
+            priority_map = {
+                '1': 'Muito Baixa',
+                '2': 'Baixa', 
+                '3': 'Média',
+                '4': 'Alta',
+                '5': 'Muito Alta',
+                '6': 'Crítica'
+            }
+            
+            priority_name = priority_map.get(str(priority_id), 'Média')
+            
+            # Armazenar no cache por 1 hora
+            self._set_cache_data('priority_names', priority_name, 3600, cache_key)
+            
+            return priority_name
+            
+        except Exception as e:
+            self.logger.error(f"Erro ao converter prioridade {priority_id}: {e}")
+            return 'Média'
+    
     def get_new_tickets(self, limit: int = 10) -> List[Dict[str, any]]:
         """Busca tickets com status 'novo' com detalhes completos"""
         if not self._ensure_authenticated():
@@ -1591,6 +1626,10 @@ class GLPIService:
                     requester_id = ticket_data.get('4', '')
                     requester_name = self._get_user_name_by_id(str(requester_id)) if requester_id else 'Não informado'
                     
+                    # Extrair ID da prioridade e converter para nome
+                    priority_id = ticket_data.get('3', '3')  # Default para prioridade média (ID 3)
+                    priority_name = self._get_priority_name_by_id(str(priority_id))
+                    
                     # Extrair informações do ticket
                     ticket_info = {
                         'id': str(ticket_data.get('2', '')),  # ID do ticket
@@ -1598,7 +1637,7 @@ class GLPIService:
                         'description': ticket_data.get('21', '')[:100] + '...' if len(ticket_data.get('21', '')) > 100 else ticket_data.get('21', ''),  # Descrição truncada
                         'date': ticket_data.get('15', ''),  # Data de abertura
                         'requester': requester_name,  # Nome do solicitante
-                        'priority': ticket_data.get('3', 'Normal'),  # Prioridade
+                        'priority': priority_name,  # Nome da prioridade convertido
                         'status': 'Novo'
                     }
                     tickets.append(ticket_info)

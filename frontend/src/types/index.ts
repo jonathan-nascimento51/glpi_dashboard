@@ -48,6 +48,15 @@ export interface FilterState {
   levels: string[];
   status: TicketStatus[];
   priority: ('high' | 'medium' | 'low')[];
+  dateRange?: DateRange;
+}
+
+export interface DateRange {
+  startDate: string;
+  endDate: string;
+  label: string;
+  start?: Date;
+  end?: Date;
 }
 
 export interface NotificationData {
@@ -99,6 +108,7 @@ export interface DashboardState {
   searchResults: SearchResult[];
   notifications: NotificationData[];
   theme: Theme;
+  dateRange?: DateRange;
 
   technicianRanking: TechnicianRanking[];
   dataIntegrityReport: any | null; // Será tipado adequadamente quando importado

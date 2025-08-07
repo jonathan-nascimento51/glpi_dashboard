@@ -1,6 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { MetricsData, SystemStatus } from '../types';
-import { DateRange } from '@/types/dashboard';
+import { MetricsData, SystemStatus, DateRange } from '../types';
 
 const API_BASE_URL = 'http://localhost:5000/api';
 

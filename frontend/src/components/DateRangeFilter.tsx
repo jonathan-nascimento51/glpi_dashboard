@@ -12,15 +12,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-
-// Interface unificada que suporta ambos os formatos
-export interface DateRange {
-  startDate?: string;  // Para compatibilidade com versão antiga
-  endDate?: string;    // Para compatibilidade com versão antiga
-  start?: Date;        // Para compatibilidade com versão nova
-  end?: Date;          // Para compatibilidade com versão nova
-  label: string;
-}
+import { DateRange } from '../types';
 
 interface DateRangeFilterProps {
   // Props da versão antiga

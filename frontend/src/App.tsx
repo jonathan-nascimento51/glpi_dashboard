@@ -26,6 +26,7 @@ function App() {
     addNotification,
     removeNotification,
     changeTheme,
+    updateDateRange,
   } = useDashboard();
 
   const [showIntegrityMonitor, setShowIntegrityMonitor] = useState(true);
@@ -112,12 +113,12 @@ function App() {
         systemActive={true}
         searchQuery={searchQuery}
         searchResults={[]}
-        dateRange={{ startDate: '', endDate: '' }}
+        dateRange={filters.dateRange || { startDate: '', endDate: '', label: 'Selecionar período' }}
         onSearch={search}
         theme={theme}
         onThemeChange={changeTheme}
         onNotification={(title, message, type) => addNotification({ title, message, type, duration: 3000 })}
-        onDateRangeChange={() => {}}
+        onDateRangeChange={updateDateRange}
       />
 
       {/* Dashboard Principal */}

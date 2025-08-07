@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { DashboardState, MetricsData, SystemStatus, FilterState, NotificationData, Theme, TechnicianRanking } from '../types';
+import { DashboardState, MetricsData, SystemStatus, FilterState, NotificationData, Theme, TechnicianRanking, DateRange } from '../types';
 import { apiService } from '../services/api';
 import { dataMonitor, MonitoringAlert } from '../utils/dataMonitor';
-import { DateRange } from '../components/DateRangeFilter';
 
 const initialFilterState: FilterState = {
   period: 'today',

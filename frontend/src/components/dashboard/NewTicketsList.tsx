@@ -21,6 +21,10 @@ interface NewTicketsListProps {
 }
 
 const priorityConfig = {
+  'Crítica': {
+    color: 'figma-status-badge-red',
+    icon: '🔴'
+  },
   'Muito Alta': {
     color: 'figma-status-badge-red',
     icon: '🔴'
@@ -36,6 +40,10 @@ const priorityConfig = {
   'Baixa': {
     color: 'figma-status-badge-green',
     icon: '🟢'
+  },
+  'Muito Baixa': {
+    color: 'figma-status-badge-blue',
+    icon: '🔵'
   },
   'Normal': {
     color: 'figma-status-badge-blue',
