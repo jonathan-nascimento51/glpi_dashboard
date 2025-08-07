@@ -499,12 +499,7 @@ class GLPIService:
                         "n3": level_metrics["n3"],
                         "n4": level_metrics["n4"]
                     },
-                    "tendencias": {
-                        "novos_hoje": 0,
-                        "resolvidos_hoje": 0,
-                        "pendencias_ontem": 0,
-                        "variacao_pendentes": 0
-                    }
+                    "tendencias": self._calculate_trends(general_novos, general_pendentes, general_progresso, general_resolvidos)
                 },
                 "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
                 "tempo_execucao": (time.time() - start_time) * 1000
@@ -518,6 +513,56 @@ class GLPIService:
         except Exception as e:
             self.logger.error(f"Erro ao obter métricas do dashboard: {e}")
             return ResponseFormatter.format_error_response(f"Erro interno: {str(e)}", [str(e)])
+    
+    def _get_general_totals_internal(self, start_date: str = None, end_date: str = None) -> dict:
+        """Método interno para obter totais gerais com filtro de data"""
+        status_totals = {}
+        
+        # Buscar totais por status sem filtro de grupo (mesma lógica do _get_general_metrics_internal)
+        for status_name, status_id in self.status_map.items():
+            search_params = {
+                "is_deleted": 0,
+                "range": "0-0",
+                "criteria[0][field]": self.field_ids["STATUS"],
+                "criteria[0][searchtype]": "equals",
+                "criteria[0][value]": status_id,
+            }
+            
+            # Adicionar filtros de data se fornecidos (formato ISO funciona melhor)
+            criteria_index = 1
+            if start_date:
+                # Usar formato ISO (YYYY-MM-DD) que funciona corretamente
+                search_params[f"criteria[{criteria_index}][link]"] = "AND"
+                search_params[f"criteria[{criteria_index}][field]"] = "15"  # Campo 15 é o correto para data de criação
+                search_params[f"criteria[{criteria_index}][searchtype]"] = "morethan"
+                search_params[f"criteria[{criteria_index}][value]"] = start_date
+                criteria_index += 1
+                
+            if end_date:
+                # Usar formato ISO (YYYY-MM-DD) que funciona corretamente
+                search_params[f"criteria[{criteria_index}][link]"] = "AND"
+                search_params[f"criteria[{criteria_index}][field]"] = "15"  # Campo 15 é o correto para data de criação
+                search_params[f"criteria[{criteria_index}][searchtype]"] = "lessthan"
+                search_params[f"criteria[{criteria_index}][value]"] = end_date
+            
+            try:
+                response = self._make_authenticated_request(
+                    'GET',
+                    f"{self.glpi_url}/search/Ticket",
+                    params=search_params
+                )
+                
+                if response and "Content-Range" in response.headers:
+                    count = int(response.headers["Content-Range"].split("/")[-1])
+                    status_totals[status_name] = count
+                else:
+                    status_totals[status_name] = 0
+                    
+            except Exception as e:
+                self.logger.error(f"Erro ao buscar contagem geral para {status_name}: {e}")
+                status_totals[status_name] = 0
+        
+        return status_totals
     
     def get_dashboard_metrics_with_date_filter(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Dict[str, any]:
         """Retorna métricas formatadas para o dashboard React com filtro de data.
@@ -636,12 +681,7 @@ class GLPIService:
                     "n3": level_metrics["n3"],
                     "n4": level_metrics["n4"]
                 },
-                "tendencias": {
-                    "novos_hoje": 0,
-                    "resolvidos_hoje": 0,
-                    "pendencias_ontem": 0,
-                    "variacao_pendentes": 0
-                },
+                "tendencias": self._get_trends_with_logging(general_novos, general_pendentes, general_progresso, general_resolvidos, start_date, end_date),
                 "filtros_aplicados": {
                     "data_inicio": start_date,
                     "data_fim": end_date
@@ -656,6 +696,92 @@ class GLPIService:
         self._set_cache_data('dashboard_metrics_filtered', result, ttl=180, sub_key=cache_key)
         
         return result
+    
+    def _get_trends_with_logging(self, general_novos: int, general_pendentes: int, general_progresso: int, general_resolvidos: int, start_date: str, end_date: str) -> dict:
+        """Função auxiliar para fazer log e chamar _calculate_trends"""
+        self.logger.info(f"Chamando _calculate_trends com start_date={start_date}, end_date={end_date}")
+        return self._calculate_trends(general_novos, general_pendentes, general_progresso, general_resolvidos, start_date, end_date)
+    
+    def _calculate_trends(self, current_novos: int, current_pendentes: int, current_progresso: int, current_resolvidos: int, current_start_date: Optional[str] = None, current_end_date: Optional[str] = None) -> dict:
+        """Calcula as tendências comparando dados atuais com período anterior
+        
+        Args:
+            current_novos: Número atual de tickets novos
+            current_pendentes: Número atual de tickets pendentes
+            current_progresso: Número atual de tickets em progresso
+            current_resolvidos: Número atual de tickets resolvidos
+            current_start_date: Data inicial do período atual (opcional)
+            current_end_date: Data final do período atual (opcional)
+        """
+        self.logger.info(f"_calculate_trends chamada com: novos={current_novos}, pendentes={current_pendentes}, progresso={current_progresso}, resolvidos={current_resolvidos}, start_date={current_start_date}, end_date={current_end_date}")
+        try:
+            from datetime import datetime, timedelta
+            
+            # Se há filtros de data aplicados, calcular período anterior baseado neles
+            if current_start_date and current_end_date:
+                # Calcular a duração do período atual
+                current_start = datetime.strptime(current_start_date, '%Y-%m-%d')
+                current_end = datetime.strptime(current_end_date, '%Y-%m-%d')
+                period_duration = (current_end - current_start).days
+                
+                # Calcular período anterior com a mesma duração
+                end_date_previous = (current_start - timedelta(days=1)).strftime('%Y-%m-%d')
+                start_date_previous = (current_start - timedelta(days=period_duration + 1)).strftime('%Y-%m-%d')
+                
+                self.logger.info(f"Calculando tendências com filtro: período atual {current_start_date} a {current_end_date}, período anterior {start_date_previous} a {end_date_previous}")
+            else:
+                # Usar período padrão de 7 dias
+                end_date_previous = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+                start_date_previous = (datetime.now() - timedelta(days=14)).strftime('%Y-%m-%d')
+                
+                self.logger.info(f"Calculando tendências sem filtro: período anterior {start_date_previous} a {end_date_previous}")
+            
+            # Obter métricas do período anterior
+            previous_general = self._get_general_totals_internal(start_date_previous, end_date_previous)
+            
+            # Calcular totais do período anterior
+            previous_novos = previous_general.get("Novo", 0)
+            previous_pendentes = previous_general.get("Pendente", 0)
+            previous_progresso = previous_general.get("Processando (atribuído)", 0) + previous_general.get("Processando (planejado)", 0)
+            previous_resolvidos = previous_general.get("Solucionado", 0) + previous_general.get("Fechado", 0)
+            
+            self.logger.info(f"Dados período anterior: novos={previous_novos}, pendentes={previous_pendentes}, progresso={previous_progresso}, resolvidos={previous_resolvidos}")
+            self.logger.info(f"Dados período atual: novos={current_novos}, pendentes={current_pendentes}, progresso={current_progresso}, resolvidos={current_resolvidos}")
+            
+            # Calcular percentuais de variação
+            def calculate_percentage_change(current: int, previous: int) -> str:
+                if previous == 0:
+                    return "+100%" if current > 0 else "0%"
+                
+                change = ((current - previous) / previous) * 100
+                if change > 0:
+                    return f"+{change:.1f}%"
+                elif change < 0:
+                    return f"{change:.1f}%"
+                else:
+                    return "0%"
+            
+            trends = {
+                "novos": calculate_percentage_change(current_novos, previous_novos),
+                "pendentes": calculate_percentage_change(current_pendentes, previous_pendentes),
+                "progresso": calculate_percentage_change(current_progresso, previous_progresso),
+                "resolvidos": calculate_percentage_change(current_resolvidos, previous_resolvidos)
+            }
+            
+            self.logger.info(f"Tendências calculadas: {trends}")
+            return trends
+            
+        except Exception as e:
+            self.logger.error(f"Erro ao calcular tendências: {e}")
+            import traceback
+            self.logger.error(f"Stack trace: {traceback.format_exc()}")
+            # Retornar valores padrão em caso de erro
+            return {
+                "novos": "0%",
+                "pendentes": "0%",
+                "progresso": "0%",
+                "resolvidos": "0%"
+            }
     
     def get_technician_ranking(self, limit: int = None) -> list:
         """Retorna ranking de técnicos por total de chamados seguindo a base de conhecimento

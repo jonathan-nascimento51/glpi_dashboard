@@ -236,7 +236,10 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
   }, [loadData]);
 
   const returnData = {
-    metrics: data?.niveis?.geral || initialMetrics,
+    metrics: {
+      ...(data?.niveis?.geral || initialMetrics),
+      tendencias: data?.tendencias || initialMetrics.tendencias
+    },
     levelMetrics: {
       niveis: data?.niveis || {
         n1: initialMetrics,

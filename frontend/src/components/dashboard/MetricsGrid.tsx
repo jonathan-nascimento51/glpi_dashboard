@@ -61,46 +61,9 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
   
   // Track component renders
   useEffect(() => {
-    // Log DETALHADO das props recebidas para depuração - APÓS CORREÇÃO DO CACHE
-    // console.log('🔍 MetricsGrid - Props recebidas COMPLETAS (APÓS CORREÇÃO):', {
-    //   metrics,
-    //   hasMetrics: !!metrics,
-    //   metricsType: typeof metrics,
-    //   metricsKeys: metrics ? Object.keys(metrics) : [],
-    //   metricsValues: metrics ? {
-    //     novos: metrics.novos,
-    //     pendentes: metrics.pendentes,
-    //     progresso: metrics.progresso,
-    //     resolvidos: metrics.resolvidos,
-    //     total: metrics.total,
-    //     niveis: metrics.niveis,
-    //     tendencias: metrics.tendencias
-    //   } : 'METRICS É NULL/UNDEFINED',
-    //   onFilterByStatus: !!onFilterByStatus
-    // });
+    // Performance tracking
+    trackRender();
     
-    // Log específico dos valores que deveriam aparecer nos cards
-    if (metrics) {
-      // console.log('📊 MetricsGrid - VALORES DOS CARDS (APÓS CORREÇÃO):', {
-      //   'Card Novos': metrics.novos,
-      //   'Card Pendentes': metrics.pendentes,
-      //   'Card Em Progresso': metrics.progresso,
-      //   'Card Resolvidos': metrics.resolvidos,
-      //   'Total Calculado': metrics.total
-      // });
-      
-      // Verificar se os valores são válidos
-      if (metrics.novos === undefined || metrics.pendentes === undefined || 
-          metrics.progresso === undefined || metrics.resolvidos === undefined) {
-        // console.error('❌ MetricsGrid - ALGUNS VALORES SÃO UNDEFINED!');
-      } else {
-        // console.log('✅ MetricsGrid - TODOS OS VALORES SÃO VÁLIDOS!');
-      }
-    } else {
-      // console.error('❌ MetricsGrid - METRICS É NULL/UNDEFINED - Cards ficarão zerados!');
-    }
-    
-    trackRender()
     measureRender(() => {
       performanceMonitor.markComponentRender('MetricsGrid', {
         hasMetrics: !!metrics,

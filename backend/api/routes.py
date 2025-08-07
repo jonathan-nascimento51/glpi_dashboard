@@ -91,7 +91,14 @@ def get_metrics():
         logger.info(f"Buscando métricas do GLPI com filtros: data={start_date} até {end_date}, status={status}, prioridade={priority}, nível={level}")
         
         # Usar método com filtros se parâmetros fornecidos, senão usar método padrão
-        if any([start_date, end_date, status, priority, level, technician, category]):
+        if start_date or end_date:
+            # Para filtros de data, usar o método específico
+            metrics_data = glpi_service.get_dashboard_metrics_with_date_filter(
+                start_date=start_date,
+                end_date=end_date
+            )
+        elif any([status, priority, level, technician, category]):
+            # Para outros filtros, usar o método geral
             metrics_data = glpi_service.get_dashboard_metrics_with_filters(
                 start_date=start_date,
                 end_date=end_date,
