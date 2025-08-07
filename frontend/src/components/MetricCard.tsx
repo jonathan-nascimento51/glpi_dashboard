@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Plus, Clock, AlertCircle, CheckCircle } from 'lucide-react';
 import { TicketStatus } from '../types';
 
@@ -83,13 +84,60 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   const Icon = config.icon;
   const TrendIcon = changeData.isPositive ? TrendingUp : TrendingDown;
 
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20, scale: 0.9 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut"
+      }
+    },
+    hover: {
+      y: -8,
+      scale: 1.03,
+      transition: {
+        duration: 0.3,
+        ease: "easeInOut"
+      }
+    }
+  }
+
+  const iconVariants = {
+    hover: {
+      scale: 1.2,
+      rotate: 10,
+      transition: {
+        duration: 0.3,
+        ease: "easeInOut"
+      }
+    }
+  }
+
+  const numberVariants = {
+    hidden: { scale: 0 },
+    visible: {
+      scale: 1,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut",
+        delay: 0.2
+      }
+    }
+  }
+
   return (
-    <div
+    <motion.div
+      variants={cardVariants}
+      initial="hidden"
+      animate="visible"
+      whileHover="hover"
       className={`
-        metric-card fade-in cursor-pointer group
+        metric-card cursor-pointer group relative overflow-hidden
         ${config.bgColor} ${config.borderColor}
-        hover:shadow-lg hover:scale-105
-        transition-all duration-300
+        figma-glass-card rounded-2xl
       `}
       onClick={onClick}
       role="button"
@@ -101,11 +149,18 @@ export const MetricCard: React.FC<MetricCardProps> = ({
         }
       }}
     >
-      <div className="flex items-center justify-between mb-4">
-        <div className={`p-3 rounded-lg ${config.bgColor} float`}>
+      <div className="flex items-center justify-between mb-4 relative z-10">
+        <motion.div 
+          variants={iconVariants}
+          className={`p-3 rounded-lg ${config.bgColor} shadow-lg`}
+        >
           <Icon className={`w-6 h-6 ${config.iconColor}`} />
-        </div>
-        <div className="flex items-center space-x-1 min-w-0">
+        </motion.div>
+        <motion.div 
+          className="flex items-center space-x-1 min-w-0"
+          whileHover={{ scale: 1.05 }}
+          transition={{ duration: 0.2 }}
+        >
           <TrendIcon 
             className={`w-4 h-4 flex-shrink-0 ${
               changeData.isPositive 
@@ -126,17 +181,20 @@ export const MetricCard: React.FC<MetricCardProps> = ({
           >
             {changeData.display}
           </span>
-        </div>
+        </motion.div>
       </div>
       
-      <div className="space-y-2">
+      <div className="space-y-2 relative z-10">
         <h3 className={`text-sm font-medium ${config.textColor} truncate`}>
           {config.title}
         </h3>
         <div className="flex items-baseline space-x-2 min-w-0">
-          <span className={`text-2xl lg:text-3xl font-bold ${config.textColor} truncate flex-shrink-0`}>
+          <motion.span 
+            variants={numberVariants}
+            className={`text-2xl lg:text-3xl font-bold ${config.textColor} truncate flex-shrink-0`}
+          >
             {value.toLocaleString('pt-BR')}
-          </span>
+          </motion.span>
           <span className="text-xs lg:text-sm text-gray-500 dark:text-gray-400 truncate flex-shrink">
             chamados
           </span>
@@ -161,8 +219,18 @@ export const MetricCard: React.FC<MetricCardProps> = ({
         </div>
       </div>
       
-      {/* Hover effect indicator */}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-    </div>
+      {/* Gradient Background */}
+      <div className={`absolute inset-0 bg-gradient-to-br opacity-5 rounded-2xl ${config.bgColor}`} />
+      
+      {/* Shine Effect */}
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 opacity-0"
+        whileHover={{
+          opacity: [0, 1, 0],
+          x: [-100, 300]
+        }}
+        transition={{ duration: 0.6 }}
+      />
+    </motion.div>
   );
 };

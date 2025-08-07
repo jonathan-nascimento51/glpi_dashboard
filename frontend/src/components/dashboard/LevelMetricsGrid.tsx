@@ -86,13 +86,43 @@ export function LevelMetricsGrid({ metrics, className }: LevelMetricsGridProps) 
   }
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 20, scale: 0.9 },
     visible: {
       opacity: 1,
       y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut"
+      }
+    },
+    hover: {
+      y: -8,
+      scale: 1.03,
       transition: {
         duration: 0.3,
-        ease: "easeOut"
+        ease: "easeInOut"
+      }
+    }
+  }
+
+  const iconVariants = {
+    hover: {
+      scale: 1.2,
+      rotate: 10,
+      transition: {
+        duration: 0.3,
+        ease: "easeInOut"
+      }
+    }
+  }
+
+  const statusVariants = {
+    hover: {
+      scale: 1.05,
+      transition: {
+        duration: 0.2,
+        ease: "easeInOut"
       }
     }
   }
@@ -111,50 +141,86 @@ export function LevelMetricsGrid({ metrics, className }: LevelMetricsGridProps) 
               variants={itemVariants}
               initial="hidden"
               animate="visible"
-              className="h-full flex"
+              whileHover="hover"
+              className="h-full flex cursor-pointer"
             >
-              <Card className="figma-glass-card border-0 shadow-sm hover:shadow-md transition-all duration-300 h-full w-full flex flex-col">
+              <Card className="figma-glass-card border-0 shadow-sm hover:shadow-md h-full w-full flex flex-col relative overflow-hidden">
                 <CardHeader className="pb-3 px-4 pt-4 flex-shrink-0">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between relative z-10">
                     <CardTitle className="text-lg font-semibold flex items-center gap-3">
-                      <div className={`p-2 rounded-lg bg-gradient-to-br shadow-sm ${config.color}`}>
+                      <motion.div 
+                        variants={iconVariants}
+                        className={`p-2 rounded-lg bg-gradient-to-br shadow-sm ${config.color}`}
+                      >
                         <TrendingUp className="h-5 w-5 text-white" />
-                      </div>
+                      </motion.div>
                       <span className="whitespace-nowrap">{config.title}</span>
                     </CardTitle>
-                    <Badge variant="outline" className={`${config.bgColor} ${config.textColor} border-0 text-sm px-3 py-1.5 font-bold`}>
-                      {total}
-                    </Badge>
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Badge variant="outline" className={`${config.bgColor} ${config.textColor} border-0 text-sm px-3 py-1.5 font-bold`}>
+                        {total}
+                      </Badge>
+                    </motion.div>
                   </div>
                 </CardHeader>
                 
-                <CardContent className="px-4 pb-4 flex-1">
+                <CardContent className="px-4 pb-4 flex-1 relative z-10">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full h-full">
                     {Object.entries(statusConfig).map(([status, statusConf]) => {
                       const Icon = statusConf.icon
                       const value = levelData[status as keyof typeof levelData]
                       
                       return (
-                        <div
+                        <motion.div
                           key={status}
-                          className="flex items-center justify-between p-4 rounded-lg figma-glass-card transition-all duration-200 hover:scale-[1.02] hover:shadow-md min-h-[60px] border border-gray-100/50 dark:border-gray-800/50"
+                          variants={statusVariants}
+                          whileHover="hover"
+                          className="flex items-center justify-between p-4 rounded-lg figma-glass-card min-h-[60px] border border-gray-100/50 dark:border-gray-800/50 cursor-pointer"
                         >
                           <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-lg ${statusConf.bgColor} shadow-sm`}>
+                            <motion.div 
+                              className={`p-2 rounded-lg ${statusConf.bgColor} shadow-sm`}
+                              whileHover={{ scale: 1.1 }}
+                              transition={{ duration: 0.2 }}
+                            >
                               <Icon className={`h-4 w-4 ${statusConf.color}`} />
-                            </div>
+                            </motion.div>
                             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                               {statusConf.label}
                             </span>
                           </div>
-                          <span className={`text-lg font-bold ${statusConf.color} tabular-nums`}>
+                          <motion.span 
+                            className={`text-lg font-bold ${statusConf.color} tabular-nums`}
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+                          >
                             {value || 0}
-                          </span>
-                        </div>
+                          </motion.span>
+                        </motion.div>
                       )
                     })}
                   </div>
                 </CardContent>
+                
+                {/* Gradient Background */}
+                <div className={cn(
+                  "absolute inset-0 bg-gradient-to-br opacity-5 rounded-2xl",
+                  config.color
+                )} />
+                
+                {/* Shine Effect */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 opacity-0"
+                  whileHover={{
+                    opacity: [0, 1, 0],
+                    x: [-100, 300]
+                  }}
+                  transition={{ duration: 0.6 }}
+                />
               </Card>
             </motion.div>
           )

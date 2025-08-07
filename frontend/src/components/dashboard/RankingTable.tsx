@@ -30,40 +30,40 @@ export function RankingTable({
   const topTechnicians = data
     .sort((a, b) => b.total - a.total)
 
-  // Configuração de cores e estilos por nível com gradientes similares ao StatusCard
+  // Configuração de cores e estilos por nível com tons corporativos suaves
   const getLevelStyle = (level?: string) => {
     switch (level) {
       case 'N4':
         return {
-          bgGradient: 'bg-gradient-to-br from-blue-500 to-cyan-600',
-          accentColor: '#2D9CDB',
-          shadowColor: 'shadow-blue-500/10',
-          hoverShadow: 'hover:shadow-blue-500/20'
+          bgGradient: 'bg-gradient-to-br from-slate-400 to-slate-500',
+          accentColor: '#64748B',
+          shadowColor: 'shadow-slate-500/10',
+          hoverShadow: 'hover:shadow-slate-500/20'
         }
       case 'N3':
         return {
-          bgGradient: 'bg-gradient-to-br from-green-500 to-emerald-600',
-          accentColor: '#27AE60',
-          shadowColor: 'shadow-green-500/10',
-          hoverShadow: 'hover:shadow-green-500/20'
+          bgGradient: 'bg-gradient-to-br from-emerald-400 to-emerald-500',
+          accentColor: '#10B981',
+          shadowColor: 'shadow-emerald-500/10',
+          hoverShadow: 'hover:shadow-emerald-500/20'
         }
       case 'N2':
         return {
-          bgGradient: 'bg-gradient-to-br from-yellow-500 to-orange-600',
-          accentColor: '#F2994A',
-          shadowColor: 'shadow-orange-500/10',
-          hoverShadow: 'hover:shadow-orange-500/20'
+          bgGradient: 'bg-gradient-to-br from-amber-400 to-amber-500',
+          accentColor: '#F59E0B',
+          shadowColor: 'shadow-amber-500/10',
+          hoverShadow: 'hover:shadow-amber-500/20'
         }
       case 'N1':
         return {
-          bgGradient: 'bg-gradient-to-br from-purple-500 to-pink-600',
-          accentColor: '#9B51E0',
-          shadowColor: 'shadow-purple-500/10',
-          hoverShadow: 'hover:shadow-purple-500/20'
+          bgGradient: 'bg-gradient-to-br from-indigo-400 to-indigo-500',
+          accentColor: '#6366F1',
+          shadowColor: 'shadow-indigo-500/10',
+          hoverShadow: 'hover:shadow-indigo-500/20'
         }
       default:
         return {
-          bgGradient: 'bg-gradient-to-br from-gray-500 to-slate-600',
+          bgGradient: 'bg-gradient-to-br from-gray-400 to-gray-500',
           accentColor: '#6B7280',
           shadowColor: 'shadow-gray-500/10',
           hoverShadow: 'hover:shadow-gray-500/20'
@@ -106,12 +106,34 @@ export function RankingTable({
   }
 
   const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 20, scale: 0.9 },
     visible: {
       opacity: 1,
       y: 0,
+      scale: 1,
       transition: {
-        duration: 0.4
+        duration: 0.5,
+        ease: "easeOut"
+      }
+    },
+    hover: {
+      y: -2,
+      scale: 1.01,
+      zIndex: 5,
+      transition: {
+        duration: 0.3,
+        ease: "easeOut"
+      }
+    }
+  }
+
+  const iconVariants = {
+    hover: {
+      scale: 1.3,
+      rotate: 15,
+      transition: {
+        duration: 0.2,
+        ease: "easeOut"
       }
     }
   }
@@ -121,7 +143,7 @@ export function RankingTable({
       <CardHeader className="px-5 pt-4 pb-2 flex-shrink-0">
         <div className="flex items-center justify-between">
           <CardTitle className="figma-heading-large flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 shadow-lg">
+            <div className="p-2 rounded-xl bg-gradient-to-br from-slate-500 to-slate-600 shadow-lg">
               <Users className="h-5 w-5 text-white" />
             </div>
             Ranking de Técnicos
@@ -145,7 +167,7 @@ export function RankingTable({
         </div>
       </CardHeader>
       
-      <CardContent className="px-5 pb-4 pt-0 flex-1 flex flex-col overflow-hidden">
+      <CardContent className="px-5 pb-4 pt-0 flex-1 flex flex-col">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -154,7 +176,8 @@ export function RankingTable({
         >
           <div 
             ref={scrollContainerRef}
-            className="flex w-full flex-1 figma-glass-card rounded-lg shadow-inner overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+            className="flex w-full flex-1 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+            style={{ zIndex: 1, overflowY: 'visible' }}
           >
           {topTechnicians.map((technician, index) => {
             const levelStyle = getLevelStyle(technician.level)
@@ -165,50 +188,60 @@ export function RankingTable({
               <motion.div
                 key={technician.id}
                 variants={cardVariants}
+                whileHover="hover"
                 className={cn(
-                  "flex-shrink-0 w-36 flex flex-col justify-between p-4 border-r border-white/10 last:border-r-0",
-                  "transition-all duration-300 hover:scale-105 relative group overflow-hidden",
-                  "figma-glass-card shadow-xl hover:shadow-2xl rounded-2xl border-0",
+                  "flex-shrink-0 w-36 flex flex-col justify-between p-6 border-r border-white/10 last:border-r-0",
+                  "cursor-pointer relative group overflow-visible",
+                  "figma-glass-card shadow-lg hover:shadow-xl rounded-xl border-0",
                   "border-l-4",
-                  "hover:shadow-lg", levelStyle.hoverShadow
+                  levelStyle.hoverShadow
                 )}
-                style={{ borderLeftColor: levelStyle.accentColor }}
+                style={{ 
+                  borderLeftColor: levelStyle.accentColor,
+                  position: 'relative',
+                  zIndex: 2
+                }}
               >
                 {/* Gradient Background - Opacidade mais suave */}
                 <div className={cn(
-                  "absolute inset-0 bg-gradient-to-br opacity-5 rounded-2xl",
+                  "absolute inset-0 bg-gradient-to-br opacity-3 rounded-xl group-hover:opacity-8 transition-opacity duration-300",
                   levelStyle.bgGradient
                 )} />
                 
-                {/* Animated Border com blur para suavizar */}
-                <div className="absolute inset-0 rounded-2xl">
-                  <div className={cn(
-                    "absolute inset-0 rounded-2xl bg-gradient-to-r opacity-20 blur-sm",
-                    levelStyle.bgGradient
-                  )} />
-                </div>
-                <div className="flex items-center justify-between mb-2 relative z-10">
-                  <div className={cn(
-                    "w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold",
-                    isTopThree ? "figma-glass-card figma-body shadow-md" : "figma-glass-card figma-body"
-                  )}>
+                {/* Enhanced Glow Effect on Hover */}
+                <div className={cn(
+                  "absolute -inset-1 rounded-xl opacity-0 group-hover:opacity-40 transition-all duration-300 blur-md",
+                  levelStyle.bgGradient
+                )} />
+                <div className="flex items-center justify-between mb-1.5 relative z-10">
+                  <motion.div 
+                    variants={iconVariants}
+                    className={cn(
+                      "w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold",
+                      isTopThree ? "figma-glass-card figma-body shadow-md" : "figma-glass-card figma-body"
+                    )}
+                  >
                     {position <= 3 && position === 1 && <Trophy className="w-3 h-3" />}
                     {position <= 3 && position === 2 && <Medal className="w-3 h-3" />}
                     {position <= 3 && position === 3 && <Award className="w-3 h-3" />}
                     {position > 3 && position}
-                  </div>
+                  </motion.div>
                   
                   {technician.level && (
-                    <div className={cn(
-                      "px-2 py-0.5 rounded-full text-xs font-medium shadow-sm text-white bg-gradient-to-r",
-                      levelStyle.bgGradient
-                    )}>
+                    <motion.div 
+                      className={cn(
+                        "px-2 py-0.5 rounded-full text-xs font-medium shadow-sm text-white bg-gradient-to-r",
+                        levelStyle.bgGradient
+                      )}
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ duration: 0.2 }}
+                    >
                       {technician.level}
-                    </div>
+                    </motion.div>
                   )}
                 </div>
 
-                <div className="text-center mb-2 relative z-10">
+                <div className="text-center mb-1.5 relative z-10">
                   <div className="figma-body leading-tight">
                     {(() => {
                       const nameParts = technician.name.split(' ');
@@ -219,11 +252,26 @@ export function RankingTable({
                   </div>
                 </div>
                 
-                <div className="text-center space-y-1 relative z-10">
-                  <div className="figma-numeric">
+                <div className="text-center space-y-0.5 relative z-10">
+                  <motion.div 
+                    className="figma-numeric"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+                  >
                     {formatNumber(technician.total)}
-                  </div>
+                  </motion.div>
                 </div>
+                
+                {/* Enhanced Shine Effect */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 opacity-0 pointer-events-none"
+                  whileHover={{
+                    opacity: [0, 1, 0],
+                    x: [-150, 350]
+                  }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                />
               </motion.div>
             )
           })}
