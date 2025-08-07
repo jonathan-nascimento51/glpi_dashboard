@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback, useMemo } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -20,6 +20,7 @@ interface NewTicketsListProps {
   limit?: number
 }
 
+// Configuração de prioridades movida para fora do componente
 const priorityConfig = {
   'Crítica': {
     color: 'figma-status-badge-red',
@@ -51,13 +52,124 @@ const priorityConfig = {
   }
 }
 
-export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
+// Variantes de animação movidas para fora do componente
+const itemVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut"
+    }
+  }
+}
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+}
+
+// Função auxiliar para obter configuração de prioridade
+const getPriorityConfig = (priority: string) => {
+  return priorityConfig[priority as keyof typeof priorityConfig] || priorityConfig['Normal']
+}
+
+// Função auxiliar para formatação de data
+const formatDate = (dateString: string) => {
+  try {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  } catch {
+    return 'Data inválida'
+  }
+}
+
+// Componente TicketItem memoizado
+const TicketItem = React.memo<{ ticket: NewTicket; index: number }>(({ ticket, index }) => {
+  const priorityConf = useMemo(() => getPriorityConfig(ticket.priority), [ticket.priority])
+  const formattedDate = useMemo(() => formatDate(ticket.date), [ticket.date])
+  
+  return (
+    <motion.div
+      key={ticket.id}
+      variants={itemVariants}
+      className="group p-5 figma-glass-card rounded-lg transition-all duration-200 border border-transparent shadow-none"
+    >
+      <div className="flex items-start gap-4">
+        {/* Ícone de prioridade */}
+        <div className="flex-shrink-0 mt-0.5">
+          <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${priorityConf.color}`}>
+            <span className="mr-1">{priorityConf.icon}</span>
+            {ticket.priority}
+          </div>
+        </div>
+        
+        {/* Conteúdo do ticket */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2 mb-2">
+            <div className="flex items-center gap-2">
+              <span className="figma-subheading">
+                #{ticket.id}
+              </span>
+              <Badge variant="secondary" className="text-xs">
+                NOVO
+              </Badge>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
+            >
+              <ExternalLink className="h-3 w-3" />
+            </Button>
+          </div>
+          
+          <h4 className="figma-body mb-2 line-clamp-2 leading-tight">
+            {ticket.title}
+          </h4>
+          
+          {ticket.description && (
+            <p className="figma-body mb-2 line-clamp-2 leading-relaxed opacity-75">
+              {ticket.description}
+            </p>
+          )}
+          
+          <div className="flex items-center justify-between figma-body">
+            <div className="flex items-center gap-1">
+              <User className="h-3 w-3" />
+              <span className="truncate max-w-24">{ticket.requester}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Calendar className="h-3 w-3" />
+              <span>{formattedDate}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  )
+})
+
+TicketItem.displayName = 'TicketItem'
+
+export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limit = 8 }) => {
   const [tickets, setTickets] = useState<NewTicket[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
 
-  const fetchTickets = async () => {
+  const fetchTickets = useCallback(async () => {
     try {
       setIsLoading(true)
       setError(null)
@@ -70,7 +182,7 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [limit])
 
   useEffect(() => {
     fetchTickets()
@@ -98,47 +210,15 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
     }, 300000) // 5 minutos
     
     return () => clearInterval(interval)
-  }, [limit])
+  }, [fetchTickets])
 
-  const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString)
-      return date.toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-      })
-    } catch {
-      return 'Data inválida'
-    }
-  }
-
-  const getPriorityConfig = (priority: string) => {
-    return priorityConfig[priority as keyof typeof priorityConfig] || priorityConfig['Normal']
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        duration: 0.3,
-        ease: "easeOut"
-      }
-    }
-  }
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  }
+  // Memoizar valores derivados
+  const ticketsCount = useMemo(() => tickets.length, [tickets.length])
+  const hasTickets = useMemo(() => tickets.length > 0, [tickets.length])
+  const formattedLastUpdate = useMemo(() => 
+    lastUpdate ? formatRelativeTime(lastUpdate) : null, 
+    [lastUpdate]
+  )
 
   return (
     <Card className={cn("figma-tickets-recentes h-full flex flex-col shadow-none", className)}>
@@ -153,7 +233,7 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
           
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="figma-badge-subtle">
-              {tickets.length} tickets
+              {ticketsCount} tickets
             </Badge>
             <Button
               variant="outline"
@@ -167,10 +247,10 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
           </div>
         </div>
         
-        {lastUpdate && (
+        {formattedLastUpdate && (
           <div className="flex items-center gap-1 figma-body">
             <Clock className="h-3 w-3" />
-            Atualizado {formatRelativeTime(lastUpdate)}
+            Atualizado {formattedLastUpdate}
           </div>
         )}
       </CardHeader>
@@ -206,7 +286,7 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
               </Button>
             </div>
           </div>
-        ) : tickets.length === 0 ? (
+        ) : !hasTickets ? (
           <div className="text-center py-8 flex-1 flex items-center justify-center">
             <div>
               <AlertCircle className="w-12 h-12 mx-auto mb-4 figma-body" />
@@ -221,72 +301,14 @@ export function NewTicketsList({ className, limit = 8 }: NewTicketsListProps) {
             animate="visible"
             className="space-y-3 flex-1 overflow-y-auto pr-2"
           >
-            {tickets.map((ticket, index) => {
-              const priorityConf = getPriorityConfig(ticket.priority)
-              
-              return (
-                <motion.div
-                  key={ticket.id}
-                  variants={itemVariants}
-                  className="group p-5 figma-glass-card rounded-lg transition-all duration-200 border border-transparent shadow-none"
-                >
-                  <div className="flex items-start gap-4">
-                    {/* Ícone de prioridade */}
-                    <div className="flex-shrink-0 mt-0.5">
-                      <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${priorityConf.color}`}>
-                        <span className="mr-1">{priorityConf.icon}</span>
-                        {ticket.priority}
-                      </div>
-                    </div>
-                    
-                    {/* Conteúdo do ticket */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <div className="flex items-center gap-2">
-                          <span className="figma-subheading">
-                            #{ticket.id}
-                          </span>
-                          <Badge variant="secondary" className="text-xs">
-                            NOVO
-                          </Badge>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
-                        >
-                          <ExternalLink className="h-3 w-3" />
-                        </Button>
-                      </div>
-                      
-                      <h4 className="figma-body mb-2 line-clamp-2 leading-tight">
-                        {ticket.title}
-                      </h4>
-                      
-                      {ticket.description && (
-                        <p className="figma-body mb-2 line-clamp-2 leading-relaxed opacity-75">
-                          {ticket.description}
-                        </p>
-                      )}
-                      
-                      <div className="flex items-center justify-between figma-body">
-                        <div className="flex items-center gap-1">
-                          <User className="h-3 w-3" />
-                          <span className="truncate max-w-24">{ticket.requester}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          <span>{formatDate(ticket.date)}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              )
-            })}
+            {tickets.map((ticket, index) => (
+              <TicketItem key={ticket.id} ticket={ticket} index={index} />
+            ))}
           </motion.div>
         )}
       </CardContent>
     </Card>
   )
-}
+})
+
+NewTicketsList.displayName = 'NewTicketsList'

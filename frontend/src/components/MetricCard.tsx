@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Plus, Clock, AlertCircle, CheckCircle } from 'lucide-react';
 import { TicketStatus } from '../types';
@@ -10,6 +10,7 @@ interface MetricCardProps {
   onClick?: () => void;
 }
 
+// Funções auxiliares movidas para fora do componente
 const getMetricConfig = (type: TicketStatus) => {
   switch (type) {
     case 'new':
@@ -20,7 +21,7 @@ const getMetricConfig = (type: TicketStatus) => {
         iconColor: 'text-blue-600 dark:text-blue-400',
         textColor: 'text-blue-900 dark:text-blue-100',
         borderColor: 'border-blue-200 dark:border-blue-800',
-      };
+      });
     case 'progress':
       return {
         title: 'Em Progresso',
@@ -73,60 +74,88 @@ const parseChange = (change: string) => {
   };
 };
 
-export const MetricCard: React.FC<MetricCardProps> = ({
+// Variantes de animação movidas para fora do componente
+const cardVariants = {
+  hidden: { opacity: 0, y: 20, scale: 0.9 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut"
+    }
+  },
+  hover: {
+    y: -8,
+    scale: 1.03,
+    transition: {
+      duration: 0.3,
+      ease: "easeInOut"
+    }
+  }
+};
+
+const iconVariants = {
+  hover: {
+    scale: 1.2,
+    rotate: 10,
+    transition: {
+      duration: 0.3,
+      ease: "easeInOut"
+    }
+  }
+};
+
+const numberVariants = {
+  hidden: { scale: 0 },
+  visible: {
+    scale: 1,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+      delay: 0.2
+    }
+  }
+};
+
+export const MetricCard = React.memo<MetricCardProps>(function MetricCard({
   type,
   value,
   change,
   onClick,
-}) => {
-  const config = getMetricConfig(type);
-  const changeData = parseChange(change);
-  const Icon = config.icon;
-  const TrendIcon = changeData.isPositive ? TrendingUp : TrendingDown;
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20, scale: 0.9 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut"
-      }
-    },
-    hover: {
-      y: -8,
-      scale: 1.03,
-      transition: {
-        duration: 0.3,
-        ease: "easeInOut"
-      }
+}) {
+  // Memoizar configuração do tipo
+  const config = useMemo(() => getMetricConfig(type), [type]);
+  
+  // Memoizar dados de mudança
+  const changeData = useMemo(() => parseChange(change), [change]);
+  
+  // Memoizar ícones
+  const Icon = useMemo(() => config.icon, [config.icon]);
+  const TrendIcon = useMemo(() => 
+    changeData.isPositive ? TrendingUp : TrendingDown, 
+    [changeData.isPositive]
+  );
+  
+  // Memoizar valor formatado
+  const formattedValue = useMemo(() => 
+    value.toLocaleString('pt-BR'), 
+    [value]
+  );
+  
+  // Memoizar estilo da barra de progresso
+  const progressBarStyle = useMemo(() => ({
+    width: `${Math.min(Math.abs(changeData.value), 100)}%`
+  }), [changeData.value]);
+  
+  // Memoizar callback de teclado
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClick?.();
     }
-  }
-
-  const iconVariants = {
-    hover: {
-      scale: 1.2,
-      rotate: 10,
-      transition: {
-        duration: 0.3,
-        ease: "easeInOut"
-      }
-    }
-  }
-
-  const numberVariants = {
-    hidden: { scale: 0 },
-    visible: {
-      scale: 1,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut",
-        delay: 0.2
-      }
-    }
-  }
+  }, [onClick]);
 
   return (
     <motion.div
@@ -142,12 +171,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
       onClick={onClick}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onClick?.();
-        }
-      }}
+      onKeyDown={handleKeyDown}
     >
       <div className="flex items-center justify-between mb-4 relative z-10">
         <motion.div 
@@ -193,7 +217,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
             variants={numberVariants}
             className={`text-2xl lg:text-3xl font-bold ${config.textColor} truncate flex-shrink-0`}
           >
-            {value.toLocaleString('pt-BR')}
+            {formattedValue}
           </motion.span>
           <span className="text-xs lg:text-sm text-gray-500 dark:text-gray-400 truncate flex-shrink">
             chamados
@@ -212,9 +236,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
                 ? 'bg-red-500' 
                 : 'bg-gray-400'
             }`}
-            style={{ 
-              width: `${Math.min(Math.abs(changeData.value), 100)}%` 
-            }}
+            style={progressBarStyle}
           />
         </div>
       </div>

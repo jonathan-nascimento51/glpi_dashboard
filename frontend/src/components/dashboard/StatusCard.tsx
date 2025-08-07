@@ -1,3 +1,4 @@
+import React, { memo, useMemo } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -20,7 +21,65 @@ interface StatusCardProps {
   maxValue?: number
 }
 
-export function StatusCard({
+// Função auxiliar definida fora do componente para evitar recriação
+const getStatusGradient = (status?: string) => {
+  switch (status) {
+    case 'online': return 'from-green-500 to-emerald-600'
+    case 'offline': return 'from-red-500 to-rose-600'
+    case 'active': return 'from-blue-500 to-cyan-600'
+    case 'progress': return 'from-yellow-500 to-orange-600'
+    case 'pending': return 'from-orange-500 to-red-600'
+    case 'resolved': return 'from-green-500 to-emerald-600'
+    default: return 'from-gray-500 to-slate-600'
+  }
+}
+
+// Variantes de animação definidas fora do componente
+const cardVariants = {
+  hidden: { opacity: 0, y: 20, scale: 0.9 },
+  visible: { 
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut"
+    }
+  },
+  hover: {
+    y: -8,
+    scale: 1.03,
+    transition: {
+      duration: 0.3,
+      ease: "easeInOut"
+    }
+  }
+}
+
+const iconVariants = {
+  hover: {
+    scale: 1.2,
+    rotate: 10,
+    transition: {
+      duration: 0.3,
+      ease: "easeInOut"
+    }
+  }
+}
+
+const numberVariants = {
+  hidden: { scale: 0 },
+  visible: {
+    scale: 1,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+      delay: 0.2
+    }
+  }
+}
+
+export const StatusCard = memo<StatusCardProps>(function StatusCard({
   title,
   value,
   status,
@@ -28,66 +87,26 @@ export function StatusCard({
   icon,
   className,
   variant = 'default'
-}: StatusCardProps) {
-  const StatusIcon = icon || (status ? getStatusIcon(status) : null)
-  const TrendIcon = trend ? getTrendIcon(trend.direction) : null
+}) {
+  // Memoizar ícones para evitar recálculos
+  const StatusIcon = useMemo(() => 
+    icon || (status ? getStatusIcon(status) : null), 
+    [icon, status]
+  )
   
-  // ANIMAÇÕES MODERNAS
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20, scale: 0.9 },
-    visible: { 
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut"
-      }
-    },
-    hover: {
-      y: -8,
-      scale: 1.03,
-      transition: {
-        duration: 0.3,
-        ease: "easeInOut"
-      }
-    }
-  }
+  const TrendIcon = useMemo(() => 
+    trend ? getTrendIcon(trend.direction) : null, 
+    [trend?.direction]
+  )
+  
+  // Memoizar gradiente do status
+  const statusGradient = useMemo(() => getStatusGradient(status), [status])
+  
+  // Memoizar valor formatado
+  const formattedValue = useMemo(() => {
+    return title === 'Sistema' ? (value > 0 ? 'Online' : 'Offline') : formatNumber(value)
+  }, [title, value])
 
-  const iconVariants = {
-    hover: {
-      scale: 1.2,
-      rotate: 10,
-      transition: {
-        duration: 0.3,
-        ease: "easeInOut"
-      }
-    }
-  }
-
-  const numberVariants = {
-    hidden: { scale: 0 },
-    visible: {
-      scale: 1,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut",
-        delay: 0.2
-      }
-    }
-  }
-
-  const getStatusGradient = (status?: string) => {
-    switch (status) {
-      case 'online': return 'from-green-500 to-emerald-600'
-      case 'offline': return 'from-red-500 to-rose-600'
-      case 'active': return 'from-blue-500 to-cyan-600'
-      case 'progress': return 'from-yellow-500 to-orange-600'
-      case 'pending': return 'from-orange-500 to-red-600'
-      case 'resolved': return 'from-green-500 to-emerald-600'
-      default: return 'from-gray-500 to-slate-600'
-    }
-  }
 
   return (
     <motion.div
@@ -101,14 +120,14 @@ export function StatusCard({
         {/* Gradient Background */}
         <div className={cn(
           "absolute inset-0 bg-gradient-to-br opacity-5",
-          getStatusGradient(status)
+          statusGradient
         )} />
         
         {/* Animated Border */}
         <div className="absolute inset-0 rounded-2xl">
           <div className={cn(
             "absolute inset-0 rounded-2xl bg-gradient-to-r opacity-20 blur-sm",
-            getStatusGradient(status)
+            statusGradient
           )} />
         </div>
         
@@ -121,7 +140,7 @@ export function StatusCard({
               variants={iconVariants}
               className={cn(
                 "p-2 rounded-xl bg-gradient-to-br shadow-lg",
-                getStatusGradient(status)
+                statusGradient
               )}
             >
               <StatusIcon className="h-5 w-5 text-white" />
@@ -136,7 +155,7 @@ export function StatusCard({
                 variants={numberVariants}
                 className="figma-numeric"
               >
-                {title === 'Sistema' ? (value > 0 ? 'Online' : 'Offline') : formatNumber(value)}
+                {formattedValue}
               </motion.div>
               
               {trend && (
@@ -171,7 +190,7 @@ export function StatusCard({
                 <Badge 
                   className={cn(
                     "capitalize text-xs font-semibold px-3 py-1 border-0 shadow-lg bg-gradient-to-r text-white",
-                    getStatusGradient(status)
+                    statusGradient
                   )}
                 >
                   {status}
@@ -193,4 +212,4 @@ export function StatusCard({
       </Card>
     </motion.div>
   )
-}
+})

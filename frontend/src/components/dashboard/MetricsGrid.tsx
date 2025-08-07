@@ -1,8 +1,8 @@
+import React, { useEffect, useCallback, useMemo } from "react"
 import { motion } from "framer-motion"
 import { StatusCard } from "./StatusCard"
 import { MetricsData, TicketStatus } from "@/types"
 import { Ticket, Clock, AlertTriangle, CheckCircle } from "lucide-react"
-import { useEffect } from "react"
 import { usePerformanceMonitoring, useRenderTracker } from "../../hooks/usePerformanceMonitoring"
 import { performanceMonitor } from "../../utils/performanceMonitor"
 
@@ -12,11 +12,48 @@ interface MetricsGridProps {
   className?: string
 }
 
-export function MetricsGrid({
+// Funções auxiliares movidas para fora do componente
+function getTrendDirection(trend?: string): 'up' | 'down' | 'stable' {
+  if (!trend) return 'stable'
+  const value = parseFloat(trend.replace('%', '').replace('+', ''))
+  if (value > 0) return 'up'
+  if (value < 0) return 'down'
+  return 'stable'
+}
+
+function parseTrendValue(trend?: string): number {
+  if (!trend) return 0
+  return Math.abs(parseFloat(trend.replace('%', '').replace('+', '')))
+}
+
+// Variantes de animação movidas para fora do componente
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.02,
+      delayChildren: 0
+    }
+  }
+}
+
+const itemVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.1,
+      ease: "easeOut"
+    }
+  }
+}
+
+export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
   metrics,
   onFilterByStatus,
   className
-}: MetricsGridProps) {
+}) {
   // Performance monitoring hooks
   const { measureRender } = usePerformanceMonitoring('MetricsGrid')
   const { trackRender } = useRenderTracker('MetricsGrid')
@@ -43,8 +80,33 @@ export function MetricsGrid({
     )
   }
 
-  // Configuração dos cards de métricas
-  const metricCards = [
+  // Callbacks memoizados para os cliques
+  const handleNewClick = useCallback(() => {
+    performanceMonitor.startMeasure('filter-click-new')
+    onFilterByStatus?.("new")
+    performanceMonitor.endMeasure('filter-click-new', 'Filter by New Status')
+  }, [onFilterByStatus])
+
+  const handleProgressClick = useCallback(() => {
+    performanceMonitor.startMeasure('filter-click-progress')
+    onFilterByStatus?.("progress")
+    performanceMonitor.endMeasure('filter-click-progress', 'Filter by Progress Status')
+  }, [onFilterByStatus])
+
+  const handlePendingClick = useCallback(() => {
+    performanceMonitor.startMeasure('filter-click-pending')
+    onFilterByStatus?.("pending")
+    performanceMonitor.endMeasure('filter-click-pending', 'Filter by Pending Status')
+  }, [onFilterByStatus])
+
+  const handleResolvedClick = useCallback(() => {
+    performanceMonitor.startMeasure('filter-click-resolved')
+    onFilterByStatus?.("resolved")
+    performanceMonitor.endMeasure('filter-click-resolved', 'Filter by Resolved Status')
+  }, [onFilterByStatus])
+
+  // Configuração dos cards de métricas memoizada
+  const metricCards = useMemo(() => [
     {
       title: "Novos",
       value: metrics.novos || 0,
@@ -55,11 +117,7 @@ export function MetricsGrid({
         value: parseTrendValue(metrics.tendencias?.novos),
         label: "vs. período anterior"
       },
-      onClick: () => {
-        performanceMonitor.startMeasure('filter-click-new')
-        onFilterByStatus?.("new")
-        performanceMonitor.endMeasure('filter-click-new', 'Filter by New Status')
-      }
+      onClick: handleNewClick
     },
     {
       title: "Em Progresso",
@@ -71,11 +129,7 @@ export function MetricsGrid({
         value: parseTrendValue(metrics.tendencias?.progresso),
         label: "vs. período anterior"
       },
-      onClick: () => {
-        performanceMonitor.startMeasure('filter-click-progress')
-        onFilterByStatus?.("progress")
-        performanceMonitor.endMeasure('filter-click-progress', 'Filter by Progress Status')
-      }
+      onClick: handleProgressClick
     },
     {
       title: "Pendentes",
@@ -87,11 +141,7 @@ export function MetricsGrid({
         value: parseTrendValue(metrics.tendencias?.pendentes),
         label: "vs. período anterior"
       },
-      onClick: () => {
-        performanceMonitor.startMeasure('filter-click-pending')
-        onFilterByStatus?.("pending")
-        performanceMonitor.endMeasure('filter-click-pending', 'Filter by Pending Status')
-      }
+      onClick: handlePendingClick
     },
     {
       title: "Resolvidos",
@@ -103,24 +153,11 @@ export function MetricsGrid({
         value: parseTrendValue(metrics.tendencias?.resolvidos),
         label: "vs. período anterior"
       },
-      onClick: () => {
-        performanceMonitor.startMeasure('filter-click-resolved')
-        onFilterByStatus?.("resolved")
-        performanceMonitor.endMeasure('filter-click-resolved', 'Filter by Resolved Status')
-      }
+      onClick: handleResolvedClick
     }
-  ]
+  ], [metrics, handleNewClick, handleProgressClick, handlePendingClick, handleResolvedClick])
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.02, // Muito rápido
-        delayChildren: 0
-      }
-    }
-  }
+
 
   return (
     <motion.div
@@ -132,18 +169,8 @@ export function MetricsGrid({
       {metricCards.map((card, index) => (
         <motion.div
           key={card.status}
-          variants={{
-            hidden: { opacity: 0 },
-            visible: {
-              opacity: 1,
-              transition: {
-                duration: 0.1, // Ultra-rápido
-                ease: "easeOut"
-              }
-            }
-          }}
+          variants={itemVariants}
           onClick={card.onClick}
-          // Remover whileTap completamente
         >
           <StatusCard
             title={card.title}
@@ -157,18 +184,4 @@ export function MetricsGrid({
       ))}
     </motion.div>
   )
-}
-
-// Funções auxiliares para processar tendências
-function getTrendDirection(trend?: string): 'up' | 'down' | 'stable' {
-  if (!trend) return 'stable'
-  const value = parseFloat(trend.replace('%', '').replace('+', ''))
-  if (value > 0) return 'up'
-  if (value < 0) return 'down'
-  return 'stable'
-}
-
-function parseTrendValue(trend?: string): number {
-  if (!trend) return 0
-  return Math.abs(parseFloat(trend.replace('%', '').replace('+', '')))
-}
+})

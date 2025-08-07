@@ -1,3 +1,4 @@
+import React, { useMemo } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -70,7 +71,168 @@ const statusConfig = {
   }
 }
 
-export function LevelMetricsGrid({ metrics, className }: LevelMetricsGridProps) {
+// Variantes de animação movidas para fora do componente
+const itemVariants = {
+  hidden: { opacity: 0, y: 20, scale: 0.9 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut"
+    }
+  },
+  hover: {
+    y: -8,
+    scale: 1.03,
+    transition: {
+      duration: 0.3,
+      ease: "easeInOut"
+    }
+  }
+}
+
+const iconVariants = {
+  hover: {
+    scale: 1.2,
+    rotate: 10,
+    transition: {
+      duration: 0.3,
+      ease: "easeInOut"
+    }
+  }
+}
+
+const statusVariants = {
+  hover: {
+    scale: 1.05,
+    transition: {
+      duration: 0.2,
+      ease: "easeInOut"
+    }
+  }
+}
+
+// Componente StatusItem memoizado
+const StatusItem = React.memo<{
+  status: string
+  statusConf: typeof statusConfig[keyof typeof statusConfig]
+  value: number
+}>(function StatusItem({ status, statusConf, value }) {
+  const Icon = statusConf.icon
+  
+  return (
+    <motion.div
+      key={status}
+      variants={statusVariants}
+      whileHover="hover"
+      className="flex items-center justify-between p-4 rounded-lg figma-glass-card min-h-[60px] border border-gray-100/50 dark:border-gray-800/50 cursor-pointer"
+    >
+      <div className="flex items-center gap-3">
+        <motion.div 
+          className={`p-2 rounded-lg ${statusConf.bgColor} shadow-sm`}
+          whileHover={{ scale: 1.1 }}
+          transition={{ duration: 0.2 }}
+        >
+          <Icon className={`h-4 w-4 ${statusConf.color}`} />
+        </motion.div>
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          {statusConf.label}
+        </span>
+      </div>
+      <motion.span 
+        className={`text-lg font-bold ${statusConf.color} tabular-nums`}
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+      >
+        {value || 0}
+      </motion.span>
+    </motion.div>
+  )
+})
+
+// Componente LevelCard memoizado
+const LevelCard = React.memo<{
+  level: string
+  levelData: any
+  config: typeof levelConfig[keyof typeof levelConfig]
+}>(function LevelCard({ level, levelData, config }) {
+  const total = useMemo(() => {
+    return Object.values(levelData).reduce((sum, value) => sum + (value || 0), 0)
+  }, [levelData])
+  
+  return (
+    <motion.div
+      key={level}
+      variants={itemVariants}
+      initial="hidden"
+      animate="visible"
+      whileHover="hover"
+      className="h-full flex cursor-pointer"
+    >
+      <Card className="figma-glass-card border-0 shadow-none h-full w-full flex flex-col relative overflow-hidden">
+        <CardHeader className="pb-3 px-4 pt-4 flex-shrink-0">
+          <div className="flex items-center justify-between relative z-10">
+            <CardTitle className="text-lg font-semibold flex items-center gap-3">
+              <motion.div 
+                variants={iconVariants}
+                className={`p-2 rounded-lg bg-gradient-to-br shadow-sm ${config.color}`}
+              >
+                <TrendingUp className="h-5 w-5 text-white" />
+              </motion.div>
+              <span className="whitespace-nowrap">{config.title}</span>
+            </CardTitle>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Badge variant="outline" className={`${config.bgColor} ${config.textColor} border-0 text-sm px-3 py-1.5 font-bold`}>
+                {total}
+              </Badge>
+            </motion.div>
+          </div>
+        </CardHeader>
+        
+        <CardContent className="px-4 pb-4 flex-1 relative z-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full h-full">
+            {Object.entries(statusConfig).map(([status, statusConf]) => {
+              const value = levelData[status as keyof typeof levelData]
+              
+              return (
+                <StatusItem
+                  key={status}
+                  status={status}
+                  statusConf={statusConf}
+                  value={value}
+                />
+              )
+            })}
+          </div>
+        </CardContent>
+        
+        {/* Gradient Background */}
+        <div className={cn(
+          "absolute inset-0 bg-gradient-to-br opacity-5 rounded-2xl",
+          config.color
+        )} />
+        
+        {/* Shine Effect */}
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 opacity-0"
+          whileHover={{
+            opacity: [0, 1, 0],
+            x: [-100, 300]
+          }}
+          transition={{ duration: 0.6 }}
+        />
+      </Card>
+    </motion.div>
+  )
+})
+
+export const LevelMetricsGrid = React.memo<LevelMetricsGridProps>(function LevelMetricsGrid({ metrics, className }) {
   // Verificação de segurança para evitar erros
   if (!metrics || !metrics.niveis) {
     return (
@@ -85,147 +247,28 @@ export function LevelMetricsGrid({ metrics, className }: LevelMetricsGridProps) 
     )
   }
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20, scale: 0.9 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut"
-      }
-    },
-    hover: {
-      y: -8,
-      scale: 1.03,
-      transition: {
-        duration: 0.3,
-        ease: "easeInOut"
-      }
-    }
-  }
-
-  const iconVariants = {
-    hover: {
-      scale: 1.2,
-      rotate: 10,
-      transition: {
-        duration: 0.3,
-        ease: "easeInOut"
-      }
-    }
-  }
-
-  const statusVariants = {
-    hover: {
-      scale: 1.05,
-      transition: {
-        duration: 0.2,
-        ease: "easeInOut"
-      }
-    }
-  }
+  // Memoizar as entradas dos níveis
+  const levelEntries = useMemo(() => {
+    return Object.entries(metrics.niveis || {})
+  }, [metrics.niveis])
 
   return (
     <div className={cn("h-full flex flex-col overflow-hidden", className)}>
       <div className="grid grid-cols-1 sm:grid-cols-2 grid-rows-1 sm:grid-rows-2 gap-2 sm:gap-3 h-full overflow-hidden p-1">
-        {Object.entries(metrics.niveis || {}).map(([level, levelData]) => {
+        {levelEntries.map(([level, levelData]) => {
           const config = levelConfig[level as keyof typeof levelConfig]
           if (!config || !levelData) return null
-          const total = Object.values(levelData).reduce((sum, value) => sum + (value || 0), 0)
           
           return (
-            <motion.div
+            <LevelCard
               key={level}
-              variants={itemVariants}
-              initial="hidden"
-              animate="visible"
-              whileHover="hover"
-              className="h-full flex cursor-pointer"
-            >
-              <Card className="figma-glass-card border-0 shadow-none h-full w-full flex flex-col relative overflow-hidden">
-                <CardHeader className="pb-3 px-4 pt-4 flex-shrink-0">
-                  <div className="flex items-center justify-between relative z-10">
-                    <CardTitle className="text-lg font-semibold flex items-center gap-3">
-                      <motion.div 
-                        variants={iconVariants}
-                        className={`p-2 rounded-lg bg-gradient-to-br shadow-sm ${config.color}`}
-                      >
-                        <TrendingUp className="h-5 w-5 text-white" />
-                      </motion.div>
-                      <span className="whitespace-nowrap">{config.title}</span>
-                    </CardTitle>
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Badge variant="outline" className={`${config.bgColor} ${config.textColor} border-0 text-sm px-3 py-1.5 font-bold`}>
-                        {total}
-                      </Badge>
-                    </motion.div>
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="px-4 pb-4 flex-1 relative z-10">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full h-full">
-                    {Object.entries(statusConfig).map(([status, statusConf]) => {
-                      const Icon = statusConf.icon
-                      const value = levelData[status as keyof typeof levelData]
-                      
-                      return (
-                        <motion.div
-                          key={status}
-                          variants={statusVariants}
-                          whileHover="hover"
-                          className="flex items-center justify-between p-4 rounded-lg figma-glass-card min-h-[60px] border border-gray-100/50 dark:border-gray-800/50 cursor-pointer"
-                        >
-                          <div className="flex items-center gap-3">
-                            <motion.div 
-                              className={`p-2 rounded-lg ${statusConf.bgColor} shadow-sm`}
-                              whileHover={{ scale: 1.1 }}
-                              transition={{ duration: 0.2 }}
-                            >
-                              <Icon className={`h-4 w-4 ${statusConf.color}`} />
-                            </motion.div>
-                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                              {statusConf.label}
-                            </span>
-                          </div>
-                          <motion.span 
-                            className={`text-lg font-bold ${statusConf.color} tabular-nums`}
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
-                          >
-                            {value || 0}
-                          </motion.span>
-                        </motion.div>
-                      )
-                    })}
-                  </div>
-                </CardContent>
-                
-                {/* Gradient Background */}
-                <div className={cn(
-                  "absolute inset-0 bg-gradient-to-br opacity-5 rounded-2xl",
-                  config.color
-                )} />
-                
-                {/* Shine Effect */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 opacity-0"
-                  whileHover={{
-                    opacity: [0, 1, 0],
-                    x: [-100, 300]
-                  }}
-                  transition={{ duration: 0.6 }}
-                />
-              </Card>
-            </motion.div>
+              level={level}
+              levelData={levelData}
+              config={config}
+            />
           )
         })}
       </div>
     </div>
   )
-}
+})
