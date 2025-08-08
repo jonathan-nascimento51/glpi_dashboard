@@ -216,7 +216,7 @@ const TechnicianCard = React.memo<{
         <div className="flex justify-center space-x-1">
           {performanceIndicators.map((_, i) => (
             <div
-              key={i}
+              key={`${technician.id}-performance-${i}`}
               className={cn(
                 "w-1.5 h-1.5 rounded-full",
                 levelStyle.accentColor

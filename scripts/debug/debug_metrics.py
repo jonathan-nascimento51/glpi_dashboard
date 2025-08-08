@@ -7,13 +7,10 @@ Script de debug para investigar inconsistência entre métricas gerais e por ní
 import sys
 import os
 
-# Adicionar o diretório pai ao path para imports
-backend_dir = os.path.dirname(os.path.abspath(__file__))
-project_dir = os.path.dirname(backend_dir)
-sys.path.insert(0, project_dir)
-sys.path.insert(0, backend_dir)
+# Adicionar o diretório do projeto ao path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from services.glpi_service import GLPIService
+from backend.services.glpi_service import GLPIService
 import json
 from datetime import datetime, timedelta
 

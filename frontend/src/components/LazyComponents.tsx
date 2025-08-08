@@ -4,6 +4,7 @@
  */
 
 import { lazy } from 'react';
+import { generateSkeletonKey } from '../utils/keyUtils';
 
 // Componentes de dashboard secundários
 export const LazyPerformanceDashboard = lazy(() => 
@@ -43,7 +44,7 @@ export const TableSkeleton = () => (
   <div className="animate-pulse space-y-4">
     <div className="h-6 bg-gray-200 rounded w-1/4" />
     {Array.from({ length: 5 }).map((_, i) => (
-      <div key={i} className="flex space-x-4">
+      <div key={generateSkeletonKey(i, 'table-skeleton')} className="flex space-x-4">
         <div className="h-10 w-10 bg-gray-200 rounded-full" />
         <div className="flex-1 space-y-2">
           <div className="h-4 bg-gray-200 rounded w-3/4" />
@@ -73,7 +74,7 @@ export const ListSkeleton = () => (
   <div className="animate-pulse space-y-3">
     <div className="h-5 bg-gray-200 rounded w-1/3 mb-4" />
     {Array.from({ length: 3 }).map((_, i) => (
-      <div key={i} className="flex items-center space-x-3 p-3 border rounded">
+      <div key={generateSkeletonKey(i, 'list-skeleton')} className="flex items-center space-x-3 p-3 border rounded">
         <div className="h-4 bg-gray-200 rounded w-8" />
         <div className="h-4 bg-gray-200 rounded flex-1" />
         <div className="h-3 bg-gray-200 rounded w-16" />

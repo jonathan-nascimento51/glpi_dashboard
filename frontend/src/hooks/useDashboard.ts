@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { fetchDashboardMetrics } from '../services/api';
 import type {
   DashboardMetrics,
@@ -60,6 +60,10 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
   const [error, setError] = useState<string | null>(null);
   // Removed unused state variables
   const [filters, setFilters] = useState<FilterParams>(initialFilters);
+  // AbortController com debounce para evitar cancelamentos desnecessários
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const loadDataTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
   // Derivar dados dos resultados da API
   const levelMetrics = data?.niveis ? {
     ...data.niveis,
@@ -74,73 +78,121 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
   const [dataIntegrityReport] = useState<any>(null);
 
   const loadData = useCallback(async (newFilters?: FilterParams) => {
-    const filtersToUse = newFilters || filters;
-    
-    // console.log('🔄 useDashboard - Iniciando loadData com filtros:', filtersToUse);
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-      // Fazer chamadas paralelas para todos os endpoints
-      const [metricsResult, systemStatusResult, technicianRankingResult] = await Promise.all([
-        fetchDashboardMetrics(filtersToUse),
-        import('../services/api').then(api => api.getSystemStatus()),
-        import('../services/api').then(api => api.getTechnicianRanking())
-      ]);
-      
-      // console.log('📥 useDashboard - Resultado recebido de fetchDashboardMetrics:', metricsResult);
-      // console.log('📥 useDashboard - Resultado recebido de getSystemStatus:', systemStatusResult);
-      // console.log('📥 useDashboard - Resultado recebido de getTechnicianRanking:', technicianRankingResult);
-      
-      // Performance metrics tracking removed for now
-      
-      if (metricsResult) {
-        // Combinar todos os dados em um objeto DashboardMetrics
-        const combinedData: DashboardMetrics = {
-          ...metricsResult,
-          systemStatus: systemStatusResult || initialSystemStatus,
-          technicianRanking: technicianRankingResult || []
-        };
-        
-        console.log('📊 useDashboard - Dados combinados:', {
-          metrics: !!metricsResult,
-          systemStatus: !!systemStatusResult,
-          technicianRanking: technicianRankingResult?.length || 0
-        });
-        
-        // console.log('✅ useDashboard - Definindo dados combinados no estado:', combinedData);
-        setData(combinedData);
-        setError(null);
-      } else {
-        console.error('❌ useDashboard - Resultado de métricas é null/undefined');
-        setError('Falha ao carregar dados do dashboard');
-      }
-    } catch (err) {
-      console.error('❌ useDashboard - Erro ao carregar dados:', err);
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
-    } finally {
-      setLoading(false);
+    // Cancelar timeout anterior se existir
+    if (loadDataTimeoutRef.current) {
+      clearTimeout(loadDataTimeoutRef.current);
     }
-  }, [filters]);
+    
+    // Debounce de 300ms para evitar múltiplas chamadas rápidas
+    return new Promise<void>((resolve) => {
+      loadDataTimeoutRef.current = setTimeout(async () => {
+        const filtersToUse = newFilters || filters;
+        
+        console.log('🔄 useDashboard - Carregando dados com filtros:', filtersToUse);
+        console.log('📅 useDashboard - DateRange nos filtros:', filtersToUse.dateRange);
+        
+        // Cancelar requisição anterior apenas se ainda estiver em andamento
+        if (abortControllerRef.current && !abortControllerRef.current.signal.aborted) {
+          console.log('🚫 Cancelando requisição anterior');
+          abortControllerRef.current.abort();
+        }
+        
+        // Criar novo AbortController
+        abortControllerRef.current = new AbortController();
+        const signal = abortControllerRef.current.signal;
+        
+        setLoading(true);
+        setError(null);
+        
+        try {
+          // Fazer chamadas paralelas para todos os endpoints com signal de cancelamento
+          const [metricsResult, systemStatusResult, technicianRankingResult] = await Promise.all([
+            fetchDashboardMetrics(filtersToUse),
+            import('../services/api').then(api => api.getSystemStatus()),
+            import('../services/api').then(api => api.getTechnicianRanking(filtersToUse, signal))
+          ]);
+          
+          // Verificar se a requisição foi cancelada
+          if (signal.aborted) {
+            console.log('🚫 Requisição foi cancelada');
+            return;
+          }
+          
+          // Performance metrics tracking removed for now
+          
+          if (metricsResult) {
+            // Combinar todos os dados em um objeto DashboardMetrics
+            const combinedData: DashboardMetrics = {
+              ...metricsResult,
+              systemStatus: systemStatusResult || initialSystemStatus,
+              technicianRanking: technicianRankingResult || []
+            };
+            
+            console.log('📊 useDashboard - Dados combinados:', {
+              metrics: !!metricsResult,
+              systemStatus: !!systemStatusResult,
+              technicianRanking: technicianRankingResult?.length || 0
+            });
+            
+            // console.log('✅ useDashboard - Definindo dados combinados no estado:', combinedData);
+            setData(combinedData);
+            setError(null);
+          } else {
+            console.error('❌ useDashboard - Resultado de métricas é null/undefined');
+            setError('Falha ao carregar dados do dashboard');
+          }
+        } catch (err) {
+          // Ignorar erros de cancelamento (axios usa CanceledError, fetch usa AbortError)
+          if (err instanceof Error && (err.name === 'AbortError' || err.name === 'CanceledError')) {
+            console.log('🚫 Requisição cancelada pelo usuário');
+            return;
+          }
+          
+          console.error('❌ useDashboard - Erro ao carregar dados:', err);
+          setError(err instanceof Error ? err.message : 'Erro desconhecido');
+        } finally {
+          // Só atualizar loading se a requisição não foi cancelada
+          if (!signal.aborted) {
+            setLoading(false);
+          }
+        }
+      
+      resolve();
+    }, 300); // Debounce de 300ms
+  });
+}, []); // Removida dependência de filters para evitar loop infinito
 
   // Removed unused forceRefresh function
 
   // Load data on mount
   useEffect(() => {
     loadData();
-  }, [loadData]);
-
-
+  }, []); // Executar apenas uma vez na montagem
 
   // Auto-refresh setup
   useEffect(() => {
     const refreshInterval = setInterval(() => {
-      loadData();
+      loadData(); // Usar a função atual sem dependência
     }, 300000); // 5 minutos
     
-    return () => clearInterval(refreshInterval);
-  }, [loadData]);
+    return () => {
+      clearInterval(refreshInterval);
+      // Cancelar requisição em andamento quando o intervalo for limpo
+       if (abortControllerRef.current && !abortControllerRef.current.signal.aborted) {
+         abortControllerRef.current.abort();
+       }
+    };
+  }, []); // Executar apenas uma vez na montagem
+  
+  // Cleanup ao desmontar o componente
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current && !abortControllerRef.current.signal.aborted) {
+        console.log('🧹 Limpando AbortController no cleanup');
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   const returnData: UseDashboardReturn = {
     metrics: data,
@@ -177,7 +229,9 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     removeNotification: (id: string) => setNotifications(prev => prev.filter(n => n.id !== id)),
     changeTheme: (newTheme: string) => setTheme(newTheme),
     updateDateRange: (dateRange: any) => {
+      console.log('🔄 useDashboard - updateDateRange chamado com:', dateRange);
       const updatedFilters = { ...filters, dateRange };
+      console.log('📊 useDashboard - Filtros atualizados:', updatedFilters);
       setFilters(updatedFilters);
       loadData(updatedFilters);
     }

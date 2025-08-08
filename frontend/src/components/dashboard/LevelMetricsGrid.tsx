@@ -11,6 +11,7 @@ import {
 } from "lucide-react"
 import { MetricsData } from "@/types"
 import { cn } from "@/lib/utils"
+import { generateLevelKey } from "../../utils/keyUtils"
 
 interface LevelMetricsGridProps {
   metrics?: MetricsData
@@ -206,7 +207,7 @@ const LevelCard = React.memo<{
               
               return (
                 <StatusItem
-                  key={`level-${level}-${status}`}
+                  key={generateLevelKey(level, status)}
                   status={status}
                   statusConf={statusConf}
                   value={value}

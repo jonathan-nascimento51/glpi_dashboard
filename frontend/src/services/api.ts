@@ -294,34 +294,95 @@ export const apiService = {
   },
 
   // Get technician ranking
-  async getTechnicianRanking(): Promise<any[]> {
+  async getTechnicianRanking(filters?: FilterParams, signal?: AbortSignal): Promise<any[]> {
     const startTime = Date.now();
-    const cacheParams = { endpoint: 'technicians/ranking' };
+    console.log('🔍 API - getTechnicianRanking chamado com filtros:', filters);
+    
+    // Construir parâmetros de query
+    const queryParams = new URLSearchParams();
+    
+    // Aplicar filtros de data se fornecidos
+    if (filters?.dateRange?.startDate && filters?.dateRange?.endDate) {
+      queryParams.append('start_date', filters.dateRange.startDate);
+      queryParams.append('end_date', filters.dateRange.endDate);
+      console.log('📅 API - Adicionando start_date:', filters.dateRange.startDate);
+      console.log('📅 API - Adicionando end_date:', filters.dateRange.endDate);
+      console.log('📅 Aplicando filtros de data ao ranking de técnicos:', {
+        start_date: filters.dateRange.startDate,
+        end_date: filters.dateRange.endDate
+      });
+    }
+    
+    // Aplicar outros filtros se fornecidos
+    if (filters?.level) {
+      queryParams.append('level', filters.level);
+    }
+    if (filters?.limit) {
+      queryParams.append('limit', filters.limit.toString());
+    }
+    
+    const url = queryParams.toString() 
+      ? `/technicians/ranking?${queryParams.toString()}`
+      : '/technicians/ranking';
+    
+    const cacheParams = { endpoint: 'technicians/ranking', filters: filters || {} };
 
-    // Verificar cache primeiro
+    // Verificar cache primeiro (com filtros)
     const cachedData = technicianRankingCache.get(cacheParams);
     if (cachedData) {
+      console.log('📦 Retornando ranking de técnicos do cache com filtros:', filters);
       return cachedData;
     }
 
     try {
-      const response = await api.get<ApiResponse<any[]>>('/technicians/ranking');
+      console.log('🔍 Buscando ranking de técnicos com URL:', url);
+      const response = await api.get<ApiResponse<any[]>>(url, {
+        signal // Passar o AbortSignal para o axios
+      });
       
       // Monitora performance
       const responseTime = Date.now() - startTime;
       const cacheKey = JSON.stringify(cacheParams);
       technicianRankingCache.recordRequestTime(cacheKey, responseTime);
       
+
+      
       if (response.data.success && response.data.data) {
         const data = response.data.data;
+        console.log('✅ Ranking de técnicos obtido com sucesso:', {
+          count: data.length,
+          filters: filters,
+          responseTime: responseTime + 'ms'
+        });
+        
+        // Mapear os dados para a estrutura esperada pelo frontend
+        const mappedData = data.map((tech: any, index: number) => ({
+          id: tech.id,
+          name: tech.name,
+          level: tech.level || 'N1',
+          total: tech.total_tickets || tech.total || 0,
+          rank: index + 1,
+          score: tech.score || 0,
+          tickets_abertos: tech.tickets_abertos || 0,
+          tickets_fechados: tech.tickets_fechados || 0,
+          tickets_pendentes: tech.tickets_pendentes || 0
+        }));
+        
+
+        
         // Armazenar no cache
-        technicianRankingCache.set(cacheParams, data);
-        return data;
+        technicianRankingCache.set(cacheParams, mappedData);
+        return mappedData;
       } else {
         console.error('API returned unsuccessful response:', response.data);
         return [];
       }
     } catch (error) {
+      // Se for um erro de cancelamento, não logar como erro
+      if (error instanceof Error && error.name === 'CanceledError') {
+        console.log('🚫 Requisição de ranking de técnicos cancelada');
+        throw error; // Re-throw para que o useDashboard possa tratar
+      }
       console.error('Error fetching technician ranking:', error);
       return [];
     }
@@ -473,7 +534,10 @@ export default api;
 // Named exports for individual functions
 export const getMetrics = apiService.getMetrics;
 export const getSystemStatus = apiService.getSystemStatus;
-export const getTechnicianRanking = apiService.getTechnicianRanking;
+export const getTechnicianRanking = (filters?: FilterParams, signal?: AbortSignal): Promise<any[]> => {
+  console.log('🔍 Export - getTechnicianRanking chamado com filtros:', filters);
+  return apiService.getTechnicianRanking(filters, signal);
+};
 export const getNewTickets = apiService.getNewTickets;
 export const search = apiService.search;
 export const healthCheck = apiService.healthCheck;
@@ -483,8 +547,10 @@ export const clearAllCaches = apiService.clearAllCaches;
 export const fetchDashboardMetrics = async (
   filters: FilterParams = {}
 ): Promise<DashboardMetrics | null> => {
+  const queryParams = new URLSearchParams();
+  let url = '';
+  
   try {
-    const queryParams = new URLSearchParams();
     
     // Mapear filtros para os nomes esperados pela API
     const filterMapping: Record<string, string> = {
@@ -513,7 +579,7 @@ export const fetchDashboardMetrics = async (
       }
     });
     
-    const url = queryParams.toString() 
+    url = queryParams.toString() 
       ? `${API_BASE_URL}/metrics?${queryParams.toString()}`
       : `${API_BASE_URL}/metrics`;
     

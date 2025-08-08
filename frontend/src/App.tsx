@@ -67,10 +67,8 @@ function App() {
   // Cache notifications
   const { notifications: cacheNotifications, removeNotification: removeCacheNotification } = useCacheNotifications();
 
-  // Load data on mount
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  // Data loading is handled by useDashboard hook
+  // Removed duplicate loadData call to prevent loops
 
   // Apply theme to body element
   useEffect(() => {

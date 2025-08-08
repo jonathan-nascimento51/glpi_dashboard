@@ -309,8 +309,13 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
           {/* Technician Ranking */}
           <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-6">Ranking de Técnicos</h3>
-            <div className="space-y-4 max-h-96 overflow-y-auto">
-              {technicianRanking.map((tech, index) => {
+            {!technicianRanking || technicianRanking.length === 0 ? (
+              <div className="text-center py-8">
+                <div className="text-gray-500">Nenhum técnico encontrado</div>
+              </div>
+            ) : (
+              <div className="space-y-4 max-h-96 overflow-y-auto">
+                {technicianRanking.map((tech, index) => {
                 const rankBadgeColor = useMemo(() => {
                   switch(index) {
                     case 0: return 'bg-slate-600';
@@ -338,7 +343,8 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
                   </div>
                 );
               })}
-            </div>
+              </div>
+            )}
           </div>
 
           {/* Recent Tickets */}

@@ -88,26 +88,38 @@ class ResponseFormatter:
                 'total': total
             }
             
-            # Criar resposta
+            # Criar resposta compatível com DashboardMetrics schema
             response = {
                 'success': True,
                 'data': {
-                    'niveis': niveis_data,
+                    # Campos principais do schema
+                    'novos': novos,
+                    'pendentes': pendentes,
+                    'progresso': progresso,
+                    'resolvidos': resolvidos,
+                    'total': total,
+                    # Estrutura de níveis (sem 'geral')
+                    'niveis': {
+                        'n1': niveis_data['n1'],
+                        'n2': niveis_data['n2'],
+                        'n3': niveis_data['n3'],
+                        'n4': niveis_data['n4']
+                    },
                     'tendencias': {
-                        'novos_hoje': 0,
-                        'resolvidos_hoje': 0,
-                        'pendencias_ontem': 0,
-                        'variacao_pendentes': 0
-                    }
-                },
-                'timestamp': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+                        'novos': '0',
+                        'pendentes': '0',
+                        'progresso': '0',
+                        'resolvidos': '0'
+                    },
+                    'timestamp': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+                }
             }
             
             if execution_time:
                 response['tempo_execucao'] = execution_time
             
             if filters:
-                response['data']['filtros_aplicados'] = filters
+                response['data']['filters_applied'] = filters
             
             return response
             

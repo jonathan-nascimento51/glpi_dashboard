@@ -6,6 +6,7 @@ import { Ticket, Clock, AlertTriangle, CheckCircle } from "lucide-react"
 import { usePerformanceMonitoring, useRenderTracker } from "../../hooks/usePerformanceMonitoring"
 import { performanceMonitor } from "../../utils/performanceMonitor"
 import { useThrottledCallback } from "../../hooks/useDebounce"
+import { generateMetricsKey, generateSkeletonKey } from "../../utils/keyUtils"
 
 interface MetricsGridProps {
   metrics: MetricsData
@@ -80,7 +81,7 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-32 figma-glass-card animate-pulse rounded-lg" />
+          <div key={generateSkeletonKey(i, 'metrics-grid')} className="h-32 figma-glass-card animate-pulse rounded-lg" />
         ))}
       </div>
     )
@@ -180,9 +181,9 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
       animate="visible"
       className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 ${className || ''}`}
     >
-      {metricCards.map((card) => (
+      {metricCards.map((card, index) => (
         <motion.div
-          key={`metrics-${card.status}`}
+          key={generateMetricsKey(card.status, 'main-grid')}
           variants={itemVariants}
         >
           <StatusCard

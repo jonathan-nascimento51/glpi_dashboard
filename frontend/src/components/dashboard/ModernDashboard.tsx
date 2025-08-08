@@ -101,17 +101,18 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
 
   // Memoizar dados do ranking processados
   const processedRankingData = useMemo(() => {
-    // console.log('📊 ModernDashboard - Processando ranking de', technicianRanking?.length || 0, 'técnicos')
+    if (!technicianRanking || !Array.isArray(technicianRanking)) {
+      return []
+    }
     
-    const result = technicianRanking.map((tech) => ({
-      id: tech.id || String(tech.name),
+    const result = technicianRanking.map((tech, index) => ({
+      id: `technician-${index}-${tech.id || 'unknown'}-${String(tech.name || 'unnamed').replace(/\s+/g, '-').toLowerCase()}`,
       name: tech.name || tech.nome || 'Técnico',
       level: tech.level || 'N1',
       total: tech.total || 0,
       rank: tech.rank || 0
     }))
     
-    // console.log('✅ ModernDashboard - Ranking processado:', result.length, 'técnicos')
     return result
   }, [technicianRanking])
 

@@ -20,7 +20,7 @@ export const API_CONFIG = {
     METRICS: '/metrics',
     METRICS_FILTERED: '/metrics/filtered',
     HEALTH: '/health',
-    TECHNICIAN_RANKING: '/technician-ranking',
+    TECHNICIAN_RANKING: '/technicians/ranking',
     NEW_TICKETS: '/new-tickets'
   }
 } as const;

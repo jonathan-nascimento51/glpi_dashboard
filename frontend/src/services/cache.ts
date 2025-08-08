@@ -58,7 +58,14 @@ class LocalCache<T> {
   private generateKey(params: Record<string, any>): string {
     // Ordena as chaves para garantir consistência
     const sortedKeys = Object.keys(params).sort();
-    const keyParts = sortedKeys.map(key => `${key}:${params[key]}`);
+    const keyParts = sortedKeys.map(key => {
+      const value = params[key];
+      // Serializa objetos complexos corretamente
+      const serializedValue = typeof value === 'object' && value !== null 
+        ? JSON.stringify(value) 
+        : String(value);
+      return `${key}:${serializedValue}`;
+    });
     return keyParts.join('|');
   }
 
