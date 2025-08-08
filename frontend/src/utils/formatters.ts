@@ -1,7 +1,5 @@
 import type {
-  DashboardMetrics,
   LevelMetrics,
-  TendenciasMetrics,
   PerformanceMetrics
 } from '../types/api';
 
@@ -199,19 +197,19 @@ export const formatPerformanceMetrics = (metrics: PerformanceMetrics): Record<st
 export const formatLevelMetricsForDisplay = (metrics: LevelMetrics) => {
   return {
     abertos: {
-      value: formatNumber(metrics.abertos),
+      value: formatNumber(metrics.abertos || 0),
       trend: metrics.tendencia_abertos ? formatTrend(metrics.tendencia_abertos) : null
     },
     fechados: {
-      value: formatNumber(metrics.fechados),
+      value: formatNumber(metrics.fechados || 0),
       trend: metrics.tendencia_fechados ? formatTrend(metrics.tendencia_fechados) : null
     },
     pendentes: {
-      value: formatNumber(metrics.pendentes),
+      value: formatNumber(metrics.pendentes || 0),
       trend: metrics.tendencia_pendentes ? formatTrend(metrics.tendencia_pendentes) : null
     },
     atrasados: {
-      value: formatNumber(metrics.atrasados),
+      value: formatNumber(metrics.atrasados || 0),
       trend: metrics.tendencia_atrasados ? formatTrend(metrics.tendencia_atrasados) : null
     }
   };

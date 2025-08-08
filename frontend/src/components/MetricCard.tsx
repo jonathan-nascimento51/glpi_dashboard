@@ -83,7 +83,7 @@ const cardVariants = {
     scale: 1,
     transition: {
       duration: 0.5,
-      ease: "easeOut"
+      ease: "easeOut" as const
     }
   },
   hover: {
@@ -91,10 +91,10 @@ const cardVariants = {
     scale: 1.03,
     transition: {
       duration: 0.3,
-      ease: "easeInOut"
+      ease: "easeInOut" as const
     }
   }
-};
+} as const;
 
 const iconVariants = {
   hover: {
@@ -102,10 +102,10 @@ const iconVariants = {
     rotate: 10,
     transition: {
       duration: 0.3,
-      ease: "easeInOut"
+      ease: "easeInOut" as const
     }
   }
-};
+} as const;
 
 const numberVariants = {
   hidden: { scale: 0 },
@@ -113,11 +113,11 @@ const numberVariants = {
     scale: 1,
     transition: {
       duration: 0.6,
-      ease: "easeOut",
+      ease: "easeOut" as const,
       delay: 0.2
     }
   }
-};
+} as const;
 
 export const MetricCard = React.memo<MetricCardProps>(function MetricCard({
   type,
@@ -255,4 +255,4 @@ export const MetricCard = React.memo<MetricCardProps>(function MetricCard({
       />
     </motion.div>
   );
-};
+});

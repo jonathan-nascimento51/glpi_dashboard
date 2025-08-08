@@ -3,7 +3,8 @@
  * Implementa verificações robustas para garantir consistência dos dados
  */
 
-import { MetricsData, SystemStatus, TechnicianRanking, LevelMetrics } from '../types';
+import { SystemStatus, TechnicianRanking } from '../types';
+import { DashboardMetrics, NiveisMetrics } from '../types/api';
 
 // Tipos para resultados de validação
 export interface ValidationResult<T> {
@@ -14,7 +15,7 @@ export interface ValidationResult<T> {
 }
 
 export interface DataIntegrityReport {
-  metrics: ValidationResult<MetricsData>;
+  metrics: ValidationResult<DashboardMetrics>;
   systemStatus: ValidationResult<SystemStatus>;
   technicianRanking: ValidationResult<TechnicianRanking[]>;
   overallValid: boolean;
@@ -24,22 +25,18 @@ export interface DataIntegrityReport {
 /**
  * Valida e sanitiza dados de métricas
  */
-export function validateMetrics(data: any): ValidationResult<MetricsData> {
+export function validateMetrics(data: any): ValidationResult<DashboardMetrics> {
   const errors: string[] = [];
   const warnings: string[] = [];
   
   // Estrutura padrão para fallback
-  const defaultMetrics: MetricsData = {
-    novos: 0,
-    pendentes: 0,
-    progresso: 0,
-    resolvidos: 0,
-    total: 0,
+  const defaultMetrics: DashboardMetrics = {
     niveis: {
-      n1: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-      n2: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-      n3: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-      n4: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 }
+      geral: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+      n1: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+      n2: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+      n3: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+      n4: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 }
     },
     tendencias: {
       novos: '0',
@@ -61,27 +58,18 @@ export function validateMetrics(data: any): ValidationResult<MetricsData> {
   }
 
   // Validar campos principais
-  const sanitizedData: MetricsData = {
-    novos: validateNumber(data.novos, 'novos', errors, warnings),
-    pendentes: validateNumber(data.pendentes, 'pendentes', errors, warnings),
-    progresso: validateNumber(data.progresso, 'progresso', errors, warnings),
-    resolvidos: validateNumber(data.resolvidos, 'resolvidos', errors, warnings),
-    total: validateNumber(data.total, 'total', errors, warnings),
-    niveis: validateLevels(data.niveis, errors, warnings),
-    tendencias: validateTrends(data.tendencias, errors, warnings)
+  const sanitizedData: DashboardMetrics = {
+    niveis: validateNiveisMetrics(data.niveis || data, errors, warnings),
+    tendencias: validateTrends(data.tendencias, errors, warnings),
+    filtros_aplicados: data.filtros_aplicados,
+    tempo_execucao: data.tempo_execucao,
+    timestamp: data.timestamp,
+    systemStatus: data.systemStatus,
+    technicianRanking: data.technicianRanking
   };
 
-  // Validar consistência dos totais
-  const calculatedTotal = sanitizedData.novos + sanitizedData.pendentes + 
-                         sanitizedData.progresso + sanitizedData.resolvidos;
-  
-  if (sanitizedData.total !== calculatedTotal) {
-    warnings.push(`Total inconsistente: declarado=${sanitizedData.total}, calculado=${calculatedTotal}`);
-    // Usar o total calculado como mais confiável
-    sanitizedData.total = calculatedTotal;
-  }
-
-  // Validar consistência dos níveis
+  // Validar consistência dos níveis internamente
+  const { geral, ...specificLevels } = sanitizedData.niveis;
   const levelTotals = {
     novos: 0,
     pendentes: 0,
@@ -89,17 +77,16 @@ export function validateMetrics(data: any): ValidationResult<MetricsData> {
     resolvidos: 0
   };
 
-  Object.values(sanitizedData.niveis).forEach(level => {
+  Object.values(specificLevels).forEach(level => {
     levelTotals.novos += level.novos;
     levelTotals.pendentes += level.pendentes;
     levelTotals.progresso += level.progresso;
     levelTotals.resolvidos += level.resolvidos;
   });
 
-  // Verificar se os totais dos níveis são consistentes com os totais gerais
-  // (pode haver diferença se existem tickets fora dos grupos N1-N4)
-  if (levelTotals.novos > sanitizedData.novos) {
-    warnings.push(`Níveis têm mais 'novos' (${levelTotals.novos}) que o total geral (${sanitizedData.novos})`);
+  // Verificar se o geral está consistente com a soma dos níveis específicos
+  if (geral.novos !== levelTotals.novos) {
+    warnings.push(`Total geral de 'novos' (${geral.novos}) não corresponde à soma dos níveis (${levelTotals.novos})`);
   }
 
   return {
@@ -223,17 +210,51 @@ function validateNumber(value: any, fieldName: string, _errors: string[], warnin
 }
 
 /**
- * Valida dados de níveis
+ * Valida dados de um nível específico para API
  */
-function validateLevels(data: any, _errors: string[], warnings: string[]): MetricsData['niveis'] {
-  const defaultLevel: LevelMetrics = {
+function validateLevel(data: any, levelName: string, warnings: string[]): import('../types/api').LevelMetrics {
+  const defaultLevel: import('../types/api').LevelMetrics = {
     novos: 0,
     pendentes: 0,
     progresso: 0,
-    resolvidos: 0
+    resolvidos: 0,
+    total: 0
   };
 
-  const defaultLevels = {
+  if (!data || typeof data !== 'object') {
+    warnings.push(`Dados do nível ${levelName} inválidos, usando valores padrão`);
+    return defaultLevel;
+  }
+
+  const novos = validateNumber(data.novos, `${levelName}.novos`, [], warnings);
+  const pendentes = validateNumber(data.pendentes, `${levelName}.pendentes`, [], warnings);
+  const progresso = validateNumber(data.progresso, `${levelName}.progresso`, [], warnings);
+  const resolvidos = validateNumber(data.resolvidos, `${levelName}.resolvidos`, [], warnings);
+  const total = novos + pendentes + progresso + resolvidos;
+
+  return {
+    novos,
+    pendentes,
+    progresso,
+    resolvidos,
+    total
+  };
+}
+
+/**
+ * Valida dados de níveis para DashboardMetrics (com propriedade geral)
+ */
+function validateNiveisMetrics(data: any, _errors: string[], warnings: string[]): NiveisMetrics {
+  const defaultLevel: import('../types/api').LevelMetrics = {
+    novos: 0,
+    pendentes: 0,
+    progresso: 0,
+    resolvidos: 0,
+    total: 0
+  };
+
+  const defaultNiveis: NiveisMetrics = {
+    geral: { ...defaultLevel },
     n1: { ...defaultLevel },
     n2: { ...defaultLevel },
     n3: { ...defaultLevel },
@@ -242,10 +263,11 @@ function validateLevels(data: any, _errors: string[], warnings: string[]): Metri
 
   if (!data || typeof data !== 'object') {
     warnings.push('Dados de níveis inválidos, usando valores padrão');
-    return defaultLevels;
+    return defaultNiveis;
   }
 
   return {
+    geral: validateLevel(data.geral, 'geral', warnings),
     n1: validateLevel(data.n1, 'n1', warnings),
     n2: validateLevel(data.n2, 'n2', warnings),
     n3: validateLevel(data.n3, 'n3', warnings),
@@ -254,33 +276,9 @@ function validateLevels(data: any, _errors: string[], warnings: string[]): Metri
 }
 
 /**
- * Valida dados de um nível específico
- */
-function validateLevel(data: any, levelName: string, warnings: string[]): LevelMetrics {
-  const defaultLevel: LevelMetrics = {
-    novos: 0,
-    pendentes: 0,
-    progresso: 0,
-    resolvidos: 0
-  };
-
-  if (!data || typeof data !== 'object') {
-    warnings.push(`Dados do nível ${levelName} inválidos, usando valores padrão`);
-    return defaultLevel;
-  }
-
-  return {
-    novos: validateNumber(data.novos, `${levelName}.novos`, [], warnings),
-    pendentes: validateNumber(data.pendentes, `${levelName}.pendentes`, [], warnings),
-    progresso: validateNumber(data.progresso, `${levelName}.progresso`, [], warnings),
-    resolvidos: validateNumber(data.resolvidos, `${levelName}.resolvidos`, [], warnings)
-  };
-}
-
-/**
  * Valida dados de tendências
  */
-function validateTrends(data: any, _errors: string[], warnings: string[]): MetricsData['tendencias'] {
+function validateTrends(data: any, _errors: string[], warnings: string[]): DashboardMetrics['tendencias'] {
   const defaultTrends = {
     novos: '0',
     pendentes: '0',

@@ -3,7 +3,8 @@
  * Implementa verificações contínuas e alertas automáticos
  */
 
-import { MetricsData, SystemStatus, TechnicianRanking } from '../types';
+import { SystemStatus, TechnicianRanking } from '../types';
+import { DashboardMetrics } from '../types/api';
 import { DataIntegrityReport } from './dataValidation';
 import { dataCacheManager } from './dataCache';
 
@@ -13,7 +14,7 @@ interface MonitoringRule {
   description: string;
   severity: 'low' | 'medium' | 'high' | 'critical';
   check: (data: {
-    metrics: MetricsData;
+    metrics: DashboardMetrics;
     systemStatus: SystemStatus;
     technicianRanking: TechnicianRanking[];
     validationReport: DataIntegrityReport;
@@ -67,7 +68,7 @@ class DataMonitor {
           }
           
           const now = Date.now();
-          const lastUpdate = validationReport.timestamp;
+          const lastUpdate = validationReport.timestamp.getTime();
           const age = now - lastUpdate;
           const maxAge = 5 * 60 * 1000; // 5 minutos
           
@@ -87,7 +88,7 @@ class DataMonitor {
         description: 'Verifica se as métricas estão consistentes entre si',
         severity: 'critical',
         check: ({ metrics }) => {
-          if (!metrics || !metrics.general || !metrics.levels) {
+          if (!metrics || !metrics.niveis || !metrics.niveis.geral) {
             return {
               passed: false,
               message: 'Dados de métricas não disponíveis para verificação de consistência',
@@ -95,14 +96,14 @@ class DataMonitor {
             };
           }
           
-          const total = (metrics.general.new || 0) + (metrics.general.pending || 0) + 
-                       (metrics.general.inProgress || 0) + (metrics.general.resolved || 0);
+          const total = (metrics.niveis.geral.novos || 0) + (metrics.niveis.geral.pendentes || 0) +
+                   (metrics.niveis.geral.progresso || 0) + (metrics.niveis.geral.resolvidos || 0);
           
           // Verificar se o total geral bate com a soma dos níveis
           let levelTotal = 0;
-          Object.values(metrics.levels).forEach(level => {
-            levelTotal += (level.new || 0) + (level.pending || 0) + (level.inProgress || 0) + (level.resolved || 0);
-          });
+          Object.values(metrics.niveis).forEach(level => {
+              levelTotal += (level.novos || 0) + (level.pendentes || 0) + (level.progresso || 0) + (level.resolvidos || 0);
+            });
           
           const discrepancy = Math.abs(total - levelTotal);
           const tolerance = Math.max(1, total * 0.05); // 5% de tolerância
@@ -132,17 +133,13 @@ class DataMonitor {
           }
           
           const isOnline = systemStatus.status === 'online';
-          const responseTime = systemStatus.responseTime || 0;
-          const maxResponseTime = 5000; // 5 segundos
           
           return {
-            passed: isOnline && responseTime <= maxResponseTime,
+            passed: isOnline,
             message: !isOnline ? 
               'Sistema offline' : 
-              responseTime > maxResponseTime ? 
-                `Tempo de resposta alto: ${responseTime}ms` : 
-                undefined,
-            details: { isOnline, responseTime, maxResponseTime }
+              undefined,
+            details: { isOnline }
           };
         }
       },
@@ -153,7 +150,7 @@ class DataMonitor {
         description: 'Verifica se os dados dos técnicos estão íntegros',
         severity: 'medium',
         check: ({ technicianRanking, metrics }) => {
-          if (!technicianRanking || !Array.isArray(technicianRanking) || !metrics || !metrics.general) {
+          if (!technicianRanking || !Array.isArray(technicianRanking) || !metrics || !metrics.niveis || !metrics.niveis.geral) {
             return {
               passed: false,
               message: 'Dados de técnicos ou métricas não disponíveis',
@@ -167,9 +164,9 @@ class DataMonitor {
           const hasDuplicates = technicianIds.length !== uniqueIds.size;
           
           // Verificar se o total de tickets dos técnicos é razoável
-          const totalTechnicianTickets = technicianRanking.reduce((sum, t) => sum + (t?.totalTickets || 0), 0);
-          const totalSystemTickets = (metrics.general.new || 0) + (metrics.general.pending || 0) + 
-                                   (metrics.general.inProgress || 0) + (metrics.general.resolved || 0);
+          const totalTechnicianTickets = technicianRanking.reduce((sum, t) => sum + (t?.total || 0), 0);
+          const totalSystemTickets = (metrics.niveis.geral.novos || 0) + (metrics.niveis.geral.pendentes || 0) +
+                                   (metrics.niveis.geral.progresso || 0) + (metrics.niveis.geral.resolvidos || 0);
           
           const ratio = totalSystemTickets > 0 ? totalTechnicianTickets / totalSystemTickets : 0;
           const isReasonableRatio = ratio <= 2.0; // Máximo 200% (considerando tickets históricos)
@@ -248,7 +245,7 @@ class DataMonitor {
    * Executa todas as regras de monitoramento
    */
   runChecks(data: {
-    metrics: MetricsData;
+    metrics: DashboardMetrics;
     systemStatus: SystemStatus;
     technicianRanking: TechnicianRanking[];
     validationReport: DataIntegrityReport;

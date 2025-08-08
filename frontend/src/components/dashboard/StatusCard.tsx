@@ -1,8 +1,8 @@
-import React, { memo, useMemo } from "react"
+import { memo, useMemo } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { cn, formatNumber, getStatusColor, getStatusIcon, getTrendIcon, getTrendColor } from "@/lib/utils"
+import { cn, formatNumber, getStatusIcon, getTrendIcon, getTrendColor } from "@/lib/utils"
 import { type LucideIcon } from "lucide-react"
 
 interface StatusCardProps {
@@ -43,7 +43,7 @@ const cardVariants = {
     scale: 1,
     transition: {
       duration: 0.5,
-      ease: "easeOut"
+      ease: "easeOut" as const
     }
   },
   hover: {
@@ -51,10 +51,10 @@ const cardVariants = {
     scale: 1.03,
     transition: {
       duration: 0.3,
-      ease: "easeInOut"
+      ease: "easeInOut" as const
     }
   }
-}
+} as const
 
 const iconVariants = {
   hover: {
@@ -62,10 +62,10 @@ const iconVariants = {
     rotate: 10,
     transition: {
       duration: 0.3,
-      ease: "easeInOut"
+      ease: "easeInOut" as const
     }
   }
-}
+} as const
 
 const numberVariants = {
   hidden: { scale: 0 },
@@ -73,11 +73,11 @@ const numberVariants = {
     scale: 1,
     transition: {
       duration: 0.6,
-      ease: "easeOut",
+      ease: "easeOut" as const,
       delay: 0.2
     }
   }
-}
+} as const
 
 export const StatusCard = memo<StatusCardProps>(function StatusCard({
   title,
@@ -86,7 +86,7 @@ export const StatusCard = memo<StatusCardProps>(function StatusCard({
   trend,
   icon,
   className,
-  variant = 'default'
+  variant: _ = 'default'
 }) {
   // Memoizar ícones para evitar recálculos
   const StatusIcon = useMemo(() => 

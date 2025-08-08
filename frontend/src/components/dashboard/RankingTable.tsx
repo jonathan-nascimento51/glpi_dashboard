@@ -86,7 +86,7 @@ const containerVariants = {
       staggerChildren: 0.1
     }
   }
-}
+} as const
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.9 },
@@ -96,7 +96,7 @@ const cardVariants = {
     scale: 1,
     transition: {
       duration: 0.5,
-      ease: "easeOut"
+      ease: "easeOut" as const
     }
   },
   hover: {
@@ -105,21 +105,21 @@ const cardVariants = {
     zIndex: 5,
     transition: {
       duration: 0.3,
-      ease: "easeOut"
+      ease: "easeOut" as const
     }
   }
-}
+} as const
 
-const iconVariants = {
-  hover: {
-    scale: 1.3,
-    rotate: 15,
-    transition: {
-      duration: 0.2,
-      ease: "easeOut"
-    }
-  }
-}
+// const iconVariants = {
+//   hover: {
+//     scale: 1.3,
+//     rotate: 15,
+//     transition: {
+//       duration: 0.2,
+//       ease: "easeOut" as const
+//     }
+//   }
+// } as const
 
 // Componente TechnicianCard memoizado
 const TechnicianCard = React.memo<{
@@ -231,7 +231,7 @@ const TechnicianCard = React.memo<{
 
 export const RankingTable = React.memo<RankingTableProps>(function RankingTable({ 
   data, 
-  title = "Ranking de Técnicos", 
+  title: _ = "Ranking de Técnicos", 
   className 
 }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)

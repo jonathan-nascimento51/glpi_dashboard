@@ -7,6 +7,16 @@ export interface LevelMetrics {
   progresso: number;
   resolvidos: number;
   total: number;
+  abertos?: number;
+  fechados?: number;
+  atrasados?: number;
+  tendencia_novos?: number;
+  tendencia_pendentes?: number;
+  tendencia_progresso?: number;
+  tendencia_resolvidos?: number;
+  tendencia_abertos?: number;
+  tendencia_fechados?: number;
+  tendencia_atrasados?: number;
 }
 
 // Métricas de níveis
@@ -67,7 +77,13 @@ export interface FilterParams {
   dateRange?: {
     startDate: string;
     endDate: string;
+    label?: string;
   };
+  level?: string;
+  technician?: string;
+  category?: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 // Resposta da API
@@ -99,8 +115,10 @@ export interface LoadingState {
 
 // Configuração de cache
 export interface CacheConfig {
+  enabled: boolean;
   ttl: number; // Time to live em milissegundos
   maxSize: number; // Número máximo de entradas no cache
+  strategy: string;
 }
 
 // Entrada do cache
@@ -120,11 +138,15 @@ export interface PerformanceMetrics {
 
 // Configuração da aplicação
 export interface AppConfig {
-  apiBaseUrl: string;
+  theme: string;
+  language: string;
+  autoRefresh: boolean;
   refreshInterval: number;
-  cacheConfig: CacheConfig;
-  enablePerformanceMonitoring: boolean;
-  enableErrorReporting: boolean;
+  showPerformanceMetrics: boolean;
+  enableNotifications: boolean;
+  dateFormat: string;
+  timeFormat: string;
+  timezone: string;
 }
 
 // Contexto do usuário
@@ -149,6 +171,7 @@ export interface Notification {
 // Tema da aplicação
 export interface Theme {
   name: string;
+  displayName: string;
   colors: {
     primary: string;
     secondary: string;
@@ -178,7 +201,16 @@ export interface Theme {
 export interface UserPreferences {
   theme: 'light' | 'dark' | 'auto';
   language: 'pt-BR' | 'en-US';
+  dateFormat: string;
+  timeFormat: string;
+  autoRefresh: boolean;
   refreshInterval: number;
+  showPerformanceMetrics: boolean;
+  enableNotifications: boolean;
+  dashboardLayout: string;
+  chartsEnabled: boolean;
+  soundEnabled: boolean;
+  emailNotifications: boolean;
   notifications: {
     enabled: boolean;
     types: ('success' | 'error' | 'warning' | 'info')[];
@@ -191,9 +223,10 @@ export interface UserPreferences {
 }
 
 // Validação de formulário
-export interface ValidationResult {
+export interface ValidationResult<T = any> {
   isValid: boolean;
-  errors: Record<string, string[]>;
+  errors: string[];
+  data?: T;
 }
 
 // Opções de exportação

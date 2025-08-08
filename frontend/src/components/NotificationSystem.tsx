@@ -60,14 +60,26 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onRem
   const config = useMemo(() => getNotificationConfig(notification.type), [notification.type]);
   const Icon = useMemo(() => config.icon, [config.icon]);
 
-  // Memoize formatted timestamp
-  const formattedTime = useMemo(() => 
-    notification.timestamp.toLocaleTimeString('pt-BR', {
+  // Memoize formatted timestamp with safety check
+  const formattedTime = useMemo(() => {
+    if (!notification.timestamp) {
+      return new Date().toLocaleTimeString('pt-BR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+    }
+    
+    const timestamp = notification.timestamp instanceof Date 
+      ? notification.timestamp 
+      : new Date(notification.timestamp);
+      
+    return timestamp.toLocaleTimeString('pt-BR', {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
-    }), [notification.timestamp]
-  );
+    });
+  }, [notification.timestamp]);
 
   // Memoize progress bar color
   const progressBarColor = useMemo(() => {

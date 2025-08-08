@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Users, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+// import { Users, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { MetricsData, LevelMetrics } from '../types';
 
 interface LevelsSectionProps {

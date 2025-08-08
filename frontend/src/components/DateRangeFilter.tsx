@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, Filter, ChevronDown } from 'lucide-react';
-import { Button } from "@/components/ui/button";
+import { Calendar, Clock, Filter } from 'lucide-react';
+// import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -140,10 +140,10 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
         y: 0,
         transition: {
           duration: 0.3,
-          ease: "easeOut"
+          ease: "easeOut" as const
         }
       }
-    };
+    } as const;
 
     return (
       <motion.div
@@ -170,7 +170,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                 }}
               >
                 <SelectTrigger className="w-48 border-gray-200 bg-white/80 hover:bg-white transition-colors">
-                  <SelectValue placeholder={formatDateForDisplay(currentRange || { label: 'Selecionar período' })} />
+                  <SelectValue placeholder={formatDateForDisplay(currentRange || { label: 'Selecionar período', startDate: '', endDate: '' })} />
                 </SelectTrigger>
                 <SelectContent>
                   {predefinedRanges.map((preset) => (
@@ -187,7 +187,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                 variant="outline" 
                 className="text-xs bg-blue-50 text-blue-700 border-blue-200"
               >
-                {formatDateForDisplay(currentRange || { label: 'Selecionar período' })}
+                {formatDateForDisplay(currentRange || { label: 'Selecionar período', startDate: '', endDate: '' })}
               </Badge>
             </div>
           </CardContent>

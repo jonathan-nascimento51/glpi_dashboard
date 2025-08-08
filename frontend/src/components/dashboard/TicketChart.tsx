@@ -17,7 +17,7 @@ import {
 } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
+// import { cn } from "@/lib/utils"
 import { TrendingUp, BarChart3, PieChart as PieChartIcon } from "lucide-react"
 
 interface ChartData {
@@ -53,10 +53,10 @@ const chartVariants = {
     scale: 1,
     transition: {
       duration: 0.6,
-      ease: "easeOut"
+      ease: "easeOut" as const
     }
   }
-}
+} as const
 
 // Configurações de margem memoizadas
 const chartMargins = {
@@ -165,7 +165,7 @@ export const TicketChart = React.memo<TicketChartProps>(function TicketChart({
                 paddingAngle={2}
                 dataKey="value"
               >
-                {pieData.map((entry, index) => (
+                {pieData.map((_, index) => (
                   <Cell key={`pie-cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                 ))}
               </Pie>

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { usePerformanceReports, usePerformanceDebug, useApiPerformance, useFilterPerformance } from "../hooks/usePerformanceMonitoring";
-import { performanceMonitor } from '../utils/performanceMonitor';
+import { usePerformanceReports, usePerformanceDebug } from "../hooks/usePerformanceMonitoring";
 
 interface PerformanceDashboardProps {
   isVisible: boolean;
@@ -49,10 +48,8 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, 
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   
-  const { reports, generateReport, clearReports, averageMetrics, latestReport } = usePerformanceReports();
-  const { isEnabled, toggleMonitoring, logMetrics, exportToAnalytics } = usePerformanceDebug();
-  const { apiMetrics } = useApiPerformance();
-  const { filterMetrics } = useFilterPerformance();
+  const { generateReport, clearReports, averageMetrics, latestReport } = usePerformanceReports();
+  const { isEnabled, toggleMonitoring, logMetrics } = usePerformanceDebug();
 
   const handleTabChange = useCallback((tab: TabType) => {
     setActiveTab(tab);
@@ -244,15 +241,15 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, 
                     Time to Interactive
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {formatTime(navigation.domInteractive - navigation.navigationStart)}
+                    {formatTime(navigation.domInteractive)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      (navigation.domInteractive - navigation.navigationStart) < 2000 
+                      navigation.domInteractive < 2000 
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-yellow-100 text-yellow-800'
                     }`}>
-                      {(navigation.domInteractive - navigation.navigationStart) < 2000 ? 'Good' : 'Needs Improvement'}
+                      {navigation.domInteractive < 2000 ? 'Good' : 'Needs Improvement'}
                     </span>
                   </td>
                 </tr>
@@ -363,12 +360,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, 
                   >
                     Limpar Dados
                   </button>
-                  <button
-                    onClick={exportToAnalytics}
-                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                  >
-                    Export Analytics
-                  </button>
+
                 </div>
 
                 {averageMetrics && (

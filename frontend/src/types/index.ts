@@ -26,9 +26,16 @@ export interface LevelMetrics {
 }
 
 export interface SystemStatus {
-  status: 'online' | 'offline' | 'maintenance';
-  sistema_ativo: boolean;
-  ultima_atualizacao: string;
+  api: string;
+  glpi: string;
+  glpi_message: string;
+  glpi_response_time: number;
+  last_update: string;
+  version: string;
+  // Campos de compatibilidade
+  status?: 'online' | 'offline' | 'maintenance';
+  sistema_ativo?: boolean;
+  ultima_atualizacao?: string;
 }
 
 export interface SearchResult {

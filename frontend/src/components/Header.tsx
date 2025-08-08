@@ -34,7 +34,7 @@ const dateRanges = [
 
 export const Header: React.FC<HeaderProps> = ({
   currentTime,
-  systemActive,
+  // systemActive,
   theme,
   searchQuery,
   searchResults,

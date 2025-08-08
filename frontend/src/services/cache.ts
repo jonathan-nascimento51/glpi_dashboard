@@ -102,10 +102,10 @@ class LocalCache<T> {
     this.requestCounts.set(key, count);
 
     // Verifica se deve ativar o cache
-    this.checkActivation(key, responseTime, count);
+    this.checkActivation(responseTime, count);
   }
 
-  private checkActivation(key: string, responseTime: number, requestCount: number): void {
+  private checkActivation(responseTime: number, requestCount: number): void {
     if (this.isActive) return;
 
     const { performanceThreshold, usageThreshold } = this.config;

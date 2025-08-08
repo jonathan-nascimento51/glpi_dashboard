@@ -1,9 +1,15 @@
-import React, { useEffect, useMemo } from "react"
-import { motion } from "framer-motion"
-import { MetricsGrid } from "./MetricsGrid"
-import { LevelMetricsGrid } from "./LevelMetricsGrid"
-import { NewTicketsList } from "./NewTicketsList"
-import { RankingTable } from "./RankingTable"
+import React, { useEffect, useMemo, Suspense } from 'react';
+import { motion } from 'framer-motion';
+import { MetricsGrid } from './MetricsGrid';
+import { LevelMetricsGrid } from './LevelMetricsGrid';
+
+// Componentes lazy centralizados
+import { 
+  LazyNewTicketsList, 
+  LazyRankingTable,
+  ListSkeleton,
+  TableSkeleton 
+} from '../LazyComponents';
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
@@ -32,7 +38,7 @@ const containerVariants = {
       delayChildren: 0
     }
   }
-}
+} as const
 
 const itemVariants = {
   hidden: { opacity: 0 },
@@ -40,10 +46,10 @@ const itemVariants = {
     opacity: 1,
     transition: {
       duration: 0.05,
-      ease: "easeOut"
+      ease: "easeOut" as const
     }
   }
-}
+} as const
 
 // Componente SkeletonCard memoizado
 const SkeletonCard = React.memo(function SkeletonCard() {
@@ -68,7 +74,7 @@ const SkeletonCard = React.memo(function SkeletonCard() {
 export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernDashboard({
   metrics,
   levelMetrics,
-  systemStatus,
+  // systemStatus,
   technicianRanking = [],
   onFilterByStatus,
   isLoading = false,
@@ -166,7 +172,7 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
       {/* Cards de métricas principais */}
       <motion.div variants={itemVariants} className="dashboard-metrics-section">
         <MetricsGrid 
-          metrics={metrics.geral || metrics}
+          metrics={metrics}
           onFilterByStatus={onFilterByStatus}
         />
       </motion.div>
@@ -176,27 +182,31 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
         {/* Métricas por nível de atendimento - ocupando 2 colunas */}
         <motion.div variants={itemVariants} className="dashboard-levels-section">
           <LevelMetricsGrid 
-            metrics={levelMetrics}
+            metrics={{ niveis: levelMetrics }}
             className="h-full"
           />
         </motion.div>
 
         {/* Lista de tickets novos - ocupando 1 coluna */}
         <motion.div variants={itemVariants} className="dashboard-tickets-section">
-          <NewTicketsList 
-            className="h-full"
-            limit={6}
-          />
+          <Suspense fallback={<ListSkeleton />}>
+            <LazyNewTicketsList 
+              className="h-full"
+              limit={6}
+            />
+          </Suspense>
         </motion.div>
       </div>
 
       {/* Ranking de técnicos - ocupando toda a largura na parte inferior */}
       <motion.div variants={itemVariants} className="dashboard-ranking-section">
-        <RankingTable 
-          data={processedRankingData}
-          title="Ranking de Técnicos"
-          className="w-full h-full"
-        />
+        <Suspense fallback={<TableSkeleton />}>
+          <LazyRankingTable 
+            data={processedRankingData}
+            title="Ranking de Técnicos"
+            className="w-full h-full"
+          />
+        </Suspense>
       </motion.div>
     </motion.div>
   )

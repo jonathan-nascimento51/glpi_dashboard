@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useTransition, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { MetricsData, TechnicianRanking, NewTicket } from '../types';
-import { DateRange } from '../types/dashboard';
+import { DateRange } from '../types';
 import { apiService } from '../services/api';
 import { useThrottledCallback } from '../hooks/useDebounce';
 import { 
@@ -10,8 +10,7 @@ import {
   AlertTriangle,
   CheckCircle,
   TrendingUp,
-  Settings,
-  Calendar
+  Settings
 } from 'lucide-react';
 
 interface ProfessionalDashboardProps {
@@ -33,9 +32,9 @@ interface StatusCardProps {
 }
 
 const StatusCard = React.memo<StatusCardProps>(({ title, value, icon: Icon, color, bgColor, trend }) => {
-  const formattedValue = useMemo(() => value.toLocaleString(), [value])
-  const trendColor = useMemo(() => trend !== undefined ? (trend >= 0 ? 'text-green-500' : 'text-red-500') : '', [trend])
-  const trendTextColor = useMemo(() => trend !== undefined ? (trend >= 0 ? 'text-green-600' : 'text-red-600') : '', [trend])
+  const formattedValue = useMemo(() => value.toLocaleString(), [value]);
+  const trendColor = useMemo(() => trend !== undefined ? (trend >= 0 ? 'text-green-500' : 'text-red-500') : '', [trend]);
+  const trendTextColor = useMemo(() => trend !== undefined ? (trend >= 0 ? 'text-green-600' : 'text-red-600') : '', [trend]);
   
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all duration-200">
@@ -57,7 +56,7 @@ const StatusCard = React.memo<StatusCardProps>(({ title, value, icon: Icon, colo
         </div>
       </div>
     </div>
-  )
+  );
 });
 
 interface LevelSectionProps {
@@ -71,8 +70,8 @@ interface LevelSectionProps {
 }
 
 const LevelSection = React.memo<LevelSectionProps>(({ level, data }) => {
-  const total = useMemo(() => data.novos + data.progresso + data.pendentes + data.resolvidos, [data])
-  const resolvedPercentage = useMemo(() => total > 0 ? ((data.resolvidos / total) * 100).toFixed(1) : '0', [total, data.resolvidos])
+  const total = useMemo(() => data.novos + data.progresso + data.pendentes + data.resolvidos, [data]);
+  const resolvedPercentage = useMemo(() => total > 0 ? ((data.resolvidos / total) * 100).toFixed(1) : '0', [total, data.resolvidos]);
   
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -118,14 +117,13 @@ const LevelSection = React.memo<LevelSectionProps>(({ level, data }) => {
       </div>
     </div>
   );
-};
+});
 
 export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
   metrics,
   technicianRanking,
   isLoading,
   dateRange,
-  onDateRangeChange,
   onRefresh
 }) => {
   // Debug logs
@@ -137,7 +135,6 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
   });
   const [newTickets, setNewTickets] = useState<NewTicket[]>([]);
   const [ticketsLoading, setTicketsLoading] = useState(false);
-  const [isPending, startTransition] = useTransition();
   const [currentTime, setCurrentTime] = useState('');
 
   // Update current time
@@ -163,11 +160,9 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
   const throttledFetchNewTickets = useThrottledCallback(async () => {
     setTicketsLoading(true);
     try {
-      startTransition(async () => {
-        const tickets = await apiService.getNewTickets(8);
-        setNewTickets(tickets);
-        setTicketsLoading(false);
-      });
+      const tickets = await apiService.getNewTickets(8);
+      setNewTickets(tickets);
+      setTicketsLoading(false);
     } catch (error) {
       console.error('Erro ao buscar tickets novos:', error);
       setTicketsLoading(false);
@@ -223,7 +218,7 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
           <div className="text-gray-900 text-xl font-semibold mb-2">Erro ao Carregar Dados</div>
           <div className="text-gray-600 mb-4">Não foi possível conectar ao sistema GLPI</div>
           <button 
-            onClick={onRefresh}
+            onClick={() => onRefresh()}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
             Tentar Novamente

@@ -84,7 +84,7 @@ const itemVariants = {
     scale: 1,
     transition: {
       duration: 0.5,
-      ease: "easeOut"
+      ease: "easeOut" as const
     }
   },
   hover: {
@@ -92,10 +92,10 @@ const itemVariants = {
     scale: 1.03,
     transition: {
       duration: 0.3,
-      ease: "easeInOut"
+      ease: "easeInOut" as const
     }
   }
-}
+} as const
 
 const iconVariants = {
   hover: {
@@ -103,26 +103,26 @@ const iconVariants = {
     rotate: 10,
     transition: {
       duration: 0.3,
-      ease: "easeInOut"
+      ease: "easeInOut" as const
     }
   }
-}
+} as const
 
 const statusVariants = {
   hover: {
     scale: 1.05,
     transition: {
       duration: 0.2,
-      ease: "easeInOut"
+      ease: "easeInOut" as const
     }
   }
-}
+} as const
 
 // Componente StatusItem memoizado
 const StatusItem = React.memo<{
   status: string
   statusConf: typeof statusConfig[keyof typeof statusConfig]
-  value: number
+  value: number | undefined
 }>(function StatusItem({ status, statusConf, value }) {
   const Icon = statusConf.icon
   
@@ -164,7 +164,7 @@ const LevelCard = React.memo<{
   config: typeof levelConfig[keyof typeof levelConfig]
 }>(function LevelCard({ level, levelData, config }) {
   const total = useMemo(() => {
-    return Object.values(levelData).reduce((sum, value) => sum + (value || 0), 0)
+    return Object.values(levelData).reduce((sum: number, value) => sum + (Number(value) || 0), 0)
   }, [levelData])
   
   return (

@@ -3,7 +3,8 @@
  * Implementa estratégias de cache com validação de integridade
  */
 
-import { MetricsData, SystemStatus, TechnicianRanking } from '../types';
+import { SystemStatus, TechnicianRanking } from '../types';
+import { DashboardMetrics } from '../types/api';
 import { validateAllData, DataIntegrityReport } from './dataValidation';
 
 interface CacheEntry<T> {
@@ -14,7 +15,7 @@ interface CacheEntry<T> {
 }
 
 interface DashboardCache {
-  metrics: CacheEntry<MetricsData> | null;
+  metrics: CacheEntry<DashboardMetrics> | null;
   systemStatus: CacheEntry<SystemStatus> | null;
   technicianRanking: CacheEntry<TechnicianRanking[]> | null;
 }
@@ -33,9 +34,9 @@ class DataCacheManager {
    * Armazena dados no cache com validação
    */
   set(
-    metrics: any,
-    systemStatus: any,
-    technicianRanking: any
+    metrics: DashboardMetrics,
+    systemStatus: SystemStatus,
+    technicianRanking: TechnicianRanking[]
   ): DataIntegrityReport {
     const timestamp = Date.now();
     
@@ -82,7 +83,7 @@ class DataCacheManager {
    * Recupera dados do cache se ainda válidos
    */
   get(): {
-    metrics: MetricsData | null;
+    metrics: DashboardMetrics | null;
     systemStatus: SystemStatus | null;
     technicianRanking: TechnicianRanking[];
     validationReport: DataIntegrityReport | null;
@@ -212,9 +213,9 @@ class DataCacheManager {
       hasData: true,
       age,
       status,
-      isValid: this.cache.metrics.isValid && 
-               this.cache.systemStatus?.isValid && 
-               this.cache.technicianRanking?.isValid,
+      isValid: (this.cache.metrics?.isValid ?? false) && 
+               (this.cache.systemStatus?.isValid ?? false) && 
+               (this.cache.technicianRanking?.isValid ?? false),
       lastUpdate: new Date(this.cache.metrics.timestamp)
     };
   }
@@ -243,7 +244,7 @@ class DataCacheManager {
       technicianRanking: any;
     }>
   ): Promise<{
-    metrics: MetricsData;
+    metrics: DashboardMetrics;
     systemStatus: SystemStatus;
     technicianRanking: TechnicianRanking[];
     validationReport: DataIntegrityReport;

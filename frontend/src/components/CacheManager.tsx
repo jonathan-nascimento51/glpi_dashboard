@@ -22,8 +22,7 @@ const CacheManager: React.FC<CacheManagerProps> = ({ className = '' }) => {
     updateStats, 
     clearAll, 
     clearSpecificCache, 
-    refreshCache, 
-    getCacheInfo 
+    refreshCache 
   } = useCache();
 
   const formatHitRate = useCallback((hitRate: number) => {

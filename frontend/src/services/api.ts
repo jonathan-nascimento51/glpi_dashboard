@@ -1,10 +1,9 @@
 import axios, { AxiosResponse } from 'axios';
-import { MetricsData, SystemStatus, DateRange } from '../types';
+import { SystemStatus, DateRange } from '../types';
 import type {
   ApiResult,
   DashboardMetrics,
   FilterParams,
-  LoadingState,
   PerformanceMetrics
 } from '../types/api';
 import {
@@ -83,7 +82,7 @@ interface ApiResponse<T> {
 
 export const apiService = {
   // Get metrics data with optional date filter
-  async getMetrics(dateRange?: DateRange): Promise<MetricsData> {
+  async getMetrics(dateRange?: DateRange): Promise<import('../types/api').DashboardMetrics> {
     const startTime = Date.now();
     
     // Criar parâmetros para o cache
@@ -119,16 +118,16 @@ export const apiService = {
           
           
           // Verificar se há filtros aplicados (estrutura diferente)
-          let processedData;
-          let processedNiveis;
+          let processedNiveis: import('../types/api').NiveisMetrics;
           
           if (rawData.general || rawData.by_level) {
             // Estrutura com filtros aplicados
             processedNiveis = {
-              n1: { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0 },
-              n2: { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0 },
-              n3: { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0 },
-              n4: { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0 }
+              geral: { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0, total: 0 },
+              n1: { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0, total: 0 },
+              n2: { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0, total: 0 },
+              n3: { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0, total: 0 },
+              n4: { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0, total: 0 }
             };
 
             // Processar dados da estrutura by_level
@@ -136,44 +135,42 @@ export const apiService = {
               Object.entries(rawData.by_level).forEach(([level, data]: [string, any]) => {
                 const levelKey = level.toLowerCase() as keyof typeof processedNiveis;
                 if (processedNiveis[levelKey]) {
+                  const novos = data['Novo'] || 0;
+                  const progresso = (data['Processando (atribuído)'] || 0) + (data['Processando (planejado)'] || 0);
+                  const pendentes = data['Pendente'] || 0;
+                  const resolvidos = (data['Solucionado'] || 0) + (data['Fechado'] || 0);
                   processedNiveis[levelKey] = {
-                    novos: data['Novo'] || 0,
-                    progresso: (data['Processando (atribuído)'] || 0) + (data['Processando (planejado)'] || 0),
-                    pendentes: data['Pendente'] || 0,
-                    resolvidos: (data['Solucionado'] || 0) + (data['Fechado'] || 0)
+                    novos,
+                    progresso,
+                    pendentes,
+                    resolvidos,
+                    total: novos + progresso + pendentes + resolvidos
                   };
                 }
               });
             }
 
-            // Usar dados gerais se disponíveis, senão calcular dos níveis
-            if (rawData.general) {
-              processedData = {
-                novos: rawData.general['Novo'] || 0,
-                pendentes: rawData.general['Pendente'] || 0,
-                progresso: (rawData.general['Processando (atribuído)'] || 0) + (rawData.general['Processando (planejado)'] || 0),
-                resolvidos: (rawData.general['Solucionado'] || 0) + (rawData.general['Fechado'] || 0)
-              };
-            } else {
-              // Calcular totais dos níveis
-              processedData = {
-                novos: Object.values(processedNiveis).reduce((sum, nivel) => sum + nivel.novos, 0),
-                pendentes: Object.values(processedNiveis).reduce((sum, nivel) => sum + nivel.pendentes, 0),
-                progresso: Object.values(processedNiveis).reduce((sum, nivel) => sum + nivel.progresso, 0),
-                resolvidos: Object.values(processedNiveis).reduce((sum, nivel) => sum + nivel.resolvidos, 0)
-              };
-            }
-
-            processedData.total = processedData.novos + processedData.pendentes + processedData.progresso + processedData.resolvidos;
+            // Calcular totais gerais dos níveis específicos (excluindo geral)
+            const levelValues = Object.entries(processedNiveis)
+              .filter(([key]) => key !== 'geral')
+              .map(([, value]) => value);
+            
+            const geralTotals = {
+              novos: levelValues.reduce((sum, nivel) => sum + nivel.novos, 0),
+              pendentes: levelValues.reduce((sum, nivel) => sum + nivel.pendentes, 0),
+              progresso: levelValues.reduce((sum, nivel) => sum + nivel.progresso, 0),
+              resolvidos: levelValues.reduce((sum, nivel) => sum + nivel.resolvidos, 0)
+            };
+            
+            // Atualizar o nível geral
+            processedNiveis.geral = {
+              ...geralTotals,
+              total: geralTotals.novos + geralTotals.pendentes + geralTotals.progresso + geralTotals.resolvidos
+            };
+            
+            // processedNiveis já está definido
           } else {
             // Estrutura normal
-            processedData = {
-              novos: rawData.novos ?? 0,
-              pendentes: rawData.pendentes ?? 0,
-              progresso: rawData.progresso ?? 0,
-              resolvidos: rawData.resolvidos ?? 0,
-              total: rawData.total ?? 0
-            };
             
             // Processar dados dos níveis
             if (rawData.niveis) {
@@ -184,21 +181,17 @@ export const apiService = {
             } else {
               // Fallback com zeros
               processedNiveis = {
-                n1: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-                n2: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-                n3: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-                n4: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 }
+                geral: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+                n1: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+                n2: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+                n3: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+                n4: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 }
               };
             }
           }
           
           // Garantir que todos os campos necessários existam
-          const data: MetricsData = {
-            novos: processedData.novos,
-            pendentes: processedData.pendentes,
-            progresso: processedData.progresso,
-            resolvidos: processedData.resolvidos,
-            total: processedData.total,
+          const data: DashboardMetrics = {
             niveis: processedNiveis,
             tendencias: rawData.tendencias || {
               novos: '0',
@@ -214,17 +207,13 @@ export const apiService = {
       } else {
         console.error('API returned unsuccessful response:', response.data);
          // Return fallback data
-        const fallbackData = {
-          novos: 0,
-          pendentes: 0,
-          progresso: 0,
-          resolvidos: 0,
-          total: 0,
+        const fallbackData: import('../types/api').DashboardMetrics = {
           niveis: {
-            n1: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-            n2: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-            n3: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-            n4: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 }
+            geral: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+            n1: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+            n2: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+            n3: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+            n4: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 }
           },
           tendencias: { novos: '0', pendentes: '0', progresso: '0', resolvidos: '0' }
         };
@@ -234,17 +223,13 @@ export const apiService = {
     } catch (error) {
       console.error('Error fetching metrics:', error);
       // Return fallback data instead of throwing
-      const fallbackData = {
-        novos: 0,
-        pendentes: 0,
-        progresso: 0,
-        resolvidos: 0,
-        total: 0,
+      const fallbackData: import('../types/api').DashboardMetrics = {
         niveis: {
-          n1: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-          n2: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-          n3: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-          n4: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 }
+          geral: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+          n1: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+          n2: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+          n3: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+          n4: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 }
         },
         tendencias: { novos: '0', pendentes: '0', progresso: '0', resolvidos: '0' }
       };
@@ -281,20 +266,18 @@ export const apiService = {
         console.error('API returned unsuccessful response:', response.data);
         // Return fallback data (não cachear)
         return {
-          api: 'unknown',
-          database: 'unknown',
-          last_update: '',
-          version: '1.0.0'
+          status: 'offline',
+          sistema_ativo: false,
+          ultima_atualizacao: new Date().toISOString()
         };
       }
     } catch (error) {
       console.error('Error fetching system status:', error);
       // Return fallback data instead of throwing (não cachear)
       return {
-        api: 'offline',
-        database: 'unknown',
-        last_update: '',
-        version: '1.0.0'
+        status: 'offline',
+        sistema_ativo: false,
+        ultima_atualizacao: new Date().toISOString()
       };
     }
   },
@@ -547,7 +530,7 @@ export const fetchDashboardMetrics = async (
         'Accept': 'application/json'
       },
       // Adicionar timeout
-      signal: AbortSignal.timeout(30000) // 30 segundos
+      signal: AbortSignal.timeout(60000) // 60 segundos
     });
     
     const endTime = performance.now();
@@ -589,6 +572,9 @@ export const fetchDashboardMetrics = async (
     
   } catch (error) {
     console.error('Erro ao buscar métricas:', error);
+    console.error('Tipo do erro:', typeof error);
+    console.error('Stack trace:', error instanceof Error ? error.stack : 'N/A');
+    console.error('URL tentada:', url);
     return null;
   }
 };

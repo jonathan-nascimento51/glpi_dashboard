@@ -1,11 +1,16 @@
-import { useState, useEffect, Profiler } from 'react';
+import { useState, useEffect, Profiler, Suspense, ProfilerOnRenderCallback } from 'react';
 import { Header } from './components/Header';
 import { NotificationSystem } from './components/NotificationSystem';
-import DataIntegrityMonitor from './components/DataIntegrityMonitor';
-import PerformanceDashboard from './components/PerformanceDashboard';
 import CacheNotification from './components/CacheNotification';
 import { ModernDashboard } from './components/dashboard/ModernDashboard';
 import { LoadingSpinner, SkeletonMetricsGrid, SkeletonLevelsSection, ErrorState } from './components/LoadingSpinner';
+
+// Componentes lazy centralizados
+import { 
+  LazyDataIntegrityMonitor, 
+  LazyPerformanceDashboard,
+  DashboardSkeleton 
+} from './components/LazyComponents';
 
 
 import { useDashboard } from './hooks/useDashboard';
@@ -16,8 +21,8 @@ import { useFilterPerformance } from './hooks/usePerformanceMonitoring';
 import { useCacheNotifications } from './hooks/useCacheNotifications';
 import { usePerformanceProfiler } from './utils/performanceMonitor';
 import { performanceMonitor } from './utils/performanceMonitor';
-import { TicketStatus } from './types';
-import { clearAllCaches } from './services/api';
+import { TicketStatus, Theme } from './types';
+// import { clearAllCaches } from './services/api'; // Não utilizado
 
 function App() {
   const {
@@ -34,7 +39,7 @@ function App() {
     theme,
     dataIntegrityReport,
     loadData,
-    forceRefresh,
+    // forceRefresh, // Não utilizado
     updateFilters,
     search,
     addNotification,
@@ -52,6 +57,11 @@ function App() {
   
   // Performance monitoring hooks
   const { onRenderCallback } = usePerformanceProfiler();
+  const profilerCallback: ProfilerOnRenderCallback = (id, phase, actualDuration, baseDuration, startTime, commitTime) => {
+    // Converter phase para o tipo esperado pelo onRenderCallback
+    const normalizedPhase = phase === 'nested-update' ? 'update' : phase;
+    onRenderCallback(id, normalizedPhase, actualDuration, baseDuration, startTime, commitTime, new Set());
+  };
   const { measureFilterOperation } = useFilterPerformance();
   
   // Cache notifications
@@ -75,9 +85,11 @@ function App() {
       updateFilters({ status: [status] });
       
       addNotification({
+        id: Date.now().toString(),
         title: 'Filtro Aplicado',
         message: `Exibindo apenas chamados com status: ${getStatusLabel(status)}`,
         type: 'info',
+        timestamp: new Date(),
         duration: 3000,
       });
       
@@ -151,11 +163,18 @@ function App() {
         systemActive={true}
         searchQuery={searchQuery}
         searchResults={[]}
-        dateRange={filters.dateRange || { startDate: '', endDate: '', label: 'Selecionar período' }}
+        dateRange={filters?.dateRange || { startDate: '', endDate: '', label: 'Selecionar período' }}
         onSearch={search}
-        theme={theme}
-        onThemeChange={changeTheme}
-        onNotification={(title, message, type) => addNotification({ title, message, type, duration: 3000 })}
+        theme={theme as Theme}
+        onThemeChange={(newTheme: Theme) => changeTheme(newTheme)}
+        onNotification={(title, message, type) => addNotification({ 
+          id: Date.now().toString(),
+          title, 
+          message, 
+          type, 
+          timestamp: new Date(),
+          duration: 3000 
+        })}
         onDateRangeChange={updateDateRange}
         onPerformanceDashboard={() => setShowPerformanceDashboard(true)}
       />
@@ -165,9 +184,12 @@ function App() {
       {/* Dashboard Principal */}
       <div className="flex-1 overflow-hidden">
         {levelMetrics ? (
-          <Profiler id="ModernDashboard" onRender={onRenderCallback}>
+          <Profiler id="ModernDashboard" onRender={profilerCallback}>
             <ModernDashboard
-              metrics={metrics}
+              metrics={{
+                ...levelMetrics?.geral || {},
+                tendencias: metrics?.tendencias || {}
+              }}
               levelMetrics={levelMetrics}
               systemStatus={systemStatus}
               technicianRanking={technicianRanking}
@@ -191,7 +213,7 @@ function App() {
                 Não foi possível carregar os dados do dashboard.
               </p>
               <button 
-                onClick={loadData} 
+                onClick={() => loadData()} 
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Tentar Novamente
@@ -231,17 +253,23 @@ function App() {
       />
       
       {/* Data Integrity Monitor */}
-      <DataIntegrityMonitor
-        report={dataIntegrityReport}
-        isVisible={showIntegrityMonitor}
-        onToggleVisibility={() => setShowIntegrityMonitor(!showIntegrityMonitor)}
-      />
+      <Suspense fallback={<DashboardSkeleton />}>
+        <LazyDataIntegrityMonitor
+          report={dataIntegrityReport}
+          isVisible={showIntegrityMonitor}
+          onToggleVisibility={() => setShowIntegrityMonitor(!showIntegrityMonitor)}
+        />
+      </Suspense>
       
       {/* Performance Dashboard */}
-      <PerformanceDashboard
-        isVisible={showPerformanceDashboard}
-        onClose={() => setShowPerformanceDashboard(false)}
-      />
+      {showPerformanceDashboard && (
+        <Suspense fallback={<DashboardSkeleton />}>
+          <LazyPerformanceDashboard
+            isVisible={showPerformanceDashboard}
+            onClose={() => setShowPerformanceDashboard(false)}
+          />
+        </Suspense>
+      )}
       
       {/* Cache Notifications */}
       {cacheNotifications.map((notification, index) => (

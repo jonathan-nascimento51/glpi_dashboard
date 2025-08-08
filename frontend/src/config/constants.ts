@@ -59,7 +59,16 @@ export const DEFAULT_USER_PREFERENCES: UserPreferences = {
   dashboardLayout: 'grid',
   chartsEnabled: true,
   soundEnabled: false,
-  emailNotifications: false
+  emailNotifications: false,
+  notifications: {
+    enabled: true,
+    types: ['success', 'error', 'warning', 'info']
+  },
+  dashboard: {
+    defaultView: 'cards',
+    autoRefresh: true,
+    showTrends: true
+  }
 };
 
 // Temas disponíveis
@@ -73,9 +82,22 @@ export const THEMES: Record<string, Theme> = {
       success: '#10B981',
       warning: '#F59E0B',
       error: '#EF4444',
+      info: '#3B82F6',
       background: '#FFFFFF',
       surface: '#F9FAFB',
       text: '#111827'
+    },
+    spacing: {
+      xs: '0.25rem',
+      sm: '0.5rem',
+      md: '1rem',
+      lg: '1.5rem',
+      xl: '2rem'
+    },
+    borderRadius: {
+      sm: '0.25rem',
+      md: '0.5rem',
+      lg: '0.75rem'
     }
   },
   dark: {
@@ -87,9 +109,22 @@ export const THEMES: Record<string, Theme> = {
       success: '#34D399',
       warning: '#FBBF24',
       error: '#F87171',
+      info: '#60A5FA',
       background: '#111827',
       surface: '#1F2937',
       text: '#F9FAFB'
+    },
+    spacing: {
+      xs: '0.25rem',
+      sm: '0.5rem',
+      md: '1rem',
+      lg: '1.5rem',
+      xl: '2rem'
+    },
+    borderRadius: {
+      sm: '0.25rem',
+      md: '0.5rem',
+      lg: '0.75rem'
     }
   },
   system: {
@@ -101,9 +136,22 @@ export const THEMES: Record<string, Theme> = {
       success: '#10B981',
       warning: '#F59E0B',
       error: '#EF4444',
+      info: '#3B82F6',
       background: '#FFFFFF',
       surface: '#F9FAFB',
       text: '#111827'
+    },
+    spacing: {
+      xs: '0.25rem',
+      sm: '0.5rem',
+      md: '1rem',
+      lg: '1.5rem',
+      xl: '2rem'
+    },
+    borderRadius: {
+      sm: '0.25rem',
+      md: '0.5rem',
+      lg: '0.75rem'
     }
   }
 };
@@ -137,11 +185,10 @@ export const LEVEL_OPTIONS = [
 
 // Configurações de exportação
 export const EXPORT_OPTIONS: ExportOptions = {
-  formats: ['pdf', 'excel', 'csv'],
-  includeCharts: true,
+  format: 'pdf',
   includeFilters: true,
-  includeMetadata: true,
-  dateRange: true
+  includeTimestamp: true,
+  filename: 'dashboard-export'
 };
 
 // Configurações de performance

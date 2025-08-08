@@ -45,10 +45,10 @@ const itemVariants = {
     opacity: 1,
     transition: {
       duration: 0.1,
-      ease: "easeOut"
+      ease: "easeOut" as const
     }
   }
-}
+} as const
 
 export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
   metrics,
@@ -90,25 +90,25 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
   const handleNewClickImmediate = useCallback(() => {
     performanceMonitor.startMeasure('filter-click-new')
     onFilterByStatus?.("new")
-    performanceMonitor.endMeasure('filter-click-new', 'Filter by New Status')
+    performanceMonitor.endMeasure('filter-click-new')
   }, [onFilterByStatus])
 
   const handleProgressClickImmediate = useCallback(() => {
     performanceMonitor.startMeasure('filter-click-progress')
     onFilterByStatus?.("progress")
-    performanceMonitor.endMeasure('filter-click-progress', 'Filter by Progress Status')
+    performanceMonitor.endMeasure('filter-click-progress')
   }, [onFilterByStatus])
 
   const handlePendingClickImmediate = useCallback(() => {
     performanceMonitor.startMeasure('filter-click-pending')
     onFilterByStatus?.("pending")
-    performanceMonitor.endMeasure('filter-click-pending', 'Filter by Pending Status')
+    performanceMonitor.endMeasure('filter-click-pending')
   }, [onFilterByStatus])
 
   const handleResolvedClickImmediate = useCallback(() => {
     performanceMonitor.startMeasure('filter-click-resolved')
     onFilterByStatus?.("resolved")
-    performanceMonitor.endMeasure('filter-click-resolved', 'Filter by Resolved Status')
+    performanceMonitor.endMeasure('filter-click-resolved')
   }, [onFilterByStatus])
 
   // Throttled versions to prevent rapid clicks
@@ -180,7 +180,7 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
       animate="visible"
       className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 ${className || ''}`}
     >
-      {metricCards.map((card, index) => (
+      {metricCards.map((card) => (
         <motion.div
           key={`metrics-${card.status}`}
           variants={itemVariants}

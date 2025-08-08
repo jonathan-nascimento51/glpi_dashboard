@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, useTransition } from "react"
+import React, { useState, useEffect, useMemo, useTransition } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -61,10 +61,10 @@ const itemVariants = {
     x: 0,
     transition: {
       duration: 0.3,
-      ease: "easeOut"
+      ease: "easeOut" as const
     }
   }
-}
+} as const
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -74,7 +74,7 @@ const containerVariants = {
       staggerChildren: 0.1
     }
   }
-}
+} as const
 
 // Função auxiliar para obter configuração de prioridade
 const getPriorityConfig = (priority: string) => {
@@ -97,7 +97,7 @@ const formatDate = (dateString: string) => {
 }
 
 // Componente TicketItem memoizado
-const TicketItem = React.memo<{ ticket: NewTicket; index: number }>(({ ticket, index }) => {
+const TicketItem = React.memo<{ ticket: NewTicket; index: number }>(({ ticket }) => {
   const priorityConf = useMemo(() => getPriorityConfig(ticket.priority), [ticket.priority])
   const formattedDate = useMemo(() => formatDate(ticket.date), [ticket.date])
   
@@ -167,7 +167,7 @@ TicketItem.displayName = 'TicketItem'
 export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limit = 8 }) => {
   const [tickets, setTickets] = useState<NewTicket[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [isPending, startTransition] = useTransition()
+  const [, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
 
@@ -176,8 +176,8 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
       setIsLoading(true)
       setError(null)
       
-      startTransition(async () => {
-        const newTickets = await apiService.getNewTickets(limit)
+      const newTickets = await apiService.getNewTickets(limit)
+      startTransition(() => {
         setTickets(newTickets)
         setLastUpdate(new Date())
         setIsLoading(false)

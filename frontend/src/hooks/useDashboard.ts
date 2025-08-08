@@ -1,77 +1,38 @@
-import { useState, useEffect, useCallback, useTransition } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { fetchDashboardMetrics } from '../services/api';
 import type {
   DashboardMetrics,
-  FilterParams,
-  LoadingState,
-  PerformanceMetrics,
-  CacheConfig,
-  ApiError
+  FilterParams
 } from '../types/api';
-import { DashboardState, MetricsData, SystemStatus, FilterState, NotificationData, Theme, TechnicianRanking, DateRange } from '../types';
-import { apiService } from '../services/api';
-import { dataMonitor, MonitoringAlert } from '../utils/dataMonitor';
-import { performanceMonitor } from '../utils/performanceMonitor';
-import { useApiPerformance } from './usePerformanceMonitoring';
-import { useDebouncedCallback, useThrottledCallback } from './useDebounce';
+import { SystemStatus, NotificationData } from '../types';
+// Removed unused imports
 
 interface UseDashboardReturn {
-  data: DashboardMetrics | null;
-  loading: boolean;
+  metrics: DashboardMetrics | null;
+  levelMetrics: any;
+  systemStatus: SystemStatus;
+  technicianRanking: any[];
+  isLoading: boolean;
+  isPending: boolean;
   error: string | null;
-  refreshData: () => Promise<void>;
-  lastUpdated: Date | null;
-  performance: PerformanceMetrics | null;
-  cacheStatus: CacheConfig | null;
+  notifications: any[];
+  searchQuery: string;
+  filters: FilterParams;
+  theme: string;
+  dataIntegrityReport: any;
+  loadData: () => Promise<void>;
+  forceRefresh: () => Promise<void>;
   updateFilters: (newFilters: FilterParams) => void;
+  search: (query: string) => void;
+  addNotification: (notification: any) => void;
+  removeNotification: (id: string) => void;
+  changeTheme: (theme: string) => void;
+  updateDateRange: (dateRange: any) => void;
 }
 
-const initialFilterState: FilterState = {
-  period: 'today',
-  levels: ['n1', 'n2', 'n3', 'n4'],
-  status: ['new', 'progress', 'pending', 'resolved'],
-  priority: ['high', 'medium', 'low'],
-};
+// Removed unused initialFilterState
 
-const initialMetrics: MetricsData = {
-  novos: 0,
-  pendentes: 0,
-  progresso: 0,
-  resolvidos: 0,
-  total: 0,
-  niveis: {
-    n1: {
-      novos: 0,
-      pendentes: 0,
-      progresso: 0,
-      resolvidos: 0
-    },
-    n2: {
-      novos: 0,
-      pendentes: 0,
-      progresso: 0,
-      resolvidos: 0
-    },
-    n3: {
-      novos: 0,
-      pendentes: 0,
-      progresso: 0,
-      resolvidos: 0
-    },
-    n4: {
-      novos: 0,
-      pendentes: 0,
-      progresso: 0,
-      resolvidos: 0
-    }
-  },
-  tendencias: {
-    novos: '0',
-    pendentes: '0',
-    progresso: '0',
-    resolvidos: '0'
-  }
-};
+// Removed unused initialMetrics
 
 const initialSystemStatus: SystemStatus = {
   status: 'offline',
@@ -79,89 +40,29 @@ const initialSystemStatus: SystemStatus = {
   ultima_atualizacao: ''
 };
 
-// Default date range - last 30 days
-const getDefaultDateRange = (): DateRange => ({
-  startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-  endDate: new Date().toISOString().split('T')[0],
-  label: 'Últimos 30 dias'
-});
+// Removed unused getDefaultDateRange
 
-const initialState: DashboardState = {
-  metrics: initialMetrics, // Usar métricas iniciais em vez de null
-  systemStatus: initialSystemStatus, // Usar status inicial em vez de null
-  technicianRanking: [],
-  isLoading: true,
-  error: null,
-  lastUpdated: null,
-  filters: initialFilterState,
-  searchQuery: '',
-  searchResults: [],
-  notifications: [],
-  theme: (localStorage.getItem('theme') as Theme) || 'light',
-
-  dataIntegrityReport: null,
-  monitoringAlerts: [],
-  dateRange: getDefaultDateRange(),
-};
+// Removed unused initialState
 
 
 
-// Função para verificações adicionais de consistência
-const performConsistencyChecks = (
-  metrics: MetricsData,
-  systemStatus: SystemStatus,
-  technicianRanking: TechnicianRanking[]
-): string[] => {
-  const errors: string[] = [];
-  
-  // Verificar se o sistema está ativo mas não há dados
-  if (systemStatus.sistema_ativo && metrics.total === 0) {
-    errors.push('Sistema ativo mas nenhum ticket encontrado');
-  }
-  
-  // Verificar se há técnicos no ranking mas nenhum ticket
-  if ((technicianRanking || []).length > 0 && metrics.total === 0) {
-    errors.push('Técnicos encontrados mas nenhum ticket no sistema');
-  }
-  
-  // Verificar se há inconsistência entre tickets totais e ranking
-  const totalTicketsInRanking = (technicianRanking || []).reduce((sum, tech) => sum + tech.total, 0);
-  if (totalTicketsInRanking > metrics.total * 2) { // Permitir alguma margem
-    errors.push(`Total de tickets no ranking (${totalTicketsInRanking}) muito maior que total geral (${metrics.total})`);
-  }
-  
-  // Verificar se há dados muito antigos
-  if (systemStatus.ultima_atualizacao) {
-    const lastUpdate = new Date(systemStatus.ultima_atualizacao);
-    const now = new Date();
-    const hoursDiff = (now.getTime() - lastUpdate.getTime()) / (1000 * 60 * 60);
-    
-    if (hoursDiff > 24) {
-      errors.push(`Dados muito antigos: última atualização há ${Math.round(hoursDiff)} horas`);
-    }
-  }
-  
-  return errors;
-};
+// Removed unused performConsistencyChecks function
 
 export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardReturn => {
   const [data, setData] = useState<DashboardMetrics | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [performance, setPerformance] = useState<PerformanceMetrics | null>(null);
-  const [cacheStatus, setCacheStatus] = useState<CacheConfig | null>(null);
+  // Removed unused state variables
   const [filters, setFilters] = useState<FilterParams>(initialFilters);
-  const [theme, setTheme] = useState<Theme>((localStorage.getItem('theme') as Theme) || 'light');
+  // Derivar dados dos resultados da API
+  const levelMetrics = data?.niveis || null;
+  const systemStatus = data?.systemStatus || initialSystemStatus;
+  const technicianRanking = data?.technicianRanking || [];
+  const [isPending] = useState<boolean>(false);
+  const [notifications, setNotifications] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [isPending, startTransition] = useTransition();
-  const { measureApiCall } = useApiPerformance();
-
-  // Throttled date range update to prevent rapid API calls
-  const throttledLoadData = useThrottledCallback(async (filters: FilterParams) => {
-    await loadData(filters);
-  }, 200);
+  const [theme, setTheme] = useState<string>('light');
+  const [dataIntegrityReport] = useState<any>(null);
 
   const loadData = useCallback(async (newFilters?: FilterParams) => {
     const filtersToUse = newFilters || filters;
@@ -172,8 +73,6 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     setError(null);
     
     try {
-      const startTime = window.performance.now();
-      
       // Fazer chamadas paralelas para todos os endpoints
       const [metricsResult, systemStatusResult, technicianRankingResult] = await Promise.all([
         fetchDashboardMetrics(filtersToUse),
@@ -185,16 +84,7 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
       // console.log('📥 useDashboard - Resultado recebido de getSystemStatus:', systemStatusResult);
       // console.log('📥 useDashboard - Resultado recebido de getTechnicianRanking:', technicianRankingResult);
       
-      const endTime = window.performance.now();
-      const responseTime = endTime - startTime;
-      
-      // Criar métricas de performance
-      const perfMetrics: PerformanceMetrics = {
-        responseTime,
-        cacheHit: false, // TODO: implementar detecção de cache
-        timestamp: new Date(),
-        endpoint: '/metrics'
-      };
+      // Performance metrics tracking removed for now
       
       if (metricsResult) {
         // Combinar todos os dados em um objeto DashboardMetrics
@@ -204,10 +94,14 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
           technicianRanking: technicianRankingResult || []
         };
         
+        console.log('📊 useDashboard - Dados combinados:', {
+          metrics: !!metricsResult,
+          systemStatus: !!systemStatusResult,
+          technicianRanking: technicianRankingResult?.length || 0
+        });
+        
         // console.log('✅ useDashboard - Definindo dados combinados no estado:', combinedData);
         setData(combinedData);
-        setLastUpdated(new Date());
-        setPerformance(perfMetrics);
         setError(null);
       } else {
         console.error('❌ useDashboard - Resultado de métricas é null/undefined');
@@ -221,10 +115,7 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     }
   }, [filters]);
 
-  // Force refresh
-  const forceRefresh = useCallback(() => {
-    loadData();
-  }, [loadData]);
+  // Removed unused forceRefresh function
 
   // Load data on mount
   useEffect(() => {
@@ -242,71 +133,45 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     return () => clearInterval(refreshInterval);
   }, [loadData]);
 
-  const returnData = {
-    metrics: {
-      ...(data?.niveis?.geral || initialMetrics),
-      tendencias: data?.tendencias || initialMetrics.tendencias
-    },
-    levelMetrics: {
-      niveis: data?.niveis || {
-        n1: initialMetrics,
-        n2: initialMetrics,
-        n3: initialMetrics,
-        n4: initialMetrics,
-        geral: initialMetrics
-      }
-    },
-    systemStatus: data?.systemStatus || initialSystemStatus,
-    technicianRanking: data?.technicianRanking || [],
+  const returnData: UseDashboardReturn = {
+    metrics: data,
+    levelMetrics,
+    systemStatus,
+    technicianRanking,
     isLoading: loading,
     isPending,
     error,
-    notifications: [],
+    notifications,
     searchQuery,
-    searchResults,
     filters,
     theme,
-    dataIntegrityReport: null,
-    monitoringAlerts: [],
+    dataIntegrityReport,
     loadData,
-    forceRefresh,
+    forceRefresh: loadData,
     updateFilters: (newFilters: FilterParams) => {
       const updatedFilters = { ...filters, ...newFilters };
       setFilters(updatedFilters);
       loadData(updatedFilters);
     },
-    search: useDebouncedCallback(async (query: string) => {
-      setSearchQuery(query);
-      if (query.trim()) {
-        try {
-          const results = await apiService.search(query);
-          setSearchResults(results);
-        } catch (error) {
-          console.error('Erro na busca:', error);
-          setSearchResults([]);
-        }
-      } else {
-        setSearchResults([]);
-      }
-    }, 300),
-    addNotification: () => {},
-    removeNotification: () => {},
-    changeTheme: (newTheme: Theme) => {
-      setTheme(newTheme);
-      localStorage.setItem('theme', newTheme);
+    search: (query: string) => setSearchQuery(query),
+    addNotification: (notification: Partial<NotificationData>) => {
+      const completeNotification: NotificationData = {
+        id: notification.id || Date.now().toString(),
+        title: notification.title || 'Notificação',
+        message: notification.message || '',
+        type: notification.type || 'info',
+        timestamp: notification.timestamp || new Date(),
+        duration: notification.duration
+      };
+      setNotifications(prev => [...prev, completeNotification]);
     },
+    removeNotification: (id: string) => setNotifications(prev => prev.filter(n => n.id !== id)),
+    changeTheme: (newTheme: string) => setTheme(newTheme),
     updateDateRange: (dateRange: any) => {
-      console.log('🔄 updateDateRange chamado com:', dateRange);
       const updatedFilters = { ...filters, dateRange };
-      console.log('🔄 Filtros atualizados:', updatedFilters);
       setFilters(updatedFilters);
-      // Use throttled load to prevent rapid API calls
-      throttledLoadData(updatedFilters);
-    },
-    refreshData: loadData,
-    lastUpdated,
-    performance,
-    cacheStatus
+      loadData(updatedFilters);
+    }
   };
   
   // Debug logs comentados para evitar erros de sintaxe

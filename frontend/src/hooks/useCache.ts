@@ -42,8 +42,35 @@ export const useCache = () => {
   // Função para atualizar estatísticas
   const updateStats = useCallback(() => {
     const allStats = getAllCacheStats();
-    setStats(allStats);
-  }, []);
+    // Transform stats to match CacheStats interface
+    const transformedStats = {
+      metrics: {
+        size: allStats.metrics.size,
+        hitRate: allStats.metrics.hitRate,
+        missRate: 1 - allStats.metrics.hitRate,
+        totalRequests: allStats.metrics.totalRequests
+      },
+      systemStatus: {
+        size: allStats.systemStatus.size,
+        hitRate: allStats.systemStatus.hitRate,
+        missRate: 1 - allStats.systemStatus.hitRate,
+        totalRequests: allStats.systemStatus.totalRequests
+      },
+      technicianRanking: {
+        size: allStats.technicianRanking.size,
+        hitRate: allStats.technicianRanking.hitRate,
+        missRate: 1 - allStats.technicianRanking.hitRate,
+        totalRequests: allStats.technicianRanking.totalRequests
+      },
+      newTickets: {
+        size: allStats.newTickets.size,
+        hitRate: allStats.newTickets.hitRate,
+        missRate: 1 - allStats.newTickets.hitRate,
+        totalRequests: allStats.newTickets.totalRequests
+      }
+    };
+     setStats(transformedStats);
+   }, []);
 
   // Função para limpar todos os caches
   const clearAll = useCallback(async () => {
@@ -88,16 +115,16 @@ export const useCache = () => {
     try {
       switch (cacheType) {
         case 'metrics':
-          await metricsCache.refresh();
+          await metricsCache.refresh({});
           break;
         case 'systemStatus':
-          await systemStatusCache.refresh();
+          await systemStatusCache.refresh({});
           break;
         case 'technicianRanking':
-          await technicianRankingCache.refresh();
+          await technicianRankingCache.refresh({});
           break;
         case 'newTickets':
-          await newTicketsCache.refresh();
+          await newTicketsCache.refresh({});
           break;
       }
       updateStats();
