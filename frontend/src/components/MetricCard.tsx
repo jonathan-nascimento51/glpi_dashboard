@@ -82,16 +82,14 @@ const cardVariants = {
     y: 0,
     scale: 1,
     transition: {
-      duration: 0.5,
-      ease: "easeOut"
+      duration: 0.5
     }
   },
   hover: {
     y: -8,
     scale: 1.03,
     transition: {
-      duration: 0.3,
-      ease: "easeInOut"
+      duration: 0.3
     }
   }
 };
@@ -101,8 +99,7 @@ const iconVariants = {
     scale: 1.2,
     rotate: 10,
     transition: {
-      duration: 0.3,
-      ease: "easeInOut"
+      duration: 0.3
     }
   }
 };
@@ -113,7 +110,6 @@ const numberVariants = {
     scale: 1,
     transition: {
       duration: 0.6,
-      ease: "easeOut",
       delay: 0.2
     }
   }
@@ -268,4 +264,4 @@ export const MetricCard = React.memo<MetricCardProps>(function MetricCard({
       />
     </motion.div>
   );
-};
+});

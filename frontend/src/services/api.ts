@@ -4,7 +4,6 @@ import type {
   ApiResult,
   DashboardMetrics,
   FilterParams,
-  LoadingState,
   PerformanceMetrics
 } from '../types/api';
 import {
@@ -93,8 +92,11 @@ export const apiService = {
       end_date: dateRange?.endDate || 'none'
     };
 
-    // Cache completamente desabilitado para forçar novas requisições
-    console.log('🚫 Cache completamente desabilitado - sempre buscando dados frescos');
+    // Verificar cache primeiro
+    const cachedData = metricsCache.get(cacheParams);
+    if (cachedData) {
+      return cachedData;
+    }
 
     try {
       let url = '/metrics';
@@ -119,16 +121,16 @@ export const apiService = {
           
           
           // Verificar se há filtros aplicados (estrutura diferente)
-          let processedData;
-          let processedNiveis;
+          let processedData: { novos: number; pendentes: number; progresso: number; resolvidos: number; total: number };
+          let processedNiveis: MetricsData['niveis'];
           
           if (rawData.general || rawData.by_level) {
-            // Estrutura com filtros aplicados
+            // Estrutura com filtros aplicados - grupos de manutenção
             processedNiveis = {
-              n1: { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0 },
-              n2: { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0 },
-              n3: { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0 },
-              n4: { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0 }
+              'Manutenção Geral': { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0, total: 0 },
+      'Patrimônio': { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0, total: 0 },
+      'Atendimento': { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0, total: 0 },
+      'Mecanografia': { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0, total: 0 }
             };
 
             // Processar dados da estrutura by_level
@@ -136,11 +138,16 @@ export const apiService = {
               Object.entries(rawData.by_level).forEach(([level, data]: [string, any]) => {
                 const levelKey = level.toLowerCase() as keyof typeof processedNiveis;
                 if (processedNiveis[levelKey]) {
+                  const novos = data['Novo'] || 0;
+                  const progresso = (data['Processando (atribuído)'] || 0) + (data['Processando (planejado)'] || 0);
+                  const pendentes = data['Pendente'] || 0;
+                  const resolvidos = (data['Solucionado'] || 0) + (data['Fechado'] || 0);
                   processedNiveis[levelKey] = {
-                    novos: data['Novo'] || 0,
-                    progresso: (data['Processando (atribuído)'] || 0) + (data['Processando (planejado)'] || 0),
-                    pendentes: data['Pendente'] || 0,
-                    resolvidos: (data['Solucionado'] || 0) + (data['Fechado'] || 0)
+                    novos,
+                    progresso,
+                    pendentes,
+                    resolvidos,
+                    total: novos + progresso + pendentes + resolvidos
                   };
                 }
               });
@@ -148,11 +155,16 @@ export const apiService = {
 
             // Usar dados gerais se disponíveis, senão calcular dos níveis
             if (rawData.general) {
+              const novos = rawData.general['Novo'] || 0;
+              const pendentes = rawData.general['Pendente'] || 0;
+              const progresso = (rawData.general['Processando (atribuído)'] || 0) + (rawData.general['Processando (planejado)'] || 0);
+              const resolvidos = (rawData.general['Solucionado'] || 0) + (rawData.general['Fechado'] || 0);
               processedData = {
-                novos: rawData.general['Novo'] || 0,
-                pendentes: rawData.general['Pendente'] || 0,
-                progresso: (rawData.general['Processando (atribuído)'] || 0) + (rawData.general['Processando (planejado)'] || 0),
-                resolvidos: (rawData.general['Solucionado'] || 0) + (rawData.general['Fechado'] || 0)
+                novos,
+                pendentes,
+                progresso,
+                resolvidos,
+                total: novos + pendentes + progresso + resolvidos
               };
             } else {
               // Calcular totais dos níveis
@@ -160,7 +172,8 @@ export const apiService = {
                 novos: Object.values(processedNiveis).reduce((sum, nivel) => sum + nivel.novos, 0),
                 pendentes: Object.values(processedNiveis).reduce((sum, nivel) => sum + nivel.pendentes, 0),
                 progresso: Object.values(processedNiveis).reduce((sum, nivel) => sum + nivel.progresso, 0),
-                resolvidos: Object.values(processedNiveis).reduce((sum, nivel) => sum + nivel.resolvidos, 0)
+                resolvidos: Object.values(processedNiveis).reduce((sum, nivel) => sum + nivel.resolvidos, 0),
+                total: 0
               };
             }
 
@@ -182,12 +195,12 @@ export const apiService = {
               // Caso os dados venham como 'levels' ao invés de 'niveis'
               processedNiveis = rawData.levels;
             } else {
-              // Fallback com zeros
+              // Fallback com zeros - grupos de manutenção
               processedNiveis = {
-                n1: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-                n2: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-                n3: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-                n4: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 }
+                'Manutenção Geral': { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+                'Patrimônio': { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+                'Atendimento': { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+                'Mecanografia': { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 }
               };
             }
           }
@@ -221,10 +234,10 @@ export const apiService = {
           resolvidos: 0,
           total: 0,
           niveis: {
-            n1: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-            n2: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-            n3: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-            n4: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 }
+            'Manutenção Geral': { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+            'Patrimônio': { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+            'Atendimento': { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+            'Mecanografia': { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 }
           },
           tendencias: { novos: '0', pendentes: '0', progresso: '0', resolvidos: '0' }
         };
@@ -241,10 +254,10 @@ export const apiService = {
         resolvidos: 0,
         total: 0,
         niveis: {
-          n1: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-          n2: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-          n3: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-          n4: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 }
+          'Manutenção Geral': { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+          'Patrimônio': { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+          'Atendimento': { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+          'Mecanografia': { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 }
         },
         tendencias: { novos: '0', pendentes: '0', progresso: '0', resolvidos: '0' }
       };
@@ -281,20 +294,18 @@ export const apiService = {
         console.error('API returned unsuccessful response:', response.data);
         // Return fallback data (não cachear)
         return {
-          api: 'unknown',
-          database: 'unknown',
-          last_update: '',
-          version: '1.0.0'
+          status: 'offline',
+          sistema_ativo: false,
+          ultima_atualizacao: ''
         };
       }
     } catch (error) {
       console.error('Error fetching system status:', error);
       // Return fallback data instead of throwing (não cachear)
       return {
-        api: 'offline',
-        database: 'unknown',
-        last_update: '',
-        version: '1.0.0'
+        status: 'offline',
+        sistema_ativo: false,
+        ultima_atualizacao: ''
       };
     }
   },

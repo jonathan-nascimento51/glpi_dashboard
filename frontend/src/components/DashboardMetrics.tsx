@@ -4,10 +4,9 @@ import type {
   DashboardMetrics,
   FilterParams,
   LoadingState,
-  PerformanceMetrics,
-  isValidLevelMetrics,
-  isValidNiveisMetrics
+  PerformanceMetrics
 } from '../types/api';
+import { isValidLevelMetrics, isValidNiveisMetrics } from '../types/api';
 
 interface DashboardMetricsProps {
   initialFilters?: FilterParams;
@@ -23,21 +22,20 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
   refreshInterval = 30000
 }) => {
   const {
-    data,
-    loading,
+    metrics: data,
+    isLoading: loading,
     error,
     refreshData,
     lastUpdated,
     performance,
-    cacheStatus,
     updateFilters
   } = useDashboard(initialFilters);
 
   const [filters, setFilters] = useState<FilterParams>(initialFilters);
   const [loadingState, setLoadingState] = useState<LoadingState>({
     isLoading: loading,
-    progress: 0,
-    stage: 'idle'
+    error: null,
+    lastUpdated: null
   });
 
   // Auto refresh effect
@@ -55,10 +53,10 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
   useEffect(() => {
     setLoadingState({
       isLoading: loading,
-      progress: loading ? 50 : 100,
-      stage: loading ? 'loading' : 'completed'
+      error: error,
+      lastUpdated: lastUpdated
     });
-  }, [loading]);
+  }, [loading, error, lastUpdated]);
 
   const handleFilterChange = (newFilters: Partial<FilterParams>) => {
     const updatedFilters = { ...filters, ...newFilters };
@@ -93,10 +91,10 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {renderMetricsCard('Abertos', levelMetrics.abertos, levelMetrics.tendencia_abertos)}
-        {renderMetricsCard('Fechados', levelMetrics.fechados, levelMetrics.tendencia_fechados)}
-        {renderMetricsCard('Pendentes', levelMetrics.pendentes, levelMetrics.tendencia_pendentes)}
-        {renderMetricsCard('Atrasados', levelMetrics.atrasados, levelMetrics.tendencia_atrasados)}
+        {renderMetricsCard('Novos', levelMetrics.novos)}
+        {renderMetricsCard('Em Progresso', levelMetrics.progresso)}
+        {renderMetricsCard('Pendentes', levelMetrics.pendentes)}
+        {renderMetricsCard('Resolvidos', levelMetrics.resolvidos)}
       </div>
     );
   };
@@ -154,8 +152,13 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
           <label className="block text-sm font-medium text-gray-700 mb-1">Data Início</label>
           <input
             type="date"
-            value={filters.startDate || ''}
-            onChange={(e) => handleFilterChange({ startDate: e.target.value })}
+            value={filters.dateRange?.startDate || ''}
+            onChange={(e) => handleFilterChange({ 
+              dateRange: { 
+                startDate: e.target.value,
+                endDate: filters.dateRange?.endDate || ''
+              } 
+            })}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -163,16 +166,21 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
           <label className="block text-sm font-medium text-gray-700 mb-1">Data Fim</label>
           <input
             type="date"
-            value={filters.endDate || ''}
-            onChange={(e) => handleFilterChange({ endDate: e.target.value })}
+            value={filters.dateRange?.endDate || ''}
+            onChange={(e) => handleFilterChange({ 
+              dateRange: { 
+                startDate: filters.dateRange?.startDate || '',
+                endDate: e.target.value
+              } 
+            })}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
           <select
-            value={filters.status || ''}
-            onChange={(e) => handleFilterChange({ status: e.target.value })}
+            value={filters.status?.[0] || ''}
+            onChange={(e) => handleFilterChange({ status: e.target.value ? [e.target.value] : [] })}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Todos</option>
@@ -184,8 +192,8 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Prioridade</label>
           <select
-            value={filters.priority || ''}
-            onChange={(e) => handleFilterChange({ priority: e.target.value })}
+            value={filters.priority?.[0] || ''}
+            onChange={(e) => handleFilterChange({ priority: e.target.value ? [e.target.value] : [] })}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Todas</option>
@@ -196,22 +204,22 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nível</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Níveis</label>
           <select
-            value={filters.level || ''}
-            onChange={(e) => handleFilterChange({ level: e.target.value })}
+            value={filters.levels?.[0] || ''}
+            onChange={(e) => handleFilterChange({ levels: e.target.value ? [e.target.value] : [] })}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Todos</option>
-            <option value="N1">N1</option>
-            <option value="N2">N2</option>
-            <option value="N3">N3</option>
-            <option value="N4">N4</option>
+            <option value="Manutenção Geral">Manutenção Geral</option>
+            <option value="Patrimônio">Patrimônio</option>
+            <option value="Atendimento">Atendimento</option>
+            <option value="Mecanografia">Mecanografia</option>
           </select>
         </div>
         <div className="flex items-end">
           <button
-            onClick={refreshData}
+            onClick={() => refreshData()}
             disabled={loading}
             className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -238,7 +246,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
             </div>
             <div className="mt-4">
               <button
-                onClick={refreshData}
+                onClick={() => refreshData()}
                 className="bg-red-100 px-3 py-2 rounded-md text-sm font-medium text-red-800 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500"
               >
                 Tentar novamente
@@ -256,9 +264,11 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Carregando métricas do dashboard...</p>
-          <div className="mt-2 text-sm text-gray-500">
-            Estágio: {loadingState.stage} ({loadingState.progress}%)
-          </div>
+          {loadingState.error && (
+            <div className="mt-2 text-sm text-red-500">
+              Erro: {loadingState.error}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -269,7 +279,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
       <div className="text-center py-12">
         <p className="text-gray-500">Nenhum dado disponível</p>
         <button
-          onClick={refreshData}
+          onClick={() => refreshData()}
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           Carregar dados
@@ -290,7 +300,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
             </span>
           )}
           <button
-            onClick={refreshData}
+            onClick={() => refreshData()}
             disabled={loading}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
           >
@@ -313,27 +323,15 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Tendências</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {renderMetricsCard('Novos Tickets', data.tendencias.novos_tickets || 0)}
-            {renderMetricsCard('Tickets Resolvidos', data.tendencias.tickets_resolvidos || 0)}
-            {renderMetricsCard('Tempo Médio Resolução', data.tendencias.tempo_medio_resolucao || 0)}
-            {renderMetricsCard('Taxa de Satisfação', data.tendencias.taxa_satisfacao || 0)}
+            {renderMetricsCard('Novos', parseInt(data.tendencias.novos || '0'))}
+            {renderMetricsCard('Pendentes', parseInt(data.tendencias.pendentes || '0'))}
+            {renderMetricsCard('Em Progresso', parseInt(data.tendencias.progresso || '0'))}
+            {renderMetricsCard('Resolvidos', parseInt(data.tendencias.resolvidos || '0'))}
           </div>
         </div>
       )}
 
-      {/* Applied Filters Info */}
-      {data.filters_applied && Object.keys(data.filters_applied).length > 0 && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-800 mb-2">Filtros Aplicados:</h3>
-          <div className="flex flex-wrap gap-2">
-            {Object.entries(data.filters_applied).map(([key, value]) => (
-              <span key={key} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                {key}: {String(value)}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
+
     </div>
   );
 };

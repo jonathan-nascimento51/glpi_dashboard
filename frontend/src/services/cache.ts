@@ -105,7 +105,7 @@ class LocalCache<T> {
     this.checkActivation(key, responseTime, count);
   }
 
-  private checkActivation(key: string, responseTime: number, requestCount: number): void {
+  private checkActivation(_key: string, responseTime: number, requestCount: number): void {
     if (this.isActive) return;
 
     const { performanceThreshold, usageThreshold } = this.config;
@@ -230,6 +230,7 @@ class LocalCache<T> {
     deletes: number;
     clears: number;
     hitRate: number;
+    missRate: number;
     isActive: boolean;
     totalRequests: number;
     avgResponseTime: number;
@@ -240,13 +241,15 @@ class LocalCache<T> {
       expiresAt: entry.expiresAt
     }));
 
+    const totalRequests = this.stats.hits + this.stats.misses;
     return {
       ...this.stats,
       size: this.cache.size,
       maxSize: this.config.maxSize,
       ttl: this.config.ttl,
       entries,
-      hitRate: this.stats.hits / (this.stats.hits + this.stats.misses) || 0,
+      hitRate: totalRequests > 0 ? this.stats.hits / totalRequests : 0,
+      missRate: totalRequests > 0 ? this.stats.misses / totalRequests : 0,
       isActive: this.isActive,
       totalRequests: Array.from(this.requestCounts.values()).reduce((sum, count) => sum + count, 0),
       avgResponseTime: this.getAverageResponseTime()

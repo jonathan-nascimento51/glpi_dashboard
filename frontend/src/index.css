@@ -37,9 +37,9 @@
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 217.2 32.6% 17.5%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 217.2 32.6% 17.5%;
     --popover-foreground: 210 40% 98%;
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
@@ -102,6 +102,96 @@
 }
 
 @layer components {
+  /* Corporate Design System Classes */
+  .corporate-card {
+    @apply bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200;
+    backdrop-filter: blur(10px);
+  }
+
+  .corporate-icon-container {
+    @apply w-10 h-10 bg-slate-100 dark:bg-slate-700 rounded-lg flex items-center justify-center;
+  }
+
+  .corporate-title {
+    @apply text-sm font-medium text-slate-700 dark:text-slate-300 uppercase tracking-wide;
+  }
+
+  .corporate-value {
+    @apply text-3xl font-bold text-slate-900 dark:text-slate-100;
+  }
+
+  .corporate-subtitle {
+    @apply text-sm text-slate-500 dark:text-slate-400;
+  }
+
+  .corporate-heading {
+    @apply text-2xl font-bold text-slate-900 dark:text-slate-100;
+  }
+
+  .corporate-description {
+    @apply text-slate-600 dark:text-slate-400 mt-1;
+  }
+
+  .corporate-section-title {
+    @apply text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4;
+  }
+
+  /* Dark theme corporate styles */
+  .dark .corporate-card {
+    @apply bg-slate-800 border-slate-700 shadow-slate-900/10;
+  }
+
+  .dark .corporate-icon-container {
+    @apply bg-slate-700;
+  }
+
+  .dark .corporate-title {
+    @apply text-slate-300;
+  }
+
+  .dark .corporate-value {
+    @apply text-slate-100;
+  }
+
+  .dark .corporate-subtitle {
+    @apply text-slate-400;
+  }
+
+  .dark .corporate-heading {
+    @apply text-slate-100;
+  }
+
+  .dark .corporate-description {
+    @apply text-slate-400;
+  }
+
+  .dark .corporate-section-title {
+    @apply text-slate-200;
+  }
+
+  /* Melhorias para badges no modo dark */
+  .figma-badge-subtle {
+    @apply bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600;
+  }
+
+  /* Melhorias para textos no modo dark */
+  .figma-body {
+    @apply text-slate-600 dark:text-slate-300;
+  }
+
+  .figma-numeric {
+    @apply text-slate-900 dark:text-slate-100;
+  }
+
+  .figma-subheading {
+    @apply text-slate-700 dark:text-slate-200;
+  }
+
+  /* Melhorias para elementos de loading no modo dark */
+  .dark .animate-pulse > div {
+    @apply bg-slate-700;
+  }
+
   /* Figma Design System Classes - OTIMIZADAS */
   .figma-glass-card {
     border-radius: 12px;
@@ -109,29 +199,87 @@
     backdrop-filter: blur(10px);
   }
 
+  /* Estilos específicos para tema de conservação e manutenção */
+  .maintenance-gradient {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  }
+
+  .conservation-gradient {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  }
+
+  .industrial-shadow {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+
+  .maintenance-card {
+    background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
+    border: 2px solid #fdba74;
+  }
+
+  .dark .maintenance-card {
+    background: linear-gradient(135deg, #431407 0%, #7c2d12 100%);
+    border: 2px solid #ea580c;
+  }
+
+  .conservation-card {
+    background: linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%);
+    border: 2px solid #86efac;
+  }
+
+  .dark .conservation-card {
+    background: linear-gradient(135deg, #052e16 0%, #166534 100%);
+    border: 2px solid #22c55e;
+  }
+
+  .industrial-text {
+    @apply text-gray-700 dark:text-gray-300;
+    font-weight: 600;
+  }
+
+  /* Scrollbar personalizada para tema industrial */
+  .scrollbar-industrial::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .scrollbar-industrial::-webkit-scrollbar-track {
+    background: #f97316;
+    border-radius: 4px;
+  }
+
+  .scrollbar-industrial::-webkit-scrollbar-thumb {
+    background: #ea580c;
+    border-radius: 4px;
+  }
+
+  .scrollbar-industrial::-webkit-scrollbar-thumb:hover {
+    background: #c2410c;
+  }
+
   /* Light theme glass card */
   body:not(.dark) .figma-glass-card {
-    background: rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(226, 232, 240, 0.8);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   }
 
   body:not(.dark) .figma-glass-card:hover {
     background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(203, 213, 225, 0.9);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     transform: translateY(-2px);
   }
 
   /* Dark theme glass card */
   body.dark .figma-glass-card {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   }
 
   body.dark .figma-glass-card:hover {
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
     transform: translateY(-2px);
   }
   
@@ -507,7 +655,28 @@
 
   .status-success {
     @apply px-3 py-2 rounded-lg font-medium;
+    @apply bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800;
     transition: all 0.3s ease;
+  }
+
+  .figma-status-badge-red {
+    @apply bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800;
+  }
+
+  .figma-status-badge-yellow {
+    @apply bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-800;
+  }
+
+  .figma-status-badge-green {
+    @apply bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800;
+  }
+
+  .figma-status-badge-blue {
+    @apply bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800;
+  }
+
+  .figma-priority-badge {
+    @apply bg-orange-100 dark:bg-orange-900/30 border-orange-200 dark:border-orange-800;
   }
 
   body:not(.dark) .status-success {

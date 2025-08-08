@@ -4,9 +4,9 @@ import type {
   NiveisMetrics,
   TendenciasMetrics,
   FilterParams,
-  ApiError,
-  ValidationResult
+  ApiError
 } from '../types/api';
+import { ValidationResult } from './dataValidation';
 
 /**
  * Utilitários de validação para dados da API
@@ -15,12 +15,21 @@ import type {
 // Validação de métricas de nível
 export const validateLevelMetrics = (data: any): ValidationResult<LevelMetrics> => {
   const errors: string[] = [];
+  const warnings: string[] = [];
+  
+  const defaultData: LevelMetrics = {
+    novos: 0,
+    progresso: 0,
+    pendentes: 0,
+    resolvidos: 0,
+    total: 0
+  };
   
   if (typeof data !== 'object' || data === null) {
-    return { isValid: false, errors: ['Dados de nível devem ser um objeto'] };
+    return { isValid: false, data: defaultData, errors: ['Dados de nível devem ser um objeto'], warnings };
   }
   
-  const requiredFields = ['abertos', 'fechados', 'pendentes', 'atrasados'];
+  const requiredFields = ['novos', 'progresso', 'pendentes', 'resolvidos', 'total'];
   
   for (const field of requiredFields) {
     if (typeof data[field] !== 'number' || data[field] < 0) {
@@ -28,31 +37,31 @@ export const validateLevelMetrics = (data: any): ValidationResult<LevelMetrics> 
     }
   }
   
-  // Validação opcional de tendências
-  const trendFields = ['tendencia_abertos', 'tendencia_fechados', 'tendencia_pendentes', 'tendencia_atrasados'];
-  
-  for (const field of trendFields) {
-    if (data[field] !== undefined && typeof data[field] !== 'number') {
-      errors.push(`Campo '${field}' deve ser um número`);
-    }
-  }
-  
   return {
     isValid: errors.length === 0,
+    data: errors.length === 0 ? data as LevelMetrics : defaultData,
     errors,
-    data: errors.length === 0 ? data as LevelMetrics : undefined
+    warnings
   };
 };
 
 // Validação de métricas de níveis
 export const validateNiveisMetrics = (data: any): ValidationResult<NiveisMetrics> => {
   const errors: string[] = [];
+  const warnings: string[] = [];
+  
+  const defaultData: NiveisMetrics = {
+    'Manutenção Geral': { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0, total: 0 },
+    'Patrimônio': { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0, total: 0 },
+    'Atendimento': { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0, total: 0 },
+    'Mecanografia': { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0, total: 0 }
+  };
   
   if (typeof data !== 'object' || data === null) {
-    return { isValid: false, errors: ['Dados de níveis devem ser um objeto'] };
+    return { isValid: false, data: defaultData, errors: ['Dados de níveis devem ser um objeto'], warnings };
   }
   
-  const validLevels = ['N1', 'N2', 'N3', 'N4'];
+  const validLevels = ['Manutenção Geral', 'Patrimônio', 'Atendimento', 'Mecanografia'];
   
   for (const level of validLevels) {
     if (data[level]) {
@@ -65,45 +74,77 @@ export const validateNiveisMetrics = (data: any): ValidationResult<NiveisMetrics
   
   return {
     isValid: errors.length === 0,
+    data: errors.length === 0 ? data as NiveisMetrics : defaultData,
     errors,
-    data: errors.length === 0 ? data as NiveisMetrics : undefined
+    warnings
   };
 };
 
 // Validação de tendências
 export const validateTendenciasMetrics = (data: any): ValidationResult<TendenciasMetrics> => {
   const errors: string[] = [];
+  const warnings: string[] = [];
+  
+  const defaultData: TendenciasMetrics = {
+    novos: '0',
+    pendentes: '0',
+    progresso: '0',
+    resolvidos: '0'
+  };
   
   if (typeof data !== 'object' || data === null) {
-    return { isValid: false, errors: ['Dados de tendências devem ser um objeto'] };
+    return { isValid: false, data: defaultData, errors: ['Dados de tendências devem ser um objeto'], warnings };
   }
   
-  const numericFields = [
-    'novos_tickets',
-    'tickets_resolvidos', 
-    'tempo_medio_resolucao',
-    'taxa_satisfacao'
+  const stringFields = [
+    'novos',
+    'pendentes', 
+    'progresso',
+    'resolvidos'
   ];
   
-  for (const field of numericFields) {
-    if (data[field] !== undefined && (typeof data[field] !== 'number' || data[field] < 0)) {
-      errors.push(`Campo '${field}' deve ser um número não negativo`);
+  for (const field of stringFields) {
+    if (data[field] !== undefined && typeof data[field] !== 'string') {
+      errors.push(`Campo '${field}' deve ser uma string`);
     }
   }
   
   return {
     isValid: errors.length === 0,
+    data: errors.length === 0 ? data as TendenciasMetrics : defaultData,
     errors,
-    data: errors.length === 0 ? data as TendenciasMetrics : undefined
+    warnings
   };
 };
 
 // Validação completa de métricas do dashboard
 export const validateDashboardMetrics = (data: any): ValidationResult<DashboardMetrics> => {
   const errors: string[] = [];
+  const warnings: string[] = [];
+  
+  const defaultData: DashboardMetrics = {
+    novos: 0,
+    pendentes: 0,
+    progresso: 0,
+    resolvidos: 0,
+    total: 0,
+    niveis: {
+      'Manutenção Geral': { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0, total: 0 },
+      'Patrimônio': { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0, total: 0 },
+      'Atendimento': { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0, total: 0 },
+      'Mecanografia': { novos: 0, progresso: 0, pendentes: 0, resolvidos: 0, total: 0 }
+    },
+    tendencias: {
+      novos: '0',
+      pendentes: '0',
+      progresso: '0',
+      resolvidos: '0'
+    },
+    timestamp: new Date().toISOString()
+  };
   
   if (typeof data !== 'object' || data === null) {
-    return { isValid: false, errors: ['Dados do dashboard devem ser um objeto'] };
+    return { isValid: false, data: defaultData, errors: ['Dados do dashboard devem ser um objeto'], warnings };
   }
   
   // Validar níveis se presente
@@ -129,60 +170,74 @@ export const validateDashboardMetrics = (data: any): ValidationResult<DashboardM
   
   return {
     isValid: errors.length === 0,
+    data: errors.length === 0 ? data as DashboardMetrics : defaultData,
     errors,
-    data: errors.length === 0 ? data as DashboardMetrics : undefined
+    warnings
   };
 };
 
 // Validação de parâmetros de filtro
 export const validateFilterParams = (params: any): ValidationResult<FilterParams> => {
   const errors: string[] = [];
+  const warnings: string[] = [];
+  
+  const defaultData: FilterParams = {};
   
   if (typeof params !== 'object' || params === null) {
-    return { isValid: false, errors: ['Parâmetros de filtro devem ser um objeto'] };
+    return { isValid: false, data: defaultData, errors: ['Parâmetros de filtro devem ser um objeto'], warnings };
   }
   
-  // Validar datas se presentes
-  if (params.startDate && typeof params.startDate !== 'string') {
-    errors.push('startDate deve ser uma string');
+  // Validar período se presente
+  const validPeriods = ['today', 'week', 'month'];
+  if (params.period && !validPeriods.includes(params.period)) {
+    errors.push(`Período deve ser um dos valores: ${validPeriods.join(', ')}`);
   }
   
-  if (params.endDate && typeof params.endDate !== 'string') {
-    errors.push('endDate deve ser uma string');
-  }
-  
-  // Validar se data de início é anterior à data de fim
-  if (params.startDate && params.endDate) {
-    const start = new Date(params.startDate);
-    const end = new Date(params.endDate);
-    
-    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      errors.push('Datas devem estar em formato válido');
-    } else if (start > end) {
-      errors.push('Data de início deve ser anterior à data de fim');
+  // Validar dateRange se presente
+  if (params.dateRange) {
+    if (typeof params.dateRange !== 'object' || params.dateRange === null) {
+      errors.push('dateRange deve ser um objeto');
+    } else {
+      if (params.dateRange.startDate && typeof params.dateRange.startDate !== 'string') {
+        errors.push('startDate deve ser uma string');
+      }
+      
+      if (params.dateRange.endDate && typeof params.dateRange.endDate !== 'string') {
+        errors.push('endDate deve ser uma string');
+      }
+      
+      // Validar se data de início é anterior à data de fim
+      if (params.dateRange.startDate && params.dateRange.endDate) {
+        const start = new Date(params.dateRange.startDate);
+        const end = new Date(params.dateRange.endDate);
+        
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+          errors.push('Datas devem estar em formato válido');
+        } else if (start > end) {
+          errors.push('Data de início deve ser anterior à data de fim');
+        }
+      }
     }
   }
   
-  // Validar valores de enum se presentes
-  const validStatuses = ['aberto', 'fechado', 'pendente', 'atrasado'];
-  if (params.status && !validStatuses.includes(params.status)) {
-    errors.push(`Status deve ser um dos valores: ${validStatuses.join(', ')}`);
+  // Validar arrays se presentes
+  if (params.levels && !Array.isArray(params.levels)) {
+    errors.push('levels deve ser um array');
   }
   
-  const validPriorities = ['baixa', 'media', 'alta', 'critica'];
-  if (params.priority && !validPriorities.includes(params.priority)) {
-    errors.push(`Prioridade deve ser um dos valores: ${validPriorities.join(', ')}`);
+  if (params.status && !Array.isArray(params.status)) {
+    errors.push('status deve ser um array');
   }
   
-  const validLevels = ['N1', 'N2', 'N3', 'N4'];
-  if (params.level && !validLevels.includes(params.level)) {
-    errors.push(`Nível deve ser um dos valores: ${validLevels.join(', ')}`);
+  if (params.priority && !Array.isArray(params.priority)) {
+    errors.push('priority deve ser um array');
   }
   
   return {
     isValid: errors.length === 0,
+    data: errors.length === 0 ? params as FilterParams : defaultData,
     errors,
-    data: errors.length === 0 ? params as FilterParams : undefined
+    warnings
   };
 };
 
@@ -190,32 +245,37 @@ export const validateFilterParams = (params: any): ValidationResult<FilterParams
 export const sanitizeFilterParams = (params: any): FilterParams => {
   const sanitized: FilterParams = {};
   
-  if (params.startDate && typeof params.startDate === 'string') {
-    sanitized.startDate = params.startDate.trim();
+  if (params.period && typeof params.period === 'string') {
+    const validPeriods = ['today', 'week', 'month'];
+    const period = params.period.trim().toLowerCase();
+    if (validPeriods.includes(period)) {
+      sanitized.period = period as 'today' | 'week' | 'month';
+    }
   }
   
-  if (params.endDate && typeof params.endDate === 'string') {
-    sanitized.endDate = params.endDate.trim();
+  if (params.dateRange && typeof params.dateRange === 'object') {
+    sanitized.dateRange = {
+      startDate: params.dateRange.startDate?.trim() || '',
+      endDate: params.dateRange.endDate?.trim() || ''
+    };
   }
   
-  if (params.status && typeof params.status === 'string') {
-    sanitized.status = params.status.trim().toLowerCase();
+  if (params.levels && Array.isArray(params.levels)) {
+    sanitized.levels = params.levels.map((level: any) => 
+      typeof level === 'string' ? level.trim() : String(level)
+    );
   }
   
-  if (params.priority && typeof params.priority === 'string') {
-    sanitized.priority = params.priority.trim().toLowerCase();
+  if (params.status && Array.isArray(params.status)) {
+    sanitized.status = params.status.map((status: any) => 
+      typeof status === 'string' ? status.trim() : String(status)
+    );
   }
   
-  if (params.level && typeof params.level === 'string') {
-    sanitized.level = params.level.trim().toUpperCase();
-  }
-  
-  if (params.technician && typeof params.technician === 'string') {
-    sanitized.technician = params.technician.trim();
-  }
-  
-  if (params.category && typeof params.category === 'string') {
-    sanitized.category = params.category.trim();
+  if (params.priority && Array.isArray(params.priority)) {
+    sanitized.priority = params.priority.map((priority: any) => 
+      typeof priority === 'string' ? priority.trim() : String(priority)
+    );
   }
   
   return sanitized;
@@ -224,9 +284,19 @@ export const sanitizeFilterParams = (params: any): FilterParams => {
 // Validação de erro da API
 export const validateApiError = (error: any): ValidationResult<ApiError> => {
   const errors: string[] = [];
+  const warnings: string[] = [];
+  
+  const defaultData: ApiError = {
+    success: false,
+    error: {
+      message: 'Erro desconhecido',
+      code: 'UNKNOWN_ERROR'
+    },
+    timestamp: new Date().toISOString()
+  };
   
   if (typeof error !== 'object' || error === null) {
-    return { isValid: false, errors: ['Erro da API deve ser um objeto'] };
+    return { isValid: false, data: defaultData, errors: ['Erro da API deve ser um objeto'], warnings };
   }
   
   if (!error.success || error.success !== false) {
@@ -251,8 +321,9 @@ export const validateApiError = (error: any): ValidationResult<ApiError> => {
   
   return {
     isValid: errors.length === 0,
+    data: errors.length === 0 ? error as ApiError : defaultData,
     errors,
-    data: errors.length === 0 ? error as ApiError : undefined
+    warnings
   };
 };
 
@@ -279,13 +350,20 @@ export const validateBatch = <T>(
 // Validação de schema genérica
 export const createValidator = <T>(
   schema: Record<string, (value: any) => boolean>,
-  requiredFields: string[] = []
+  requiredFields: string[] = [],
+  defaultData?: T
 ) => {
   return (data: any): ValidationResult<T> => {
     const errors: string[] = [];
+    const warnings: string[] = [];
     
     if (typeof data !== 'object' || data === null) {
-      return { isValid: false, errors: ['Dados devem ser um objeto'] };
+      return { 
+        isValid: false, 
+        data: defaultData || ({} as T), 
+        errors: ['Dados devem ser um objeto'], 
+        warnings 
+      };
     }
     
     // Verificar campos obrigatórios
@@ -304,8 +382,9 @@ export const createValidator = <T>(
     
     return {
       isValid: errors.length === 0,
+      data: errors.length === 0 ? data as T : (defaultData || ({} as T)),
       errors,
-      data: errors.length === 0 ? data as T : undefined
+      warnings
     };
   };
 };

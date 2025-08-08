@@ -1,76 +1,114 @@
 import { useState, useEffect, useCallback, useTransition } from 'react';
 import { fetchDashboardMetrics } from '../services/api';
 import type {
-  DashboardMetrics,
   FilterParams,
-  LoadingState,
   PerformanceMetrics,
   CacheConfig,
-  ApiError
+  DashboardMetrics
 } from '../types/api';
-import { DashboardState, MetricsData, SystemStatus, FilterState, NotificationData, Theme, TechnicianRanking, DateRange } from '../types';
-import { apiService } from '../services/api';
-import { dataMonitor, MonitoringAlert } from '../utils/dataMonitor';
-import { performanceMonitor } from '../utils/performanceMonitor';
-import { useApiPerformance } from './usePerformanceMonitoring';
-import { useDebouncedCallback, useThrottledCallback } from './useDebounce';
+import { SystemStatus, NotificationData, Theme, TechnicianRanking, LevelMetrics } from '../types';
+// import { dataMonitor, MonitoringAlert } from '../utils/dataMonitor';
+// import { performanceMonitor } from '../utils/performanceMonitor';
+// import { useApiPerformance } from './usePerformanceMonitoring';
+// import { useDebouncedCallback, useThrottledCallback } from './useDebounce';
 
 interface UseDashboardReturn {
-  data: DashboardMetrics | null;
-  loading: boolean;
+  // Dados principais
+  metrics: DashboardMetrics | null;
+  levelMetrics: {
+    niveis: {
+      'Manutenção Geral': LevelMetrics;
+      'Patrimônio': LevelMetrics;
+      'Atendimento': LevelMetrics;
+      'Mecanografia': LevelMetrics;
+    };
+    geral: LevelMetrics;
+  } | null;
+  systemStatus: SystemStatus | null;
+  technicianRanking: TechnicianRanking[];
+  
+  // Estados de carregamento
+  isLoading: boolean;
+  isPending: boolean;
   error: string | null;
-  refreshData: () => Promise<void>;
+  
+  // Notificações e busca
+  notifications: NotificationData[];
+  searchQuery: string;
+  searchResults: any[];
+  
+  // Filtros e tema
+  filters: FilterParams;
+  theme: Theme;
+  
+  // Relatórios e alertas
+  dataIntegrityReport: any | null;
+  monitoringAlerts: any[];
+  
+  // Funções
+  loadData: (newFilters?: FilterParams) => Promise<void>;
+  forceRefresh: () => void;
+  updateFilters: (newFilters: FilterParams) => void;
+  search: () => void;
+  addNotification: (notification: any) => void;
+  removeNotification: (id: string) => void;
+  changeTheme: (theme: Theme) => void;
+  updateDateRange: (dateRange: any) => void;
+  refreshData: (newFilters?: FilterParams) => Promise<void>;
   lastUpdated: Date | null;
   performance: PerformanceMetrics | null;
   cacheStatus: CacheConfig | null;
-  updateFilters: (newFilters: FilterParams) => void;
 }
 
-const initialFilterState: FilterState = {
-  period: 'today',
-  levels: ['n1', 'n2', 'n3', 'n4'],
-  status: ['new', 'progress', 'pending', 'resolved'],
-  priority: ['high', 'medium', 'low'],
-};
+// const initialFilterState: FilterState = {
+//   period: 'today',
+//   levels: ['n1', 'n2', 'n3', 'n4'],
+//   status: ['new', 'progress', 'pending', 'resolved'],
+//   priority: ['high', 'medium', 'low'],
+// };
 
-const initialMetrics: MetricsData = {
+const initialMetrics: DashboardMetrics = {
   novos: 0,
   pendentes: 0,
   progresso: 0,
   resolvidos: 0,
   total: 0,
   niveis: {
-    n1: {
+    'Manutenção Geral': {
       novos: 0,
       pendentes: 0,
       progresso: 0,
-      resolvidos: 0
+      resolvidos: 0,
+      total: 0
     },
-    n2: {
+    'Patrimônio': {
       novos: 0,
       pendentes: 0,
       progresso: 0,
-      resolvidos: 0
+      resolvidos: 0,
+      total: 0
     },
-    n3: {
+    'Atendimento': {
       novos: 0,
       pendentes: 0,
       progresso: 0,
-      resolvidos: 0
+      resolvidos: 0,
+      total: 0
     },
-    n4: {
+    'Mecanografia': {
       novos: 0,
       pendentes: 0,
       progresso: 0,
-      resolvidos: 0
+      resolvidos: 0,
+      total: 0
     }
   },
   tendencias: {
-    novos: '0',
-    pendentes: '0',
-    progresso: '0',
-    resolvidos: '0'
-  }
+      novos: '0',
+      pendentes: '0',
+      progresso: '0',
+      resolvidos: '0'
+    }
 };
 
 const initialSystemStatus: SystemStatus = {
@@ -79,70 +117,70 @@ const initialSystemStatus: SystemStatus = {
   ultima_atualizacao: ''
 };
 
-// Default date range - last 30 days
-const getDefaultDateRange = (): DateRange => ({
-  startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-  endDate: new Date().toISOString().split('T')[0],
-  label: 'Últimos 30 dias'
-});
+// // Default date range - last 30 days
+// const getDefaultDateRange = (): DateRange => ({
+//   startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+//   endDate: new Date().toISOString().split('T')[0],
+//   label: 'Últimos 30 dias'
+// });
 
-const initialState: DashboardState = {
-  metrics: initialMetrics, // Usar métricas iniciais em vez de null
-  systemStatus: initialSystemStatus, // Usar status inicial em vez de null
-  technicianRanking: [],
-  isLoading: true,
-  error: null,
-  lastUpdated: null,
-  filters: initialFilterState,
-  searchQuery: '',
-  searchResults: [],
-  notifications: [],
-  theme: (localStorage.getItem('theme') as Theme) || 'light',
+// const initialState: DashboardState = {
+//   metrics: initialMetrics, // Usar métricas iniciais em vez de null
+//   systemStatus: initialSystemStatus, // Usar status inicial em vez de null
+//   technicianRanking: [],
+//   isLoading: true,
+//   error: null,
+//   lastUpdated: null,
+//   filters: initialFilterState,
+//   searchQuery: '',
+//   searchResults: [],
+//   notifications: [],
+//   theme: (localStorage.getItem('theme') as Theme) || 'light',
+//
+//   dataIntegrityReport: null,
+//   monitoringAlerts: [],
+//   dateRange: getDefaultDateRange(),
+// };
 
-  dataIntegrityReport: null,
-  monitoringAlerts: [],
-  dateRange: getDefaultDateRange(),
-};
 
 
-
-// Função para verificações adicionais de consistência
-const performConsistencyChecks = (
-  metrics: MetricsData,
-  systemStatus: SystemStatus,
-  technicianRanking: TechnicianRanking[]
-): string[] => {
-  const errors: string[] = [];
-  
-  // Verificar se o sistema está ativo mas não há dados
-  if (systemStatus.sistema_ativo && metrics.total === 0) {
-    errors.push('Sistema ativo mas nenhum ticket encontrado');
-  }
-  
-  // Verificar se há técnicos no ranking mas nenhum ticket
-  if ((technicianRanking || []).length > 0 && metrics.total === 0) {
-    errors.push('Técnicos encontrados mas nenhum ticket no sistema');
-  }
-  
-  // Verificar se há inconsistência entre tickets totais e ranking
-  const totalTicketsInRanking = (technicianRanking || []).reduce((sum, tech) => sum + tech.total, 0);
-  if (totalTicketsInRanking > metrics.total * 2) { // Permitir alguma margem
-    errors.push(`Total de tickets no ranking (${totalTicketsInRanking}) muito maior que total geral (${metrics.total})`);
-  }
-  
-  // Verificar se há dados muito antigos
-  if (systemStatus.ultima_atualizacao) {
-    const lastUpdate = new Date(systemStatus.ultima_atualizacao);
-    const now = new Date();
-    const hoursDiff = (now.getTime() - lastUpdate.getTime()) / (1000 * 60 * 60);
-    
-    if (hoursDiff > 24) {
-      errors.push(`Dados muito antigos: última atualização há ${Math.round(hoursDiff)} horas`);
-    }
-  }
-  
-  return errors;
-};
+// // Função para verificações adicionais de consistência
+// const performConsistencyChecks = (
+//   metrics: MetricsData,
+//   systemStatus: SystemStatus,
+//   technicianRanking: TechnicianRanking[]
+// ): string[] => {
+//   const errors: string[] = [];
+//   
+//   // Verificar se o sistema está ativo mas não há dados
+//   if (systemStatus.sistema_ativo && metrics.total === 0) {
+//     errors.push('Sistema ativo mas nenhum ticket encontrado');
+//   }
+//   
+//   // Verificar se há técnicos no ranking mas nenhum ticket
+//   if ((technicianRanking || []).length > 0 && metrics.total === 0) {
+//     errors.push('Técnicos encontrados mas nenhum ticket no sistema');
+//   }
+//   
+//   // Verificar se há inconsistência entre tickets totais e ranking
+//   const totalTicketsInRanking = (technicianRanking || []).reduce((sum, tech) => sum + tech.total, 0);
+//   if (totalTicketsInRanking > metrics.total * 2) { // Permitir alguma margem
+//     errors.push(`Total de tickets no ranking (${totalTicketsInRanking}) muito maior que total geral (${metrics.total})`);
+//   }
+//   
+//   // Verificar se há dados muito antigos
+//   if (systemStatus.ultima_atualizacao) {
+//     const lastUpdate = new Date(systemStatus.ultima_atualizacao);
+//     const now = new Date();
+//     const hoursDiff = (now.getTime() - lastUpdate.getTime()) / (1000 * 60 * 60);
+//     
+//     if (hoursDiff > 24) {
+//       errors.push(`Dados muito antigos: última atualização há ${Math.round(hoursDiff)} horas`);
+//     }
+//   }
+//   
+//   return errors;
+// };
 
 export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardReturn => {
   const [data, setData] = useState<DashboardMetrics | null>(null);
@@ -150,11 +188,11 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [performance, setPerformance] = useState<PerformanceMetrics | null>(null);
-  const [cacheStatus, setCacheStatus] = useState<CacheConfig | null>(null);
+  const [cacheStatus] = useState<CacheConfig | null>(null);
   const [filters, setFilters] = useState<FilterParams>(initialFilters);
   const [theme, setTheme] = useState<Theme>((localStorage.getItem('theme') as Theme) || 'light');
-  const [isPending, startTransition] = useTransition();
-  const { measureApiCall } = useApiPerformance();
+  const [isPending] = useTransition();
+  // const { measureApiCall } = useApiPerformance();
 
   const loadData = useCallback(async (newFilters?: FilterParams) => {
     const filtersToUse = newFilters || filters;
@@ -168,10 +206,8 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
       const startTime = window.performance.now();
       
       // Fazer chamadas paralelas para todos os endpoints
-      const [metricsResult, systemStatusResult, technicianRankingResult] = await Promise.all([
-        fetchDashboardMetrics(filtersToUse),
-        import('../services/api').then(api => api.getSystemStatus()),
-        import('../services/api').then(api => api.getTechnicianRanking())
+      const [metricsResult] = await Promise.all([
+        fetchDashboardMetrics(filtersToUse)
       ]);
       
       // console.log('📥 useDashboard - Resultado recebido de fetchDashboardMetrics:', metricsResult);
@@ -190,11 +226,9 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
       };
       
       if (metricsResult) {
-        // Combinar todos os dados em um objeto DashboardMetrics
+        // Combiner todos os dados em um objeto DashboardMetrics
         const combinedData: DashboardMetrics = {
-          ...metricsResult,
-          systemStatus: systemStatusResult || initialSystemStatus,
-          technicianRanking: technicianRankingResult || []
+          ...metricsResult
         };
         
         // console.log('✅ useDashboard - Definindo dados combinados no estado:', combinedData);
@@ -236,21 +270,24 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
   }, [loadData]);
 
   const returnData = {
-    metrics: {
-      ...(data?.niveis?.geral || initialMetrics),
-      tendencias: data?.tendencias || initialMetrics.tendencias
-    },
+    metrics: data || initialMetrics,
     levelMetrics: {
       niveis: data?.niveis || {
-        n1: initialMetrics,
-        n2: initialMetrics,
-        n3: initialMetrics,
-        n4: initialMetrics,
-        geral: initialMetrics
+        'Manutenção Geral': initialMetrics.niveis['Manutenção Geral'],
+        'Patrimônio': initialMetrics.niveis['Patrimônio'],
+        'Atendimento': initialMetrics.niveis['Atendimento'],
+        'Mecanografia': initialMetrics.niveis['Mecanografia']
+      },
+      geral: {
+        novos: data?.novos || 0,
+        pendentes: data?.pendentes || 0,
+        progresso: data?.progresso || 0,
+        resolvidos: data?.resolvidos || 0,
+        total: data?.total || 0
       }
     },
-    systemStatus: data?.systemStatus || initialSystemStatus,
-    technicianRanking: data?.technicianRanking || [],
+    systemStatus: initialSystemStatus,
+    technicianRanking: [],
     isLoading: loading,
     isPending,
     error,

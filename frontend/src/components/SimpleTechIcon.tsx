@@ -11,7 +11,7 @@ export const SimpleTechIcon: React.FC<SimpleTechIconProps> = ({ className = "", 
     <div className={`relative ${className}`}>
       <Cpu 
         size={size} 
-        className="text-white/90 drop-shadow-sm" 
+        className="text-slate-600 dark:text-white/90 drop-shadow-sm" 
         strokeWidth={1.5}
       />
       {/* Indicador de status */}

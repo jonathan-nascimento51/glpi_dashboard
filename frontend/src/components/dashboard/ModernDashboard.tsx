@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo } from "react"
+import React, { useEffect } from "react"
 import { motion } from "framer-motion"
 import { MetricsGrid } from "./MetricsGrid"
 import { LevelMetricsGrid } from "./LevelMetricsGrid"
 import { NewTicketsList } from "./NewTicketsList"
-import { RankingTable } from "./RankingTable"
+import CategoryRankingTable from "./CategoryRankingTable"
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
@@ -39,8 +39,7 @@ const itemVariants = {
   visible: {
     opacity: 1,
     transition: {
-      duration: 0.05,
-      ease: "easeOut"
+      duration: 0.05
     }
   }
 }
@@ -68,7 +67,7 @@ const SkeletonCard = React.memo(function SkeletonCard() {
 export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernDashboard({
   metrics,
   levelMetrics,
-  systemStatus,
+  systemStatus: _,
   technicianRanking = [],
   onFilterByStatus,
   isLoading = false,
@@ -93,21 +92,7 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
     })
   }, [metrics, technicianRanking, isLoading, measureRender])
 
-  // Memoizar dados do ranking processados
-  const processedRankingData = useMemo(() => {
-    // console.log('📊 ModernDashboard - Processando ranking de', technicianRanking?.length || 0, 'técnicos')
-    
-    const result = technicianRanking.map((tech) => ({
-      id: tech.id || String(tech.name),
-      name: tech.name || tech.nome || 'Técnico',
-      level: tech.level || 'N1',
-      total: tech.total || 0,
-      rank: tech.rank || 0
-    }))
-    
-    // console.log('✅ ModernDashboard - Ranking processado:', result.length, 'técnicos')
-    return result
-  }, [technicianRanking])
+
 
   // Loading state
   if (isLoading) {
@@ -166,7 +151,7 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
       {/* Cards de métricas principais */}
       <motion.div variants={itemVariants} className="dashboard-metrics-section">
         <MetricsGrid 
-          metrics={metrics.geral || metrics}
+          metrics={metrics}
           onFilterByStatus={onFilterByStatus}
         />
       </motion.div>
@@ -190,11 +175,11 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
         </motion.div>
       </div>
 
-      {/* Ranking de técnicos - ocupando toda a largura na parte inferior */}
+      {/* Top Categorias - ocupando toda a largura na parte inferior */}
       <motion.div variants={itemVariants} className="dashboard-ranking-section">
-        <RankingTable 
-          data={processedRankingData}
-          title="Ranking de Técnicos"
+        <CategoryRankingTable 
+          limit={10}
+          autoRefresh={true}
           className="w-full h-full"
         />
       </motion.div>

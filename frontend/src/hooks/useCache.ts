@@ -88,16 +88,16 @@ export const useCache = () => {
     try {
       switch (cacheType) {
         case 'metrics':
-          await metricsCache.refresh();
+          metricsCache.refresh({});
           break;
         case 'systemStatus':
-          await systemStatusCache.refresh();
+          systemStatusCache.refresh({});
           break;
         case 'technicianRanking':
-          await technicianRankingCache.refresh();
+          technicianRankingCache.refresh({});
           break;
         case 'newTickets':
-          await newTicketsCache.refresh();
+          newTicketsCache.refresh({});
           break;
       }
       updateStats();

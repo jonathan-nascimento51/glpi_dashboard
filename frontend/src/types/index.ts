@@ -5,10 +5,11 @@ export interface MetricsData {
   resolvidos: number;
   total: number;
   niveis: {
-    n1: LevelMetrics;
-    n2: LevelMetrics;
-    n3: LevelMetrics;
-    n4: LevelMetrics;
+    'Manutenção Geral': LevelMetrics;
+    'Patrimônio': LevelMetrics;
+    'Atendimento': LevelMetrics;
+    'Mecanografia': LevelMetrics;
+    geral?: LevelMetrics;
   };
   tendencias: {
     novos: string;
@@ -23,6 +24,7 @@ export interface LevelMetrics {
   progresso: number;
   pendentes: number;
   resolvidos: number;
+  total: number;
 }
 
 export interface SystemStatus {

@@ -130,9 +130,9 @@ class DataCacheManager {
     
     console.log(`📦 Dados recuperados do cache (${cacheStatus}):`, {
       age: Math.round(age / 1000) + 's',
-      isValid: this.cache.metrics.isValid && 
-               this.cache.systemStatus.isValid && 
-               this.cache.technicianRanking.isValid
+      isValid: (this.cache.metrics?.validationReport?.metrics?.isValid ?? false) && 
+                (this.cache.systemStatus?.validationReport?.systemStatus?.isValid ?? false) && 
+                (this.cache.technicianRanking?.validationReport?.technicianRanking?.isValid ?? false)
     });
     
     return {
@@ -212,9 +212,9 @@ class DataCacheManager {
       hasData: true,
       age,
       status,
-      isValid: this.cache.metrics.isValid && 
-               this.cache.systemStatus?.isValid && 
-               this.cache.technicianRanking?.isValid,
+      isValid: (this.cache.metrics?.validationReport?.metrics?.isValid ?? false) && 
+                (this.cache.systemStatus?.validationReport?.systemStatus?.isValid ?? false) && 
+                (this.cache.technicianRanking?.validationReport?.technicianRanking?.isValid ?? false),
       lastUpdate: new Date(this.cache.metrics.timestamp)
     };
   }

@@ -5,6 +5,7 @@ import logging
 import redis
 from backend.config.settings import active_config
 from backend.api.routes import api_bp
+from backend.routes.maintenance_routes import register_maintenance_routes
 
 # Instância global do cache
 cache = Cache()
@@ -81,6 +82,9 @@ def create_app(config=None):
     
     # Registra blueprints
     app.register_blueprint(api_bp)
+    
+    # Registra rotas de manutenção
+    register_maintenance_routes(app)
     
     logger.info(f"Aplicação configurada com ambiente: {app.config.get('ENV', 'development')}")
     return app

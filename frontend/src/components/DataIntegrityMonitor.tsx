@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { AlertTriangle, CheckCircle, Info, X, Eye, EyeOff } from 'lucide-react';
 import { DataIntegrityReport } from '../utils/dataValidation';
 

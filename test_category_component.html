@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Top Categorias</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .category-card {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            background: #f9f9f9;
+        }
+        .category-name {
+            font-weight: bold;
+            color: #333;
+        }
+        .category-count {
+            color: #666;
+            font-size: 14px;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        .error {
+            color: #d32f2f;
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏆 Top Chamados por Categoria</h1>
+        <div id="content">
+            <div class="loading">Carregando dados...</div>
+        </div>
+    </div>
+
+    <script>
+        async function loadTopCategories() {
+            try {
+                const response = await fetch('http://localhost:5000/api/tickets/top-categories?limit=10');
+                const data = await response.json();
+                
+                console.log('Dados recebidos:', data);
+                
+                const contentDiv = document.getElementById('content');
+                
+                if (data.success && data.data && data.data.length > 0) {
+                    contentDiv.innerHTML = data.data.map((category, index) => `
+                        <div class="category-card">
+                            <div class="category-name">
+                                #${category.rank} - ${category.name}
+                            </div>
+                            <div class="category-count">
+                                ${category.ticket_count} chamados
+                            </div>
+                            <div style="font-size: 12px; color: #888; margin-top: 5px;">
+                                ${category.complete_name}
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    contentDiv.innerHTML = '<div class="error">Nenhum dado encontrado</div>';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+                document.getElementById('content').innerHTML = 
+                    `<div class="error">Erro ao carregar dados: ${error.message}</div>`;
+            }
+        }
+        
+        // Carregar dados quando a página carregar
+        window.addEventListener('load', loadTopCategories);
+    </script>
+</body>
+</html>

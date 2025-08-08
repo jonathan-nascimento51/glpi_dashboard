@@ -318,6 +318,57 @@ def get_technician_ranking():
         }), 500
 
 
+@api_bp.route('/tickets/top-categories')
+@monitor_performance
+@cache_with_filters(timeout=300)
+def get_top_tickets_by_category():
+    """Endpoint para obter top de chamados por categoria com filtros avançados"""
+    start_time = time.time()
+    logger.info("=== REQUISIÇÃO RECEBIDA: /tickets/top-categories ===")
+    
+    try:
+        # Obter parâmetros de filtro
+        filters = extract_filter_params()
+        start_date = filters.get('start_date')
+        end_date = filters.get('end_date')
+        maintenance_group = filters.get('maintenance_group')
+        limit = filters.get('limit', 10)  # Padrão: top 10
+        
+        logger.info(f"Buscando top categorias com filtros: data={start_date} até {end_date}, grupo={maintenance_group}, limite={limit}")
+        
+        # Buscar top categorias
+        categories_data = glpi_service.get_top_tickets_by_category(
+            limit=limit,
+            start_date=start_date,
+            end_date=end_date,
+            maintenance_group=maintenance_group
+        )
+        
+        if not categories_data:
+            logger.warning("Nenhum dado de categoria retornado pelo GLPI")
+            return jsonify({
+                "success": True,
+                "data": [],
+                "message": "Não foi possível obter dados de categorias do GLPI."
+            })
+
+        # Log de performance
+        response_time = (time.time() - start_time) * 1000
+        logger.info(f"Top categorias obtido com sucesso: {len(categories_data)} categorias em {response_time:.2f}ms")
+        
+        if response_time > active_config.PERFORMANCE_TARGET_P95:
+            logger.warning(f"Resposta lenta detectada: {response_time:.2f}ms > {active_config.PERFORMANCE_TARGET_P95}ms")
+        
+        return jsonify({"success": True, "data": categories_data, "response_time_ms": round(response_time, 2)})
+        
+    except Exception as e:
+        logger.error(f"Erro ao buscar top categorias: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": f"Erro interno do servidor: {str(e)}"
+        }), 500
+
+
 # ===== ENDPOINTS DE ADMINISTRAÇÃO - LOOKUPS =====
 
 @api_bp.route('/admin/lookups/reload', methods=['POST'])

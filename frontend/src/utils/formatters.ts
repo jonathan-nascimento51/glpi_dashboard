@@ -1,7 +1,5 @@
 import type {
-  DashboardMetrics,
   LevelMetrics,
-  TendenciasMetrics,
   PerformanceMetrics
 } from '../types/api';
 
@@ -153,10 +151,10 @@ export const formatPriority = (priority: string): { text: string; color: string;
 // Formatação de nível
 export const formatLevel = (level: string): string => {
   const levelMap: Record<string, string> = {
-    N1: 'Nível 1',
-    N2: 'Nível 2',
-    N3: 'Nível 3',
-    N4: 'Nível 4'
+    'MANUTENÇÃO GERAL': 'Manutenção Geral',
+    'PATRIMÔNIO': 'Patrimônio',
+    'ATENDIMENTO': 'Atendimento',
+    'MECANOGRAFIA': 'Mecanografia'
   };
   
   return levelMap[level.toUpperCase()] || level;
@@ -198,21 +196,21 @@ export const formatPerformanceMetrics = (metrics: PerformanceMetrics): Record<st
 // Formatação de métricas de nível para exibição
 export const formatLevelMetricsForDisplay = (metrics: LevelMetrics) => {
   return {
-    abertos: {
-      value: formatNumber(metrics.abertos),
-      trend: metrics.tendencia_abertos ? formatTrend(metrics.tendencia_abertos) : null
+    novos: {
+      value: formatNumber(metrics.novos),
+      trend: null
     },
-    fechados: {
-      value: formatNumber(metrics.fechados),
-      trend: metrics.tendencia_fechados ? formatTrend(metrics.tendencia_fechados) : null
+    progresso: {
+      value: formatNumber(metrics.progresso),
+      trend: null
     },
     pendentes: {
       value: formatNumber(metrics.pendentes),
-      trend: metrics.tendencia_pendentes ? formatTrend(metrics.tendencia_pendentes) : null
+      trend: null
     },
-    atrasados: {
-      value: formatNumber(metrics.atrasados),
-      trend: metrics.tendencia_atrasados ? formatTrend(metrics.tendencia_atrasados) : null
+    resolvidos: {
+      value: formatNumber(metrics.resolvidos),
+      trend: null
     }
   };
 };

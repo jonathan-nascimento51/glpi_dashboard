@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Users, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+// Removed unused imports
 import { MetricsData, LevelMetrics } from '../types';
 
 interface LevelsSectionProps {
@@ -28,7 +28,7 @@ const LevelCard = React.memo<LevelCardProps>(({ level, data, resolucaoRate }) =>
     <div className="card-base p-6 col-span-3 md:col-span-6 lg:col-span-3">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-h3 text-primary">Nível {level}</h3>
+        <h3 className="text-h3 text-primary">{level}</h3>
         <span className="text-meta status-resolved">
           {resolucaoRate}% Resolução
         </span>
@@ -77,10 +77,10 @@ export const LevelsSection = React.memo<LevelsSectionProps>(({ metrics }) => {
 
   // Memoizar as taxas de resolução calculadas
   const resolutionRates = useMemo(() => ({
-    n1: calculateResolutionRate(metrics.niveis.n1),
-    n2: calculateResolutionRate(metrics.niveis.n2),
-    n3: calculateResolutionRate(metrics.niveis.n3),
-    n4: calculateResolutionRate(metrics.niveis.n4)
+    'Manutenção Geral': calculateResolutionRate(metrics.niveis['Manutenção Geral']),
+    'Patrimônio': calculateResolutionRate(metrics.niveis['Patrimônio']),
+    'Atendimento': calculateResolutionRate(metrics.niveis['Atendimento']),
+    'Mecanografia': calculateResolutionRate(metrics.niveis['Mecanografia'])
   }), [metrics.niveis]);
 
   return (
@@ -88,10 +88,10 @@ export const LevelsSection = React.memo<LevelsSectionProps>(({ metrics }) => {
       <div className="col-span-12">
         <h2 className="text-h1 text-primary mb-6">Níveis de Atendimento</h2>
         <div className="grid grid-cols-12 gap-4">
-          <LevelCard level="1" data={metrics.niveis.n1} resolucaoRate={resolutionRates.n1} />
-          <LevelCard level="2" data={metrics.niveis.n2} resolucaoRate={resolutionRates.n2} />
-          <LevelCard level="3" data={metrics.niveis.n3} resolucaoRate={resolutionRates.n3} />
-          <LevelCard level="4" data={metrics.niveis.n4} resolucaoRate={resolutionRates.n4} />
+          <LevelCard level="Manutenção Geral" data={metrics.niveis['Manutenção Geral']} resolucaoRate={resolutionRates['Manutenção Geral']} />
+          <LevelCard level="Patrimônio" data={metrics.niveis['Patrimônio']} resolucaoRate={resolutionRates['Patrimônio']} />
+          <LevelCard level="Atendimento" data={metrics.niveis['Atendimento']} resolucaoRate={resolutionRates['Atendimento']} />
+          <LevelCard level="Mecanografia" data={metrics.niveis['Mecanografia']} resolucaoRate={resolutionRates['Mecanografia']} />
         </div>
       </div>
     </section>

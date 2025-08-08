@@ -3,19 +3,19 @@
 // Métricas por nível
 export interface LevelMetrics {
   novos: number;
-  pendentes: number;
   progresso: number;
+  pendentes: number;
   resolvidos: number;
   total: number;
 }
 
-// Métricas de níveis
+// Níveis de métricas
 export interface NiveisMetrics {
-  n1: LevelMetrics;
-  n2: LevelMetrics;
-  n3: LevelMetrics;
-  n4: LevelMetrics;
-  geral: LevelMetrics;
+  'Manutenção Geral': LevelMetrics;
+  'Patrimônio': LevelMetrics;
+  'Atendimento': LevelMetrics;
+  'Mecanografia': LevelMetrics;
+  geral?: LevelMetrics;
 }
 
 // Tendências
@@ -28,6 +28,11 @@ export interface TendenciasMetrics {
 
 // Métricas do dashboard
 export interface DashboardMetrics {
+  novos: number;
+  pendentes: number;
+  progresso: number;
+  resolvidos: number;
+  total: number;
   niveis: NiveisMetrics;
   tendencias?: TendenciasMetrics;
   filtros_aplicados?: any;
@@ -82,10 +87,12 @@ export interface ApiResponse<T = any> {
 // Erro da API
 export interface ApiError {
   success: false;
-  error: string;
+  error: {
+    message: string;
+    code?: string;
+  };
   details?: any;
-  timestamp?: string;
-  code?: string | number;
+  timestamp: string;
 }
 
 // Resultado da API (união de sucesso e erro)
@@ -190,11 +197,8 @@ export interface UserPreferences {
   };
 }
 
-// Validação de formulário
-export interface ValidationResult {
-  isValid: boolean;
-  errors: Record<string, string[]>;
-}
+// Validação de formulário - usando tipo genérico do dataValidation.ts
+// export interface ValidationResult - removido para evitar conflito com tipo genérico
 
 // Opções de exportação
 export interface ExportOptions {
@@ -236,10 +240,10 @@ export const isValidLevelMetrics = (data: any): data is LevelMetrics => {
 export const isValidNiveisMetrics = (data: any): data is NiveisMetrics => {
   return (
     typeof data === 'object' &&
-    isValidLevelMetrics(data.n1) &&
-    isValidLevelMetrics(data.n2) &&
-    isValidLevelMetrics(data.n3) &&
-    isValidLevelMetrics(data.n4) &&
+    isValidLevelMetrics(data['Manutenção Geral']) &&
+    isValidLevelMetrics(data['Patrimônio']) &&
+    isValidLevelMetrics(data['Atendimento']) &&
+    isValidLevelMetrics(data['Mecanografia']) &&
     isValidLevelMetrics(data.geral)
   );
 };
@@ -258,11 +262,16 @@ export const transformLegacyData = (legacyData: any): DashboardMetrics => {
   // Se os dados já vêm na estrutura correta da API
   if (legacyData?.niveis) {
     return {
+      novos: legacyData.novos || 0,
+      pendentes: legacyData.pendentes || 0,
+      progresso: legacyData.progresso || 0,
+      resolvidos: legacyData.resolvidos || 0,
+      total: legacyData.total || 0,
       niveis: {
-        n1: legacyData.niveis.n1 || defaultLevel,
-        n2: legacyData.niveis.n2 || defaultLevel,
-        n3: legacyData.niveis.n3 || defaultLevel,
-        n4: legacyData.niveis.n4 || defaultLevel,
+        'Manutenção Geral': legacyData.niveis['Manutenção Geral'] || defaultLevel,
+        'Patrimônio': legacyData.niveis['Patrimônio'] || defaultLevel,
+        'Atendimento': legacyData.niveis['Atendimento'] || defaultLevel,
+        'Mecanografia': legacyData.niveis['Mecanografia'] || defaultLevel,
         geral: legacyData.niveis.geral || defaultLevel
       },
       tendencias: legacyData?.tendencias,
@@ -276,11 +285,16 @@ export const transformLegacyData = (legacyData: any): DashboardMetrics => {
 
   // Fallback para dados legados
   return {
+    novos: legacyData?.novos || 0,
+    pendentes: legacyData?.pendentes || 0,
+    progresso: legacyData?.progresso || 0,
+    resolvidos: legacyData?.resolvidos || 0,
+    total: legacyData?.total || 0,
     niveis: {
-      n1: legacyData?.n1 || defaultLevel,
-      n2: legacyData?.n2 || defaultLevel,
-      n3: legacyData?.n3 || defaultLevel,
-      n4: legacyData?.n4 || defaultLevel,
+      'Manutenção Geral': legacyData?.['Manutenção Geral'] || defaultLevel,
+      'Patrimônio': legacyData?.['Patrimônio'] || defaultLevel,
+      'Atendimento': legacyData?.['Atendimento'] || defaultLevel,
+      'Mecanografia': legacyData?.['Mecanografia'] || defaultLevel,
       geral: legacyData?.geral || defaultLevel
     },
     tendencias: legacyData?.tendencias,

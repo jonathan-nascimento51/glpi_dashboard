@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, useTransition } from "react"
+import React, { useState, useEffect, useCallback, useTransition, useMemo } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -18,36 +18,37 @@ import { apiService } from "@/services/api"
 interface NewTicketsListProps {
   className?: string
   limit?: number
+  hideHeader?: boolean
 }
 
 // Configuração de prioridades movida para fora do componente
 const priorityConfig = {
   'Crítica': {
-    color: 'figma-status-badge-red',
+    color: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800',
     icon: '🔴'
   },
   'Muito Alta': {
-    color: 'figma-status-badge-red',
+    color: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800',
     icon: '🔴'
   },
   'Alta': {
-    color: 'figma-priority-badge text-orange-700 dark:text-orange-300',
+    color: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-800',
     icon: '🟠'
   },
   'Média': {
-    color: 'figma-status-badge-yellow',
+    color: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-800',
     icon: '🟡'
   },
   'Baixa': {
-    color: 'figma-status-badge-green',
+    color: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800',
     icon: '🟢'
   },
   'Muito Baixa': {
-    color: 'figma-status-badge-blue',
+    color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800',
     icon: '🔵'
   },
   'Normal': {
-    color: 'figma-status-badge-blue',
+    color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800',
     icon: '🔵'
   }
 }
@@ -59,8 +60,7 @@ const itemVariants = {
     opacity: 1,
     x: 0,
     transition: {
-      duration: 0.3,
-      ease: "easeOut"
+      duration: 0.3
     }
   }
 }
@@ -96,7 +96,7 @@ const formatDate = (dateString: string) => {
 }
 
 // Componente TicketItem memoizado
-const TicketItem = React.memo<{ ticket: NewTicket; index: number }>(({ ticket, index }) => {
+const TicketItem = React.memo<{ ticket: NewTicket; index: number }>(({ ticket, index: _ }) => {
   const priorityConf = useMemo(() => getPriorityConfig(ticket.priority), [ticket.priority])
   const formattedDate = useMemo(() => formatDate(ticket.date), [ticket.date])
   
@@ -122,9 +122,9 @@ const TicketItem = React.memo<{ ticket: NewTicket; index: number }>(({ ticket, i
               <span className="figma-subheading">
                 #{ticket.id}
               </span>
-              <Badge variant="secondary" className="text-xs">
-                NOVO
-              </Badge>
+              <Badge variant="secondary" className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800">
+              NOVO
+            </Badge>
             </div>
             <Button
               variant="ghost"
@@ -145,7 +145,7 @@ const TicketItem = React.memo<{ ticket: NewTicket; index: number }>(({ ticket, i
             </p>
           )}
           
-          <div className="flex items-center justify-between figma-body">
+          <div className="flex items-center justify-between text-sm text-slate-600 dark:text-slate-400">
             <div className="flex items-center gap-1">
               <User className="h-3 w-3" />
               <span className="truncate max-w-24">{ticket.requester}</span>
@@ -163,20 +163,22 @@ const TicketItem = React.memo<{ ticket: NewTicket; index: number }>(({ ticket, i
 
 TicketItem.displayName = 'TicketItem'
 
-export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limit = 8 }) => {
+export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limit = 8, hideHeader = false }) => {
   const [tickets, setTickets] = useState<NewTicket[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [isPending, startTransition] = useTransition()
+  const [, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
+
 
   const fetchTickets = useCallback(async () => {
     try {
       setIsLoading(true)
       setError(null)
       
-      startTransition(async () => {
-        const newTickets = await apiService.getNewTickets(limit)
+      const newTickets = await apiService.getNewTickets(limit)
+      
+      startTransition(() => {
         setTickets(newTickets)
         setLastUpdate(new Date())
         setIsLoading(false)
@@ -225,39 +227,74 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
   )
 
   return (
-    <Card className={cn("figma-tickets-recentes h-full flex flex-col shadow-none", className)}>
-      <CardHeader className="px-5 pt-5 pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="figma-heading-large flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-gradient-to-br shadow-lg from-slate-600 to-slate-700">
-              <AlertCircle className="h-5 w-5 text-white" />
+    <Card className={cn("figma-tickets-recentes flex flex-col shadow-none h-full", className)}>
+      {!hideHeader && (
+        <CardHeader className="px-5 pt-5 pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="figma-heading-large flex items-center gap-2">
+              <div className="p-2 rounded-xl bg-gradient-to-br shadow-lg from-slate-600 to-slate-700">
+                <AlertCircle className="h-5 w-5 text-white" />
+              </div>
+              Tickets Novos
+            </CardTitle>
+            
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="figma-badge-subtle">
+                {ticketsCount} tickets
+              </Badge>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={fetchTickets}
+                disabled={isLoading}
+                className="h-8 w-8 p-0"
+              >
+                <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
+              </Button>
             </div>
-            Tickets Novos
-          </CardTitle>
+          </div>
           
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="figma-badge-subtle">
-              {ticketsCount} tickets
-            </Badge>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={fetchTickets}
-              disabled={isLoading}
-              className="h-8 w-8 p-0"
-            >
-              <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
-            </Button>
+
+          
+
+          
+          {formattedLastUpdate && (
+            <div className="flex items-center gap-1 figma-body mt-2">
+              <Clock className="h-3 w-3" />
+              Atualizado {formattedLastUpdate}
+            </div>
+          )}
+        </CardHeader>
+      )}
+      
+      {hideHeader && (
+        <div className="px-5 pt-3 pb-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="figma-badge-subtle">
+                {ticketsCount} tickets
+              </Badge>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={fetchTickets}
+                disabled={isLoading}
+                className="h-8 w-8 p-0"
+              >
+                <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
+              </Button>
+            </div>
           </div>
+          {formattedLastUpdate && (
+            <div className="flex items-center gap-1 figma-body mt-2">
+              <Clock className="h-3 w-3" />
+              Atualizado {formattedLastUpdate}
+            </div>
+          )}
         </div>
-        
-        {formattedLastUpdate && (
-          <div className="flex items-center gap-1 figma-body">
-            <Clock className="h-3 w-3" />
-            Atualizado {formattedLastUpdate}
-          </div>
-        )}
-      </CardHeader>
+      )}
       
       <CardContent className="px-5 pb-5 pt-0 flex-1 flex flex-col overflow-hidden">
         {isLoading ? (
@@ -265,11 +302,11 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
             {[...Array(4)].map((_, i) => (
               <div key={i} className="animate-pulse">
                 <div className="flex items-start gap-3 p-3 figma-glass-card rounded-lg">
-                  <div className="w-8 h-8 bg-gray-200 rounded-full" />
+                  <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full" />
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-3/4" />
-                    <div className="h-3 bg-gray-200 rounded w-1/2" />
-                    <div className="h-3 bg-gray-200 rounded w-1/4" />
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/4" />
                   </div>
                 </div>
               </div>
@@ -278,8 +315,8 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
         ) : error ? (
           <div className="text-center py-8 flex-1 flex items-center justify-center">
             <div>
-              <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-400" />
-              <div className="text-sm text-red-600 font-medium">{error}</div>
+              <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-400 dark:text-red-500" />
+              <div className="text-sm text-red-600 dark:text-red-400 font-medium">{error}</div>
               <Button 
                 variant="outline" 
                 size="sm" 

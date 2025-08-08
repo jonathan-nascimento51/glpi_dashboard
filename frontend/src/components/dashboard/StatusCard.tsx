@@ -1,8 +1,8 @@
-import React, { memo, useMemo } from "react"
+import { memo, useMemo } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { cn, formatNumber, getStatusColor, getStatusIcon, getTrendIcon, getTrendColor } from "@/lib/utils"
+import { cn, formatNumber, getStatusIcon, getTrendIcon, getTrendColor } from "@/lib/utils"
 import { type LucideIcon } from "lucide-react"
 
 interface StatusCardProps {
@@ -42,16 +42,14 @@ const cardVariants = {
     y: 0,
     scale: 1,
     transition: {
-      duration: 0.5,
-      ease: "easeOut"
+      duration: 0.5
     }
   },
   hover: {
     y: -8,
     scale: 1.03,
     transition: {
-      duration: 0.3,
-      ease: "easeInOut"
+      duration: 0.3
     }
   }
 }
@@ -61,8 +59,7 @@ const iconVariants = {
     scale: 1.2,
     rotate: 10,
     transition: {
-      duration: 0.3,
-      ease: "easeInOut"
+      duration: 0.3
     }
   }
 }
@@ -73,7 +70,6 @@ const numberVariants = {
     scale: 1,
     transition: {
       duration: 0.6,
-      ease: "easeOut",
       delay: 0.2
     }
   }
@@ -86,7 +82,7 @@ export const StatusCard = memo<StatusCardProps>(function StatusCard({
   trend,
   icon,
   className,
-  variant = 'default'
+  variant: _ = 'default'
 }) {
   // Memoizar ícones para evitar recálculos
   const StatusIcon = useMemo(() => 
@@ -163,8 +159,8 @@ export const StatusCard = memo<StatusCardProps>(function StatusCard({
                   className={cn(
                     "flex items-center gap-2 text-sm font-medium px-3 py-1 rounded-full",
                     getTrendColor(trend.direction),
-                    trend.direction === 'up' && "bg-green-100 text-green-700",
-                    trend.direction === 'down' && "bg-red-100 text-red-700",
+                    trend.direction === 'up' && "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400",
+                    trend.direction === 'down' && "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400",
                     trend.direction === 'stable' && "figma-glass-card figma-body"
                   )}
                   whileHover={{ scale: 1.05 }}

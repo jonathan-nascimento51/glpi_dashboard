@@ -36,10 +36,10 @@ export function validateMetrics(data: any): ValidationResult<MetricsData> {
     resolvidos: 0,
     total: 0,
     niveis: {
-      n1: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-      n2: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-      n3: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 },
-      n4: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0 }
+      'Manutenção Geral': { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+      'Patrimônio': { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+      'Atendimento': { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+      'Mecanografia': { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 }
     },
     tendencias: {
       novos: '0',
@@ -230,14 +230,15 @@ function validateLevels(data: any, _errors: string[], warnings: string[]): Metri
     novos: 0,
     pendentes: 0,
     progresso: 0,
-    resolvidos: 0
+    resolvidos: 0,
+    total: 0
   };
 
   const defaultLevels = {
-    n1: { ...defaultLevel },
-    n2: { ...defaultLevel },
-    n3: { ...defaultLevel },
-    n4: { ...defaultLevel }
+    'Manutenção Geral': { ...defaultLevel },
+    'Patrimônio': { ...defaultLevel },
+    'Atendimento': { ...defaultLevel },
+    'Mecanografia': { ...defaultLevel }
   };
 
   if (!data || typeof data !== 'object') {
@@ -246,10 +247,10 @@ function validateLevels(data: any, _errors: string[], warnings: string[]): Metri
   }
 
   return {
-    n1: validateLevel(data.n1, 'n1', warnings),
-    n2: validateLevel(data.n2, 'n2', warnings),
-    n3: validateLevel(data.n3, 'n3', warnings),
-    n4: validateLevel(data.n4, 'n4', warnings)
+    'Manutenção Geral': validateLevel(data['Manutenção Geral'] || data.n1, 'Manutenção Geral', warnings),
+    'Patrimônio': validateLevel(data['Patrimônio'] || data.n2, 'Patrimônio', warnings),
+    'Atendimento': validateLevel(data['Atendimento'] || data.n3, 'Atendimento', warnings),
+    'Mecanografia': validateLevel(data['Mecanografia'] || data.n4, 'Mecanografia', warnings)
   };
 }
 
@@ -261,7 +262,8 @@ function validateLevel(data: any, levelName: string, warnings: string[]): LevelM
     novos: 0,
     pendentes: 0,
     progresso: 0,
-    resolvidos: 0
+    resolvidos: 0,
+    total: 0
   };
 
   if (!data || typeof data !== 'object') {
@@ -273,7 +275,8 @@ function validateLevel(data: any, levelName: string, warnings: string[]): LevelM
     novos: validateNumber(data.novos, `${levelName}.novos`, [], warnings),
     pendentes: validateNumber(data.pendentes, `${levelName}.pendentes`, [], warnings),
     progresso: validateNumber(data.progresso, `${levelName}.progresso`, [], warnings),
-    resolvidos: validateNumber(data.resolvidos, `${levelName}.resolvidos`, [], warnings)
+    resolvidos: validateNumber(data.resolvidos, `${levelName}.resolvidos`, [], warnings),
+    total: validateNumber(data.total, `${levelName}.total`, [], warnings)
   };
 }
 

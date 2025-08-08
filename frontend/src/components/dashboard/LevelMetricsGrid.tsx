@@ -18,29 +18,29 @@ interface LevelMetricsGridProps {
 }
 
 const levelConfig = {
-  n1: {
-    title: "Nível N1",
-    color: "from-slate-600 to-slate-700",
-    bgColor: "bg-slate-100 dark:bg-slate-800",
-    textColor: "text-slate-900 dark:text-slate-100 font-bold"
+  'Manutenção Geral': {
+    title: "Manutenção Geral",
+    color: "from-blue-600 to-blue-700",
+    bgColor: "bg-blue-100 dark:bg-blue-800",
+    textColor: "text-blue-900 dark:text-blue-100 font-bold"
   },
-  n2: {
-    title: "Nível N2",
-    color: "from-slate-700 to-slate-800",
-    bgColor: "bg-slate-100 dark:bg-slate-800",
-    textColor: "text-slate-900 dark:text-slate-100 font-bold"
+  'Patrimônio': {
+    title: "Patrimônio",
+    color: "from-green-600 to-green-700",
+    bgColor: "bg-green-100 dark:bg-green-800",
+    textColor: "text-green-900 dark:text-green-100 font-bold"
   },
-  n3: {
-    title: "Nível N3",
-    color: "from-slate-500 to-slate-600",
-    bgColor: "bg-slate-100 dark:bg-slate-800",
-    textColor: "text-slate-900 dark:text-slate-100 font-bold"
+  'Atendimento': {
+    title: "Atendimento",
+    color: "from-purple-600 to-purple-700",
+    bgColor: "bg-purple-100 dark:bg-purple-800",
+    textColor: "text-purple-900 dark:text-purple-100 font-bold"
   },
-  n4: {
-    title: "Nível N4",
-    color: "from-slate-800 to-slate-900",
-    bgColor: "bg-slate-100 dark:bg-slate-800",
-    textColor: "text-slate-900 dark:text-slate-100 font-bold"
+  'Mecanografia': {
+    title: "Mecanografia",
+    color: "from-orange-600 to-orange-700",
+    bgColor: "bg-orange-100 dark:bg-orange-800",
+    textColor: "text-orange-900 dark:text-orange-100 font-bold"
   }
 }
 
@@ -83,16 +83,14 @@ const itemVariants = {
     y: 0,
     scale: 1,
     transition: {
-      duration: 0.5,
-      ease: "easeOut"
+      duration: 0.5
     }
   },
   hover: {
     y: -8,
     scale: 1.03,
     transition: {
-      duration: 0.3,
-      ease: "easeInOut"
+      duration: 0.3
     }
   }
 }
@@ -102,8 +100,7 @@ const iconVariants = {
     scale: 1.2,
     rotate: 10,
     transition: {
-      duration: 0.3,
-      ease: "easeInOut"
+      duration: 0.3
     }
   }
 }
@@ -112,8 +109,7 @@ const statusVariants = {
   hover: {
     scale: 1.05,
     transition: {
-      duration: 0.2,
-      ease: "easeInOut"
+      duration: 0.2
     }
   }
 }
@@ -149,7 +145,7 @@ const StatusItem = React.memo<{
         className={`text-lg font-bold ${statusConf.color} tabular-nums`}
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
       >
         {value || 0}
       </motion.span>
@@ -164,7 +160,7 @@ const LevelCard = React.memo<{
   config: typeof levelConfig[keyof typeof levelConfig]
 }>(function LevelCard({ level, levelData, config }) {
   const total = useMemo(() => {
-    return Object.values(levelData).reduce((sum, value) => sum + (value || 0), 0)
+    return Object.values(levelData).reduce((sum: number, value) => sum + (Number(value) || 0), 0)
   }, [levelData])
   
   return (
@@ -193,7 +189,7 @@ const LevelCard = React.memo<{
               transition={{ duration: 0.2 }}
             >
               <Badge variant="outline" className={`${config.bgColor} ${config.textColor} border-0 text-sm px-3 py-1.5 font-bold`}>
-                {total}
+                {String(total)}
               </Badge>
             </motion.div>
           </div>

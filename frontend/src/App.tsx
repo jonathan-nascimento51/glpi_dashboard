@@ -1,10 +1,12 @@
-import { useState, useEffect, Profiler } from 'react';
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Header } from './components/Header';
 import { NotificationSystem } from './components/NotificationSystem';
 import DataIntegrityMonitor from './components/DataIntegrityMonitor';
 import PerformanceDashboard from './components/PerformanceDashboard';
 import CacheNotification from './components/CacheNotification';
-import { ModernDashboard } from './components/dashboard/ModernDashboard';
+import { CorporateDashboard } from './components/dashboard/CorporateDashboard';
+import MaintenanceDashboard from './pages/MaintenanceDashboard';
 import { LoadingSpinner, SkeletonMetricsGrid, SkeletonLevelsSection, ErrorState } from './components/LoadingSpinner';
 
 
@@ -14,10 +16,10 @@ import { useDashboard } from './hooks/useDashboard';
 
 import { useFilterPerformance } from './hooks/usePerformanceMonitoring';
 import { useCacheNotifications } from './hooks/useCacheNotifications';
-import { usePerformanceProfiler } from './utils/performanceMonitor';
+
 import { performanceMonitor } from './utils/performanceMonitor';
 import { TicketStatus } from './types';
-import { clearAllCaches } from './services/api';
+
 
 function App() {
   const {
@@ -34,7 +36,7 @@ function App() {
     theme,
     dataIntegrityReport,
     loadData,
-    forceRefresh,
+
     updateFilters,
     search,
     addNotification,
@@ -43,15 +45,13 @@ function App() {
     updateDateRange,
   } = useDashboard();
 
-
-
-
+  // Estado para hora atual que atualiza em tempo real
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   const [showIntegrityMonitor, setShowIntegrityMonitor] = useState(true);
   const [showPerformanceDashboard, setShowPerformanceDashboard] = useState(false);
   
   // Performance monitoring hooks
-  const { onRenderCallback } = usePerformanceProfiler();
   const { measureFilterOperation } = useFilterPerformance();
   
   // Cache notifications
@@ -61,6 +61,15 @@ function App() {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  // Atualizar hora a cada segundo
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   // Apply theme to body element
   useEffect(() => {
@@ -137,69 +146,93 @@ function App() {
         <ErrorState
           title="Erro ao Carregar Dashboard"
           message={error}
-          onRetry={loadData}
+          onRetry={() => loadData()}
         />
       </div>
     );
   }
 
   return (
-    <div className={`h-screen overflow-hidden transition-all duration-300 ${theme}`}>
-      {/* Header */}
-      <Header
-        currentTime={new Date().toLocaleTimeString('pt-BR')}
-        systemActive={true}
-        searchQuery={searchQuery}
-        searchResults={[]}
-        dateRange={filters.dateRange || { startDate: '', endDate: '', label: 'Selecionar período' }}
-        onSearch={search}
-        theme={theme}
-        onThemeChange={changeTheme}
-        onNotification={(title, message, type) => addNotification({ title, message, type, duration: 3000 })}
-        onDateRangeChange={updateDateRange}
-        onPerformanceDashboard={() => setShowPerformanceDashboard(true)}
-      />
+    <Router>
+      <div className={`h-screen overflow-hidden transition-all duration-300 ${theme}`}>
+        {/* Header */}
+        <Header
+          currentTime={currentTime.toLocaleString('pt-BR', {
+            weekday: 'short',
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+          })}
+          systemActive={true}
+          searchQuery={searchQuery}
+          searchResults={[]}
+          dateRange={filters.dateRange || { startDate: '', endDate: '' }}
+          onSearch={search}
+          theme={theme}
+          onThemeChange={changeTheme}
+          onNotification={(title, message, type) => addNotification({ title, message, type, duration: 3000 })}
+          onDateRangeChange={updateDateRange}
+          onPerformanceDashboard={() => setShowPerformanceDashboard(true)}
+        />
 
-
-      
-      {/* Dashboard Principal */}
-      <div className="flex-1 overflow-hidden">
-        {levelMetrics ? (
-          <Profiler id="ModernDashboard" onRender={onRenderCallback}>
-            <ModernDashboard
-              metrics={metrics}
-              levelMetrics={levelMetrics}
-              systemStatus={systemStatus}
-              technicianRanking={technicianRanking}
-              onFilterByStatus={handleFilterByStatus}
-              isLoading={isLoading}
+        {/* Main Content with Routes */}
+        <div className="flex-1 overflow-hidden">
+          <Routes>
+            <Route 
+              path="/" 
+              element={
+                (levelMetrics && metrics) ? (
+                    <CorporateDashboard
+                      metrics={{
+                        ...metrics,
+                        tendencias: metrics.tendencias || {
+                          novos: '0',
+                          pendentes: '0',
+                          progresso: '0',
+                          resolvidos: '0'
+                        }
+                      }}
+                      levelMetrics={levelMetrics}
+                      systemStatus={systemStatus}
+                      technicianRanking={technicianRanking}
+                      onFilterByStatus={handleFilterByStatus}
+                      isLoading={isLoading}
+                    />
+                ) : (
+                  // Fallback para quando não há dados
+                  <div className="h-full bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center">
+                    <div className="text-center py-12">
+                      <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+                        <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        Nenhum dado disponível
+                      </h3>
+                      <p className="text-gray-600 mb-4">
+                        Não foi possível carregar os dados do dashboard.
+                      </p>
+                      <button 
+                        onClick={() => loadData()} 
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        Tentar Novamente
+                      </button>
+                    </div>
+                  </div>
+                )
+              } 
             />
-          </Profiler>
-        ) : (
-          // Fallback para quando não há dados
-          <div className="h-full bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center">
-            <div className="text-center py-12">
-              <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Nenhum dado disponível
-              </h3>
-              <p className="text-gray-600 mb-4">
-                Não foi possível carregar os dados do dashboard.
-              </p>
-              <button 
-                onClick={loadData} 
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Tentar Novamente
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
+            <Route 
+              path="/maintenance" 
+              element={<MaintenanceDashboard />} 
+            />
+          </Routes>
+        </div>
 
       {/* Loading overlay for refresh */}
       {(isLoading && levelMetrics) && (
@@ -255,8 +288,8 @@ function App() {
       ))}
       
 
-
-    </div>
+      </div>
+    </Router>
   );
 };
 

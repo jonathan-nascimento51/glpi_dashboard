@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Search, X, Clock, Calendar, ChevronDown } from 'lucide-react';
 import { Theme, SearchResult } from '../types';
 import { SimpleTechIcon } from './SimpleTechIcon';
@@ -33,7 +33,7 @@ const dateRanges = [
 
 export const Header: React.FC<HeaderProps> = ({
   currentTime,
-  systemActive,
+  // systemActive, // Unused variable
   theme,
   searchQuery,
   searchResults,
@@ -194,7 +194,7 @@ export const Header: React.FC<HeaderProps> = ({
                 Dashboard GLPI
               </h1>
               <p className="figma-subheading text-sm font-medium truncate">
-                Departamento de Tecnologia do Estado
+                Departamento de Manutenção
               </p>
             </div>
           </div>
@@ -305,22 +305,11 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
           
+
           {/* ========== SEÇÃO DIREITA: CONTROLES + STATUS ========== */}
           <div className="flex items-center space-x-4 flex-shrink-0">
             
-            {/* Performance Dashboard Button */}
-            {onPerformanceDashboard && (
-              <button
-                onClick={onPerformanceDashboard}
-                className="btn-secondary flex items-center space-x-2 px-3 py-2 rounded-xl text-sm font-medium hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                title="Abrir Dashboard de Performance"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-                <span>Performance</span>
-              </button>
-            )}
+
 
             {/* Theme Selector */}
             <div className="relative" ref={themeRef}>
@@ -356,9 +345,11 @@ export const Header: React.FC<HeaderProps> = ({
 
 
             {/* Current Time */}
-            <div className="figma-glass-card flex items-center space-x-2 text-sm px-3 py-2 rounded-xl font-mono">
-              <Clock className="w-4 h-4" />
-              <span className="figma-body">{currentTime}</span>
+            <div className="figma-glass-card flex items-center space-x-3 text-sm px-4 py-2 rounded-xl font-mono min-w-0">
+              <Clock className="w-4 h-4 flex-shrink-0" />
+              <div className="flex flex-col leading-tight">
+                <span className="figma-body text-xs font-medium whitespace-nowrap">{currentTime}</span>
+              </div>
             </div>
           </div>
         </div>

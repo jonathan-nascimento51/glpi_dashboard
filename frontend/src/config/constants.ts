@@ -27,83 +27,116 @@ export const API_CONFIG = {
 
 // Configuração de cache
 export const CACHE_CONFIG: CacheConfig = {
-  enabled: true,
   ttl: 300000, // 5 minutos
-  maxSize: 100,
-  strategy: 'lru'
+  maxSize: 100
 };
 
 // Configuração padrão da aplicação
 export const DEFAULT_APP_CONFIG: AppConfig = {
-  theme: 'light',
-  language: 'pt-BR',
-  autoRefresh: true,
+  apiBaseUrl: 'http://localhost:8000/api',
   refreshInterval: 30000, // 30 segundos
-  showPerformanceMetrics: false,
-  enableNotifications: true,
-  dateFormat: 'DD/MM/YYYY',
-  timeFormat: '24h',
-  timezone: 'America/Sao_Paulo'
+  cacheConfig: {
+    ttl: 300000,
+    maxSize: 100
+  },
+  enablePerformanceMonitoring: false,
+  enableErrorReporting: true
 };
 
 // Preferências padrão do usuário
 export const DEFAULT_USER_PREFERENCES: UserPreferences = {
   theme: 'light',
   language: 'pt-BR',
-  dateFormat: 'DD/MM/YYYY',
-  timeFormat: '24h',
-  autoRefresh: true,
   refreshInterval: 30000,
-  showPerformanceMetrics: false,
-  enableNotifications: true,
-  dashboardLayout: 'grid',
-  chartsEnabled: true,
-  soundEnabled: false,
-  emailNotifications: false
+  notifications: {
+    enabled: true,
+    types: ['success', 'error', 'warning', 'info']
+  },
+  dashboard: {
+    defaultView: 'cards',
+    autoRefresh: true,
+    showTrends: true
+  }
 };
 
 // Temas disponíveis
 export const THEMES: Record<string, Theme> = {
   light: {
     name: 'light',
-    displayName: 'Claro',
     colors: {
       primary: '#3B82F6',
       secondary: '#6B7280',
       success: '#10B981',
       warning: '#F59E0B',
       error: '#EF4444',
+      info: '#06B6D4',
       background: '#FFFFFF',
       surface: '#F9FAFB',
       text: '#111827'
+    },
+    spacing: {
+      xs: '0.25rem',
+      sm: '0.5rem',
+      md: '1rem',
+      lg: '1.5rem',
+      xl: '2rem'
+    },
+    borderRadius: {
+      sm: '0.25rem',
+      md: '0.5rem',
+      lg: '0.75rem'
     }
   },
   dark: {
     name: 'dark',
-    displayName: 'Escuro',
     colors: {
       primary: '#60A5FA',
       secondary: '#9CA3AF',
       success: '#34D399',
       warning: '#FBBF24',
       error: '#F87171',
+      info: '#22D3EE',
       background: '#111827',
       surface: '#1F2937',
       text: '#F9FAFB'
+    },
+    spacing: {
+      xs: '0.25rem',
+      sm: '0.5rem',
+      md: '1rem',
+      lg: '1.5rem',
+      xl: '2rem'
+    },
+    borderRadius: {
+      sm: '0.25rem',
+      md: '0.5rem',
+      lg: '0.75rem'
     }
   },
   system: {
     name: 'system',
-    displayName: 'Sistema',
     colors: {
       primary: '#3B82F6',
       secondary: '#6B7280',
       success: '#10B981',
       warning: '#F59E0B',
       error: '#EF4444',
+      info: '#06B6D4',
       background: '#FFFFFF',
       surface: '#F9FAFB',
       text: '#111827'
+    },
+    spacing: {
+      xs: '0.25rem',
+      sm: '0.5rem',
+      md: '1rem',
+      lg: '1.5rem',
+      xl: '2rem'
+    },
+    borderRadius: {
+      sm: '0.25rem',
+      md: '0.5rem',
+      lg: '0.75rem'
     }
   }
 };
@@ -129,19 +162,18 @@ export const PRIORITY_OPTIONS = [
 // Opções de nível
 export const LEVEL_OPTIONS = [
   { value: '', label: 'Todos' },
-  { value: 'N1', label: 'Nível 1' },
-  { value: 'N2', label: 'Nível 2' },
-  { value: 'N3', label: 'Nível 3' },
-  { value: 'N4', label: 'Nível 4' }
+  { value: 'Manutenção Geral', label: 'Manutenção Geral' },
+  { value: 'Patrimônio', label: 'Patrimônio' },
+  { value: 'Atendimento', label: 'Atendimento' },
+  { value: 'Mecanografia', label: 'Mecanografia' }
 ] as const;
 
 // Configurações de exportação
 export const EXPORT_OPTIONS: ExportOptions = {
-  formats: ['pdf', 'excel', 'csv'],
-  includeCharts: true,
+  format: 'csv',
   includeFilters: true,
-  includeMetadata: true,
-  dateRange: true
+  includeTimestamp: true,
+  filename: 'dashboard-export'
 };
 
 // Configurações de performance
@@ -190,7 +222,7 @@ export const ERROR_MESSAGES = {
 
 // Configurações de debug
 export const DEBUG_CONFIG = {
-  ENABLED: import.meta.env.DEV,
+  ENABLED: import.meta.env.DEV || false,
   LOG_LEVEL: import.meta.env.VITE_LOG_LEVEL || 'info',
   SHOW_PERFORMANCE: import.meta.env.VITE_SHOW_PERFORMANCE === 'true',
   SHOW_API_CALLS: import.meta.env.VITE_SHOW_API_CALLS === 'true',

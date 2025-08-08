@@ -95,8 +95,7 @@ const cardVariants = {
     y: 0,
     scale: 1,
     transition: {
-      duration: 0.5,
-      ease: "easeOut"
+      duration: 0.5
     }
   },
   hover: {
@@ -104,22 +103,12 @@ const cardVariants = {
     scale: 1.01,
     zIndex: 5,
     transition: {
-      duration: 0.3,
-      ease: "easeOut"
+      duration: 0.3
     }
   }
 }
 
-const iconVariants = {
-  hover: {
-    scale: 1.3,
-    rotate: 15,
-    transition: {
-      duration: 0.2,
-      ease: "easeOut"
-    }
-  }
-}
+
 
 // Componente TechnicianCard memoizado
 const TechnicianCard = React.memo<{
@@ -231,7 +220,7 @@ const TechnicianCard = React.memo<{
 
 export const RankingTable = React.memo<RankingTableProps>(function RankingTable({ 
   data, 
-  title = "Ranking de Técnicos", 
+  title: _ = "Ranking de Técnicos", 
   className 
 }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)

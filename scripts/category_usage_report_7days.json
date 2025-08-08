@@ -1,0 +1,628 @@
+{
+  "generated_at": "2025-08-08T04:08:10.490832",
+  "period_days": 7,
+  "summary": {
+    "total_categories": 102,
+    "categories_with_tickets": 2,
+    "categories_without_tickets": 100,
+    "total_tickets": 2
+  },
+  "categories_with_usage": [
+    {
+      "id": "35",
+      "name": "Desentupimento",
+      "complete_name": "Manutenção > Hidráulica > Desentupimento",
+      "level": 3,
+      "ticket_count": 1
+    },
+    {
+      "id": "90",
+      "name": "Readequação Rede Lógica",
+      "complete_name": "Manutenção > Rede Computadores > Readequação Rede Lógica",
+      "level": 3,
+      "ticket_count": 1
+    }
+  ],
+  "categories_without_usage": [
+    {
+      "id": 1,
+      "name": "Ar Condicionado",
+      "complete_name": "Manutenção > Ar Condicionado",
+      "level": 2
+    },
+    {
+      "id": 2,
+      "name": "Conserto",
+      "complete_name": "Manutenção > Ar Condicionado > Conserto",
+      "level": 3
+    },
+    {
+      "id": 3,
+      "name": "Desinstalação",
+      "complete_name": "Manutenção > Ar Condicionado > Desinstalação",
+      "level": 3
+    },
+    {
+      "id": 4,
+      "name": "Instalação",
+      "complete_name": "Manutenção > Ar Condicionado > Instalação",
+      "level": 3
+    },
+    {
+      "id": 6,
+      "name": "Remanejo",
+      "complete_name": "Manutenção > Ar Condicionado > Remanejo",
+      "level": 3
+    },
+    {
+      "id": 7,
+      "name": "Outras atividades",
+      "complete_name": "Manutenção > Ar Condicionado > Outras atividades",
+      "level": 3
+    },
+    {
+      "id": 22,
+      "name": "Elétrica",
+      "complete_name": "Manutenção > Elétrica",
+      "level": 2
+    },
+    {
+      "id": 23,
+      "name": "Conserto",
+      "complete_name": "Manutenção > Elétrica > Conserto",
+      "level": 3
+    },
+    {
+      "id": 24,
+      "name": "Instalação",
+      "complete_name": "Manutenção > Elétrica > Instalação",
+      "level": 3
+    },
+    {
+      "id": 25,
+      "name": "Remoção",
+      "complete_name": "Manutenção > Elétrica > Remoção",
+      "level": 3
+    },
+    {
+      "id": 26,
+      "name": "Readequação",
+      "complete_name": "Manutenção > Elétrica > Readequação",
+      "level": 3
+    },
+    {
+      "id": 27,
+      "name": "Troca",
+      "complete_name": "Manutenção > Elétrica > Troca",
+      "level": 3
+    },
+    {
+      "id": 28,
+      "name": "Descarte",
+      "complete_name": "Manutenção > Elétrica > Descarte",
+      "level": 3
+    },
+    {
+      "id": 29,
+      "name": "Suporte",
+      "complete_name": "Manutenção > Elétrica > Suporte",
+      "level": 3
+    },
+    {
+      "id": 30,
+      "name": "Hidráulica",
+      "complete_name": "Manutenção > Hidráulica",
+      "level": 2
+    },
+    {
+      "id": 31,
+      "name": "Reparo/Conserto",
+      "complete_name": "Manutenção > Hidráulica > Reparo/Conserto",
+      "level": 3
+    },
+    {
+      "id": 32,
+      "name": "Instalação",
+      "complete_name": "Manutenção > Hidráulica > Instalação",
+      "level": 3
+    },
+    {
+      "id": 33,
+      "name": "Remoção",
+      "complete_name": "Manutenção > Hidráulica > Remoção",
+      "level": 3
+    },
+    {
+      "id": 34,
+      "name": "Troca",
+      "complete_name": "Manutenção > Hidráulica > Troca",
+      "level": 3
+    },
+    {
+      "id": 35,
+      "name": "Desentupimento",
+      "complete_name": "Manutenção > Hidráulica > Desentupimento",
+      "level": 3
+    },
+    {
+      "id": 36,
+      "name": "Plantação",
+      "complete_name": "Conservação > Jardinagem > Plantação",
+      "level": 3
+    },
+    {
+      "id": 37,
+      "name": "Jardinagem",
+      "complete_name": "Conservação > Jardinagem",
+      "level": 2
+    },
+    {
+      "id": 38,
+      "name": "Poda/Corte",
+      "complete_name": "Conservação > Jardinagem > Poda/Corte",
+      "level": 3
+    },
+    {
+      "id": 39,
+      "name": "Remoção",
+      "complete_name": "Conservação > Jardinagem > Remoção",
+      "level": 3
+    },
+    {
+      "id": 40,
+      "name": "Outras Atividades",
+      "complete_name": "Conservação > Jardinagem > Outras Atividades",
+      "level": 3
+    },
+    {
+      "id": 45,
+      "name": "Limpeza",
+      "complete_name": "Conservação > Limpeza",
+      "level": 2
+    },
+    {
+      "id": 46,
+      "name": "Limpeza de banheiros",
+      "complete_name": "Conservação > Limpeza > Limpeza de banheiros",
+      "level": 3
+    },
+    {
+      "id": 47,
+      "name": "Limpeza geral",
+      "complete_name": "Conservação > Limpeza > Limpeza geral",
+      "level": 3
+    },
+    {
+      "id": 48,
+      "name": "Outras Atividades",
+      "complete_name": "Conservação > Limpeza > Outras Atividades",
+      "level": 3
+    },
+    {
+      "id": 49,
+      "name": "Recolher materiais recicláveis",
+      "complete_name": "Conservação > Limpeza > Recolher materiais recicláveis",
+      "level": 3
+    },
+    {
+      "id": 50,
+      "name": "Marcenaria",
+      "complete_name": "Manutenção > Marcenaria",
+      "level": 2
+    },
+    {
+      "id": 51,
+      "name": "Confecção de Mobiliário",
+      "complete_name": "Manutenção > Marcenaria > Confecção de Mobiliário",
+      "level": 3
+    },
+    {
+      "id": 52,
+      "name": "Conserto de Mobiliário",
+      "complete_name": "Manutenção > Marcenaria > Conserto de Mobiliário",
+      "level": 3
+    },
+    {
+      "id": 53,
+      "name": "Remanejo de Mobiliário",
+      "complete_name": "Manutenção > Marcenaria > Remanejo de Mobiliário",
+      "level": 3
+    },
+    {
+      "id": 54,
+      "name": "Outras Atividades",
+      "complete_name": "Manutenção > Marcenaria > Outras Atividades",
+      "level": 3
+    },
+    {
+      "id": 55,
+      "name": "Carregadores",
+      "complete_name": "Conservação > Carregadores",
+      "level": 2
+    },
+    {
+      "id": 56,
+      "name": "Movimentação de Insumos",
+      "complete_name": "Conservação > Carregadores > Movimentação de Insumos",
+      "level": 3
+    },
+    {
+      "id": 57,
+      "name": "Recolhimento",
+      "complete_name": "Conservação > Carregadores > Recolhimento",
+      "level": 3
+    },
+    {
+      "id": 58,
+      "name": "Substituição",
+      "complete_name": "Conservação > Carregadores > Substituição",
+      "level": 3
+    },
+    {
+      "id": 81,
+      "name": "Pedreiro",
+      "complete_name": "Pedreiro",
+      "level": 1
+    },
+    {
+      "id": 82,
+      "name": "Instalação",
+      "complete_name": "Pedreiro > Instalação",
+      "level": 2
+    },
+    {
+      "id": 83,
+      "name": "Remoção",
+      "complete_name": "Pedreiro > Remoção",
+      "level": 2
+    },
+    {
+      "id": 85,
+      "name": "Pintura",
+      "complete_name": "Manutenção > Pintura",
+      "level": 2
+    },
+    {
+      "id": 86,
+      "name": "Parede",
+      "complete_name": "Manutenção > Pintura > Parede",
+      "level": 3
+    },
+    {
+      "id": 87,
+      "name": "Outros",
+      "complete_name": "Manutenção > Pintura > Outros",
+      "level": 3
+    },
+    {
+      "id": 88,
+      "name": "Rede Computadores",
+      "complete_name": "Manutenção > Rede Computadores",
+      "level": 2
+    },
+    {
+      "id": 89,
+      "name": "Instalação de Rede Lógica",
+      "complete_name": "Manutenção > Rede Computadores > Instalação de Rede Lógica",
+      "level": 3
+    },
+    {
+      "id": 90,
+      "name": "Readequação Rede Lógica",
+      "complete_name": "Manutenção > Rede Computadores > Readequação Rede Lógica",
+      "level": 3
+    },
+    {
+      "id": 91,
+      "name": "Conserto Rede Lógica",
+      "complete_name": "Manutenção > Rede Computadores > Conserto Rede Lógica",
+      "level": 3
+    },
+    {
+      "id": 92,
+      "name": "Organização de Cabeamento",
+      "complete_name": "Manutenção > Rede Computadores > Organização de Cabeamento",
+      "level": 3
+    },
+    {
+      "id": 93,
+      "name": "Saída de Bens Materiais",
+      "complete_name": "Saída de Bens Materiais",
+      "level": 1
+    },
+    {
+      "id": 94,
+      "name": "Vidraçaria",
+      "complete_name": "Manutenção > Vidraçaria",
+      "level": 2
+    },
+    {
+      "id": 95,
+      "name": "Serralheria",
+      "complete_name": "Serralheria",
+      "level": 1
+    },
+    {
+      "id": 98,
+      "name": "Copa",
+      "complete_name": "Conservação > Copa",
+      "level": 2
+    },
+    {
+      "id": 99,
+      "name": "Conservação",
+      "complete_name": "Conservação",
+      "level": 1
+    },
+    {
+      "id": 100,
+      "name": "Higienização",
+      "complete_name": "Manutenção > Ar Condicionado > Higienização",
+      "level": 3
+    },
+    {
+      "id": 101,
+      "name": "Descarte",
+      "complete_name": "Conservação > Carregadores > Descarte",
+      "level": 3
+    },
+    {
+      "id": 102,
+      "name": "Movimentação Equipamentos",
+      "complete_name": "Conservação > Carregadores > Movimentação Equipamentos",
+      "level": 3
+    },
+    {
+      "id": 103,
+      "name": "Movimentação Mobiliário",
+      "complete_name": "Conservação > Carregadores > Movimentação Mobiliário",
+      "level": 3
+    },
+    {
+      "id": 104,
+      "name": "Manutenção",
+      "complete_name": "Manutenção",
+      "level": 1
+    },
+    {
+      "id": 105,
+      "name": "Agua",
+      "complete_name": "Conservação > Copa > Agua",
+      "level": 3
+    },
+    {
+      "id": 106,
+      "name": "Café",
+      "complete_name": "Conservação > Copa > Café",
+      "level": 3
+    },
+    {
+      "id": 107,
+      "name": "Limpar louça de salas",
+      "complete_name": "Conservação > Copa > Limpar louça de salas",
+      "level": 3
+    },
+    {
+      "id": 108,
+      "name": "Recolher e Limpar Louças Sala de Reunião",
+      "complete_name": "Conservação > Copa > Recolher e Limpar Louças Sala de Reunião",
+      "level": 3
+    },
+    {
+      "id": 109,
+      "name": "Repor Café,Agua Sala de reunião",
+      "complete_name": "Conservação > Copa > Repor Café,Agua Sala de reunião",
+      "level": 3
+    },
+    {
+      "id": 110,
+      "name": "Repor Louça de salas",
+      "complete_name": "Conservação > Copa > Repor Louça de salas",
+      "level": 3
+    },
+    {
+      "id": 111,
+      "name": "Vazamento",
+      "complete_name": "Manutenção > Hidráulica > Vazamento",
+      "level": 3
+    },
+    {
+      "id": 112,
+      "name": "Manutenção de folhagens internas",
+      "complete_name": "Conservação > Jardinagem > Manutenção de folhagens internas",
+      "level": 3
+    },
+    {
+      "id": 113,
+      "name": "Varrição",
+      "complete_name": "Conservação > Jardinagem > Varrição",
+      "level": 3
+    },
+    {
+      "id": 114,
+      "name": "Descarte",
+      "complete_name": "Conservação > Jardinagem > Descarte",
+      "level": 3
+    },
+    {
+      "id": 115,
+      "name": "Retirada de Inço (gramas e canteiros)",
+      "complete_name": "Conservação > Jardinagem > Retirada de Inço (gramas e canteiros)",
+      "level": 3
+    },
+    {
+      "id": 116,
+      "name": "Cri-Cri",
+      "complete_name": "Conservação > Jardinagem > Cri-Cri",
+      "level": 3
+    },
+    {
+      "id": 117,
+      "name": "Irrigar/Molhar",
+      "complete_name": "Conservação > Jardinagem > Irrigar/Molhar",
+      "level": 3
+    },
+    {
+      "id": 118,
+      "name": "Lava a Jato",
+      "complete_name": "Conservação > Limpeza > Lava a Jato",
+      "level": 3
+    },
+    {
+      "id": 119,
+      "name": "Bandeirante",
+      "complete_name": "Conservação > Limpeza > Bandeirante",
+      "level": 3
+    },
+    {
+      "id": 120,
+      "name": "Janelas e Portas",
+      "complete_name": "Conservação > Limpeza > Janelas e Portas",
+      "level": 3
+    },
+    {
+      "id": 121,
+      "name": "Recolher Lixo Orgânico",
+      "complete_name": "Conservação > Limpeza > Recolher Lixo Orgânico",
+      "level": 3
+    },
+    {
+      "id": 122,
+      "name": "Reposição Papel Higiênico",
+      "complete_name": "Conservação > Limpeza > Reposição Papel Higiênico",
+      "level": 3
+    },
+    {
+      "id": 123,
+      "name": "Reposição Papel Toalha",
+      "complete_name": "Conservação > Limpeza > Reposição Papel Toalha",
+      "level": 3
+    },
+    {
+      "id": 124,
+      "name": "Reposição de Sabonete",
+      "complete_name": "Conservação > Limpeza > Reposição de Sabonete",
+      "level": 3
+    },
+    {
+      "id": 125,
+      "name": "Varrição",
+      "complete_name": "Conservação > Limpeza > Varrição",
+      "level": 3
+    },
+    {
+      "id": 126,
+      "name": "Descarte Lixo Orgânico",
+      "complete_name": "Conservação > Limpeza > Descarte Lixo Orgânico",
+      "level": 3
+    },
+    {
+      "id": 127,
+      "name": "Conserto de Aberturas",
+      "complete_name": "Manutenção > Marcenaria > Conserto de Aberturas",
+      "level": 3
+    },
+    {
+      "id": 128,
+      "name": "Mensageria",
+      "complete_name": "Conservação > Mensageria",
+      "level": 2
+    },
+    {
+      "id": 129,
+      "name": "Movimentação Documentos",
+      "complete_name": "Conservação > Mensageria > Movimentação Documentos",
+      "level": 3
+    },
+    {
+      "id": 130,
+      "name": "Movimentação Insumos até 5Kg",
+      "complete_name": "Conservação > Mensageria > Movimentação Insumos até 5Kg",
+      "level": 3
+    },
+    {
+      "id": 131,
+      "name": "Movimentação Materiais até 5Kg",
+      "complete_name": "Conservação > Mensageria > Movimentação Materiais até 5Kg",
+      "level": 3
+    },
+    {
+      "id": 132,
+      "name": "Outras entregas e Movimentações até 5Kg",
+      "complete_name": "Conservação > Mensageria > Outras entregas e Movimentações até 5Kg",
+      "level": 3
+    },
+    {
+      "id": 133,
+      "name": "Montagem/Desmontagem",
+      "complete_name": "Pedreiro > Montagem/Desmontagem",
+      "level": 2
+    },
+    {
+      "id": 134,
+      "name": "Reparo",
+      "complete_name": "Pedreiro > Reparo",
+      "level": 2
+    },
+    {
+      "id": 135,
+      "name": "Reparo de pedras portuguesas",
+      "complete_name": "Pedreiro > Reparo de pedras portuguesas",
+      "level": 2
+    },
+    {
+      "id": 136,
+      "name": "Aberturas",
+      "complete_name": "Manutenção > Pintura > Aberturas",
+      "level": 3
+    },
+    {
+      "id": 137,
+      "name": "Forro",
+      "complete_name": "Manutenção > Pintura > Forro",
+      "level": 3
+    },
+    {
+      "id": 138,
+      "name": "Mobiliário",
+      "complete_name": "Manutenção > Pintura > Mobiliário",
+      "level": 3
+    },
+    {
+      "id": 139,
+      "name": "Vidro",
+      "complete_name": "Manutenção > Vidraçaria > Vidro",
+      "level": 3
+    },
+    {
+      "id": 140,
+      "name": "Janelas",
+      "complete_name": "Manutenção > Vidraçaria > Janelas",
+      "level": 3
+    },
+    {
+      "id": 141,
+      "name": "Divisórias de vidro",
+      "complete_name": "Manutenção > Vidraçaria > Divisórias de vidro",
+      "level": 3
+    },
+    {
+      "id": 142,
+      "name": "Outros",
+      "complete_name": "Manutenção > Vidraçaria > Outros",
+      "level": 3
+    },
+    {
+      "id": 143,
+      "name": "Servente",
+      "complete_name": "Manutenção > Servente",
+      "level": 2
+    },
+    {
+      "id": 144,
+      "name": "Projetos",
+      "complete_name": "Manutenção > Projetos",
+      "level": 2
+    }
+  ]
+}
