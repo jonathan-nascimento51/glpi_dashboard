@@ -179,7 +179,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {paint.map((entry, index) => (
                 <MetricCard
-                  key={index}
+                  key={`paint-metric-${index}`}
                   title={entry.name}
                   value={entry.startTime}
                   description={`Tempo para ${entry.name}`}

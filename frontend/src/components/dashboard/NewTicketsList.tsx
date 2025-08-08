@@ -14,6 +14,7 @@ import {
 import { NewTicket } from "@/types"
 import { cn, formatRelativeTime } from "@/lib/utils"
 import { apiService } from "@/services/api"
+import { useThrottledCallback } from "@/hooks/useDebounce"
 
 interface NewTicketsListProps {
   className?: string
@@ -170,7 +171,7 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
   const [error, setError] = useState<string | null>(null)
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
 
-  const fetchTickets = useCallback(async () => {
+  const fetchTickets = useThrottledCallback(async () => {
     try {
       setIsLoading(true)
       setError(null)
@@ -186,7 +187,7 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
       setError('Erro ao carregar tickets')
       setIsLoading(false)
     }
-  }, [limit])
+  }, 2000) // 2 second throttle
 
   useEffect(() => {
     fetchTickets()

@@ -69,7 +69,7 @@ export const SkeletonMetricsGrid: React.FC = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {Array.from({ length: 4 }).map((_, index) => (
-        <SkeletonCard key={index} />
+        <SkeletonCard key={`metrics-skeleton-${index}`} />
       ))}
     </div>
   );
@@ -89,7 +89,7 @@ export const SkeletonLevelsSection: React.FC = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {Array.from({ length: 4 }).map((_, index) => (
-          <SkeletonCard key={index} />
+          <SkeletonCard key={`levels-skeleton-${index}`} />
         ))}
       </div>
       

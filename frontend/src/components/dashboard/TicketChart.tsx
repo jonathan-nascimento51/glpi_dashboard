@@ -70,7 +70,7 @@ export function TicketChart({
         <div className="figma-glass-card rounded-lg p-3 shadow-none">
           <p className="figma-body font-medium">{label}</p>
           {payload.map((entry: any, index: number) => (
-            <p key={index} className="text-sm" style={{ color: entry.color }}>
+            <p key={`tooltip-entry-${index}`} className="text-sm" style={{ color: entry.color }}>
               {entry.name}: <span className="font-semibold">{entry.value}</span>
             </p>
           ))}
@@ -131,7 +131,7 @@ export function TicketChart({
                 dataKey="value"
               >
                 {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                  <Cell key={`pie-cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip />} />

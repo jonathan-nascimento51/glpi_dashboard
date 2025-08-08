@@ -2,6 +2,7 @@ import React, { useState, useEffect, useTransition } from 'react';
 import { MetricsData, TechnicianRanking, NewTicket } from '../types';
 import { DateRange } from '../types/dashboard';
 import { apiService } from '../services/api';
+import { useThrottledCallback } from '../hooks/useDebounce';
 import { 
   BarChart3, 
   Clock, 
@@ -152,23 +153,25 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
     return () => clearInterval(interval);
   }, []);
 
+  // Throttled function to prevent excessive API calls
+  const throttledFetchNewTickets = useThrottledCallback(async () => {
+    setTicketsLoading(true);
+    try {
+      startTransition(async () => {
+        const tickets = await apiService.getNewTickets(8);
+        setNewTickets(tickets);
+        setTicketsLoading(false);
+      });
+    } catch (error) {
+      console.error('Erro ao buscar tickets novos:', error);
+      setTicketsLoading(false);
+    }
+  }, 2000); // 2 second throttle
+
   // Fetch recent tickets - OTIMIZADO para reduzir recarregamentos
   useEffect(() => {
-    const fetchNewTickets = async () => {
-      setTicketsLoading(true);
-      try {
-        startTransition(async () => {
-          const tickets = await apiService.getNewTickets(8);
-          setNewTickets(tickets);
-          setTicketsLoading(false);
-        });
-      } catch (error) {
-        console.error('Erro ao buscar tickets novos:', error);
-        setTicketsLoading(false);
-      }
-    };
 
-    fetchNewTickets();
+    throttledFetchNewTickets();
     
     // CORREÇÃO: Aumentado para 5 minutos e adicionado controle de interação
     const interval = setInterval(() => {
@@ -186,7 +189,7 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
       // Só atualiza se não houver interação recente (últimos 2 minutos)
       if (timeSinceInteraction > 120000) {
         console.log('🎫 Atualizando tickets novos no Professional Dashboard');
-        fetchNewTickets();
+        throttledFetchNewTickets();
       } else {
         console.log('⏸️ Atualização de tickets pausada no Professional Dashboard');
       }

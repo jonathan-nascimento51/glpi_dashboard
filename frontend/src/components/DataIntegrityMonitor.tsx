@@ -118,13 +118,13 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
                   Status: {report.metrics.isValid ? 'Válido' : 'Inválido'}
                 </div>
                 {report.metrics.errors.map((error, index) => (
-                  <div key={index} className="text-xs text-red-600 flex items-start space-x-1">
+                  <div key={`metrics-error-${index}`} className="text-xs text-red-600 flex items-start space-x-1">
                     <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
                     <span>{error}</span>
                   </div>
                 ))}
                 {report.metrics.warnings.map((warning, index) => (
-                  <div key={index} className="text-xs text-yellow-600 flex items-start space-x-1">
+                  <div key={`metrics-warning-${index}`} className="text-xs text-yellow-600 flex items-start space-x-1">
                     <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
                     <span>{warning}</span>
                   </div>
@@ -144,13 +144,13 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
                   Status: {report.systemStatus.isValid ? 'Válido' : 'Inválido'}
                 </div>
                 {report.systemStatus.errors.map((error, index) => (
-                  <div key={index} className="text-xs text-red-600 flex items-start space-x-1">
+                  <div key={`system-error-${index}`} className="text-xs text-red-600 flex items-start space-x-1">
                     <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
                     <span>{error}</span>
                   </div>
                 ))}
                 {report.systemStatus.warnings.map((warning, index) => (
-                  <div key={index} className="text-xs text-yellow-600 flex items-start space-x-1">
+                  <div key={`system-warning-${index}`} className="text-xs text-yellow-600 flex items-start space-x-1">
                     <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
                     <span>{warning}</span>
                   </div>
@@ -173,13 +173,13 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
                   Técnicos válidos: {report.technicianRanking.data.length}
                 </div>
                 {report.technicianRanking.errors.map((error, index) => (
-                  <div key={index} className="text-xs text-red-600 flex items-start space-x-1">
+                  <div key={`ranking-error-${index}`} className="text-xs text-red-600 flex items-start space-x-1">
                     <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
                     <span>{error}</span>
                   </div>
                 ))}
                 {report.technicianRanking.warnings.map((warning, index) => (
-                  <div key={index} className="text-xs text-yellow-600 flex items-start space-x-1">
+                  <div key={`ranking-warning-${index}`} className="text-xs text-yellow-600 flex items-start space-x-1">
                     <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
                     <span>{warning}</span>
                   </div>

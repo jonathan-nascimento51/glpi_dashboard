@@ -153,8 +153,15 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
   const [cacheStatus, setCacheStatus] = useState<CacheConfig | null>(null);
   const [filters, setFilters] = useState<FilterParams>(initialFilters);
   const [theme, setTheme] = useState<Theme>((localStorage.getItem('theme') as Theme) || 'light');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isPending, startTransition] = useTransition();
   const { measureApiCall } = useApiPerformance();
+
+  // Throttled date range update to prevent rapid API calls
+  const throttledLoadData = useThrottledCallback(async (filters: FilterParams) => {
+    await loadData(filters);
+  }, 200);
 
   const loadData = useCallback(async (newFilters?: FilterParams) => {
     const filtersToUse = newFilters || filters;
@@ -255,8 +262,8 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     isPending,
     error,
     notifications: [],
-    searchQuery: '',
-    searchResults: [],
+    searchQuery,
+    searchResults,
     filters,
     theme,
     dataIntegrityReport: null,
@@ -268,7 +275,20 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
       setFilters(updatedFilters);
       loadData(updatedFilters);
     },
-    search: () => {},
+    search: useDebouncedCallback(async (query: string) => {
+      setSearchQuery(query);
+      if (query.trim()) {
+        try {
+          const results = await apiService.search(query);
+          setSearchResults(results);
+        } catch (error) {
+          console.error('Erro na busca:', error);
+          setSearchResults([]);
+        }
+      } else {
+        setSearchResults([]);
+      }
+    }, 300),
     addNotification: () => {},
     removeNotification: () => {},
     changeTheme: (newTheme: Theme) => {
@@ -280,7 +300,8 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
       const updatedFilters = { ...filters, dateRange };
       console.log('🔄 Filtros atualizados:', updatedFilters);
       setFilters(updatedFilters);
-      loadData(updatedFilters);
+      // Use throttled load to prevent rapid API calls
+      throttledLoadData(updatedFilters);
     },
     refreshData: loadData,
     lastUpdated,

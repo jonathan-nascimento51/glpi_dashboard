@@ -128,7 +128,7 @@ const StatusItem = React.memo<{
   
   return (
     <motion.div
-      key={status}
+key={`status-item-${status}`}
       variants={statusVariants}
       whileHover="hover"
       className="flex items-center justify-between p-4 rounded-lg figma-glass-card min-h-[60px] border border-gray-100/50 dark:border-gray-800/50 cursor-pointer"
@@ -169,7 +169,7 @@ const LevelCard = React.memo<{
   
   return (
     <motion.div
-      key={level}
+      key={`level-motion-${level}`}
       variants={itemVariants}
       initial="hidden"
       animate="visible"
@@ -206,7 +206,7 @@ const LevelCard = React.memo<{
               
               return (
                 <StatusItem
-                  key={status}
+                  key={`level-${level}-${status}`}
                   status={status}
                   statusConf={statusConf}
                   value={value}
@@ -268,7 +268,7 @@ export const LevelMetricsGrid = React.memo<LevelMetricsGridProps>(function Level
           
           return (
             <LevelCard
-              key={level}
+              key={`level-card-${level}`}
               level={level}
               levelData={levelData}
               config={config}

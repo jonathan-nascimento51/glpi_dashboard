@@ -238,7 +238,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
               <h4 className="text-xs font-medium text-slate-300 uppercase tracking-wide">Períodos Rápidos</h4>
               {predefinedRanges.map((range, index) => (
                 <button
-                  key={index}
+                  key={`date-range-${index}`}
                   onClick={() => handlePredefinedRangeSelect(range)}
                   className={`w-full text-left px-3 py-2 rounded-md text-sm transition-all duration-200 ${
                     currentRange?.label === range.label

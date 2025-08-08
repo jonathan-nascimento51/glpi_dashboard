@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Debounce e Throttle - GLPI Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success {
+            color: #28a745;
+        }
+        .info {
+            color: #17a2b8;
+        }
+        .warning {
+            color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste das Implementações de Debounce e Throttle</h1>
+    
+    <div class="test-section">
+        <h2>🔍 Teste de Debounce - Campo de Busca (300ms)</h2>
+        <p>Digite rapidamente no campo abaixo. A função só deve ser executada após parar de digitar por 300ms.</p>
+        <input type="text" id="searchInput" class="test-input" placeholder="Digite para testar o debounce...">
+        <div id="searchLog" class="log"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>⚡ Teste de Throttle - Filtros (100ms)</h2>
+        <p>Clique rapidamente nos botões abaixo. A função deve ser executada no máximo a cada 100ms.</p>
+        <button id="filterBtn1" class="test-button">Filtro Status</button>
+        <button id="filterBtn2" class="test-button">Filtro Prioridade</button>
+        <button id="filterBtn3" class="test-button">Filtro Nível</button>
+        <div id="filterLog" class="log"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📊 Teste da API - Verificação de Dados</h2>
+        <p>Teste se a API está retornando dados corretamente:</p>
+        <button id="testApiBtn" class="test-button">Testar API /metrics</button>
+        <button id="testStatusBtn" class="test-button">Testar API /status</button>
+        <div id="apiLog" class="log"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📈 Resultados dos Testes</h2>
+        <div id="results" class="log">
+            <div class="info">Aguardando testes...</div>
+        </div>
+    </div>
+
+    <script>
+        // Simulação dos hooks de debounce e throttle
+        function debounce(func, delay) {
+            let timeoutId;
+            return function (...args) {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+        
+        function throttle(func, delay) {
+            let lastCall = 0;
+            return function (...args) {
+                const now = Date.now();
+                if (now - lastCall >= delay) {
+                    lastCall = now;
+                    func.apply(this, args);
+                }
+            };
+        }
+        
+        // Logs
+        function addLog(elementId, message, type = 'info') {
+            const logElement = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = type;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            logElement.appendChild(logEntry);
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+        
+        // Teste de Debounce
+        let searchCount = 0;
+        const debouncedSearch = debounce((query) => {
+            searchCount++;
+            addLog('searchLog', `🔍 Busca executada #${searchCount}: "${query}"`, 'success');
+            addLog('results', `✅ Debounce funcionando - Busca #${searchCount}`, 'success');
+        }, 300);
+        
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            addLog('searchLog', `⌨️ Digitando: "${e.target.value}"`, 'info');
+            debouncedSearch(e.target.value);
+        });
+        
+        // Teste de Throttle
+        let filterCount = 0;
+        const throttledFilter = throttle((filterType) => {
+            filterCount++;
+            addLog('filterLog', `⚡ Filtro aplicado #${filterCount}: ${filterType}`, 'success');
+            addLog('results', `✅ Throttle funcionando - Filtro #${filterCount}`, 'success');
+        }, 100);
+        
+        document.getElementById('filterBtn1').addEventListener('click', () => {
+            addLog('filterLog', '🖱️ Clique em Filtro Status', 'info');
+            throttledFilter('Status');
+        });
+        
+        document.getElementById('filterBtn2').addEventListener('click', () => {
+            addLog('filterLog', '🖱️ Clique em Filtro Prioridade', 'info');
+            throttledFilter('Prioridade');
+        });
+        
+        document.getElementById('filterBtn3').addEventListener('click', () => {
+            addLog('filterLog', '🖱️ Clique em Filtro Nível', 'info');
+            throttledFilter('Nível');
+        });
+        
+        // Teste da API
+        document.getElementById('testApiBtn').addEventListener('click', async () => {
+            try {
+                addLog('apiLog', '🌐 Testando API /metrics...', 'info');
+                const response = await fetch('http://localhost:5000/api/metrics');
+                const data = await response.json();
+                
+                if (response.ok && data.data) {
+                    addLog('apiLog', `✅ API funcionando - Total de tickets: ${data.data.niveis.geral.total}`, 'success');
+                    addLog('results', '✅ API /metrics respondendo corretamente', 'success');
+                } else {
+                    addLog('apiLog', '❌ API retornou dados inválidos', 'warning');
+                }
+            } catch (error) {
+                addLog('apiLog', `❌ Erro na API: ${error.message}`, 'warning');
+                addLog('results', '❌ Erro ao conectar com a API', 'warning');
+            }
+        });
+        
+        document.getElementById('testStatusBtn').addEventListener('click', async () => {
+            try {
+                addLog('apiLog', '🌐 Testando API /status...', 'info');
+                const response = await fetch('http://localhost:5000/api/status');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    addLog('apiLog', `✅ Status API: ${data.data?.status || 'OK'}`, 'success');
+                    addLog('results', '✅ API /status respondendo corretamente', 'success');
+                } else {
+                    addLog('apiLog', '❌ API status retornou erro', 'warning');
+                }
+            } catch (error) {
+                addLog('apiLog', `❌ Erro no status: ${error.message}`, 'warning');
+            }
+        });
+        
+        // Inicialização
+        addLog('results', '🚀 Página de testes carregada', 'info');
+        addLog('results', '📝 Instruções:', 'info');
+        addLog('results', '1. Digite rapidamente no campo de busca', 'info');
+        addLog('results', '2. Clique rapidamente nos botões de filtro', 'info');
+        addLog('results', '3. Teste as APIs do backend', 'info');
+    </script>
+</body>
+</html>

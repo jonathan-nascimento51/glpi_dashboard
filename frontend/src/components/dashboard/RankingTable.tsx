@@ -303,7 +303,7 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
               const style = getLevelStyle(level)
               return (
                 <Badge 
-              key={level} 
+              key={`ranking-level-${level}`} 
               className={cn(
                 "text-xs px-2 py-1 border text-white font-medium",
                 style.accentColor

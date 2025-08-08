@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDashboard } from '../hooks/useDashboard';
+import { useThrottledCallback } from '../hooks/useDebounce';
 import type {
   DashboardMetrics,
   FilterParams,
@@ -60,14 +61,19 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
     });
   }, [loading]);
 
+  // Throttled filter update to group rapid changes (100ms)
+  const throttledUpdateFilters = useThrottledCallback((updatedFilters: FilterParams) => {
+    updateFilters(updatedFilters);
+  }, 100);
+
   const handleFilterChange = (newFilters: Partial<FilterParams>) => {
     const updatedFilters = { ...filters, ...newFilters };
     console.log('🔍 DashboardMetrics - Filtros atuais:', filters);
     console.log('🔍 DashboardMetrics - Novos filtros:', newFilters);
     console.log('🔍 DashboardMetrics - Filtros combinados:', updatedFilters);
     setFilters(updatedFilters);
-    // Aplicar os filtros imediatamente
-    updateFilters(updatedFilters);
+    // Apply filters with throttling to group rapid changes
+    throttledUpdateFilters(updatedFilters);
   };
 
   const renderMetricsCard = (title: string, value: number, trend?: number) => (

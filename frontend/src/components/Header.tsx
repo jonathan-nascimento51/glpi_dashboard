@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { Search, X, Clock, Calendar, ChevronDown } from 'lucide-react';
 import { Theme, SearchResult } from '../types';
 import { SimpleTechIcon } from './SimpleTechIcon';
+import { useDebouncedCallback } from '../hooks/useDebounce';
 
 interface HeaderProps {
   currentTime: string;
@@ -117,10 +118,14 @@ export const Header: React.FC<HeaderProps> = ({
     }
   }, [customStartDate, customEndDate, onDateRangeChange, onNotification]);
 
-  // Search handlers
+  // Search handlers with debounce (300ms)
+  const debouncedSearch = useDebouncedCallback((query: string) => {
+    onSearch(query);
+  }, 300);
+
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    onSearch(e.target.value);
-  }, [onSearch]);
+    debouncedSearch(e.target.value);
+  }, [debouncedSearch]);
 
   const handleSearchFocus = useCallback(() => {
     if (searchResults.length > 0) setShowSearchResults(true);
@@ -231,7 +236,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-200 max-h-80 overflow-y-auto z-50">
                   {searchResults.map((result, index) => (
                     <button
-                      key={index}
+                      key={`search-result-${index}`}
                       className="w-full px-4 py-3 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
                     >
                       <div className="text-sm font-medium text-gray-900">{result.title}</div>
