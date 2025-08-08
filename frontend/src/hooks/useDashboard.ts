@@ -35,9 +35,15 @@ interface UseDashboardReturn {
 // Removed unused initialMetrics
 
 const initialSystemStatus: SystemStatus = {
+  api: 'offline',
+  glpi: 'offline',
+  glpi_message: 'Sistema não conectado',
+  glpi_response_time: 0,
+  last_update: new Date().toISOString(),
+  version: '1.0.0',
   status: 'offline',
   sistema_ativo: false,
-  ultima_atualizacao: ''
+  ultima_atualizacao: new Date().toISOString()
 };
 
 // Removed unused getDefaultDateRange
@@ -55,7 +61,10 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
   // Removed unused state variables
   const [filters, setFilters] = useState<FilterParams>(initialFilters);
   // Derivar dados dos resultados da API
-  const levelMetrics = data?.niveis || null;
+  const levelMetrics = data?.niveis ? {
+    ...data.niveis,
+    tendencias: data.tendencias
+  } : null;
   const systemStatus = data?.systemStatus || initialSystemStatus;
   const technicianRanking = data?.technicianRanking || [];
   const [isPending] = useState<boolean>(false);

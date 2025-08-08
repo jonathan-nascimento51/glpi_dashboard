@@ -188,7 +188,7 @@ function App() {
             <ModernDashboard
               metrics={{
                 ...levelMetrics?.geral || {},
-                tendencias: metrics?.tendencias || {}
+                tendencias: levelMetrics?.tendencias || {}
               }}
               levelMetrics={levelMetrics}
               systemStatus={systemStatus}

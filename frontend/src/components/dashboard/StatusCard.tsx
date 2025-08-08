@@ -1,9 +1,11 @@
+import React from 'react'
 import { memo, useMemo } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn, formatNumber, getStatusIcon, getTrendIcon, getTrendColor } from "@/lib/utils"
-import { type LucideIcon } from "lucide-react"
+import { type LucideIcon, Info, TrendingUp, TrendingDown, Minus } from "lucide-react"
+import { SimpleTooltip } from "@/components/ui/SimpleTooltip"
 
 interface StatusCardProps {
   title: string
@@ -19,6 +21,7 @@ interface StatusCardProps {
   variant?: 'default' | 'compact' | 'detailed' | 'gradient'
   showProgress?: boolean
   maxValue?: number
+  onClick?: () => void
 }
 
 // Função auxiliar definida fora do componente para evitar recriação
@@ -32,6 +35,52 @@ const getStatusGradient = (status?: string) => {
     case 'resolved': return 'from-green-500 to-emerald-600'
     default: return 'from-gray-500 to-slate-600'
   }
+}
+
+// Função para determinar a direção da tendência
+const getTrendDirection = (trendValue: number): 'up' | 'down' | 'neutral' => {
+  if (trendValue > 0) return 'up'
+  if (trendValue < 0) return 'down'
+  return 'neutral'
+}
+
+// Função para gerar explicação da tendência
+const getTrendExplanation = (trendValue: number, title: string): React.ReactNode => {
+  const direction = getTrendDirection(trendValue)
+  
+  if (direction === 'neutral') {
+    return (
+      <div className="text-left">
+        <div className="font-semibold mb-2">📊 Tendência: {title}</div>
+        <div className="text-sm space-y-1">
+          <div>• <strong>Variação:</strong> Sem mudança</div>
+          <div>• <strong>Período:</strong> Comparação com últimos 7 dias</div>
+          <div>• <strong>Status:</strong> Estável</div>
+        </div>
+      </div>
+    )
+  }
+
+  const isExtreme = Math.abs(trendValue) > 500
+  const explanation = isExtreme 
+    ? "Valor muito alto devido à comparação entre dados históricos completos vs. período específico de 7 dias"
+    : "Variação normal baseada na comparação com o período anterior"
+
+  return (
+    <div className="text-left">
+      <div className="font-semibold mb-2">📊 Tendência: {title}</div>
+      <div className="text-sm space-y-1">
+        <div>• <strong>Variação:</strong> {direction === 'up' ? '↗️' : '↘️'} {Math.abs(trendValue).toFixed(1)}%</div>
+        <div>• <strong>Período:</strong> vs. últimos 7 dias</div>
+        <div>• <strong>Interpretação:</strong> {explanation}</div>
+        {isExtreme && (
+          <div className="mt-2 p-2 bg-slate-800 border border-slate-600 rounded text-xs text-slate-200">
+            <strong className="text-amber-400">💡 Nota:</strong> Percentuais altos são normais quando comparamos dados históricos completos com períodos específicos.
+          </div>
+        )}
+      </div>
+    </div>
+  )
 }
 
 // Variantes de animação definidas fora do componente
@@ -86,7 +135,8 @@ export const StatusCard = memo<StatusCardProps>(function StatusCard({
   trend,
   icon,
   className,
-  variant: _ = 'default'
+  variant: _ = 'default',
+  onClick
 }) {
   // Memoizar ícones para evitar recálculos
   const StatusIcon = useMemo(() => 
@@ -107,6 +157,12 @@ export const StatusCard = memo<StatusCardProps>(function StatusCard({
     return formatNumber(value);
   }, [value])
 
+  // Handler para clique no card
+  const handleCardClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    onClick?.()
+  }
 
   return (
     <motion.div
@@ -116,7 +172,10 @@ export const StatusCard = memo<StatusCardProps>(function StatusCard({
       whileHover="hover"
       className={cn("cursor-pointer", className)}
     >
-      <Card className="figma-glass-card relative overflow-hidden rounded-2xl shadow-none">
+      <Card 
+        className="figma-glass-card relative overflow-hidden rounded-2xl shadow-none"
+        onClick={handleCardClick}
+      >
         {/* Gradient Background */}
         <div className={cn(
           "absolute inset-0 bg-gradient-to-br opacity-5",
@@ -159,26 +218,42 @@ export const StatusCard = memo<StatusCardProps>(function StatusCard({
               </motion.div>
               
               {trend && (
-                <motion.div 
-                  className={cn(
-                    "flex items-center gap-2 text-sm font-medium px-3 py-1 rounded-full",
-                    getTrendColor(trend.direction),
-                    trend.direction === 'up' && "bg-green-100 text-green-700",
-                    trend.direction === 'down' && "bg-red-100 text-red-700",
-                    trend.direction === 'stable' && "figma-glass-card figma-body"
-                  )}
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {TrendIcon && <TrendIcon className="h-4 w-4" />}
-                  <span>
-                    {trend.direction === 'up' ? '+' : trend.direction === 'down' ? '-' : ''}
-                    {formatNumber(trend.value)}
-                  </span>
-                  {trend.label && (
-                    <span className="text-xs opacity-75">{trend.label}</span>
-                  )}
-                </motion.div>
+                <div className="flex items-center gap-2">
+                  <motion.div 
+                    className={cn(
+                      "flex items-center gap-2 text-sm font-medium px-3 py-1 rounded-full",
+                      getTrendColor(trend.direction),
+                      trend.direction === 'up' && "bg-green-100 text-green-700",
+                      trend.direction === 'down' && "bg-red-100 text-red-700",
+                      trend.direction === 'stable' && "figma-glass-card figma-body"
+                    )}
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {TrendIcon && <TrendIcon className="h-4 w-4" />}
+                    <span>
+                      {trend.value === 0 ? 'sem alteração' : (
+                        `${trend.direction === 'up' ? '+' : trend.direction === 'down' ? '-' : ''}${formatNumber(trend.value)}`
+                      )}
+                    </span>
+                    {trend.label && trend.value !== 0 && (
+                      <span className="text-xs opacity-75">{trend.label}</span>
+                    )}
+                  </motion.div>
+                  
+                  <SimpleTooltip content={getTrendExplanation(trend.value, title)}>
+                    <motion.div
+                      whileHover={{ scale: 1.1 }}
+                      className="cursor-help"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                      }}
+                    >
+                      <Info className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                    </motion.div>
+                  </SimpleTooltip>
+                </div>
               )}
             </div>
             

@@ -184,7 +184,6 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
         <motion.div
           key={`metrics-${card.status}`}
           variants={itemVariants}
-          onClick={card.onClick}
         >
           <StatusCard
             title={card.title}
@@ -192,7 +191,8 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
             status={card.status}
             icon={card.icon}
             trend={card.trend}
-            className="h-full"
+            className="h-full cursor-pointer"
+            onClick={card.onClick}
           />
         </motion.div>
       ))}
