@@ -1,0 +1,423 @@
+# Pre-commit hooks configuration
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+default_stages: [commit]
+default_language_version:
+  python: python3.11
+  node: '18.17.0'
+
+ci:
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit.com hooks
+
+    for more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_branch: ''
+  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false
+
+repos:
+  # General hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args: ['--unsafe']
+      - id: check-json
+      - id: check-toml
+      - id: check-xml
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: check-symlinks
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: check-docstring-first
+      - id: debug-statements
+      - id: name-tests-test
+        args: ['--pytest-test-first']
+      - id: requirements-txt-fixer
+      - id: fix-byte-order-marker
+      - id: mixed-line-ending
+        args: ['--fix=lf']
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: check-ast
+        files: \.py$
+      - id: check-builtin-literals
+        files: \.py$
+      - id: check-docstring-first
+        files: \.py$
+      - id: double-quote-string-fixer
+        files: \.py$
+
+  # Python formatting and linting
+  - repo: https://github.com/psf/black
+    rev: 23.7.0
+    hooks:
+      - id: black
+        language_version: python3.11
+        files: \.py$
+        exclude: ^
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        name: isort (python)
+        files: \.py$
+        args: ["--profile", "black", "--filter-files"]
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.0.0
+    hooks:
+      - id: flake8
+        files: \.py$
+        additional_dependencies:
+          - flake8-docstrings>=1.7.0
+          - flake8-import-order>=0.18.0
+          - flake8-bugbear>=23.7.0
+          - flake8-comprehensions>=3.14.0
+          - flake8-simplify>=0.20.0
+          - flake8-bandit>=4.1.1
+        args:
+          - --max-line-length=88
+          - --extend-ignore=E203,W503,E501,B008,B024
+          - --max-complexity=10
+          - --import-order-style=pep8
+          - --application-import-names=backend,scripts
+
+  # Python type checking
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.5.1
+    hooks:
+      - id: mypy
+        files: \.py$
+        exclude: ^(tests/|scripts/tests/)
+        additional_dependencies:
+          - types-requests>=2.31.0
+          - types-redis>=4.6.0
+          - types-python-dateutil>=2.8.0
+          - types-pytz>=2023.3.0
+        args:
+          - --ignore-missing-imports
+          - --disallow-untyped-defs
+          - --no-implicit-optional
+          - --warn-redundant-casts
+          - --warn-unused-ignores
+          - --warn-no-return
+          - --warn-unreachable
+          - --strict-equality
+
+  # Security scanning
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.5
+    hooks:
+      - id: bandit
+        files: \.py$
+        exclude: ^(tests/|scripts/tests/)
+        args:
+          - -r
+          - backend
+          - scripts
+          - --skip=B101,B601
+          - --format=custom
+          - --msg-template="{abspath}:{line}: {test_id}[bandit]: {severity}: {msg}"
+
+  # Dependency scanning
+  - repo: https://github.com/pyupio/safety
+    rev: 2.3.4
+    hooks:
+      - id: safety
+        files: requirements.*\.txt$
+        args:
+          - --short-report
+          - --output
+          - screen
+
+  # Frontend hooks
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.0.3
+    hooks:
+      - id: prettier
+        files: \.(js|jsx|ts|tsx|json|css|scss|md|yaml|yml)$
+        exclude: |
+          (?x)^(
+              frontend/dist/.*|
+              frontend/build/.*|
+              frontend/coverage/.*|
+              frontend/node_modules/.*|
+              .*\.min\.(js|css)$|
+              package-lock\.json$|
+              yarn\.lock$
+          )$
+        args:
+          - --write
+          - --config=.prettierrc.json
+
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.53.0
+    hooks:
+      - id: eslint
+        files: \.(js|jsx|ts|tsx)$
+        exclude: |
+          (?x)^(
+              frontend/dist/.*|
+              frontend/build/.*|
+              frontend/coverage/.*|
+              frontend/node_modules/.*|
+              .*\.min\.js$|
+              .*\.config\.(js|ts)$
+          )$
+        additional_dependencies:
+          - '@typescript-eslint/eslint-plugin@^6.10.0'
+          - '@typescript-eslint/parser@^6.10.0'
+          - 'eslint-plugin-react@^7.33.0'
+          - 'eslint-plugin-react-hooks@^4.6.0'
+          - 'eslint-plugin-jsx-a11y@^6.7.0'
+          - 'eslint-plugin-testing-library@^6.0.0'
+          - 'eslint-plugin-jest-dom@^5.0.0'
+        args:
+          - --fix
+          - --max-warnings=0
+
+  # Documentation
+  - repo: https://github.com/executablebooks/mdformat
+    rev: 0.7.17
+    hooks:
+      - id: mdformat
+        files: \.md$
+        exclude: |
+          (?x)^(
+              CHANGELOG\.md$|
+              frontend/node_modules/.*
+          )$
+        additional_dependencies:
+          - mdformat-gfm>=0.3.5
+          - mdformat-black>=0.1.1
+        args:
+          - --wrap=80
+
+  # Commit message validation
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.8.2
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
+
+  # Secrets detection
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args:
+          - --baseline
+          - .secrets.baseline
+          - --exclude-files
+          - '.*\.lock$'
+          - --exclude-files
+          - 'frontend/node_modules/.*'
+          - --exclude-files
+          - 'frontend/dist/.*'
+          - --exclude-files
+          - 'frontend/build/.*'
+          - --exclude-files
+          - 'coverage/.*'
+          - --exclude-files
+          - '.*\.min\.(js|css)$'
+        exclude: |
+          (?x)^(
+              \.secrets\.baseline$|
+              frontend/package-lock\.json$|
+              frontend/yarn\.lock$
+          )$
+
+  # YAML linting
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.32.0
+    hooks:
+      - id: yamllint
+        files: \.(yaml|yml)$
+        args:
+          - --format
+          - parsable
+          - --strict
+        exclude: |
+          (?x)^(
+              frontend/node_modules/.*|
+              \.github/workflows/.*
+          )$
+
+  # Shell script linting
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.9.0.5
+    hooks:
+      - id: shellcheck
+        files: \.(sh|bash)$
+        args:
+          - --severity=warning
+          - --shell=bash
+          - --external-sources
+
+  # Docker linting
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.0
+    hooks:
+      - id: hadolint-docker
+        files: Dockerfile.*
+        args:
+          - --ignore
+          - DL3008
+          - --ignore
+          - DL3009
+          - --ignore
+          - DL3015
+
+  # Local hooks for project-specific checks
+  - repo: local
+    hooks:
+      # Python tests
+      - id: pytest-check
+        name: pytest-check
+        entry: python -m pytest
+        language: system
+        files: \.py$
+        exclude: ^frontend/
+        pass_filenames: false
+        args:
+          - tests/
+          - --maxfail=1
+          - --tb=short
+          - -q
+        stages: [push]
+
+      # Frontend tests
+      - id: frontend-test
+        name: frontend-test
+        entry: npm
+        language: system
+        files: \.(js|jsx|ts|tsx)$
+        exclude: |
+          (?x)^(
+              backend/.*|
+              scripts/.*|
+              tests/.*
+          )$
+        pass_filenames: false
+        args:
+          - run
+          - test:ci
+        stages: [push]
+
+      # Check for TODO/FIXME comments
+      - id: check-todos
+        name: check-todos
+        entry: python
+        language: system
+        files: \.(py|js|jsx|ts|tsx)$
+        args:
+          - -c
+          - |
+            import sys
+            import re
+            
+            todo_pattern = re.compile(r'(TODO|FIXME|XXX|HACK)\s*:', re.IGNORECASE)
+            found_todos = []
+            
+            for filename in sys.argv[1:]:
+                try:
+                    with open(filename, 'r', encoding='utf-8') as f:
+                        for line_num, line in enumerate(f, 1):
+                            if todo_pattern.search(line):
+                                found_todos.append(f"{filename}:{line_num}: {line.strip()}")
+                except Exception:
+                    continue
+            
+            if found_todos:
+                print("Found TODO/FIXME comments:")
+                for todo in found_todos:
+                    print(f"  {todo}")
+                print("\nPlease resolve these before committing or add them to the issue tracker.")
+                sys.exit(1)
+        stages: [commit]
+
+      # Check for debug statements
+      - id: check-debug-statements
+        name: check-debug-statements
+        entry: python
+        language: system
+        files: \.(py|js|jsx|ts|tsx)$
+        args:
+          - -c
+          - |
+            import sys
+            import re
+            
+            debug_patterns = [
+                re.compile(r'console\.(log|debug|info|warn|error)\s*\(', re.IGNORECASE),
+                re.compile(r'debugger\s*;?', re.IGNORECASE),
+                re.compile(r'print\s*\(.*\)', re.IGNORECASE),
+                re.compile(r'pdb\.set_trace\s*\(\)', re.IGNORECASE),
+                re.compile(r'breakpoint\s*\(\)', re.IGNORECASE),
+            ]
+            
+            found_debug = []
+            
+            for filename in sys.argv[1:]:
+                try:
+                    with open(filename, 'r', encoding='utf-8') as f:
+                        for line_num, line in enumerate(f, 1):
+                            for pattern in debug_patterns:
+                                if pattern.search(line) and not line.strip().startswith('#'):
+                                    found_debug.append(f"{filename}:{line_num}: {line.strip()}")
+                except Exception:
+                    continue
+            
+            if found_debug:
+                print("Found debug statements:")
+                for debug in found_debug:
+                    print(f"  {debug}")
+                print("\nPlease remove debug statements before committing.")
+                sys.exit(1)
+        stages: [commit]
+
+      # Validate environment files
+      - id: validate-env-files
+        name: validate-env-files
+        entry: python
+        language: system
+        files: \.env.*
+        args:
+          - -c
+          - |
+            import sys
+            import re
+            
+            env_pattern = re.compile(r'^[A-Z_][A-Z0-9_]*=.*$')
+            comment_pattern = re.compile(r'^\s*#.*$')
+            empty_pattern = re.compile(r'^\s*$')
+            
+            errors = []
+            
+            for filename in sys.argv[1:]:
+                try:
+                    with open(filename, 'r', encoding='utf-8') as f:
+                        for line_num, line in enumerate(f, 1):
+                            line = line.rstrip()
+                            if not (env_pattern.match(line) or comment_pattern.match(line) or empty_pattern.match(line)):
+                                errors.append(f"{filename}:{line_num}: Invalid environment variable format: {line}")
+                except Exception as e:
+                    errors.append(f"{filename}: Error reading file: {e}")
+            
+            if errors:
+                print("Environment file validation errors:")
+                for error in errors:
+                    print(f"  {error}")
+                print("\nEnvironment variables should be in UPPER_CASE=value format.")
+                sys.exit(1)
+        stages: [commit]

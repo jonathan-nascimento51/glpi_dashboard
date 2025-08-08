@@ -1,0 +1,59 @@
+# GLPI Dashboard Grafana Datasources
+# ==================================
+
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true
+    jsonData:
+      httpMethod: POST
+      manageAlerts: true
+      prometheusType: Prometheus
+      prometheusVersion: 2.40.0
+      cacheLevel: 'High'
+      disableMetricsLookup: false
+      customQueryParameters: ''
+      timeInterval: '15s'
+    secureJsonData: {}
+    version: 1
+    uid: prometheus-uid
+
+  - name: Redis
+    type: redis-datasource
+    access: proxy
+    url: redis://redis:6379
+    database: 0
+    isDefault: false
+    editable: true
+    jsonData:
+      client: 'standalone'
+      poolSize: 5
+      timeout: 10
+      pingInterval: 0
+      pipelineWindow: 0
+    secureJsonData:
+      password: ''
+    version: 1
+    uid: redis-uid
+
+  - name: GLPI Dashboard API
+    type: infinity
+    access: proxy
+    url: http://backend:5000
+    isDefault: false
+    editable: true
+    jsonData:
+      auth_method: 'none'
+      allowed_hosts: ['backend:5000']
+      oauth2_settings: {}
+      secure_sockets_enabled: false
+      tls_skip_verify: true
+      timeout_in_seconds: 30
+    secureJsonData: {}
+    version: 1
+    uid: glpi-api-uid

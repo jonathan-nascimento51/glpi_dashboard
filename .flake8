@@ -1,0 +1,234 @@
+[flake8]
+# Base configuration
+max-line-length = 88
+max-complexity = 10
+max-doc-length = 120
+
+# Error codes to ignore
+ignore = 
+    # Black compatibility
+    E203,  # whitespace before ':'
+    W503,  # line break before binary operator
+    E501,  # line too long (handled by black)
+    
+    # Docstring related (handled by flake8-docstrings)
+    D100,  # Missing docstring in public module
+    D101,  # Missing docstring in public class
+    D102,  # Missing docstring in public method
+    D103,  # Missing docstring in public function
+    D104,  # Missing docstring in public package
+    D105,  # Missing docstring in magic method
+    D107,  # Missing docstring in __init__
+    
+    # Import related
+    F401,  # module imported but unused (handled by isort)
+    
+    # Bugbear compatibility
+    B008,  # Do not perform function calls in argument defaults
+    B024,  # Abstract base class without abstract methods
+    
+    # Other
+    W504,  # line break after binary operator
+    E402,  # module level import not at top of file
+    E731,  # do not assign a lambda expression, use a def
+
+# Error codes to select (enable specific checks)
+select = 
+    E,     # pycodestyle errors
+    W,     # pycodestyle warnings
+    F,     # pyflakes
+    C,     # mccabe complexity
+    B,     # flake8-bugbear
+    I,     # flake8-import-order
+    D,     # flake8-docstrings
+    S,     # flake8-bandit
+    N,     # pep8-naming
+    T,     # flake8-print
+    Q,     # flake8-quotes
+    A,     # flake8-builtins
+    C4,    # flake8-comprehensions
+    SIM,   # flake8-simplify
+    PIE,   # flake8-pie
+    PT,    # flake8-pytest-style
+    RET,   # flake8-return
+    UP,    # pyupgrade
+
+# Files and directories to exclude
+exclude = 
+    .git,
+    __pycache__,
+    .pytest_cache,
+    .mypy_cache,
+    .tox,
+    .venv,
+    venv,
+    env,
+    ENV,
+    env.bak,
+    venv.bak,
+    build,
+    dist,
+    *.egg-info,
+    .eggs,
+    migrations,
+    node_modules,
+    frontend,
+    coverage_html_report,
+    docs/_build,
+    .coverage,
+    htmlcov,
+    *.pyc,
+    *.pyo,
+    *.pyd,
+    .Python,
+    pip-log.txt,
+    pip-delete-this-directory.txt,
+    .DS_Store,
+    Thumbs.db,
+    .idea,
+    .vscode,
+    *.log,
+    *.tmp,
+    *.temp,
+    .cache,
+    .parcel-cache
+
+# File patterns to include
+filename = 
+    *.py
+
+# Statistics
+statistics = True
+count = True
+show-source = True
+show-pep8 = True
+
+# Docstring configuration
+docstring-convention = google
+require-return-section-when-returning-nothing = False
+
+# Import order configuration
+import-order-style = pep8
+application-import-names = backend,scripts
+
+# Naming conventions
+classmethod-decorators = 
+    classmethod,
+    pydantic.validator,
+    pydantic.root_validator
+
+staticmethod-decorators = 
+    staticmethod
+
+# Per-file ignores
+per-file-ignores = 
+    # Tests can have longer lines and missing docstrings
+    tests/*:D,E501,S101,S106,S108,S311,S603,S607,B011,PT011,PT012,PT015,PT023
+    scripts/tests/*:D,E501,S101,S106,S108,S311,S603,S607,B011,PT011,PT012,PT015,PT023
+    
+    # Configuration files
+    */settings.py:S105,S106,S108
+    */config.py:S105,S106,S108
+    
+    # Init files
+    __init__.py:F401,D104
+    
+    # Scripts
+    scripts/*:D100,D103,T201,S602,S603,S607
+    
+    # Migration files (if any)
+    */migrations/*:D,E501,F401,N806
+    
+    # Setup files
+    setup.py:D100,D103
+    conftest.py:D100,D103
+    
+    # Flask app files
+    */app.py:D100,D103
+    */wsgi.py:D100,D103
+    
+    # CLI scripts
+    */cli.py:D100,D103,T201
+    */manage.py:D100,D103,T201
+
+# Complexity thresholds
+mccabe-complexity = 10
+
+# Line length for specific contexts
+max-line-length-suggestions = 88
+
+# Pytest style configuration
+pytest-fixture-no-parentheses = True
+pytest-parametrize-names-type = csv
+pytest-parametrize-values-type = tuple
+pytest-parametrize-values-row-type = tuple
+
+# Quotes configuration
+inline-quotes = single
+multiline-quotes = double
+docstring-quotes = double
+avoid-escape = True
+
+# Return statement configuration
+max-returns = 6
+max-branches = 12
+max-arguments = 5
+max-local-variables = 15
+max-statements = 50
+max-attributes = 7
+max-public-methods = 20
+max-bool-expr = 5
+
+# Simplify configuration
+simplify-if-return = True
+simplify-if-expr = True
+
+# Comprehension configuration
+comprehension-generator-in-any-all = True
+
+# Builtins configuration
+builtins = _,__
+
+# Print configuration
+print-functions = print,pprint,pp
+
+# Additional configuration for specific plugins
+
+# flake8-bandit (security)
+[bandit]
+skips = B101,B601
+exclude_dirs = tests,scripts/tests
+
+# flake8-import-order
+[import-order]
+style = pep8
+case-sensitive = True
+force-single-line-imports = False
+force-sort-within-sections = True
+lexicographical = True
+order-by-type = True
+group-by-package = True
+
+# flake8-docstrings
+[docstrings]
+convention = google
+ignore-decorators = property,staticmethod,classmethod
+ignore-init-method-first-line = True
+ignore-private = True
+ignore-semiprivate = True
+
+# flake8-pytest-style
+[pytest-style]
+fixture-parentheses = False
+parametrize-names-type = csv
+parametrize-values-type = tuple
+parametrize-values-row-type = tuple
+raises-require-match-for = BaseException,Exception,ValueError,TypeError,AttributeError,KeyError,IndexError
+marks-require-parentheses = False
+
+# flake8-quotes
+[quotes]
+inline-quotes = single
+multiline-quotes = double
+docstring-quotes = double
+avoid-escape = True

@@ -25,6 +25,7 @@ import { TicketStatus, Theme } from './types';
 
 function App() {
   const {
+    metrics,
     levelMetrics,
     systemStatus,
     technicianRanking,
@@ -107,7 +108,7 @@ function App() {
 
 
   // Show loading state on initial load
-  if (isLoading && !levelMetrics) {
+  if (isLoading && !metrics) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
         <div className="animate-pulse">
@@ -139,7 +140,7 @@ function App() {
   }
 
   // Show error state
-  if (error && !levelMetrics) {
+  if (error && !metrics) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 flex items-center justify-center">
         <ErrorState
@@ -179,12 +180,17 @@ function App() {
       
       {/* Dashboard Principal */}
       <div className="flex-1 overflow-hidden">
-        {levelMetrics ? (
+        {metrics ? (
           <Profiler id="ModernDashboard" onRender={profilerCallback}>
             <ModernDashboard
               metrics={{
-                ...levelMetrics?.geral || {},
-                tendencias: levelMetrics?.tendencias || {}
+                novos: metrics?.niveis?.geral?.novos || 0,
+                pendentes: metrics?.niveis?.geral?.pendentes || 0,
+                progresso: metrics?.niveis?.geral?.progresso || 0,
+                resolvidos: metrics?.niveis?.geral?.resolvidos || 0,
+                total: (metrics?.niveis?.geral?.novos || 0) + (metrics?.niveis?.geral?.pendentes || 0) + (metrics?.niveis?.geral?.progresso || 0) + (metrics?.niveis?.geral?.resolvidos || 0),
+                niveis: metrics?.niveis || {},
+                tendencias: metrics?.tendencias || {}
               }}
               levelMetrics={levelMetrics}
               systemStatus={systemStatus}

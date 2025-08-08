@@ -1,0 +1,226 @@
+# GLPI Dashboard - Production Configuration
+# ========================================
+# Use: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+version: '3.8'
+
+services:
+  # Backend Production Configuration
+  backend:
+    build:
+      target: production
+    restart: always
+    environment:
+      - FLASK_ENV=production
+      - FLASK_DEBUG=False
+      - LOG_LEVEL=WARNING
+      - PYTHONOPTIMIZE=1
+      - PYTHONDONTWRITEBYTECODE=1
+      - GUNICORN_WORKERS=4
+      - GUNICORN_THREADS=2
+      - GUNICORN_TIMEOUT=30
+      - GUNICORN_KEEPALIVE=2
+      - GUNICORN_MAX_REQUESTS=1000
+      - GUNICORN_MAX_REQUESTS_JITTER=100
+    command: >
+      gunicorn
+      --bind 0.0.0.0:5000
+      --workers ${GUNICORN_WORKERS:-4}
+      --threads ${GUNICORN_THREADS:-2}
+      --timeout ${GUNICORN_TIMEOUT:-30}
+      --keepalive ${GUNICORN_KEEPALIVE:-2}
+      --max-requests ${GUNICORN_MAX_REQUESTS:-1000}
+      --max-requests-jitter ${GUNICORN_MAX_REQUESTS_JITTER:-100}
+      --preload
+      --access-logfile -
+      --error-logfile -
+      --log-level warning
+      "backend.app:create_app()"
+    volumes:
+      - ./logs:/app/logs
+      - backend_prod_cache:/app/.cache
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+  # Frontend Production Configuration
+  frontend:
+    build:
+      target: production
+    restart: always
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - frontend_dist:/app/dist:ro
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+  # Redis Production Configuration
+  redis:
+    restart: always
+    command: >
+      redis-server
+      --appendonly yes
+      --appendfsync everysec
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --tcp-keepalive 60
+      --timeout 300
+      --save 900 1
+      --save 300 10
+      --save 60 10000
+    volumes:
+      - redis_prod_data:/data
+      - ./docker/redis/redis-prod.conf:/usr/local/etc/redis/redis.conf:ro
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+  # Nginx Production Configuration
+  nginx:
+    restart: always
+    volumes:
+      - ./docker/nginx/nginx-prod.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/conf.d/prod.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./docker/nginx/ssl:/etc/nginx/ssl:ro
+      - frontend_dist:/usr/share/nginx/html:ro
+      - nginx_prod_logs:/var/log/nginx
+    environment:
+      - NGINX_WORKER_PROCESSES=auto
+      - NGINX_WORKER_CONNECTIONS=1024
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    profiles: []
+    # Remove profiles to enable by default in production
+
+  # Log Aggregation (Production)
+  fluentd:
+    image: fluent/fluentd:v1.16-debian-1
+    container_name: glpi_dashboard_fluentd
+    restart: always
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    volumes:
+      - ./docker/fluentd/fluent.conf:/fluentd/etc/fluent.conf:ro
+      - ./logs:/var/log/app
+      - fluentd_data:/var/log/fluentd
+    networks:
+      - glpi_network
+    profiles:
+      - logging
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+
+  # Health Check Service
+  healthcheck:
+    image: alpine:latest
+    container_name: glpi_dashboard_healthcheck
+    restart: always
+    volumes:
+      - ./scripts/healthcheck.sh:/healthcheck.sh:ro
+    networks:
+      - glpi_network
+    profiles:
+      - monitoring
+    command: >
+      sh -c "
+        apk add --no-cache curl &&
+        chmod +x /healthcheck.sh &&
+        while true; do
+          /healthcheck.sh
+          sleep 60
+        done
+      "
+    depends_on:
+      - backend
+      - frontend
+      - nginx
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 64M
+        reservations:
+          cpus: '0.05'
+          memory: 32M
+
+  # Backup Service
+  backup:
+    image: alpine:latest
+    container_name: glpi_dashboard_backup
+    restart: "no"
+    volumes:
+      - redis_prod_data:/data/redis:ro
+      - ./logs:/data/logs:ro
+      - ./backups:/backups
+      - ./scripts/backup.sh:/backup.sh:ro
+    networks:
+      - glpi_network
+    profiles:
+      - backup
+    command: >
+      sh -c "
+        apk add --no-cache tar gzip &&
+        chmod +x /backup.sh &&
+        /backup.sh
+      "
+    environment:
+      - BACKUP_RETENTION_DAYS=30
+      - BACKUP_SCHEDULE=daily
+
+volumes:
+  redis_prod_data:
+    driver: local
+  backend_prod_cache:
+    driver: local
+  frontend_dist:
+    driver: local
+  nginx_prod_logs:
+    driver: local
+  fluentd_data:
+    driver: local
+
+# Production-specific network configuration
+networks:
+  glpi_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
+    driver_opts:
+      com.docker.network.bridge.name: glpi_prod_br0

@@ -1,0 +1,38 @@
+# GLPI Dashboard Grafana Dashboards Provisioning
+# ==============================================
+
+apiVersion: 1
+
+providers:
+  - name: 'GLPI Dashboard'
+    orgId: 1
+    folder: 'GLPI Dashboard'
+    folderUid: 'glpi-folder'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards
+
+  - name: 'System Monitoring'
+    orgId: 1
+    folder: 'System'
+    folderUid: 'system-folder'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards/system
+
+  - name: 'Application Metrics'
+    orgId: 1
+    folder: 'Application'
+    folderUid: 'app-folder'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards/application

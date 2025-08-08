@@ -160,7 +160,7 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
       resolve();
     }, 300); // Debounce de 300ms
   });
-}, []); // Removida dependência de filters para evitar loop infinito
+}, [filters]); // Dependência de filters necessária
 
   // Removed unused forceRefresh function
 
@@ -168,6 +168,14 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
   useEffect(() => {
     loadData();
   }, []); // Executar apenas uma vez na montagem
+
+  // Load data when filters change
+  useEffect(() => {
+    if (Object.keys(filters).length > 0) {
+      console.log('🔄 useDashboard - Filtros mudaram, recarregando dados:', filters);
+      loadData();
+    }
+  }, [filters, loadData]);
 
   // Auto-refresh setup
   useEffect(() => {
@@ -212,7 +220,7 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     updateFilters: (newFilters: FilterParams) => {
       const updatedFilters = { ...filters, ...newFilters };
       setFilters(updatedFilters);
-      loadData(updatedFilters);
+      // loadData será chamado automaticamente pelo useEffect quando filters mudar
     },
     search: (query: string) => setSearchQuery(query),
     addNotification: (notification: Partial<NotificationData>) => {
@@ -233,7 +241,7 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
       const updatedFilters = { ...filters, dateRange };
       console.log('📊 useDashboard - Filtros atualizados:', updatedFilters);
       setFilters(updatedFilters);
-      loadData(updatedFilters);
+      // loadData será chamado automaticamente pelo useEffect quando filters mudar
     }
   };
   

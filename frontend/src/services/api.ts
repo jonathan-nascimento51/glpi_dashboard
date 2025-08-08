@@ -601,24 +601,15 @@ export const fetchDashboardMetrics = async (
     
     const startTime = performance.now();
     
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      // Adicionar timeout
-      signal: AbortSignal.timeout(60000) // 60 segundos
+    const response = await api.get('/metrics', {
+      params: Object.fromEntries(queryParams),
+      timeout: 60000
     });
     
     const endTime = performance.now();
     const responseTime = endTime - startTime;
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const result: ApiResult<DashboardMetrics> = await response.json();
+    const result: ApiResult<DashboardMetrics> = response.data;
     console.log('Resposta da API recebida:', result);
     
     // Log de performance
