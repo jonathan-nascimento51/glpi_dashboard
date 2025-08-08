@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from backend.services.api_service import APIService
 from backend.services.glpi_service import GLPIService
+from backend.services.lookup_loader import get_lookup_loader, clear_lookups_cache
 from backend.config.settings import active_config
 from backend.utils.performance import (
     monitor_performance, 
@@ -314,6 +315,187 @@ def get_technician_ranking():
         return jsonify({
             "success": False,
             "error": f"Erro interno do servidor: {str(e)}"
+        }), 500
+
+
+# ===== ENDPOINTS DE ADMINISTRAÇÃO - LOOKUPS =====
+
+@api_bp.route('/admin/lookups/reload', methods=['POST'])
+def reload_lookups():
+    """Endpoint para recarregar lookups/catálogos do GLPI"""
+    try:
+        logger.info("Iniciando recarga de lookups...")
+        
+        # Limpa cache existente
+        clear_lookups_cache()
+        
+        # Obtém nova instância do loader
+        loader = get_lookup_loader()
+        
+        # Força recarregamento de todos os catálogos
+        catalogs = loader.list_catalogs()
+        reloaded_catalogs = []
+        
+        for catalog in catalogs:
+            try:
+                data = loader.get_catalog(catalog, force_reload=True)
+                if data:
+                    reloaded_catalogs.append({
+                        'name': catalog,
+                        'count': len(data) if isinstance(data, list) else len(data.get('items', [])),
+                        'status': 'success'
+                    })
+                else:
+                    reloaded_catalogs.append({
+                        'name': catalog,
+                        'count': 0,
+                        'status': 'empty'
+                    })
+            except Exception as e:
+                logger.error(f"Erro ao recarregar catálogo {catalog}: {str(e)}")
+                reloaded_catalogs.append({
+                    'name': catalog,
+                    'count': 0,
+                    'status': 'error',
+                    'error': str(e)
+                })
+        
+        logger.info(f"Recarga de lookups concluída: {len(reloaded_catalogs)} catálogos processados")
+        
+        return jsonify({
+            "success": True,
+            "message": "Lookups recarregados com sucesso",
+            "data": {
+                "catalogs_processed": len(reloaded_catalogs),
+                "catalogs": reloaded_catalogs,
+                "timestamp": time.time()
+            }
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro ao recarregar lookups: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": f"Erro ao recarregar lookups: {str(e)}"
+        }), 500
+
+
+@api_bp.route('/admin/lookups/health')
+def lookups_health():
+    """Endpoint para verificar saúde dos lookups"""
+    try:
+        loader = get_lookup_loader()
+        
+        # Verifica status de cada catálogo
+        catalogs = loader.list_catalogs()
+        health_data = []
+        
+        for catalog in catalogs:
+            try:
+                data = loader.get_catalog(catalog)
+                metadata = loader.get_metadata(catalog)
+                
+                health_info = {
+                    'name': catalog,
+                    'status': 'healthy' if data else 'empty',
+                    'count': len(data) if isinstance(data, list) else len(data.get('items', [])) if data else 0,
+                    'last_updated': metadata.get('extraction_time') if metadata else None,
+                    'is_fresh': loader.is_data_fresh(catalog),
+                    'cache_hit': True  # Assumindo que está em cache se chegou até aqui
+                }
+                
+                # Verifica se dados estão muito antigos
+                if not health_info['is_fresh']:
+                    health_info['status'] = 'stale'
+                    health_info['warning'] = 'Dados podem estar desatualizados'
+                
+                health_data.append(health_info)
+                
+            except Exception as e:
+                logger.error(f"Erro ao verificar saúde do catálogo {catalog}: {str(e)}")
+                health_data.append({
+                    'name': catalog,
+                    'status': 'error',
+                    'count': 0,
+                    'error': str(e),
+                    'is_fresh': False,
+                    'cache_hit': False
+                })
+        
+        # Status geral
+        total_catalogs = len(health_data)
+        healthy_catalogs = len([c for c in health_data if c['status'] == 'healthy'])
+        error_catalogs = len([c for c in health_data if c['status'] == 'error'])
+        
+        overall_status = 'healthy'
+        if error_catalogs > 0:
+            overall_status = 'degraded' if healthy_catalogs > 0 else 'unhealthy'
+        elif healthy_catalogs == 0:
+            overall_status = 'empty'
+        
+        return jsonify({
+            "success": True,
+            "data": {
+                "overall_status": overall_status,
+                "summary": {
+                    "total_catalogs": total_catalogs,
+                    "healthy_catalogs": healthy_catalogs,
+                    "error_catalogs": error_catalogs,
+                    "empty_catalogs": len([c for c in health_data if c['status'] == 'empty']),
+                    "stale_catalogs": len([c for c in health_data if c['status'] == 'stale'])
+                },
+                "catalogs": health_data,
+                "timestamp": time.time()
+            }
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro ao verificar saúde dos lookups: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": f"Erro ao verificar saúde dos lookups: {str(e)}"
+        }), 500
+
+
+@api_bp.route('/admin/lookups/stats')
+def lookups_stats():
+    """Endpoint para obter estatísticas dos lookups"""
+    try:
+        loader = get_lookup_loader()
+        
+        # Obtém estatísticas de cada catálogo
+        catalogs = loader.list_catalogs()
+        stats_data = []
+        
+        for catalog in catalogs:
+            try:
+                stats = loader.get_catalog_stats(catalog)
+                if stats:
+                    stats_data.append({
+                        'catalog': catalog,
+                        **stats
+                    })
+            except Exception as e:
+                logger.error(f"Erro ao obter estatísticas do catálogo {catalog}: {str(e)}")
+                stats_data.append({
+                    'catalog': catalog,
+                    'error': str(e)
+                })
+        
+        return jsonify({
+            "success": True,
+            "data": {
+                "catalogs": stats_data,
+                "total_catalogs": len(catalogs),
+                "timestamp": time.time()
+            }
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro ao obter estatísticas dos lookups: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": f"Erro ao obter estatísticas dos lookups: {str(e)}"
         }), 500
 
 @api_bp.route('/tickets/new')

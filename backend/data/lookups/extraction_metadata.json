@@ -1,0 +1,11 @@
+{
+  "extraction_date": "2025-08-08T02:58:19.248861",
+  "glpi_url": "http://10.72.30.39/sis/apirest.php/",
+  "catalogs": {
+    "users": 935,
+    "groups": 94,
+    "categories": 100,
+    "tickets": 48
+  },
+  "total_items": 1177
+}

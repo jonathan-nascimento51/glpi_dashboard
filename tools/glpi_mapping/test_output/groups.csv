@@ -1,0 +1,11 @@
+id,name,level,parent_id,category,status
+2,CC-ATENDENTE,1,,groups,active
+3,CC-BIBLIOTECA,1,,groups,active
+4,CC-CANELA,1,,groups,active
+6,CC-DAAP,1,,groups,active
+7,CC-DAP,1,,groups,active
+8,CC-DGAP,1,,groups,active
+9,CC-DPO,1,,groups,active
+10,CC-DRH,1,,groups,active
+11,CC-DSP,1,,groups,active
+12,CC-DTIC,1,,groups,active

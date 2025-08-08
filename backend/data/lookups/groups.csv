@@ -1,0 +1,95 @@
+id,name,level,parent_id,category,status
+2,CC-ATENDENTE,1,,groups,active
+3,CC-BIBLIOTECA,1,,groups,active
+4,CC-CANELA,1,,groups,active
+6,CC-DAAP,1,,groups,active
+7,CC-DAP,1,,groups,active
+8,CC-DGAP,1,,groups,active
+9,CC-DPO,1,,groups,active
+10,CC-DRH,1,,groups,active
+11,CC-DSP,1,,groups,active
+12,CC-DTIC,1,,groups,active
+13,CC-DTIC-RESTRITO,1,,groups,active
+14,CC-ETICA,1,,groups,active
+15,CC-GABINETE,1,,groups,active
+16,CC-GABINETESA,1,,groups,active
+17,CC-GRPF,1,,groups,active
+18,CC-INTERIOR,1,,groups,active
+19,CC-JURIDICO,1,,groups,active
+20,CC-LEGISLATIVO,1,,groups,active
+21,CC-CONSERVACÃO,1,,groups,active
+22,CC-MANUTENCAO,1,,groups,active
+23,CC-MECANOGRAFIA,1,,groups,active
+24,CC-MECANOGRAFIA-RECEP,1,,groups,active
+25,CC-PARLAMENTAR,1,,groups,active
+26,CC-PATRIMONIO,1,,groups,active
+27,CC-PROTOCOLO,1,,groups,active
+28,CC-SAA,1,,groups,active
+29,CC-SAA-ATOS,1,,groups,active
+30,CC-SAEF,1,,groups,active
+31,CC-SECRETARIASA,1,,groups,active
+32,CC-SUB-GERAL,1,,groups,active
+33,CM-ALARESID,1,,groups,active
+34,CM-CENTRAL,1,,groups,active
+35,CM-DEFESACIVIL,1,,groups,active
+36,CM-GAB,1,,groups,active
+37,CM-GABMED,1,,groups,active
+38,CM-GUARDA,1,,groups,active
+39,CM-OPER-RESTRITO,1,,groups,active
+40,CM-OPER-SEG-EQUIPES,1,,groups,active
+41,CM-OPERACOES,1,,groups,active
+42,CM-SUBADM,1,,groups,active
+43,CM-TELE,1,,groups,active
+44,CM-TRANSP,1,,groups,active
+45,GG-AGENDA,1,,groups,active
+46,GG-ASSESSORIAAR,1,,groups,active
+47,GG-ASSTEC,1,,groups,active
+48,GG-CERIMONIAL,1,,groups,active
+49,GG-CONSERVACAO,1,,groups,active
+50,GG-DCGD,1,,groups,active
+51,GG-GABINETE,1,,groups,active
+52,GG-PRECURSORIA,1,,groups,active
+53,GG-REDACAO,1,,groups,active
+54,GG-SEIDAPE,1,,groups,active
+55,GVG-ASS-MILITAR,1,,groups,active
+56,GVG-GABINETE,1,,groups,active
+57,GVG-GPE,1,,groups,active
+58,GVG-INSTITUCIONAL,1,,groups,active
+59,GVG-OUTROS,1,,groups,active
+60,GVG-RS-SEG,1,,groups,active
+61,GVG-TRANSICAO,1,,groups,active
+62,SECOM-APOIOADM,1,,groups,active
+63,SECOM-AUDIO-VIDEO,1,,groups,active
+64,SECOM-CLIPAGEM,1,,groups,active
+65,SECOM-DG,1,,groups,active
+66,SECOM-EVENTOS,1,,groups,active
+67,SECOM-FINANCEIRO,1,,groups,active
+68,SECOM-FOTO,1,,groups,active
+69,SECOM-GAB,1,,groups,active
+70,SECOM-IMPRENSA,1,,groups,active
+71,SECOM-JORNALISMO,1,,groups,active
+72,SECOM-JURIDICO,1,,groups,active
+73,SECOM-JURIDICO_APOIOADM,1,,groups,active
+74,SECOM-PROTOCOLO,1,,groups,active
+75,SECOM-PUBLICIDADE,1,,groups,active
+76,SECOM-REDACAO,1,,groups,active
+77,SECOM-REDES,1,,groups,active
+78,SECOM-SAAC,1,,groups,active
+81,CC-SAGAP,1,,groups,active
+82,Divisão / Departamento,1,,groups,active
+83,CASA CIVIL,2,,groups,active
+84,Assessoria de Comunicação,3,,groups,active
+85,Assessoria Técnica Superior,3,,groups,active
+86,Chefia de Gabinete,3,,groups,active
+87,Conselho de Desenvolvimento Econômico,2,,groups,active
+88,Escritório de Brasilia,3,,groups,active
+89,Gabinete dos Prefeitos,2,,groups,active
+90,Secretaria-Executiva,3,,groups,active
+91,Ouvidoria Geral do Estado,4,,groups,active
+92,"Departamento de Ouvidoria,Ética,Controle Público e Transparência",5,,groups,active
+93,Divisão de Ética e Controle Público,6,,groups,active
+94,Divisão de Transparência Ativa,6,,groups,active
+95,Divisão de Transparência Passiva,6,,groups,active
+96,Subchefia Administrativa,4,,groups,active
+97,Departamento de Compras e Contratos,5,,groups,active
+98,Departamento de Gestão de Atos e Pessoal,5,,groups,active

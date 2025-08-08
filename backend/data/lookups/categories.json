@@ -1,0 +1,4182 @@
+[
+  {
+    "id": 1,
+    "name": "Ar Condicionado",
+    "level": 2,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção",
+      "completename": "Manutenção > Ar Condicionado",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"104\":104}",
+      "sons_cache": "{\"1\":\"1\",\"2\":2,\"3\":3,\"100\":100,\"4\":4,\"7\":7,\"6\":6}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:00:20",
+      "date_creation": "2023-09-18 15:37:11",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/104"
+        }
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "name": "Conserto",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Ar Condicionado",
+      "completename": "Manutenção > Ar Condicionado > Conserto",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"2\":2}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 20:35:03",
+      "date_creation": "2023-09-18 15:37:29",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/1"
+        }
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "name": "Desinstalação",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Ar Condicionado",
+      "completename": "Manutenção > Ar Condicionado > Desinstalação",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"3\":3}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 20:35:08",
+      "date_creation": "2023-09-18 15:37:42",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/1"
+        }
+      ]
+    }
+  },
+  {
+    "id": 4,
+    "name": "Instalação",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Ar Condicionado",
+      "completename": "Manutenção > Ar Condicionado > Instalação",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"4\":4}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 20:35:15",
+      "date_creation": "2023-09-18 15:38:03",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/1"
+        }
+      ]
+    }
+  },
+  {
+    "id": 6,
+    "name": "Remanejo",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Ar Condicionado",
+      "completename": "Manutenção > Ar Condicionado > Remanejo",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"6\":6}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 20:35:31",
+      "date_creation": "2023-09-18 15:38:23",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/1"
+        }
+      ]
+    }
+  },
+  {
+    "id": 7,
+    "name": "Outras atividades",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Ar Condicionado",
+      "completename": "Manutenção > Ar Condicionado > Outras atividades",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"7\":7}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 20:35:23",
+      "date_creation": "2023-09-18 15:38:33",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/1"
+        }
+      ]
+    }
+  },
+  {
+    "id": 22,
+    "name": "Elétrica",
+    "level": 2,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção",
+      "completename": "Manutenção > Elétrica",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"104\":104}",
+      "sons_cache": "{\"22\":\"22\",\"23\":23,\"28\":28,\"24\":24,\"26\":26,\"25\":25,\"29\":29,\"27\":27}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:32:07",
+      "date_creation": "2023-09-18 16:56:26",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/104"
+        }
+      ]
+    }
+  },
+  {
+    "id": 23,
+    "name": "Conserto",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Elétrica",
+      "completename": "Manutenção > Elétrica > Conserto",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"23\":23}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:32:13",
+      "date_creation": "2023-09-18 16:56:41",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/22"
+        }
+      ]
+    }
+  },
+  {
+    "id": 24,
+    "name": "Instalação",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Elétrica",
+      "completename": "Manutenção > Elétrica > Instalação",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"24\":24}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:32:22",
+      "date_creation": "2023-09-18 16:56:55",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/22"
+        }
+      ]
+    }
+  },
+  {
+    "id": 25,
+    "name": "Remoção",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Elétrica",
+      "completename": "Manutenção > Elétrica > Remoção",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"25\":25}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:32:31",
+      "date_creation": "2023-09-18 16:57:07",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/22"
+        }
+      ]
+    }
+  },
+  {
+    "id": 26,
+    "name": "Readequação",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Elétrica",
+      "completename": "Manutenção > Elétrica > Readequação",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"26\":26}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:32:27",
+      "date_creation": "2023-09-18 16:57:19",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/22"
+        }
+      ]
+    }
+  },
+  {
+    "id": 27,
+    "name": "Troca",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Elétrica",
+      "completename": "Manutenção > Elétrica > Troca",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"27\":27}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:32:42",
+      "date_creation": "2023-09-18 16:57:32",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/22"
+        }
+      ]
+    }
+  },
+  {
+    "id": 28,
+    "name": "Descarte",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Elétrica",
+      "completename": "Manutenção > Elétrica > Descarte",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"28\":28}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:32:17",
+      "date_creation": "2023-09-18 16:57:42",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/22"
+        }
+      ]
+    }
+  },
+  {
+    "id": 29,
+    "name": "Suporte",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Elétrica",
+      "completename": "Manutenção > Elétrica > Suporte",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"29\":29}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:32:36",
+      "date_creation": "2023-09-18 16:57:55",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/22"
+        }
+      ]
+    }
+  },
+  {
+    "id": 30,
+    "name": "Hidráulica",
+    "level": 2,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção",
+      "completename": "Manutenção > Hidráulica",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"104\":104}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:48:35",
+      "date_creation": "2023-09-18 17:18:40",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/104"
+        }
+      ]
+    }
+  },
+  {
+    "id": 31,
+    "name": "Reparo/Conserto",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Hidráulica",
+      "completename": "Manutenção > Hidráulica > Reparo/Conserto",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"31\":31}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:48:52",
+      "date_creation": "2023-09-18 17:18:51",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/30"
+        }
+      ]
+    }
+  },
+  {
+    "id": 32,
+    "name": "Instalação",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Hidráulica",
+      "completename": "Manutenção > Hidráulica > Instalação",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"32\":32}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:48:43",
+      "date_creation": "2023-09-18 17:19:03",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/30"
+        }
+      ]
+    }
+  },
+  {
+    "id": 33,
+    "name": "Remoção",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Hidráulica",
+      "completename": "Manutenção > Hidráulica > Remoção",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"33\":33}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:48:49",
+      "date_creation": "2023-09-18 17:19:14",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/30"
+        }
+      ]
+    }
+  },
+  {
+    "id": 34,
+    "name": "Troca",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Hidráulica",
+      "completename": "Manutenção > Hidráulica > Troca",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"34\":34}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:48:56",
+      "date_creation": "2023-09-18 17:19:26",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/30"
+        }
+      ]
+    }
+  },
+  {
+    "id": 35,
+    "name": "Desentupimento",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Hidráulica",
+      "completename": "Manutenção > Hidráulica > Desentupimento",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"35\":35}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:48:39",
+      "date_creation": "2023-09-18 17:20:11",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/30"
+        }
+      ]
+    }
+  },
+  {
+    "id": 36,
+    "name": "Plantação",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Jardinagem",
+      "completename": "Conservação > Jardinagem > Plantação",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"36\":36}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:03:38",
+      "date_creation": "2023-09-18 17:34:31",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/37"
+        }
+      ]
+    }
+  },
+  {
+    "id": 37,
+    "name": "Jardinagem",
+    "level": 2,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação",
+      "completename": "Conservação > Jardinagem",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:02:40",
+      "date_creation": "2023-09-18 17:34:53",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/99"
+        }
+      ]
+    }
+  },
+  {
+    "id": 38,
+    "name": "Poda/Corte",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Jardinagem",
+      "completename": "Conservação > Jardinagem > Poda/Corte",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"38\":38}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:03:43",
+      "date_creation": "2023-09-18 17:35:32",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/37"
+        }
+      ]
+    }
+  },
+  {
+    "id": 39,
+    "name": "Remoção",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Jardinagem",
+      "completename": "Conservação > Jardinagem > Remoção",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"39\":39}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:03:47",
+      "date_creation": "2023-09-18 17:35:46",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/37"
+        }
+      ]
+    }
+  },
+  {
+    "id": 40,
+    "name": "Outras Atividades",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Jardinagem",
+      "completename": "Conservação > Jardinagem > Outras Atividades",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"40\":40}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:03:34",
+      "date_creation": "2023-09-18 17:35:59",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/37"
+        }
+      ]
+    }
+  },
+  {
+    "id": 45,
+    "name": "Limpeza",
+    "level": 2,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação",
+      "completename": "Conservação > Limpeza",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:03:15",
+      "date_creation": "2023-09-19 09:50:32",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/99"
+        }
+      ]
+    }
+  },
+  {
+    "id": 46,
+    "name": "Limpeza de banheiros",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Limpeza",
+      "completename": "Conservação > Limpeza > Limpeza de banheiros",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"46\":46}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:16:41",
+      "date_creation": "2023-09-19 09:50:42",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/45"
+        }
+      ]
+    }
+  },
+  {
+    "id": 47,
+    "name": "Limpeza geral",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Limpeza",
+      "completename": "Conservação > Limpeza > Limpeza geral",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"47\":47}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:16:45",
+      "date_creation": "2023-09-19 09:50:59",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/45"
+        }
+      ]
+    }
+  },
+  {
+    "id": 48,
+    "name": "Outras Atividades",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Limpeza",
+      "completename": "Conservação > Limpeza > Outras Atividades",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"48\":48}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:16:49",
+      "date_creation": "2023-09-19 09:51:13",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/45"
+        }
+      ]
+    }
+  },
+  {
+    "id": 49,
+    "name": "Recolher materiais recicláveis",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Limpeza",
+      "completename": "Conservação > Limpeza > Recolher materiais recicláveis",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"49\":49}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:16:56",
+      "date_creation": "2023-09-19 09:51:28",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/45"
+        }
+      ]
+    }
+  },
+  {
+    "id": 50,
+    "name": "Marcenaria",
+    "level": 2,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção",
+      "completename": "Manutenção > Marcenaria",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"104\":104}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:27:13",
+      "date_creation": "2023-09-19 10:28:48",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/104"
+        }
+      ]
+    }
+  },
+  {
+    "id": 51,
+    "name": "Confecção de Mobiliário",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Marcenaria",
+      "completename": "Manutenção > Marcenaria > Confecção de Mobiliário",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"51\":51}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:31:34",
+      "date_creation": "2023-09-19 10:29:03",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/50"
+        }
+      ]
+    }
+  },
+  {
+    "id": 52,
+    "name": "Conserto de Mobiliário",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Marcenaria",
+      "completename": "Manutenção > Marcenaria > Conserto de Mobiliário",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"52\":52}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:31:40",
+      "date_creation": "2023-09-19 10:29:15",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/50"
+        }
+      ]
+    }
+  },
+  {
+    "id": 53,
+    "name": "Remanejo de Mobiliário",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Marcenaria",
+      "completename": "Manutenção > Marcenaria > Remanejo de Mobiliário",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"53\":53}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:31:50",
+      "date_creation": "2023-09-19 10:29:28",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/50"
+        }
+      ]
+    }
+  },
+  {
+    "id": 54,
+    "name": "Outras Atividades",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Marcenaria",
+      "completename": "Manutenção > Marcenaria > Outras Atividades",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"54\":54}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:31:45",
+      "date_creation": "2023-09-19 10:29:39",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/50"
+        }
+      ]
+    }
+  },
+  {
+    "id": 55,
+    "name": "Carregadores",
+    "level": 2,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação",
+      "completename": "Conservação > Carregadores",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:02:10",
+      "date_creation": "2023-09-19 10:39:14",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/99"
+        }
+      ]
+    }
+  },
+  {
+    "id": 56,
+    "name": "Movimentação de Insumos",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Carregadores",
+      "completename": "Conservação > Carregadores > Movimentação de Insumos",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"56\":56}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 21:00:22",
+      "date_creation": "2023-09-19 10:39:33",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/55"
+        }
+      ]
+    }
+  },
+  {
+    "id": 57,
+    "name": "Recolhimento",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Carregadores",
+      "completename": "Conservação > Carregadores > Recolhimento",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"57\":57}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 21:00:41",
+      "date_creation": "2023-09-19 10:39:47",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/55"
+        }
+      ]
+    }
+  },
+  {
+    "id": 58,
+    "name": "Substituição",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Carregadores",
+      "completename": "Conservação > Carregadores > Substituição",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"58\":58}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 21:00:50",
+      "date_creation": "2023-09-19 10:39:59",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/55"
+        }
+      ]
+    }
+  },
+  {
+    "id": 81,
+    "name": "Pedreiro",
+    "level": 1,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": 0,
+      "completename": "Pedreiro",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "[]",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:48:24",
+      "date_creation": "2023-09-19 15:54:12",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        }
+      ]
+    }
+  },
+  {
+    "id": 82,
+    "name": "Instalação",
+    "level": 2,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Pedreiro",
+      "completename": "Pedreiro > Instalação",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"81\":81}",
+      "sons_cache": "{\"82\":82}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:49:13",
+      "date_creation": "2023-09-19 15:54:28",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/81"
+        }
+      ]
+    }
+  },
+  {
+    "id": 83,
+    "name": "Remoção",
+    "level": 2,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Pedreiro",
+      "completename": "Pedreiro > Remoção",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"81\":81}",
+      "sons_cache": "{\"83\":83}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:49:40",
+      "date_creation": "2023-09-19 15:54:46",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/81"
+        }
+      ]
+    }
+  },
+  {
+    "id": 85,
+    "name": "Pintura",
+    "level": 2,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção",
+      "completename": "Manutenção > Pintura",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"104\":104}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:59:02",
+      "date_creation": "2023-09-19 16:07:35",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/104"
+        }
+      ]
+    }
+  },
+  {
+    "id": 86,
+    "name": "Parede",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Pintura",
+      "completename": "Manutenção > Pintura > Parede",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"86\":86}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:59:19",
+      "date_creation": "2023-09-19 16:07:45",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/85"
+        }
+      ]
+    }
+  },
+  {
+    "id": 87,
+    "name": "Outros",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Pintura",
+      "completename": "Manutenção > Pintura > Outros",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"87\":87}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:59:14",
+      "date_creation": "2023-09-19 16:08:01",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/85"
+        }
+      ]
+    }
+  },
+  {
+    "id": 88,
+    "name": "Rede Computadores",
+    "level": 2,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção",
+      "completename": "Manutenção > Rede Computadores",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"104\":104}",
+      "sons_cache": "{\"88\":88,\"91\":91,\"89\":89,\"92\":92,\"90\":90}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-30 00:06:38",
+      "date_creation": "2023-09-19 16:38:52",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/104"
+        }
+      ]
+    }
+  },
+  {
+    "id": 89,
+    "name": "Instalação de Rede Lógica",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Rede Computadores",
+      "completename": "Manutenção > Rede Computadores > Instalação de Rede Lógica",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"89\":89}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-30 00:06:49",
+      "date_creation": "2023-09-19 16:39:10",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/88"
+        }
+      ]
+    }
+  },
+  {
+    "id": 90,
+    "name": "Readequação Rede Lógica",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Rede Computadores",
+      "completename": "Manutenção > Rede Computadores > Readequação Rede Lógica",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"90\":90}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-30 00:06:57",
+      "date_creation": "2023-09-19 16:39:38",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/88"
+        }
+      ]
+    }
+  },
+  {
+    "id": 91,
+    "name": "Conserto Rede Lógica",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Rede Computadores",
+      "completename": "Manutenção > Rede Computadores > Conserto Rede Lógica",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"91\":91}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-30 00:06:45",
+      "date_creation": "2023-09-19 16:39:58",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/88"
+        }
+      ]
+    }
+  },
+  {
+    "id": 92,
+    "name": "Organização de Cabeamento",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Rede Computadores",
+      "completename": "Manutenção > Rede Computadores > Organização de Cabeamento",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"92\":92}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-30 00:07:28",
+      "date_creation": "2023-09-19 16:40:22",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/88"
+        }
+      ]
+    }
+  },
+  {
+    "id": 93,
+    "name": "Saída de Bens Materiais",
+    "level": 1,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": 0,
+      "completename": "Saída de Bens Materiais",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "[]",
+      "sons_cache": "{\"93\":93}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2023-09-28 10:32:15",
+      "date_creation": "2023-09-28 10:32:15",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        }
+      ]
+    }
+  },
+  {
+    "id": 94,
+    "name": "Vidraçaria",
+    "level": 2,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção",
+      "completename": "Manutenção > Vidraçaria",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"104\":104}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-30 00:21:04",
+      "date_creation": "2023-09-28 13:33:43",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/104"
+        }
+      ]
+    }
+  },
+  {
+    "id": 95,
+    "name": "Serralheria",
+    "level": 1,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": 0,
+      "completename": "Serralheria",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "[]",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2023-09-28 13:38:04",
+      "date_creation": "2023-09-28 13:38:04",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        }
+      ]
+    }
+  },
+  {
+    "id": 98,
+    "name": "Copa",
+    "level": 2,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação",
+      "completename": "Conservação > Copa",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 11:32:39",
+      "date_creation": "2025-04-29 11:29:11",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/99"
+        }
+      ]
+    }
+  },
+  {
+    "id": 99,
+    "name": "Conservação",
+    "level": 1,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": 0,
+      "completename": "Conservação",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "[]",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 11:30:05",
+      "date_creation": "2025-04-29 11:30:05",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        }
+      ]
+    }
+  },
+  {
+    "id": 100,
+    "name": "Higienização",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Ar Condicionado",
+      "completename": "Manutenção > Ar Condicionado > Higienização",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": "{\"100\":100}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 20:13:53",
+      "date_creation": "2025-04-29 20:13:53",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/1"
+        }
+      ]
+    }
+  },
+  {
+    "id": 101,
+    "name": "Descarte",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Carregadores",
+      "completename": "Conservação > Carregadores > Descarte",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 21:01:38",
+      "date_creation": "2025-04-29 21:01:38",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/55"
+        }
+      ]
+    }
+  },
+  {
+    "id": 102,
+    "name": "Movimentação Equipamentos",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Carregadores",
+      "completename": "Conservação > Carregadores > Movimentação Equipamentos",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 21:02:29",
+      "date_creation": "2025-04-29 21:02:29",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/55"
+        }
+      ]
+    }
+  },
+  {
+    "id": 103,
+    "name": "Movimentação Mobiliário",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Carregadores",
+      "completename": "Conservação > Carregadores > Movimentação Mobiliário",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": null,
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 21:02:42",
+      "date_creation": "2025-04-29 21:02:42",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/55"
+        }
+      ]
+    }
+  },
+  {
+    "id": 104,
+    "name": "Manutenção",
+    "level": 1,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": 0,
+      "completename": "Manutenção",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "[]",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 21:59:46",
+      "date_creation": "2025-04-29 21:59:46",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        }
+      ]
+    }
+  },
+  {
+    "id": 105,
+    "name": "Agua",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Copa",
+      "completename": "Conservação > Copa > Agua",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"98\":98}",
+      "sons_cache": "{\"105\":105}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:15:32",
+      "date_creation": "2025-04-29 22:15:32",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/98"
+        }
+      ]
+    }
+  },
+  {
+    "id": 106,
+    "name": "Café",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Copa",
+      "completename": "Conservação > Copa > Café",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"98\":98}",
+      "sons_cache": "{\"106\":106}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:15:46",
+      "date_creation": "2025-04-29 22:15:46",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/98"
+        }
+      ]
+    }
+  },
+  {
+    "id": 107,
+    "name": "Limpar louça de salas",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Copa",
+      "completename": "Conservação > Copa > Limpar louça de salas",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"98\":98}",
+      "sons_cache": "{\"107\":107}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:16:11",
+      "date_creation": "2025-04-29 22:16:11",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/98"
+        }
+      ]
+    }
+  },
+  {
+    "id": 108,
+    "name": "Recolher e Limpar Louças Sala de Reunião",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Copa",
+      "completename": "Conservação > Copa > Recolher e Limpar Louças Sala de Reunião",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"98\":98}",
+      "sons_cache": "{\"108\":108}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:16:45",
+      "date_creation": "2025-04-29 22:16:45",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/98"
+        }
+      ]
+    }
+  },
+  {
+    "id": 109,
+    "name": "Repor Café,Agua Sala de reunião",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Copa",
+      "completename": "Conservação > Copa > Repor Café,Agua Sala de reunião",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"98\":98}",
+      "sons_cache": "{\"109\":109}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:16:59",
+      "date_creation": "2025-04-29 22:16:59",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/98"
+        }
+      ]
+    }
+  },
+  {
+    "id": 110,
+    "name": "Repor Louça de salas",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Copa",
+      "completename": "Conservação > Copa > Repor Louça de salas",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"98\":98}",
+      "sons_cache": "{\"110\":110}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:17:17",
+      "date_creation": "2025-04-29 22:17:17",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/98"
+        }
+      ]
+    }
+  },
+  {
+    "id": 111,
+    "name": "Vazamento",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Hidráulica",
+      "completename": "Manutenção > Hidráulica > Vazamento",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"104\":104,\"30\":30}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 22:50:26",
+      "date_creation": "2025-04-29 22:50:26",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/30"
+        }
+      ]
+    }
+  },
+  {
+    "id": 112,
+    "name": "Manutenção de folhagens internas",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Jardinagem",
+      "completename": "Conservação > Jardinagem > Manutenção de folhagens internas",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"37\":37}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:05:24",
+      "date_creation": "2025-04-29 23:05:24",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/37"
+        }
+      ]
+    }
+  },
+  {
+    "id": 113,
+    "name": "Varrição",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Jardinagem",
+      "completename": "Conservação > Jardinagem > Varrição",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"37\":37}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:05:48",
+      "date_creation": "2025-04-29 23:05:48",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/37"
+        }
+      ]
+    }
+  },
+  {
+    "id": 114,
+    "name": "Descarte",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Jardinagem",
+      "completename": "Conservação > Jardinagem > Descarte",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"37\":37}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:06:05",
+      "date_creation": "2025-04-29 23:06:05",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/37"
+        }
+      ]
+    }
+  },
+  {
+    "id": 115,
+    "name": "Retirada de Inço (gramas e canteiros)",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Jardinagem",
+      "completename": "Conservação > Jardinagem > Retirada de Inço (gramas e canteiros)",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"37\":37}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:06:30",
+      "date_creation": "2025-04-29 23:06:30",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/37"
+        }
+      ]
+    }
+  },
+  {
+    "id": 116,
+    "name": "Cri-Cri",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Jardinagem",
+      "completename": "Conservação > Jardinagem > Cri-Cri",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"37\":37}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:06:45",
+      "date_creation": "2025-04-29 23:06:45",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/37"
+        }
+      ]
+    }
+  },
+  {
+    "id": 117,
+    "name": "Irrigar/Molhar",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Jardinagem",
+      "completename": "Conservação > Jardinagem > Irrigar/Molhar",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"37\":37}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:06:59",
+      "date_creation": "2025-04-29 23:06:59",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/37"
+        }
+      ]
+    }
+  },
+  {
+    "id": 118,
+    "name": "Lava a Jato",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Limpeza",
+      "completename": "Conservação > Limpeza > Lava a Jato",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"45\":45}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:18:04",
+      "date_creation": "2025-04-29 23:18:04",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/45"
+        }
+      ]
+    }
+  },
+  {
+    "id": 119,
+    "name": "Bandeirante",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Limpeza",
+      "completename": "Conservação > Limpeza > Bandeirante",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"45\":45}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:18:19",
+      "date_creation": "2025-04-29 23:18:19",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/45"
+        }
+      ]
+    }
+  },
+  {
+    "id": 120,
+    "name": "Janelas e Portas",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Limpeza",
+      "completename": "Conservação > Limpeza > Janelas e Portas",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"45\":45}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:18:37",
+      "date_creation": "2025-04-29 23:18:37",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/45"
+        }
+      ]
+    }
+  },
+  {
+    "id": 121,
+    "name": "Recolher Lixo Orgânico",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Limpeza",
+      "completename": "Conservação > Limpeza > Recolher Lixo Orgânico",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"45\":45}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:18:51",
+      "date_creation": "2025-04-29 23:18:51",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/45"
+        }
+      ]
+    }
+  },
+  {
+    "id": 122,
+    "name": "Reposição Papel Higiênico",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Limpeza",
+      "completename": "Conservação > Limpeza > Reposição Papel Higiênico",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"45\":45}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:19:08",
+      "date_creation": "2025-04-29 23:19:08",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/45"
+        }
+      ]
+    }
+  },
+  {
+    "id": 123,
+    "name": "Reposição Papel Toalha",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Limpeza",
+      "completename": "Conservação > Limpeza > Reposição Papel Toalha",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"45\":45}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:19:22",
+      "date_creation": "2025-04-29 23:19:22",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/45"
+        }
+      ]
+    }
+  },
+  {
+    "id": 124,
+    "name": "Reposição de Sabonete",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Limpeza",
+      "completename": "Conservação > Limpeza > Reposição de Sabonete",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"45\":45}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:19:35",
+      "date_creation": "2025-04-29 23:19:35",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/45"
+        }
+      ]
+    }
+  },
+  {
+    "id": 125,
+    "name": "Varrição",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Limpeza",
+      "completename": "Conservação > Limpeza > Varrição",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"45\":45}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:19:47",
+      "date_creation": "2025-04-29 23:19:47",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/45"
+        }
+      ]
+    }
+  },
+  {
+    "id": 126,
+    "name": "Descarte Lixo Orgânico",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Limpeza",
+      "completename": "Conservação > Limpeza > Descarte Lixo Orgânico",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"45\":45}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:20:03",
+      "date_creation": "2025-04-29 23:20:03",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/45"
+        }
+      ]
+    }
+  },
+  {
+    "id": 127,
+    "name": "Conserto de Aberturas",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Marcenaria",
+      "completename": "Manutenção > Marcenaria > Conserto de Aberturas",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"104\":104,\"50\":50}",
+      "sons_cache": "{\"127\":127}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:28:20",
+      "date_creation": "2025-04-29 23:28:20",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/50"
+        }
+      ]
+    }
+  },
+  {
+    "id": 128,
+    "name": "Mensageria",
+    "level": 2,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação",
+      "completename": "Conservação > Mensageria",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99}",
+      "sons_cache": "{\"128\":\"128\",\"129\":129,\"130\":130,\"131\":131,\"132\":132}",
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:37:21",
+      "date_creation": "2025-04-29 23:37:21",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/99"
+        }
+      ]
+    }
+  },
+  {
+    "id": 129,
+    "name": "Movimentação Documentos",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Mensageria",
+      "completename": "Conservação > Mensageria > Movimentação Documentos",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"128\":128}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:37:38",
+      "date_creation": "2025-04-29 23:37:38",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/128"
+        }
+      ]
+    }
+  },
+  {
+    "id": 130,
+    "name": "Movimentação Insumos até 5Kg",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Mensageria",
+      "completename": "Conservação > Mensageria > Movimentação Insumos até 5Kg",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"128\":128}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:37:50",
+      "date_creation": "2025-04-29 23:37:50",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/128"
+        }
+      ]
+    }
+  },
+  {
+    "id": 131,
+    "name": "Movimentação Materiais até 5Kg",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Mensageria",
+      "completename": "Conservação > Mensageria > Movimentação Materiais até 5Kg",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"128\":128}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:38:04",
+      "date_creation": "2025-04-29 23:38:04",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/128"
+        }
+      ]
+    }
+  },
+  {
+    "id": 132,
+    "name": "Outras entregas e Movimentações até 5Kg",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Conservação &#62; Mensageria",
+      "completename": "Conservação > Mensageria > Outras entregas e Movimentações até 5Kg",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"99\":99,\"128\":128}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:38:18",
+      "date_creation": "2025-04-29 23:38:18",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/128"
+        }
+      ]
+    }
+  },
+  {
+    "id": 133,
+    "name": "Montagem/Desmontagem",
+    "level": 2,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Pedreiro",
+      "completename": "Pedreiro > Montagem/Desmontagem",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"81\":81}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:50:13",
+      "date_creation": "2025-04-29 23:50:13",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/81"
+        }
+      ]
+    }
+  },
+  {
+    "id": 134,
+    "name": "Reparo",
+    "level": 2,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Pedreiro",
+      "completename": "Pedreiro > Reparo",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"81\":81}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:50:31",
+      "date_creation": "2025-04-29 23:50:31",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/81"
+        }
+      ]
+    }
+  },
+  {
+    "id": 135,
+    "name": "Reparo de pedras portuguesas",
+    "level": 2,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Pedreiro",
+      "completename": "Pedreiro > Reparo de pedras portuguesas",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"81\":81}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:50:51",
+      "date_creation": "2025-04-29 23:50:51",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/81"
+        }
+      ]
+    }
+  },
+  {
+    "id": 136,
+    "name": "Aberturas",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Pintura",
+      "completename": "Manutenção > Pintura > Aberturas",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"104\":104,\"85\":85}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-29 23:59:46",
+      "date_creation": "2025-04-29 23:59:46",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/85"
+        }
+      ]
+    }
+  },
+  {
+    "id": 137,
+    "name": "Forro",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Pintura",
+      "completename": "Manutenção > Pintura > Forro",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"104\":104,\"85\":85}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-30 00:00:03",
+      "date_creation": "2025-04-30 00:00:03",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/85"
+        }
+      ]
+    }
+  },
+  {
+    "id": 138,
+    "name": "Mobiliário",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Pintura",
+      "completename": "Manutenção > Pintura > Mobiliário",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"104\":104,\"85\":85}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-30 00:00:15",
+      "date_creation": "2025-04-30 00:00:15",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/85"
+        }
+      ]
+    }
+  },
+  {
+    "id": 139,
+    "name": "Vidro",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Vidraçaria",
+      "completename": "Manutenção > Vidraçaria > Vidro",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"104\":104,\"94\":94}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-30 00:21:33",
+      "date_creation": "2025-04-30 00:21:33",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/94"
+        }
+      ]
+    }
+  },
+  {
+    "id": 140,
+    "name": "Janelas",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Vidraçaria",
+      "completename": "Manutenção > Vidraçaria > Janelas",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"104\":104,\"94\":94}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-30 00:21:46",
+      "date_creation": "2025-04-30 00:21:46",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/94"
+        }
+      ]
+    }
+  },
+  {
+    "id": 141,
+    "name": "Divisórias de vidro",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Vidraçaria",
+      "completename": "Manutenção > Vidraçaria > Divisórias de vidro",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"104\":104,\"94\":94}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-30 00:22:02",
+      "date_creation": "2025-04-30 00:22:02",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/94"
+        }
+      ]
+    }
+  },
+  {
+    "id": 142,
+    "name": "Outros",
+    "level": 3,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção &#62; Vidraçaria",
+      "completename": "Manutenção > Vidraçaria > Outros",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"104\":104,\"94\":94}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-04-30 00:22:15",
+      "date_creation": "2025-04-30 00:22:15",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/94"
+        }
+      ]
+    }
+  },
+  {
+    "id": 143,
+    "name": "Servente",
+    "level": 2,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção",
+      "completename": "Manutenção > Servente",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"104\":104}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-06-17 10:32:25",
+      "date_creation": "2025-06-17 10:32:25",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/104"
+        }
+      ]
+    }
+  },
+  {
+    "id": 144,
+    "name": "Projetos",
+    "level": 2,
+    "parent_id": null,
+    "category": "categories",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "itilcategories_id": "Manutenção",
+      "completename": "Manutenção > Projetos",
+      "comment": "",
+      "knowbaseitemcategories_id": 0,
+      "users_id": 0,
+      "groups_id": 0,
+      "code": "",
+      "ancestors_cache": "{\"104\":104}",
+      "sons_cache": null,
+      "is_helpdeskvisible": 1,
+      "tickettemplates_id_incident": 0,
+      "tickettemplates_id_demand": 0,
+      "changetemplates_id": 0,
+      "problemtemplates_id": 0,
+      "is_incident": 1,
+      "is_request": 1,
+      "is_problem": 1,
+      "is_change": 1,
+      "date_mod": "2025-07-07 16:41:05",
+      "date_creation": "2025-07-07 16:41:05",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        },
+        {
+          "rel": "ITILCategory",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/ITILCategory/104"
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,101 @@
+id,name,level,parent_id,category,status
+1,Ar Condicionado,2,,categories,active
+2,Conserto,3,,categories,active
+3,Desinstalação,3,,categories,active
+4,Instalação,3,,categories,active
+6,Remanejo,3,,categories,active
+7,Outras atividades,3,,categories,active
+22,Elétrica,2,,categories,active
+23,Conserto,3,,categories,active
+24,Instalação,3,,categories,active
+25,Remoção,3,,categories,active
+26,Readequação,3,,categories,active
+27,Troca,3,,categories,active
+28,Descarte,3,,categories,active
+29,Suporte,3,,categories,active
+30,Hidráulica,2,,categories,active
+31,Reparo/Conserto,3,,categories,active
+32,Instalação,3,,categories,active
+33,Remoção,3,,categories,active
+34,Troca,3,,categories,active
+35,Desentupimento,3,,categories,active
+36,Plantação,3,,categories,active
+37,Jardinagem,2,,categories,active
+38,Poda/Corte,3,,categories,active
+39,Remoção,3,,categories,active
+40,Outras Atividades,3,,categories,active
+45,Limpeza,2,,categories,active
+46,Limpeza de banheiros,3,,categories,active
+47,Limpeza geral,3,,categories,active
+48,Outras Atividades,3,,categories,active
+49,Recolher materiais recicláveis,3,,categories,active
+50,Marcenaria,2,,categories,active
+51,Confecção de Mobiliário,3,,categories,active
+52,Conserto de Mobiliário,3,,categories,active
+53,Remanejo de Mobiliário,3,,categories,active
+54,Outras Atividades,3,,categories,active
+55,Carregadores,2,,categories,active
+56,Movimentação de Insumos,3,,categories,active
+57,Recolhimento,3,,categories,active
+58,Substituição,3,,categories,active
+81,Pedreiro,1,,categories,active
+82,Instalação,2,,categories,active
+83,Remoção,2,,categories,active
+85,Pintura,2,,categories,active
+86,Parede,3,,categories,active
+87,Outros,3,,categories,active
+88,Rede Computadores,2,,categories,active
+89,Instalação de Rede Lógica,3,,categories,active
+90,Readequação Rede Lógica,3,,categories,active
+91,Conserto Rede Lógica,3,,categories,active
+92,Organização de Cabeamento,3,,categories,active
+93,Saída de Bens Materiais,1,,categories,active
+94,Vidraçaria,2,,categories,active
+95,Serralheria,1,,categories,active
+98,Copa,2,,categories,active
+99,Conservação,1,,categories,active
+100,Higienização,3,,categories,active
+101,Descarte,3,,categories,active
+102,Movimentação Equipamentos,3,,categories,active
+103,Movimentação Mobiliário,3,,categories,active
+104,Manutenção,1,,categories,active
+105,Agua,3,,categories,active
+106,Café,3,,categories,active
+107,Limpar louça de salas,3,,categories,active
+108,Recolher e Limpar Louças Sala de Reunião,3,,categories,active
+109,"Repor Café,Agua Sala de reunião",3,,categories,active
+110,Repor Louça de salas,3,,categories,active
+111,Vazamento,3,,categories,active
+112,Manutenção de folhagens internas,3,,categories,active
+113,Varrição,3,,categories,active
+114,Descarte,3,,categories,active
+115,Retirada de Inço (gramas e canteiros),3,,categories,active
+116,Cri-Cri,3,,categories,active
+117,Irrigar/Molhar,3,,categories,active
+118,Lava a Jato,3,,categories,active
+119,Bandeirante,3,,categories,active
+120,Janelas e Portas,3,,categories,active
+121,Recolher Lixo Orgânico,3,,categories,active
+122,Reposição Papel Higiênico,3,,categories,active
+123,Reposição Papel Toalha,3,,categories,active
+124,Reposição de Sabonete,3,,categories,active
+125,Varrição,3,,categories,active
+126,Descarte Lixo Orgânico,3,,categories,active
+127,Conserto de Aberturas,3,,categories,active
+128,Mensageria,2,,categories,active
+129,Movimentação Documentos,3,,categories,active
+130,Movimentação Insumos até 5Kg,3,,categories,active
+131,Movimentação Materiais até 5Kg,3,,categories,active
+132,Outras entregas e Movimentações até 5Kg,3,,categories,active
+133,Montagem/Desmontagem,2,,categories,active
+134,Reparo,2,,categories,active
+135,Reparo de pedras portuguesas,2,,categories,active
+136,Aberturas,3,,categories,active
+137,Forro,3,,categories,active
+138,Mobiliário,3,,categories,active
+139,Vidro,3,,categories,active
+140,Janelas,3,,categories,active
+141,Divisórias de vidro,3,,categories,active
+142,Outros,3,,categories,active
+143,Servente,2,,categories,active
+144,Projetos,2,,categories,active

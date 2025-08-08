@@ -1,0 +1,362 @@
+[
+  {
+    "id": 2,
+    "name": "CC-ATENDENTE",
+    "level": 1,
+    "parent_id": null,
+    "category": "groups",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "comment": null,
+      "ldap_field": "memberof",
+      "ldap_value": "CN=GG-CC-ATENDENTE,OU=OTRS,OU=GRUPOS DE RECURSOS,OU=PIRATINI,DC=PPIRATINI,DC=INTRA,DC=RS,DC=GOV,DC=BR",
+      "ldap_group_dn": null,
+      "date_mod": "2023-10-03 10:31:02",
+      "groups_id": 0,
+      "completename": "CC-ATENDENTE",
+      "ancestors_cache": "[]",
+      "sons_cache": "{\"2\":2}",
+      "is_requester": 1,
+      "is_watcher": 1,
+      "is_assign": 1,
+      "is_task": 1,
+      "is_notify": 1,
+      "is_itemgroup": 1,
+      "is_usergroup": 1,
+      "is_manager": 1,
+      "date_creation": "2023-10-03 09:29:56",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        }
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "name": "CC-BIBLIOTECA",
+    "level": 1,
+    "parent_id": null,
+    "category": "groups",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "comment": null,
+      "ldap_field": "memberof",
+      "ldap_value": "CN=GG-CC-BIBLIOTECA,OU=BIBLIOTECA,OU=CC,OU=USUARIOS,OU=PIRATINI,DC=PPIRATINI,DC=INTRA,DC=RS,DC=GOV,DC=BR",
+      "ldap_group_dn": null,
+      "date_mod": "2023-10-03 10:31:09",
+      "groups_id": 0,
+      "completename": "CC-BIBLIOTECA",
+      "ancestors_cache": "[]",
+      "sons_cache": "{\"3\":3}",
+      "is_requester": 1,
+      "is_watcher": 1,
+      "is_assign": 1,
+      "is_task": 1,
+      "is_notify": 1,
+      "is_itemgroup": 1,
+      "is_usergroup": 1,
+      "is_manager": 1,
+      "date_creation": "2023-10-03 09:29:56",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        }
+      ]
+    }
+  },
+  {
+    "id": 4,
+    "name": "CC-CANELA",
+    "level": 1,
+    "parent_id": null,
+    "category": "groups",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "comment": null,
+      "ldap_field": "memberof",
+      "ldap_value": "CN=GG-CC-CANELA,OU=CANELA,OU=CC,OU=USUARIOS,OU=PIRATINI,DC=PPIRATINI,DC=INTRA,DC=RS,DC=GOV,DC=BR",
+      "ldap_group_dn": null,
+      "date_mod": "2023-10-03 10:31:29",
+      "groups_id": 0,
+      "completename": "CC-CANELA",
+      "ancestors_cache": "[]",
+      "sons_cache": "{\"4\":4}",
+      "is_requester": 1,
+      "is_watcher": 1,
+      "is_assign": 1,
+      "is_task": 1,
+      "is_notify": 1,
+      "is_itemgroup": 1,
+      "is_usergroup": 1,
+      "is_manager": 1,
+      "date_creation": "2023-10-03 09:29:56",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        }
+      ]
+    }
+  },
+  {
+    "id": 6,
+    "name": "CC-DAAP",
+    "level": 1,
+    "parent_id": null,
+    "category": "groups",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "comment": null,
+      "ldap_field": "memberof",
+      "ldap_value": "CN=GG-CC-DAAP,OU=DAAP,OU=CC,OU=USUARIOS,OU=PIRATINI,DC=PPIRATINI,DC=INTRA,DC=RS,DC=GOV,DC=BR",
+      "ldap_group_dn": null,
+      "date_mod": "2023-10-03 10:31:41",
+      "groups_id": 0,
+      "completename": "CC-DAAP",
+      "ancestors_cache": "[]",
+      "sons_cache": "{\"6\":6}",
+      "is_requester": 1,
+      "is_watcher": 1,
+      "is_assign": 1,
+      "is_task": 1,
+      "is_notify": 1,
+      "is_itemgroup": 1,
+      "is_usergroup": 1,
+      "is_manager": 1,
+      "date_creation": "2023-10-03 09:29:56",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        }
+      ]
+    }
+  },
+  {
+    "id": 7,
+    "name": "CC-DAP",
+    "level": 1,
+    "parent_id": null,
+    "category": "groups",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "comment": null,
+      "ldap_field": "memberof",
+      "ldap_value": "CN=GG-CC-DAP,OU=DAP,OU=CC,OU=USUARIOS,OU=PIRATINI,DC=PPIRATINI,DC=INTRA,DC=RS,DC=GOV,DC=BR",
+      "ldap_group_dn": null,
+      "date_mod": "2023-10-03 10:31:47",
+      "groups_id": 0,
+      "completename": "CC-DAP",
+      "ancestors_cache": "[]",
+      "sons_cache": "{\"7\":7}",
+      "is_requester": 1,
+      "is_watcher": 1,
+      "is_assign": 1,
+      "is_task": 1,
+      "is_notify": 1,
+      "is_itemgroup": 1,
+      "is_usergroup": 1,
+      "is_manager": 1,
+      "date_creation": "2023-10-03 09:29:56",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        }
+      ]
+    }
+  },
+  {
+    "id": 8,
+    "name": "CC-DGAP",
+    "level": 1,
+    "parent_id": null,
+    "category": "groups",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "comment": null,
+      "ldap_field": "memberof",
+      "ldap_value": "CN=GG-CC-DGAP,OU=DGAP,OU=CC,OU=USUARIOS,OU=PIRATINI,DC=PPIRATINI,DC=INTRA,DC=RS,DC=GOV,DC=BR",
+      "ldap_group_dn": null,
+      "date_mod": "2023-10-03 10:31:53",
+      "groups_id": 0,
+      "completename": "CC-DGAP",
+      "ancestors_cache": "[]",
+      "sons_cache": "{\"8\":8}",
+      "is_requester": 1,
+      "is_watcher": 1,
+      "is_assign": 1,
+      "is_task": 1,
+      "is_notify": 1,
+      "is_itemgroup": 1,
+      "is_usergroup": 1,
+      "is_manager": 1,
+      "date_creation": "2023-10-03 09:29:56",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        }
+      ]
+    }
+  },
+  {
+    "id": 9,
+    "name": "CC-DPO",
+    "level": 1,
+    "parent_id": null,
+    "category": "groups",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "comment": null,
+      "ldap_field": "memberof",
+      "ldap_value": "CN=GG-CC-DPO,OU=DPO,OU=CC,OU=USUARIOS,OU=PIRATINI,DC=PPIRATINI,DC=INTRA,DC=RS,DC=GOV,DC=BR",
+      "ldap_group_dn": null,
+      "date_mod": "2023-10-03 10:31:58",
+      "groups_id": 0,
+      "completename": "CC-DPO",
+      "ancestors_cache": "[]",
+      "sons_cache": "{\"9\":9}",
+      "is_requester": 1,
+      "is_watcher": 1,
+      "is_assign": 1,
+      "is_task": 1,
+      "is_notify": 1,
+      "is_itemgroup": 1,
+      "is_usergroup": 1,
+      "is_manager": 1,
+      "date_creation": "2023-10-03 09:29:56",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        }
+      ]
+    }
+  },
+  {
+    "id": 10,
+    "name": "CC-DRH",
+    "level": 1,
+    "parent_id": null,
+    "category": "groups",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "comment": null,
+      "ldap_field": "memberof",
+      "ldap_value": "CN=GG-CC-DRH,OU=DRH,OU=CC,OU=USUARIOS,OU=PIRATINI,DC=PPIRATINI,DC=INTRA,DC=RS,DC=GOV,DC=BR",
+      "ldap_group_dn": null,
+      "date_mod": "2023-10-03 10:32:06",
+      "groups_id": 0,
+      "completename": "CC-DRH",
+      "ancestors_cache": "[]",
+      "sons_cache": "{\"10\":10}",
+      "is_requester": 1,
+      "is_watcher": 1,
+      "is_assign": 1,
+      "is_task": 1,
+      "is_notify": 1,
+      "is_itemgroup": 1,
+      "is_usergroup": 1,
+      "is_manager": 1,
+      "date_creation": "2023-10-03 09:29:56",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        }
+      ]
+    }
+  },
+  {
+    "id": 11,
+    "name": "CC-DSP",
+    "level": 1,
+    "parent_id": null,
+    "category": "groups",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "comment": null,
+      "ldap_field": "memberof",
+      "ldap_value": "CN=GG-CC-DSP,OU=MANUTENCAO,OU=CC,OU=USUARIOS,OU=PIRATINI,DC=PPIRATINI,DC=INTRA,DC=RS,DC=GOV,DC=BR",
+      "ldap_group_dn": null,
+      "date_mod": "2023-10-03 10:32:11",
+      "groups_id": 0,
+      "completename": "CC-DSP",
+      "ancestors_cache": "[]",
+      "sons_cache": "{\"11\":11}",
+      "is_requester": 1,
+      "is_watcher": 1,
+      "is_assign": 1,
+      "is_task": 1,
+      "is_notify": 1,
+      "is_itemgroup": 1,
+      "is_usergroup": 1,
+      "is_manager": 1,
+      "date_creation": "2023-10-03 09:29:56",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        }
+      ]
+    }
+  },
+  {
+    "id": 12,
+    "name": "CC-DTIC",
+    "level": 1,
+    "parent_id": null,
+    "category": "groups",
+    "status": "active",
+    "metadata": {
+      "entities_id": "Origem",
+      "is_recursive": 1,
+      "comment": null,
+      "ldap_field": "memberof",
+      "ldap_value": "CN=GG-CC-DTIC,OU=DTIC,OU=CC,OU=USUARIOS,OU=PIRATINI,DC=PPIRATINI,DC=INTRA,DC=RS,DC=GOV,DC=BR",
+      "ldap_group_dn": null,
+      "date_mod": "2025-07-30 15:26:54",
+      "groups_id": 0,
+      "completename": "CC-DTIC",
+      "ancestors_cache": "[]",
+      "sons_cache": "{\"12\":12}",
+      "is_requester": 1,
+      "is_watcher": 1,
+      "is_assign": 1,
+      "is_task": 1,
+      "is_notify": 0,
+      "is_itemgroup": 1,
+      "is_usergroup": 1,
+      "is_manager": 1,
+      "date_creation": "2023-10-03 09:29:56",
+      "links": [
+        {
+          "rel": "Entity",
+          "href": "http://cau.ppiratini.intra.rs.gov.br/sis/front/apirest.php/Entity/0"
+        }
+      ]
+    }
+  }
+]
