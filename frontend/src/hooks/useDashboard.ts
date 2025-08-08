@@ -196,26 +196,84 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
 
   const loadData = useCallback(async (newFilters?: FilterParams) => {
     const filtersToUse = newFilters || filters;
+    const requestId = `dashboard_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
-    // console.log('🔄 useDashboard - Iniciando loadData com filtros:', filtersToUse);
+    console.log(`[${requestId}] 🔄 Iniciando loadData com filtros:`, filtersToUse);
     
     setLoading(true);
     setError(null);
     
     try {
+      // Validar filtros antes de fazer a requisição
+      if (filtersToUse.dateRange) {
+        const { startDate, endDate } = filtersToUse.dateRange;
+        if (startDate && endDate) {
+          const start = new Date(startDate);
+          const end = new Date(endDate);
+          
+          if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+            throw new Error('Datas inválidas fornecidas nos filtros');
+          }
+          
+          if (start > end) {
+            throw new Error('Data inicial não pode ser posterior à data final');
+          }
+          
+          // Verificar se o intervalo não é muito grande (máximo 1 ano)
+          const diffTime = Math.abs(end.getTime() - start.getTime());
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          if (diffDays > 365) {
+            throw new Error('Intervalo de datas não pode ser superior a 1 ano');
+          }
+        }
+      }
+      
       const startTime = window.performance.now();
       
-      // Fazer chamadas paralelas para todos os endpoints
-      const [metricsResult] = await Promise.all([
-        fetchDashboardMetrics(filtersToUse)
-      ]);
+      // Fazer chamadas paralelas para todos os endpoints com timeout
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Timeout: Requisição demorou mais de 30 segundos')), 30000);
+      });
       
-      // console.log('📥 useDashboard - Resultado recebido de fetchDashboardMetrics:', metricsResult);
-      // console.log('📥 useDashboard - Resultado recebido de getSystemStatus:', systemStatusResult);
-      // console.log('📥 useDashboard - Resultado recebido de getTechnicianRanking:', technicianRankingResult);
+      const [metricsResult] = await Promise.race([
+        Promise.all([
+          fetchDashboardMetrics(filtersToUse)
+        ]),
+        timeoutPromise
+      ]) as [any];
+      
+      console.log(`[${requestId}] 📥 Resultado recebido:`, metricsResult);
       
       const endTime = window.performance.now();
       const responseTime = endTime - startTime;
+      
+      // Validar estrutura dos dados recebidos
+      if (metricsResult && typeof metricsResult === 'object') {
+        // Verificar se tem as propriedades essenciais
+        const requiredProps = ['novos', 'pendentes', 'progresso', 'resolvidos', 'total'];
+        const missingProps = requiredProps.filter(prop => !(prop in metricsResult));
+        
+        if (missingProps.length > 0) {
+          console.warn(`[${requestId}] ⚠️ Propriedades ausentes nos dados:`, missingProps);
+        }
+        
+        // Validar se os valores são números válidos
+        const numericProps = ['novos', 'pendentes', 'progresso', 'resolvidos', 'total'];
+        for (const prop of numericProps) {
+          if (metricsResult[prop] !== undefined && (typeof metricsResult[prop] !== 'number' || isNaN(metricsResult[prop]))) {
+            console.warn(`[${requestId}] ⚠️ Valor inválido para ${prop}:`, metricsResult[prop]);
+            metricsResult[prop] = 0; // Valor padrão
+          }
+        }
+        
+        // Verificar consistência dos dados
+        const calculatedTotal = (metricsResult.novos || 0) + (metricsResult.pendentes || 0) + 
+                               (metricsResult.progresso || 0) + (metricsResult.resolvidos || 0);
+        
+        if (metricsResult.total !== calculatedTotal && calculatedTotal > 0) {
+          console.warn(`[${requestId}] ⚠️ Inconsistência nos totais: declarado=${metricsResult.total}, calculado=${calculatedTotal}`);
+        }
+      }
       
       // Criar métricas de performance
       const perfMetrics: PerformanceMetrics = {
@@ -226,23 +284,50 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
       };
       
       if (metricsResult) {
-        // Combiner todos os dados em um objeto DashboardMetrics
+        // Combinar todos os dados em um objeto DashboardMetrics
         const combinedData: DashboardMetrics = {
-          ...metricsResult
+          ...initialMetrics, // Usar valores padrão como base
+          ...metricsResult   // Sobrescrever com dados recebidos
         };
         
-        // console.log('✅ useDashboard - Definindo dados combinados no estado:', combinedData);
+        console.log(`[${requestId}] ✅ Dados processados e validados:`, combinedData);
         setData(combinedData);
         setLastUpdated(new Date());
         setPerformance(perfMetrics);
         setError(null);
+        
+        // Log de performance
+        if (responseTime > 5000) {
+          console.warn(`[${requestId}] ⚠️ Requisição lenta: ${responseTime.toFixed(2)}ms`);
+        } else {
+          console.log(`[${requestId}] ⚡ Requisição concluída em ${responseTime.toFixed(2)}ms`);
+        }
       } else {
-        console.error('❌ useDashboard - Resultado de métricas é null/undefined');
-        setError('Falha ao carregar dados do dashboard');
+        console.error(`[${requestId}] ❌ Resultado de métricas é null/undefined`);
+        setError('Falha ao carregar dados do dashboard - resposta vazia');
       }
     } catch (err) {
-      console.error('❌ useDashboard - Erro ao carregar dados:', err);
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      console.error(`[${requestId}] ❌ Erro ao carregar dados:`, err);
+      
+      let errorMessage = 'Erro desconhecido';
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === 'string') {
+        errorMessage = err;
+      }
+      
+      // Categorizar tipos de erro
+      if (errorMessage.includes('timeout') || errorMessage.includes('Timeout')) {
+        errorMessage = 'Timeout: O servidor demorou muito para responder';
+      } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+        errorMessage = 'Erro de rede: Verifique sua conexão com a internet';
+      } else if (errorMessage.includes('401') || errorMessage.includes('403')) {
+        errorMessage = 'Erro de autenticação: Verifique suas credenciais';
+      } else if (errorMessage.includes('500')) {
+        errorMessage = 'Erro interno do servidor: Tente novamente em alguns minutos';
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

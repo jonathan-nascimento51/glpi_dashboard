@@ -1,0 +1,225 @@
+name: ✨ Feature Request
+description: Sugerir uma nova funcionalidade ou melhoria
+title: "[FEATURE] "
+labels: ["enhancement", "needs-triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por sugerir uma nova funcionalidade! Por favor, preencha as informações abaixo para nos ajudar a entender e avaliar sua proposta.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Por favor, confirme que você:
+      options:
+        - label: Pesquisei por feature requests similares existentes
+          required: true
+        - label: Li o roadmap do projeto
+          required: true
+        - label: Esta funcionalidade está alinhada com os objetivos do projeto
+          required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema ou Necessidade
+      description: Descreva o problema que esta funcionalidade resolveria ou a necessidade que ela atenderia.
+      placeholder: |
+        Qual problema você está tentando resolver?
+        Por que esta funcionalidade é necessária?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solução Proposta
+      description: Descreva a solução que você gostaria de ver implementada.
+      placeholder: |
+        Como você imagina que esta funcionalidade deveria funcionar?
+        Quais seriam os principais componentes?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas Consideradas
+      description: Descreva quaisquer soluções alternativas ou funcionalidades que você considerou.
+      placeholder: |
+        Que outras abordagens você considerou?
+        Por que a solução proposta é melhor?
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Componente Afetado
+      description: Qual componente seria afetado por esta funcionalidade?
+      options:
+        - Frontend (React/TypeScript)
+        - Backend (Python/FastAPI)
+        - API GLPI Integration
+        - Database
+        - Authentication
+        - Dashboard Metrics
+        - Cache System
+        - CI/CD Pipeline
+        - Documentation
+        - Multiple Components
+        - New Component
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridade
+      description: Qual é a prioridade desta funcionalidade?
+      options:
+        - Critical (Bloqueador para uso)
+        - High (Muito importante)
+        - Medium (Importante)
+        - Low (Nice to have)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: Complexidade Estimada
+      description: Qual você acredita ser a complexidade desta implementação?
+      options:
+        - Low (Algumas horas)
+        - Medium (Alguns dias)
+        - High (Algumas semanas)
+        - Very High (Alguns meses)
+        - Unknown
+    validations:
+      required: true
+
+  - type: textarea
+    id: user_stories
+    attributes:
+      label: User Stories
+      description: Descreva como diferentes tipos de usuários usariam esta funcionalidade.
+      placeholder: |
+        Como [tipo de usuário], eu quero [funcionalidade] para que [benefício].
+        
+        Exemplo:
+        - Como administrador, eu quero filtrar tickets por técnico para que eu possa avaliar a performance individual.
+        - Como técnico, eu quero ver meus tickets em aberto para que eu possa priorizar meu trabalho.
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Critérios de Aceitação
+      description: Liste os critérios que devem ser atendidos para considerar esta funcionalidade completa.
+      placeholder: |
+        - [ ] Critério 1
+        - [ ] Critério 2
+        - [ ] Critério 3
+        - [ ] Testes unitários implementados
+        - [ ] Documentação atualizada
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups/Wireframes
+      description: Se aplicável, adicione mockups, wireframes ou screenshots de como você imagina a interface.
+      placeholder: Cole imagens ou links para mockups aqui...
+
+  - type: textarea
+    id: technical_details
+    attributes:
+      label: Detalhes Técnicos
+      description: Forneça detalhes técnicos sobre a implementação, se você tiver ideias específicas.
+      placeholder: |
+        - APIs necessárias
+        - Estruturas de dados
+        - Considerações de performance
+        - Impacto em componentes existentes
+
+  - type: checkboxes
+    id: breaking_changes
+    attributes:
+      label: Breaking Changes
+      description: Esta funcionalidade introduziria mudanças que quebram compatibilidade?
+      options:
+        - label: Esta funcionalidade pode introduzir breaking changes
+        - label: Esta funcionalidade requer migração de dados
+        - label: Esta funcionalidade afeta APIs existentes
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependências
+      description: Esta funcionalidade depende de outras funcionalidades ou bibliotecas externas?
+      placeholder: |
+        - Dependência 1
+        - Dependência 2
+        - Funcionalidades relacionadas
+
+  - type: dropdown
+    id: target_users
+    attributes:
+      label: Usuários Alvo
+      description: Quem são os principais usuários que se beneficiariam desta funcionalidade?
+      options:
+        - Administradores
+        - Técnicos
+        - Gerentes
+        - Usuários Finais
+        - Desenvolvedores
+        - Todos os Usuários
+    validations:
+      required: true
+
+  - type: textarea
+    id: business_value
+    attributes:
+      label: Valor de Negócio
+      description: Qual é o valor de negócio ou benefício que esta funcionalidade traria?
+      placeholder: |
+        - Melhoria na produtividade
+        - Redução de custos
+        - Melhor experiência do usuário
+        - Conformidade com regulamentações
+        - Vantagem competitiva
+    validations:
+      required: true
+
+  - type: textarea
+    id: metrics
+    attributes:
+      label: Métricas de Sucesso
+      description: Como você mediria o sucesso desta funcionalidade?
+      placeholder: |
+        - Métrica 1: [descrição]
+        - Métrica 2: [descrição]
+        - KPIs relevantes
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Contexto Adicional
+      description: Adicione qualquer outro contexto, links ou informações sobre a feature request.
+      placeholder: |
+        - Links para documentação relevante
+        - Exemplos de implementações similares
+        - Feedback de usuários
+        - Qualquer outra informação útil
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribuição
+      description: Você estaria disposto a contribuir com a implementação?
+      options:
+        - label: Posso ajudar com o design/especificação
+        - label: Posso ajudar com a implementação
+        - label: Posso ajudar com testes
+        - label: Posso ajudar com documentação
+        - label: Posso fornecer feedback durante o desenvolvimento

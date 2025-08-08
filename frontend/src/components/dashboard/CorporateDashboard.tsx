@@ -46,6 +46,7 @@ interface CorporateMetricCardProps {
   }
   onClick?: () => void
   className?: string
+  statusClass?: string
 }
 
 const CorporateMetricCard: React.FC<CorporateMetricCardProps> = ({
@@ -55,7 +56,8 @@ const CorporateMetricCard: React.FC<CorporateMetricCardProps> = ({
   icon: Icon,
   trend,
   onClick,
-  className
+  className,
+  statusClass
 }) => {
   return (
     <motion.div
@@ -67,7 +69,7 @@ const CorporateMetricCard: React.FC<CorporateMetricCardProps> = ({
         className
       )}
     >
-      <Card className="figma-glass-card h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+      <Card className={cn("figma-glass-card h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300", statusClass)}>
         <CardContent className="p-6">
           <div className="flex items-start justify-between">
             <div className="flex-1">
@@ -274,28 +276,32 @@ export const CorporateDashboard: React.FC<CorporateDashboardProps> = ({
       value: (metrics.novos || 0).toLocaleString(),
       subtitle: "Aguardando atendimento",
       icon: AlertCircle,
-      onClick: () => onFilterByStatus?.("new")
+      onClick: () => onFilterByStatus?.("new"),
+      statusClass: "status-new"
     },
     {
       title: "Em Progresso",
       value: (metrics.progresso || 0).toLocaleString(),
       subtitle: "Sendo processados",
       icon: Settings,
-      onClick: () => onFilterByStatus?.("progress")
+      onClick: () => onFilterByStatus?.("progress"),
+      statusClass: "status-progress"
     },
     {
       title: "Pendentes",
       value: (metrics.pendentes || 0).toLocaleString(),
       subtitle: "Aguardando informações",
       icon: Clock,
-      onClick: () => onFilterByStatus?.("pending")
+      onClick: () => onFilterByStatus?.("pending"),
+      statusClass: "status-pending"
     },
     {
       title: "Resolvidos",
       value: (metrics.resolvidos || 0).toLocaleString(),
       subtitle: "Concluídos com sucesso",
       icon: CheckCircle2,
-      onClick: () => onFilterByStatus?.("resolved")
+      onClick: () => onFilterByStatus?.("resolved"),
+      statusClass: "status-resolved"
     }
   ], [metrics, onFilterByStatus])
 

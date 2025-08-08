@@ -1,0 +1,105 @@
+/*
+ * ==================================================================
+ *                          DARK THEME STYLES
+ * ==================================================================
+ *
+ * Instruções:
+ * 1. Salve este arquivo como `dark-theme.css` dentro de `frontend/src/styles/`.
+ *
+ * 2. Importe este arquivo no seu componente React principal (ex: App.tsx ou index.tsx).
+ *    import './styles/dark-theme.css';
+ *
+ * 3. Adicione o atributo `data-theme="dark"` ao elemento `<body>` ou `<html>`
+ *    para ativar o modo escuro. Você pode fazer isso com um hook do React.
+ */
+
+[data-theme='dark'] {
+  /* -- Cores Base -- */
+  --background-primary: #121212;    /* Fundo principal, bem escuro */
+  --background-secondary: #1e1e1e;  /* Fundo de elementos como cards, modais */
+  --background-tertiary: #2a2a2a;   /* Fundo para hover, elementos ativos */
+
+  /* -- Cores de Texto (CORREÇÃO PRINCIPAL) -- */
+  --text-primary: #e0e0e0;   /* Cor principal para textos (clara) */
+  --text-secondary: #b3b3b3; /* Cor para textos secundários, placeholders */
+  --text-disabled: #757575;  /* Cor para textos desabilitados */
+  --text-link: #64b5f6;      /* Cor para links */
+
+  /* -- Cores de Borda -- */
+  --border-primary: #3c3c3c;
+  --border-secondary: #555555;
+
+  /* -- Cores de Acento e Status -- */
+  --accent-primary: #0d6efd; /* Azul do Bootstrap */
+  --status-success: #198754; /* Verde do Bootstrap */
+  --status-warning: #ffc107; /* Amarelo do Bootstrap */
+  --status-error: #dc3545;   /* Vermelho do Bootstrap */
+  --status-info: #0dcaf0;    /* Ciano do Bootstrap */
+
+  /*
+   * ==================================================================
+   *       Sobrescrevendo estilos de componentes específicos
+   * ==================================================================
+   * OBS: Ajuste os seletores (.card, .table, etc) para corresponder
+   *      às classes CSS exatas do seu projeto, se necessário.
+   */
+
+  /* Cards, Widgets, Contêineres */
+  .card, .metric-card, .chart-container, .widget {
+    background-color: var(--background-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-primary);
+    box-shadow: none; /* Remover sombras que podem não ficar bem no escuro */
+  }
+
+  .card-header, .widget-title {
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-primary);
+  }
+
+  /* Tabelas */
+  .table {
+    color: var(--text-primary);
+    border-color: var(--border-primary);
+  }
+
+  .table > :not(caption) > * > * {
+    background-color: transparent;
+    color: var(--text-primary);
+    border-color: var(--border-primary);
+  }
+
+  .table-striped > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-accent-bg: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+  }
+
+  .table-hover > tbody > tr:hover > * {
+    --bs-table-accent-bg: rgba(255, 255, 255, 0.075);
+    color: var(--text-primary);
+  }
+
+  /* Botões */
+  .btn-secondary {
+    background-color: var(--background-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-secondary);
+  }
+
+  /* Inputs, Selects, Textareas */
+  .form-control, .form-select {
+    background-color: var(--background-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-secondary);
+  }
+
+  .form-control::placeholder, textarea::placeholder {
+    color: var(--text-secondary);
+  }
+}
+
+/* Aplica as cores base ao body quando o tema escuro está ativo */
+body[data-theme='dark'] {
+    background-color: var(--background-primary);
+    color: var(--text-primary);
+}

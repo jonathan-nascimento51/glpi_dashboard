@@ -1,0 +1,393 @@
+name: 🤖 Automation
+
+on:
+  issues:
+    types: [opened, edited, labeled, unlabeled]
+  pull_request:
+    types: [opened, edited, labeled, unlabeled, synchronize]
+  pull_request_review:
+    types: [submitted]
+  schedule:
+    # Executa diariamente às 2:00 UTC para limpeza e manutenção
+    - cron: '0 2 * * *'
+
+jobs:
+  # Auto-labeling para issues e PRs
+  auto-label:
+    name: 🏷️ Auto Label
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues' || github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Auto Label Issues
+        if: github.event_name == 'issues'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+            
+            const title = issue.title.toLowerCase();
+            const body = issue.body ? issue.body.toLowerCase() : '';
+            const labels = [];
+            
+            // Labels baseadas no título
+            if (title.includes('[bug]') || title.includes('bug:')) {
+              labels.push('bug');
+            }
+            if (title.includes('[feature]') || title.includes('feat:')) {
+              labels.push('enhancement');
+            }
+            if (title.includes('[docs]') || title.includes('documentation')) {
+              labels.push('documentation');
+            }
+            
+            // Labels baseadas no conteúdo
+            if (body.includes('frontend') || body.includes('react') || body.includes('typescript')) {
+              labels.push('frontend');
+            }
+            if (body.includes('backend') || body.includes('python') || body.includes('fastapi')) {
+              labels.push('backend');
+            }
+            if (body.includes('glpi') || body.includes('api integration')) {
+              labels.push('glpi-integration');
+            }
+            if (body.includes('database') || body.includes('sql') || body.includes('migration')) {
+              labels.push('database');
+            }
+            if (body.includes('security') || body.includes('vulnerability')) {
+              labels.push('security');
+            }
+            if (body.includes('performance') || body.includes('optimization')) {
+              labels.push('performance');
+            }
+            if (body.includes('test') || body.includes('testing')) {
+              labels.push('testing');
+            }
+            
+            // Severidade para bugs
+            if (labels.includes('bug')) {
+              if (body.includes('critical') || body.includes('sistema não funciona')) {
+                labels.push('critical');
+              } else if (body.includes('high') || body.includes('funcionalidade principal')) {
+                labels.push('high-priority');
+              } else if (body.includes('medium')) {
+                labels.push('medium-priority');
+              } else if (body.includes('low') || body.includes('cosmético')) {
+                labels.push('low-priority');
+              }
+            }
+            
+            // Adiciona labels se houver alguma
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: labels
+              });
+            }
+
+      - name: Auto Label Pull Requests
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            
+            const title = pr.title.toLowerCase();
+            const body = pr.body ? pr.body.toLowerCase() : '';
+            const labels = [];
+            
+            // Labels baseadas no tipo de commit
+            if (title.includes('feat:') || title.includes('feature')) {
+              labels.push('enhancement');
+            }
+            if (title.includes('fix:') || title.includes('bugfix')) {
+              labels.push('bug');
+            }
+            if (title.includes('docs:') || title.includes('documentation')) {
+              labels.push('documentation');
+            }
+            if (title.includes('refactor:') || title.includes('refactoring')) {
+              labels.push('refactoring');
+            }
+            if (title.includes('perf:') || title.includes('performance')) {
+              labels.push('performance');
+            }
+            if (title.includes('test:') || title.includes('testing')) {
+              labels.push('testing');
+            }
+            if (title.includes('ci:') || title.includes('build:')) {
+              labels.push('ci/cd');
+            }
+            
+            // Labels baseadas nos arquivos modificados
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            
+            const frontendFiles = files.filter(f => f.filename.startsWith('frontend/'));
+            const backendFiles = files.filter(f => f.filename.startsWith('backend/'));
+            const docsFiles = files.filter(f => f.filename.endsWith('.md') || f.filename.startsWith('docs/'));
+            const configFiles = files.filter(f => 
+              f.filename.includes('docker') || 
+              f.filename.includes('.yml') || 
+              f.filename.includes('.yaml') || 
+              f.filename.includes('Makefile') ||
+              f.filename.includes('.github/')
+            );
+            
+            if (frontendFiles.length > 0) labels.push('frontend');
+            if (backendFiles.length > 0) labels.push('backend');
+            if (docsFiles.length > 0) labels.push('documentation');
+            if (configFiles.length > 0) labels.push('ci/cd');
+            
+            // Breaking changes
+            if (body.includes('breaking change') || title.includes('!:')) {
+              labels.push('breaking-change');
+            }
+            
+            // Tamanho do PR
+            const totalChanges = files.reduce((acc, file) => acc + file.changes, 0);
+            if (totalChanges > 500) {
+              labels.push('large-pr');
+            } else if (totalChanges < 50) {
+              labels.push('small-pr');
+            }
+            
+            // Adiciona labels se houver alguma
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: labels
+              });
+            }
+
+  # Verificação de qualidade para PRs
+  pr-quality-check:
+    name: 🔍 PR Quality Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check PR Title
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = context.payload.pull_request.title;
+            const conventionalCommitPattern = /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?!?: .+/;
+            
+            if (!conventionalCommitPattern.test(title)) {
+              github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: `⚠️ **Título do PR não segue o padrão Conventional Commits**\n\nPor favor, use o formato: \`tipo(escopo): descrição\`\n\nExemplos:\n- \`feat(dashboard): adicionar filtro por técnico\`\n- \`fix(api): corrigir timeout na busca de tickets\`\n- \`docs: atualizar README com instruções de instalação\`\n\nVeja mais detalhes em [Conventional Commits](https://www.conventionalcommits.org/).`
+              });
+            }
+
+      - name: Check PR Size
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            
+            const totalChanges = files.reduce((acc, file) => acc + file.changes, 0);
+            const filesCount = files.length;
+            
+            if (totalChanges > 1000 || filesCount > 50) {
+              github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: `📏 **PR Grande Detectado**\n\nEste PR tem ${totalChanges} mudanças em ${filesCount} arquivos.\n\n**Recomendações:**\n- Considere dividir em PRs menores\n- Certifique-se de que todas as mudanças estão relacionadas\n- Adicione descrição detalhada das mudanças\n- Considere adicionar mais revisores`
+              });
+            }
+
+      - name: Check for TODO/FIXME
+        run: |
+          if grep -r "TODO\|FIXME\|XXX\|HACK" --include="*.py" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" .; then
+            echo "⚠️ TODO/FIXME encontrados no código"
+            echo "::warning::TODO/FIXME encontrados. Considere resolver antes do merge."
+          fi
+
+  # Atualização automática de dependências
+  dependency-update:
+    name: 📦 Dependency Update Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Check Python Dependencies
+        run: |
+          cd backend
+          pip install pip-audit
+          pip-audit --format=json --output=audit-report.json || true
+          if [ -s audit-report.json ]; then
+            echo "🚨 Vulnerabilidades encontradas nas dependências Python"
+          fi
+
+      - name: Check Node Dependencies
+        run: |
+          cd frontend
+          npm audit --audit-level=moderate --json > audit-report.json || true
+          if [ -s audit-report.json ]; then
+            echo "🚨 Vulnerabilidades encontradas nas dependências Node.js"
+          fi
+
+  # Limpeza automática
+  cleanup:
+    name: 🧹 Cleanup
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - name: Close Stale Issues
+        uses: actions/stale@v8
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          stale-issue-message: |
+            Esta issue foi marcada como stale porque não teve atividade recente.
+            Ela será fechada em 7 dias se não houver atividade adicional.
+            Se você acredita que esta issue ainda é relevante, por favor comente.
+          close-issue-message: |
+            Esta issue foi fechada automaticamente devido à inatividade.
+            Se você acredita que ela ainda é relevante, por favor reabra.
+          stale-pr-message: |
+            Este PR foi marcado como stale porque não teve atividade recente.
+            Ele será fechado em 7 dias se não houver atividade adicional.
+          close-pr-message: |
+            Este PR foi fechado automaticamente devido à inatividade.
+            Se você ainda deseja fazer merge, por favor reabra e atualize.
+          days-before-stale: 30
+          days-before-close: 7
+          stale-issue-label: 'stale'
+          stale-pr-label: 'stale'
+          exempt-issue-labels: 'pinned,security,critical'
+          exempt-pr-labels: 'pinned,security,critical'
+
+  # Notificações para revisões
+  review-notifications:
+    name: 📢 Review Notifications
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    steps:
+      - name: Request Reviews
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            
+            // Determina revisores baseado nos arquivos modificados
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            
+            const reviewers = new Set();
+            
+            // Adiciona revisores baseado nos arquivos
+            const frontendFiles = files.filter(f => f.filename.startsWith('frontend/'));
+            const backendFiles = files.filter(f => f.filename.startsWith('backend/'));
+            const docsFiles = files.filter(f => f.filename.endsWith('.md'));
+            
+            // Aqui você pode adicionar lógica para atribuir revisores específicos
+            // baseado nos arquivos modificados ou outras regras
+            
+            let message = `🔍 **Revisão Solicitada**\n\n`;
+            message += `Este PR modifica:\n`;
+            if (frontendFiles.length > 0) message += `- 🎨 Frontend (${frontendFiles.length} arquivos)\n`;
+            if (backendFiles.length > 0) message += `- ⚙️ Backend (${backendFiles.length} arquivos)\n`;
+            if (docsFiles.length > 0) message += `- 📚 Documentação (${docsFiles.length} arquivos)\n`;
+            
+            message += `\n**Checklist para Revisores:**\n`;
+            message += `- [ ] Código segue padrões do projeto\n`;
+            message += `- [ ] Testes adequados incluídos\n`;
+            message += `- [ ] Documentação atualizada\n`;
+            message += `- [ ] Sem problemas de segurança\n`;
+            message += `- [ ] Performance aceitável\n`;
+            
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: message
+            });
+
+  # Métricas e relatórios
+  metrics:
+    name: 📊 Metrics
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - name: Generate Weekly Report
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            
+            // Issues criadas na semana
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all',
+              since: oneWeekAgo.toISOString()
+            });
+            
+            // PRs criados na semana
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all',
+              sort: 'created',
+              direction: 'desc'
+            });
+            
+            const recentPRs = prs.filter(pr => new Date(pr.created_at) > oneWeekAgo);
+            
+            console.log(`📊 Relatório Semanal:`);
+            console.log(`- Issues criadas: ${issues.length}`);
+            console.log(`- PRs criados: ${recentPRs.length}`);
+            console.log(`- PRs merged: ${recentPRs.filter(pr => pr.merged_at).length}`);
+            
+            // Aqui você pode adicionar lógica para enviar relatórios
+            // para Slack, Discord, email, etc.

@@ -8,16 +8,25 @@ import json
 from datetime import datetime, timedelta
 from backend.config.settings import active_config
 from backend.utils.response_formatter import ResponseFormatter
+from backend.utils.validators import validate_api_response, sanitize_input, ValidationError
+import traceback
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 
 class GLPIService:
-    """Serviço para integração com a API do GLPI com autenticação robusta"""
+    """Serviço para integração com a API do GLPI com autenticação robusta e monitoramento aprimorado"""
     
     def __init__(self):
         self.glpi_url = active_config.GLPI_URL
         self.app_token = active_config.GLPI_APP_TOKEN
         self.user_token = active_config.GLPI_USER_TOKEN
         self.logger = logging.getLogger('glpi_service')
+        
+        # Validar configurações críticas
+        if not self.glpi_url or not self.app_token or not self.user_token:
+            self.logger.error("Configurações críticas do GLPI não encontradas")
+            raise ValueError("Configurações GLPI incompletas")
         
         # Mapeamento de status dos tickets
         self.status_map = {
@@ -53,9 +62,30 @@ class GLPIService:
         self.session_token = None
         self.token_created_at = None
         self.token_expires_at = None
-        self.max_retries = 3
+        
+        # Configurações aprimoradas de retry e timeout
+        self.max_retries = getattr(active_config, 'GLPI_MAX_RETRIES', 3)
         self.retry_delay_base = 2  # Base para backoff exponencial
         self.session_timeout = 3600  # 1 hora em segundos
+        self.connect_timeout = getattr(active_config, 'GLPI_CONNECT_TIMEOUT', 10)
+        self.read_timeout = getattr(active_config, 'GLPI_READ_TIMEOUT', 30)
+        
+        # Configurar sessão HTTP com retry strategy
+        self.session = requests.Session()
+        retry_strategy = Retry(
+            total=self.max_retries,
+            status_forcelist=[500, 502, 503, 504, 429],
+            backoff_factor=1,
+            raise_on_status=False
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        self.session.mount("http://", adapter)
+        self.session.mount("https://", adapter)
+        
+        # Métricas de performance
+        self.request_count = 0
+        self.error_count = 0
+        self.total_response_time = 0
         
         # Sistema de cache para evitar consultas repetitivas
         self._cache = {
@@ -65,6 +95,23 @@ class GLPIService:
             'dashboard_metrics': {'data': None, 'timestamp': None, 'ttl': 180},  # 3 minutos
             'dashboard_metrics_filtered': {},  # Cache dinâmico para filtros de data
             'priority_names': {}  # Cache para nomes de prioridade
+        }
+    
+    def get_performance_metrics(self) -> Dict[str, float]:
+        """Retorna métricas de performance do serviço"""
+        avg_response_time = 0
+        if self.request_count > 0:
+            avg_response_time = self.total_response_time / self.request_count
+        
+        error_rate = 0
+        if self.request_count > 0:
+            error_rate = (self.error_count / self.request_count) * 100
+        
+        return {
+            'total_requests': self.request_count,
+            'total_errors': self.error_count,
+            'error_rate_percent': round(error_rate, 2),
+            'avg_response_time_ms': round(avg_response_time, 2)
         }
     
     def _is_cache_valid(self, cache_key: str, sub_key: str = None) -> bool:
@@ -136,56 +183,110 @@ class GLPIService:
     
     def _authenticate_with_retry(self) -> bool:
         """Autentica com retry automático e backoff exponencial"""
+        request_id = f"auth_{int(time.time() * 1000)}"
+        
         for attempt in range(self.max_retries):
             try:
-                if self._perform_authentication():
+                self.logger.info(f"[{request_id}] Tentativa {attempt + 1} de autenticação")
+                
+                if self._perform_authentication(request_id):
                     return True
                     
                 if attempt < self.max_retries - 1:
                     delay = self.retry_delay_base ** attempt
-                    self.logger.warning(f"Tentativa {attempt + 1} falhou, aguardando {delay}s antes da próxima tentativa...")
+                    self.logger.warning(f"[{request_id}] Tentativa {attempt + 1} falhou, aguardando {delay}s antes da próxima tentativa...")
                     time.sleep(delay)
                     
             except Exception as e:
-                self.logger.error(f"Erro na tentativa {attempt + 1} de autenticação: {e}")
+                self.logger.error(f"[{request_id}] Erro na tentativa {attempt + 1} de autenticação: {e}")
+                self.logger.error(f"[{request_id}] Traceback: {traceback.format_exc()}")
                 if attempt < self.max_retries - 1:
                     delay = self.retry_delay_base ** attempt
                     time.sleep(delay)
         
-        self.logger.error(f"Falha na autenticação após {self.max_retries} tentativas")
+        self.logger.error(f"[{request_id}] Falha na autenticação após {self.max_retries} tentativas")
         return False
     
-    def _perform_authentication(self) -> bool:
-        """Executa o processo de autenticação"""
+    def _perform_authentication(self, request_id: str = None) -> bool:
+        """Executa o processo de autenticação com validação aprimorada"""
+        if not request_id:
+            request_id = f"auth_{int(time.time() * 1000)}"
+        
+        # Validar configurações
         if not self.app_token or not self.user_token:
-            self.logger.error("Tokens de autenticação do GLPI (GLPI_APP_TOKEN, GLPI_USER_TOKEN) não estão configurados.")
+            self.logger.error(f"[{request_id}] Tokens de autenticação do GLPI (GLPI_APP_TOKEN, GLPI_USER_TOKEN) não estão configurados.")
+            return False
+        
+        # Sanitizar tokens
+        app_token = sanitize_input(self.app_token)
+        user_token = sanitize_input(self.user_token)
+        
+        if not app_token or not user_token:
+            self.logger.error(f"[{request_id}] Tokens inválidos após sanitização")
             return False
             
         session_headers = {
             "Content-Type": "application/json",
-            "App-Token": self.app_token,
-            "Authorization": f"user_token {self.user_token}",
+            "App-Token": app_token,
+            "Authorization": f"user_token {user_token}",
+            "User-Agent": f'GLPI-Dashboard/{getattr(active_config, "VERSION", "1.0.0")}'
         }
         
         try:
-            self.logger.info("Autenticando na API do GLPI...")
-            response = requests.get(
+            self.logger.info(f"[{request_id}] Autenticando na API do GLPI...")
+            start_time = time.time()
+            
+            timeout = (self.connect_timeout, self.read_timeout)
+            response = self.session.get(
                 f"{self.glpi_url}/initSession", 
                 headers=session_headers,
-                timeout=10
+                timeout=timeout
             )
+            
+            response_time = (time.time() - start_time) * 1000
+            self.request_count += 1
+            self.total_response_time += response_time
+            
             response.raise_for_status()
             
-            response_data = response.json()
+            try:
+                response_data = response.json()
+            except json.JSONDecodeError as je:
+                self.logger.error(f"[{request_id}] Erro ao decodificar resposta JSON: {je}")
+                self.error_count += 1
+                return False
+            
+            if 'session_token' not in response_data:
+                self.logger.error(f"[{request_id}] Resposta não contém session_token: {response_data}")
+                self.error_count += 1
+                return False
+            
             self.session_token = response_data["session_token"]
             self.token_created_at = time.time()
             self.token_expires_at = self.token_created_at + self.session_timeout
             
-            self.logger.info("Autenticação bem-sucedida!")
+            self.logger.info(f"[{request_id}] Autenticação bem-sucedida em {response_time:.2f}ms!")
             return True
             
+        except requests.exceptions.Timeout as te:
+            self.logger.error(f"[{request_id}] Timeout na autenticação: {te}")
+            self.error_count += 1
+            return False
+            
+        except requests.exceptions.ConnectionError as ce:
+            self.logger.error(f"[{request_id}] Erro de conexão na autenticação: {ce}")
+            self.error_count += 1
+            return False
+            
         except requests.exceptions.RequestException as e:
-            self.logger.error(f"Falha na autenticação: {e}")
+            self.logger.error(f"[{request_id}] Falha na autenticação: {e}")
+            self.error_count += 1
+            return False
+        
+        except Exception as e:
+            self.logger.error(f"[{request_id}] Erro inesperado na autenticação: {e}")
+            self.logger.error(f"[{request_id}] Traceback: {traceback.format_exc()}")
+            self.error_count += 1
             return False
     
     def authenticate(self) -> bool:
@@ -200,14 +301,21 @@ class GLPIService:
             
         return {
             "Session-Token": self.session_token,
-            "App-Token": self.app_token
+            "App-Token": self.app_token,
+            "User-Agent": f'GLPI-Dashboard/{getattr(active_config, "VERSION", "1.0.0")}'
         }
     
-    def _make_authenticated_request(self, method: str, url: str, **kwargs) -> Optional[requests.Response]:
-        """Faz uma requisição autenticada com retry automático em caso de falha de autenticação"""
+    def _make_authenticated_request(self, method: str, url: str, request_id: str = None, **kwargs) -> Optional[requests.Response]:
+        """Faz uma requisição autenticada com retry automático e monitoramento aprimorado"""
+        if not request_id:
+            request_id = f"req_{int(time.time() * 1000)}"
+        
+        start_time = time.time()
+        
         for attempt in range(self.max_retries):
             headers = self.get_api_headers()
             if not headers:
+                self.logger.error(f"[{request_id}] Não foi possível obter headers de autenticação")
                 return None
             
             # Adicionar headers customizados se fornecidos
@@ -215,28 +323,62 @@ class GLPIService:
                 headers.update(kwargs['headers'])
             kwargs['headers'] = headers
             
+            # Configurar timeout
+            if 'timeout' not in kwargs:
+                kwargs['timeout'] = (self.connect_timeout, self.read_timeout)
+            
             try:
-                response = requests.request(method, url, timeout=10, **kwargs)
+                self.logger.debug(f"[{request_id}] {method} {url} (tentativa {attempt + 1})")
+                
+                response = self.session.request(method, url, **kwargs)
+                
+                response_time = (time.time() - start_time) * 1000
+                self.request_count += 1
+                self.total_response_time += response_time
                 
                 # Se recebemos 401 ou 403, token pode estar expirado
                 if response.status_code in [401, 403]:
-                    self.logger.warning(f"Recebido status {response.status_code}, token pode estar expirado")
+                    self.logger.warning(f"[{request_id}] Recebido status {response.status_code}, token pode estar expirado")
                     self.session_token = None  # Forçar re-autenticação
                     self.token_created_at = None
                     
                     if attempt < self.max_retries - 1:
-                        self.logger.info("Tentando re-autenticar...")
+                        self.logger.info(f"[{request_id}] Tentando re-autenticar...")
                         continue
                 
+                # Log de performance
+                if response_time > 5000:  # > 5 segundos
+                    self.logger.warning(f"[{request_id}] Requisição lenta: {response_time:.2f}ms")
+                
+                self.logger.debug(f"[{request_id}] Resposta: {response.status_code} em {response_time:.2f}ms")
                 return response
                 
-            except requests.exceptions.RequestException as e:
-                self.logger.error(f"Erro na requisição (tentativa {attempt + 1}): {e}")
+            except requests.exceptions.Timeout as te:
+                self.logger.error(f"[{request_id}] Timeout na requisição (tentativa {attempt + 1}): {te}")
+                self.error_count += 1
                 if attempt < self.max_retries - 1:
-                    time.sleep(self.retry_delay_base ** attempt)
+                    sleep_time = self.retry_delay_base ** attempt
+                    time.sleep(sleep_time)
                     continue
-                return None
+                    
+            except requests.exceptions.ConnectionError as ce:
+                self.logger.error(f"[{request_id}] Erro de conexão (tentativa {attempt + 1}): {ce}")
+                self.error_count += 1
+                if attempt < self.max_retries - 1:
+                    sleep_time = self.retry_delay_base ** attempt
+                    time.sleep(sleep_time)
+                    continue
+                    
+            except requests.exceptions.RequestException as e:
+                self.logger.error(f"[{request_id}] Erro na requisição (tentativa {attempt + 1}): {e}")
+                self.error_count += 1
+                if attempt < self.max_retries - 1:
+                    sleep_time = self.retry_delay_base ** attempt
+                    time.sleep(sleep_time)
+                    continue
         
+        self.error_count += 1
+        self.logger.error(f"[{request_id}] Falha em todas as {self.max_retries} tentativas")
         return None
     
     def discover_field_ids(self) -> bool:
@@ -336,10 +478,50 @@ class GLPIService:
             self.logger.error(f"Erro ao descobrir IDs dos status: {e}")
             return False
     
-    def get_ticket_count(self, group_id: int, status_id: int, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Optional[int]:
-        """Busca o total de tickets para um grupo e status específicos, com filtro de data opcional"""
+    def get_ticket_count(self, group_id: int, status_id: int, start_date: Optional[str] = None, end_date: Optional[str] = None, request_id: str = None) -> Optional[int]:
+        """Busca o total de tickets para um grupo e status específicos, com filtro de data opcional e validação aprimorada"""
+        if not request_id:
+            request_id = f"ticket_count_{int(time.time() * 1000)}"
+            
+        # Validar parâmetros de entrada
+        if not isinstance(group_id, int) or group_id <= 0:
+            self.logger.error(f"[{request_id}] group_id deve ser um inteiro positivo, recebido: {group_id}")
+            return None
+            
+        if not isinstance(status_id, int) or status_id <= 0:
+            self.logger.error(f"[{request_id}] status_id deve ser um inteiro positivo, recebido: {status_id}")
+            return None
+            
+        # Validar datas se fornecidas
+        if start_date:
+            try:
+                from ..utils.validators import validate_date_format
+                if not validate_date_format(start_date):
+                    self.logger.error(f"[{request_id}] Formato de data inválido para start_date: {start_date}")
+                    return None
+            except ImportError:
+                # Validação básica se o módulo não estiver disponível
+                import re
+                if not re.match(r'^\d{4}-\d{2}-\d{2}$', start_date):
+                    self.logger.error(f"[{request_id}] Formato de data inválido para start_date: {start_date}")
+                    return None
+                    
+        if end_date:
+            try:
+                from ..utils.validators import validate_date_format
+                if not validate_date_format(end_date):
+                    self.logger.error(f"[{request_id}] Formato de data inválido para end_date: {end_date}")
+                    return None
+            except ImportError:
+                # Validação básica se o módulo não estiver disponível
+                import re
+                if not re.match(r'^\d{4}-\d{2}-\d{2}$', end_date):
+                    self.logger.error(f"[{request_id}] Formato de data inválido para end_date: {end_date}")
+                    return None
+        
         if not self.field_ids:
             if not self.discover_field_ids():
+                self.logger.error(f"[{request_id}] Falha ao descobrir IDs dos campos")
                 return None
             
         search_params = {
@@ -363,6 +545,7 @@ class GLPIService:
             search_params[f"criteria[{criteria_index}][searchtype]"] = "morethan"
             search_params[f"criteria[{criteria_index}][value]"] = start_date
             criteria_index += 1
+            self.logger.debug(f"[{request_id}] Filtro data início: {start_date}")
             
         if end_date:
             # Usar formato ISO (YYYY-MM-DD) que funciona corretamente
@@ -370,28 +553,46 @@ class GLPIService:
             search_params[f"criteria[{criteria_index}][field]"] = "15"  # Campo 15 é o correto para data de criação
             search_params[f"criteria[{criteria_index}][searchtype]"] = "lessthan"
             search_params[f"criteria[{criteria_index}][value]"] = end_date
+            self.logger.debug(f"[{request_id}] Filtro data fim: {end_date}")
         
         try:
+            self.logger.debug(f"[{request_id}] Buscando tickets - Grupo: {group_id}, Status: {status_id}")
+            
             response = self._make_authenticated_request(
                 'GET',
                 f"{self.glpi_url}/search/Ticket",
+                request_id=request_id,
                 params=search_params
             )
             
             if not response:
+                self.logger.error(f"[{request_id}] Nenhuma resposta recebida")
                 return None
             
             if "Content-Range" in response.headers:
-                total = int(response.headers["Content-Range"].split("/")[-1])
-                return total
+                try:
+                    total = int(response.headers["Content-Range"].split("/")[-1])
+                    self.logger.debug(f"[{request_id}] Contagem encontrada: {total}")
+                    return total
+                except (ValueError, IndexError) as e:
+                    self.logger.error(f"[{request_id}] Erro ao parsear Content-Range: {e}")
+                    return None
             
             if 200 <= response.status_code < 300:
+                self.logger.debug(f"[{request_id}] Resposta OK sem Content-Range, assumindo 0 tickets")
                 return 0
                 
             response.raise_for_status()
             
+        except requests.exceptions.HTTPError as he:
+            self.logger.error(f"[{request_id}] Erro HTTP ao buscar contagem de tickets: {he}")
+            return None
+        except requests.exceptions.RequestException as re:
+            self.logger.error(f"[{request_id}] Erro de requisição ao buscar contagem de tickets: {re}")
+            return None
         except Exception as e:
-            self.logger.error(f"Erro ao buscar contagem de tickets: {e}")
+            self.logger.error(f"[{request_id}] Erro inesperado ao buscar contagem de tickets: {e}")
+            self.logger.debug(f"[{request_id}] Traceback: {traceback.format_exc()}")
             return None
         
         return None
@@ -549,45 +750,81 @@ class GLPIService:
         self.logger.info(f"=== RESULTADO FINAL DAS MÉTRICAS GERAIS: {status_totals} ===")
         return status_totals
     
-    def get_dashboard_metrics(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Dict[str, any]:
-        """Retorna métricas formatadas para o dashboard React usando o sistema unificado.
+    def get_dashboard_metrics(self, start_date: Optional[str] = None, end_date: Optional[str] = None, request_id: str = None) -> Dict[str, any]:
+        """Retorna métricas formatadas para o dashboard React com validação e monitoramento aprimorados.
         
         Args:
             start_date: Data inicial no formato YYYY-MM-DD (opcional)
             end_date: Data final no formato YYYY-MM-DD (opcional)
+            request_id: ID da requisição para rastreamento (opcional)
         
         Retorna um dicionário com as métricas formatadas ou erro.
         """
+        if not request_id:
+            request_id = f"dashboard_metrics_{int(time.time() * 1000)}"
+            
         start_time = time.time()
         
         try:
+            # Validar parâmetros de data se fornecidos
+            if start_date:
+                try:
+                    from ..utils.validators import validate_date_format
+                    if not validate_date_format(start_date):
+                        self.logger.error(f"[{request_id}] Formato de data inválido para start_date: {start_date}")
+                        return ResponseFormatter.format_error_response("Formato de data inválido", [f"start_date deve estar no formato YYYY-MM-DD, recebido: {start_date}"])
+                except ImportError:
+                    import re
+                    if not re.match(r'^\d{4}-\d{2}-\d{2}$', start_date):
+                        self.logger.error(f"[{request_id}] Formato de data inválido para start_date: {start_date}")
+                        return ResponseFormatter.format_error_response("Formato de data inválido", [f"start_date deve estar no formato YYYY-MM-DD, recebido: {start_date}"])
+                        
+            if end_date:
+                try:
+                    from ..utils.validators import validate_date_format
+                    if not validate_date_format(end_date):
+                        self.logger.error(f"[{request_id}] Formato de data inválido para end_date: {end_date}")
+                        return ResponseFormatter.format_error_response("Formato de data inválido", [f"end_date deve estar no formato YYYY-MM-DD, recebido: {end_date}"])
+                except ImportError:
+                    import re
+                    if not re.match(r'^\d{4}-\d{2}-\d{2}$', end_date):
+                        self.logger.error(f"[{request_id}] Formato de data inválido para end_date: {end_date}")
+                        return ResponseFormatter.format_error_response("Formato de data inválido", [f"end_date deve estar no formato YYYY-MM-DD, recebido: {end_date}"])
+            
+            self.logger.info(f"[{request_id}] Iniciando busca de métricas do dashboard")
+            
             # Se parâmetros de data foram fornecidos, usar o método com filtro
             if start_date or end_date:
-                return self.get_dashboard_metrics_with_date_filter(start_date, end_date)
+                self.logger.debug(f"[{request_id}] Usando filtro de data: {start_date} até {end_date}")
+                return self.get_dashboard_metrics_with_date_filter(start_date, end_date, request_id)
             
             # Verificar cache primeiro
             if self._is_cache_valid('dashboard_metrics'):
                 cached_data = self._get_cache_data('dashboard_metrics')
                 if cached_data:
-                    self.logger.info("Retornando métricas do cache")
+                    self.logger.info(f"[{request_id}] Retornando métricas do cache")
                     return cached_data
             
             # Autenticar uma única vez
             if not self._ensure_authenticated():
+                self.logger.error(f"[{request_id}] Falha na autenticação com GLPI")
                 return ResponseFormatter.format_error_response("Falha na autenticação com GLPI", ["Erro de autenticação"])
             
             if not self.discover_field_ids():
+                self.logger.error(f"[{request_id}] Falha ao descobrir IDs dos campos")
                 return ResponseFormatter.format_error_response("Falha ao descobrir IDs dos campos", ["Erro ao obter configuração"])
             
             # Descobrir e validar IDs dos status
             if not self.discover_status_ids():
-                self.logger.warning("Falha ao validar IDs dos status, usando mapeamento padrão")
+                self.logger.warning(f"[{request_id}] Falha ao validar IDs dos status, usando mapeamento padrão")
             
             # Obter totais gerais (todos os grupos) para métricas principais
+            self.logger.debug(f"[{request_id}] Obtendo métricas gerais")
             general_totals = self._get_general_metrics_internal()
-            self.logger.info(f"Totais gerais obtidos: {general_totals}")
+            self.logger.info(f"[{request_id}] Totais gerais obtidos: {general_totals}")
             
             # Obter métricas por nível (grupos N1-N4)
+            self.logger.debug(f"[{request_id}] Obtendo métricas por nível")
             raw_metrics = self._get_metrics_by_level_internal()
             
             # Usar o mesmo formato da função com filtros para consistência

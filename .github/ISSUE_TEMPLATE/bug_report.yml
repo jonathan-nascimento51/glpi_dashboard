@@ -1,0 +1,167 @@
+name: 🐛 Bug Report
+description: Relatar um bug ou comportamento inesperado
+title: "[BUG] "
+labels: ["bug", "needs-triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por reportar este bug! Por favor, preencha as informações abaixo para nos ajudar a reproduzir e corrigir o problema.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Por favor, confirme que você:
+      options:
+        - label: Pesquisei por issues similares existentes
+          required: true
+        - label: Estou usando a versão mais recente
+          required: true
+        - label: Li a documentação relevante
+          required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição do Bug
+      description: Uma descrição clara e concisa do que o bug é.
+      placeholder: Descreva o problema...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passos para Reproduzir
+      description: Passos para reproduzir o comportamento
+      placeholder: |
+        1. Vá para '...'
+        2. Clique em '...'
+        3. Role para baixo até '...'
+        4. Veja o erro
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamento Esperado
+      description: Uma descrição clara e concisa do que você esperava que acontecesse.
+      placeholder: Descreva o comportamento esperado...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Comportamento Atual
+      description: Uma descrição clara e concisa do que realmente aconteceu.
+      placeholder: Descreva o comportamento atual...
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots/Logs
+      description: Se aplicável, adicione screenshots ou logs para ajudar a explicar o problema.
+      placeholder: Cole screenshots ou logs aqui...
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Componente Afetado
+      description: Qual componente está apresentando o problema?
+      options:
+        - Frontend (React/TypeScript)
+        - Backend (Python/FastAPI)
+        - API GLPI Integration
+        - Database
+        - Authentication
+        - Dashboard Metrics
+        - Cache System
+        - CI/CD Pipeline
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severidade
+      description: Qual é a severidade deste bug?
+      options:
+        - Critical (Sistema não funciona)
+        - High (Funcionalidade principal quebrada)
+        - Medium (Funcionalidade secundária afetada)
+        - Low (Problema cosmético ou menor)
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Versão
+      description: Qual versão você está usando?
+      placeholder: ex. v1.2.3
+    validations:
+      required: true
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Navegador (se aplicável)
+      description: Qual navegador você está usando?
+      options:
+        - Chrome
+        - Firefox
+        - Safari
+        - Edge
+        - Other
+        - N/A
+
+  - type: input
+    id: os
+    attributes:
+      label: Sistema Operacional
+      description: Qual sistema operacional você está usando?
+      placeholder: ex. Windows 11, macOS 13, Ubuntu 22.04
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Informações do Ambiente
+      description: Informações adicionais sobre o ambiente (versões de dependências, configurações especiais, etc.)
+      placeholder: |
+        - Python: 3.11.0
+        - Node.js: 18.17.0
+        - Docker: 24.0.0
+        - Outras informações relevantes...
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Contexto Adicional
+      description: Adicione qualquer outro contexto sobre o problema aqui.
+      placeholder: Qualquer informação adicional que possa ser útil...
+
+  - type: checkboxes
+    id: regression
+    attributes:
+      label: Regressão
+      description: Este é um problema de regressão?
+      options:
+        - label: Este bug funcionava corretamente em uma versão anterior
+        - label: Posso identificar a versão onde parou de funcionar
+
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Workaround
+      description: Existe alguma solução temporária para este problema?
+      placeholder: Descreva qualquer workaround conhecido...

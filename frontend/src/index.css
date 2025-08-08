@@ -102,6 +102,16 @@
 }
 
 @layer components {
+  /* Melhorias de legibilidade - tamanhos de fonte aumentados */
+  .text-xs {
+    font-size: 0.8125rem !important; /* 13px ao invés de 12px */
+    line-height: 1.25rem !important;
+  }
+  
+  .text-sm {
+    font-size: 0.9375rem !important; /* 15px ao invés de 14px */
+    line-height: 1.375rem !important;
+  }
   /* Corporate Design System Classes */
   .corporate-card {
     @apply bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200;
@@ -197,6 +207,15 @@
     border-radius: 12px;
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
+  }
+  
+  /* Override glass card background for status cards */
+  .status-new.figma-glass-card,
+  .status-progress.figma-glass-card,
+  .status-pending.figma-glass-card,
+  .status-resolved.figma-glass-card {
+    @apply bg-transparent;
+    backdrop-filter: none !important;
   }
 
   /* Estilos específicos para tema de conservação e manutenção */
@@ -317,7 +336,7 @@
   
   .figma-body {
     font-family: 'Inter', sans-serif;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 400;
     line-height: 1.5;
     transition: color 0.3s ease;
@@ -625,32 +644,81 @@
     transition: opacity 0.1s ease;
   }
   
-  .status-new {
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-    @apply text-blue-700 dark:text-blue-300;
-    /* SIMPLIFICADO: box-shadow */
-    box-shadow: 0 1px 2px rgba(59, 130, 246, 0.2);
+  .status-new,
+  .status-new.figma-glass-card {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 50%, #cbd5e1 100%) !important;
+    @apply text-slate-800 dark:text-slate-200;
+    border: 1px solid rgba(71, 85, 105, 0.3) !important;
+    box-shadow: 0 4px 12px rgba(71, 85, 105, 0.15) !important;
+    backdrop-filter: none !important;
+  }
+
+  .status-new .status-icon {
+    background: linear-gradient(135deg, #475569 0%, #334155 100%) !important;
+    box-shadow: 0 2px 8px rgba(71, 85, 105, 0.3) !important;
+  }
+
+  .status-progress,
+  .status-progress.figma-glass-card {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%) !important;
+    @apply text-slate-800 dark:text-slate-200;
+    border: 1px solid rgba(56, 189, 248, 0.3) !important;
+    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15) !important;
+    backdrop-filter: none !important;
+  }
+
+  .status-progress .status-icon {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3) !important;
+  }
+
+  .status-pending,
+  .status-pending.figma-glass-card {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 50%, #fed7aa 100%) !important;
+    @apply text-slate-800 dark:text-slate-200;
+    border: 1px solid rgba(234, 88, 12, 0.3) !important;
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.15) !important;
+    backdrop-filter: none !important;
+  }
+
+  .status-pending .status-icon {
+    background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important;
+    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.3) !important;
+  }
+
+  .status-resolved,
+  .status-resolved.figma-glass-card {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%) !important;
+    @apply text-slate-800 dark:text-slate-200;
+    border: 1px solid rgba(34, 197, 94, 0.3) !important;
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15) !important;
+    backdrop-filter: none !important;
+  }
+
+  .status-resolved .status-icon {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%) !important;
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3) !important;
   }
   
-  .status-progress {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    @apply text-amber-700 dark:text-amber-300;
-    /* SIMPLIFICADO: box-shadow */
-    box-shadow: 0 1px 2px rgba(245, 158, 11, 0.2);
+  /* Cores para os números principais dos cards */
+  .status-new .figma-numeric {
+    @apply text-red-900 dark:text-red-100;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
   
-  .status-pending {
-    background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
-    @apply text-orange-700 dark:text-orange-300;
-    /* SIMPLIFICADO: box-shadow */
-    box-shadow: 0 1px 2px rgba(249, 115, 22, 0.2);
+  .status-progress .figma-numeric {
+    @apply text-blue-900 dark:text-blue-100;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
   
-  .status-resolved {
-    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-    @apply text-green-700 dark:text-green-300;
-    /* SIMPLIFICADO: box-shadow */
-    box-shadow: 0 1px 2px rgba(34, 197, 94, 0.2);
+  .status-pending .figma-numeric {
+    @apply text-amber-900 dark:text-amber-100;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  .status-resolved .figma-numeric {
+    @apply text-green-900 dark:text-green-100;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
 
   .status-success {
@@ -1164,13 +1232,17 @@ h3 {
 
 /* Classes personalizadas para substituir backgrounds muito brancos */
 .figma-badge-subtle {
-  @apply bg-white/20 text-gray-700 border-white/30;
+  @apply bg-white/20 text-gray-700 border-white/30 text-sm;
   backdrop-filter: blur(8px);
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .dark .figma-badge-subtle {
-  @apply bg-white/10 text-gray-300 border-white/20;
+  @apply bg-white/10 text-gray-300 border-white/20 text-sm;
   backdrop-filter: blur(8px);
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .figma-level-badge {

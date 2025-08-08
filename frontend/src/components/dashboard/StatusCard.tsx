@@ -104,6 +104,17 @@ export const StatusCard = memo<StatusCardProps>(function StatusCard({
   }, [value])
 
 
+  // Determinar classe de status específica
+  const getStatusClass = (status?: string) => {
+    switch (status) {
+      case 'new': return 'status-new'
+      case 'progress': return 'status-progress'
+      case 'pending': return 'status-pending'
+      case 'resolved': return 'status-resolved'
+      default: return ''
+    }
+  }
+
   return (
     <motion.div
       variants={cardVariants}
@@ -112,7 +123,10 @@ export const StatusCard = memo<StatusCardProps>(function StatusCard({
       whileHover="hover"
       className={cn("cursor-pointer", className)}
     >
-      <Card className="figma-glass-card relative overflow-hidden rounded-2xl shadow-none">
+      <Card className={cn(
+        "figma-glass-card relative overflow-hidden rounded-2xl shadow-none",
+        getStatusClass(status)
+      )}>
         {/* Gradient Background */}
         <div className={cn(
           "absolute inset-0 bg-gradient-to-br opacity-5",
@@ -135,7 +149,7 @@ export const StatusCard = memo<StatusCardProps>(function StatusCard({
             <motion.div
               variants={iconVariants}
               className={cn(
-                "p-2 rounded-xl bg-gradient-to-br shadow-lg",
+                "status-icon p-2 rounded-xl bg-gradient-to-br shadow-lg",
                 statusGradient
               )}
             >

@@ -10,11 +10,13 @@ from backend.utils.performance import (
     extract_filter_params
 )
 from backend.utils.response_formatter import ResponseFormatter
+from backend.utils.validators import validate_filter_params, validate_api_response, sanitize_input, ValidationError
 from backend.schemas.dashboard import DashboardMetrics, ApiError
 from pydantic import ValidationError
 import logging
 from datetime import datetime
 import time
+import traceback
 
 # Importar cache do app principal
 try:
@@ -54,92 +56,145 @@ DEFAULT_METRICS = {
 def get_metrics():
     """Endpoint para obter métricas do dashboard do GLPI com suporte a filtros avançados e validação"""
     start_time = time.time()
+    request_id = f"req_{int(time.time() * 1000)}"
     
     try:
+        logger.info(f"[{request_id}] Iniciando busca de métricas")
+        
         # Obter todos os parâmetros de filtro
         filters = extract_filter_params()
-        start_date = filters.get('start_date')  # Formato: YYYY-MM-DD
-        end_date = filters.get('end_date')      # Formato: YYYY-MM-DD
-        status = filters.get('status')          # novo, pendente, progresso, resolvido
-        priority = filters.get('priority')      # 1-5
-        level = filters.get('level')            # n1, n2, n3, n4
-        technician = filters.get('technician')  # ID do técnico
-        category = filters.get('category')      # ID da categoria
         
-        # Validar formato das datas se fornecidas
-        if start_date:
-            try:
-                datetime.strptime(start_date, '%Y-%m-%d')
-            except ValueError:
-                error_response = ResponseFormatter.format_error_response("Formato de data_inicio inválido. Use YYYY-MM-DD", ["Formato de data inválido"])
-                return jsonify(error_response), 400
+        # Sanitizar inputs de string
+        for key, value in filters.items():
+            if isinstance(value, str):
+                filters[key] = sanitize_input(value)
         
-        if end_date:
-            try:
-                datetime.strptime(end_date, '%Y-%m-%d')
-            except ValueError:
-                error_response = ResponseFormatter.format_error_response("Formato de data_fim inválido. Use YYYY-MM-DD", ["Formato de data inválido"])
-                return jsonify(error_response), 400
+        # Validar parâmetros usando o novo sistema de validação
+        validation_result = validate_filter_params(filters)
         
-        # Validar que data_inicio não seja posterior a data_fim
-        if start_date and end_date:
-            start_dt = datetime.strptime(start_date, '%Y-%m-%d')
-            end_dt = datetime.strptime(end_date, '%Y-%m-%d')
-            if start_dt > end_dt:
-                error_response = ResponseFormatter.format_error_response("Data de início não pode ser posterior à data de fim", ["Intervalo de data inválido"])
-                return jsonify(error_response), 400
+        if not validation_result.is_valid:
+            logger.warning(f"[{request_id}] Parâmetros inválidos: {validation_result.errors}")
+            error_response = ResponseFormatter.format_error_response(
+                "Parâmetros de filtro inválidos", 
+                validation_result.errors
+            )
+            return jsonify(error_response), 400
         
-        logger.info(f"Buscando métricas do GLPI com filtros: data={start_date} até {end_date}, status={status}, prioridade={priority}, nível={level}")
+        # Log warnings se houver
+        if validation_result.warnings:
+            logger.warning(f"[{request_id}] Avisos de validação: {validation_result.warnings}")
+        
+        # Extrair parâmetros validados
+        start_date = filters.get('start_date')
+        end_date = filters.get('end_date')
+        status = filters.get('status')
+        priority = filters.get('priority')
+        level = filters.get('level')
+        technician = filters.get('technician')
+        category = filters.get('category')
+        
+        logger.info(f"[{request_id}] Buscando métricas do GLPI com filtros: data={start_date} até {end_date}, status={status}, prioridade={priority}, nível={level}")
         
         # Usar método com filtros se parâmetros fornecidos, senão usar método padrão
-        if start_date or end_date:
-            # Para filtros de data, usar o método específico
-            metrics_data = glpi_service.get_dashboard_metrics_with_date_filter(
-                start_date=start_date,
-                end_date=end_date
+        try:
+            if start_date or end_date:
+                # Para filtros de data, usar o método específico
+                metrics_data = glpi_service.get_dashboard_metrics_with_date_filter(
+                    start_date=start_date,
+                    end_date=end_date
+                )
+            elif any([status, priority, level, technician, category]):
+                # Para outros filtros, usar o método geral
+                metrics_data = glpi_service.get_dashboard_metrics_with_filters(
+                    start_date=start_date,
+                    end_date=end_date,
+                    status=status,
+                    priority=priority,
+                    level=level,
+                    technician=technician,
+                    category=category
+                )
+            else:
+                metrics_data = glpi_service.get_dashboard_metrics()
+        except Exception as service_error:
+            logger.error(f"[{request_id}] Erro no serviço GLPI: {service_error}", exc_info=True)
+            error_response = ResponseFormatter.format_error_response(
+                "Erro ao comunicar com o serviço GLPI", 
+                [str(service_error)]
             )
-        elif any([status, priority, level, technician, category]):
-            # Para outros filtros, usar o método geral
-            metrics_data = glpi_service.get_dashboard_metrics_with_filters(
-                start_date=start_date,
-                end_date=end_date,
-                status=status,
-                priority=priority,
-                level=level,
-                technician=technician,
-                category=category
-            )
-        else:
-            metrics_data = glpi_service.get_dashboard_metrics()
+            return jsonify(error_response), 503
         
         # Verificar se houve erro no serviço
         if isinstance(metrics_data, dict) and metrics_data.get('success') is False:
+            logger.error(f"[{request_id}] Serviço GLPI retornou erro: {metrics_data}")
             return jsonify(metrics_data), 500
         
         if not metrics_data:
-            logger.warning("Não foi possível obter métricas do GLPI, usando dados de fallback.")
-            error_response = ResponseFormatter.format_error_response("Não foi possível conectar ou obter dados do GLPI", ["Erro de conexão"])
+            logger.warning(f"[{request_id}] Não foi possível obter métricas do GLPI, usando dados de fallback.")
+            error_response = ResponseFormatter.format_error_response(
+                "Não foi possível conectar ou obter dados do GLPI", 
+                ["Erro de conexão"]
+            )
             return jsonify(error_response), 503
+        
+        # Validar estrutura da resposta
+        response_validation = validate_api_response(metrics_data)
+        if not response_validation.is_valid:
+            logger.error(f"[{request_id}] Resposta da API inválida: {response_validation.errors}")
+            # Continuar mesmo com warnings, mas logar erros críticos
+            for error in response_validation.errors:
+                logger.error(f"[{request_id}] Erro de estrutura: {error}")
+        
+        if response_validation.warnings:
+            for warning in response_validation.warnings:
+                logger.warning(f"[{request_id}] Aviso de estrutura: {warning}")
 
         # Log de performance
         response_time = (time.time() - start_time) * 1000
-        logger.info(f"Métricas obtidas com sucesso em {response_time:.2f}ms")
+        logger.info(f"[{request_id}] Métricas obtidas com sucesso em {response_time:.2f}ms")
         
-        if response_time > active_config.PERFORMANCE_TARGET_P95:
-            logger.warning(f"Resposta lenta detectada: {response_time:.2f}ms > {active_config.PERFORMANCE_TARGET_P95}ms")
+        # Verificar thresholds de performance
+        if response_time > active_config.PERFORMANCE_TARGET_P99:
+            logger.error(f"[{request_id}] Resposta muito lenta: {response_time:.2f}ms > {active_config.PERFORMANCE_TARGET_P99}ms (P99)")
+        elif response_time > active_config.PERFORMANCE_TARGET_P95:
+            logger.warning(f"[{request_id}] Resposta lenta: {response_time:.2f}ms > {active_config.PERFORMANCE_TARGET_P95}ms (P95)")
         
         # Validar dados com Pydantic (opcional, para garantir estrutura)
         try:
             if 'data' in metrics_data:
                 DashboardMetrics(**metrics_data['data'])
+                logger.debug(f"[{request_id}] Validação Pydantic bem-sucedida")
         except ValidationError as ve:
-            logger.warning(f"Dados não seguem o schema esperado: {ve}")
+            logger.warning(f"[{request_id}] Dados não seguem o schema esperado: {ve}")
+        
+        # Adicionar metadados de resposta
+        if isinstance(metrics_data, dict):
+            metrics_data['request_id'] = request_id
+            metrics_data['response_time_ms'] = round(response_time, 2)
         
         return jsonify(metrics_data)
         
+    except ValidationError as ve:
+        logger.error(f"[{request_id}] Erro de validação: {ve}")
+        error_response = ResponseFormatter.format_error_response(
+            "Erro de validação de dados", 
+            [str(ve)]
+        )
+        return jsonify(error_response), 400
+    
     except Exception as e:
-        logger.error(f"Erro inesperado ao buscar métricas: {e}", exc_info=True)
-        error_response = ResponseFormatter.format_error_response(f"Erro interno no servidor: {str(e)}", [str(e)])
+        logger.error(f"[{request_id}] Erro inesperado ao buscar métricas: {e}")
+        logger.error(f"[{request_id}] Traceback: {traceback.format_exc()}")
+        
+        # Em produção, não expor detalhes do erro
+        if active_config.DEBUG:
+            error_message = f"Erro interno no servidor: {str(e)}"
+            error_details = [str(e), traceback.format_exc()]
+        else:
+            error_message = "Erro interno no servidor"
+            error_details = ["Erro interno - verifique os logs"]
+        
+        error_response = ResponseFormatter.format_error_response(error_message, error_details)
         return jsonify(error_response), 500
 
 @api_bp.route('/metrics/filtered')

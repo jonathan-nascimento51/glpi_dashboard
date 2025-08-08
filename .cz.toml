@@ -1,0 +1,173 @@
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "1.0.0"
+tag_format = "v$version"
+version_files = [
+    "backend/setup.py",
+    "frontend/package.json",
+    "VERSION"
+]
+style = [
+    ["qmark", "fg:#ff9d00 bold"],
+    ["question", "bold"],
+    ["answer", "fg:#ff9d00 bold"],
+    ["pointer", "fg:#ff9d00 bold"],
+    ["highlighted", "fg:#ff9d00 bold"],
+    ["selected", "fg:#cc5454"],
+    ["separator", "fg:#cc5454"],
+    ["instruction", ""],
+    ["text", ""],
+    ["disabled", "fg:#858585 italic"]
+]
+
+[tool.commitizen.settings]
+use_shortcuts = true
+
+# Configuração personalizada para tipos de commit
+[tool.commitizen.customize]
+commit_parser = "^(?P<change_type>feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(?:\((?P<scope>[^()
+]*)\)|\()?(?P<breaking>!)?:\s(?P<message>.*)?"
+version_parser = "(?P<version>([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?)"
+change_type_order = ["BREAKING CHANGE", "feat", "fix", "refactor", "perf"]
+
+# Template para changelog
+changelog_pattern = "^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?(!)?:"
+changelog_start_rev = "v1.0.0"
+changelog_merge_prerelease = true
+
+# Configuração de tipos de commit
+[[tool.commitizen.customize.questions]]
+type = "list"
+name = "change_type"
+message = "Selecione o tipo de mudança que você está commitando:"
+choices = [
+    {value = "feat", name = "feat: ✨ Uma nova funcionalidade"},
+    {value = "fix", name = "fix: 🐛 Correção de bug"},
+    {value = "docs", name = "docs: 📚 Mudanças na documentação"},
+    {value = "style", name = "style: 💎 Mudanças que não afetam o significado do código (espaços, formatação, etc)"},
+    {value = "refactor", name = "refactor: 📦 Mudança de código que não corrige bug nem adiciona funcionalidade"},
+    {value = "perf", name = "perf: 🚀 Mudança de código que melhora performance"},
+    {value = "test", name = "test: 🚨 Adição ou correção de testes"},
+    {value = "build", name = "build: 🛠️ Mudanças que afetam o sistema de build ou dependências externas"},
+    {value = "ci", name = "ci: ⚙️ Mudanças nos arquivos e scripts de configuração de CI"},
+    {value = "chore", name = "chore: ♻️ Outras mudanças que não modificam src ou arquivos de teste"},
+    {value = "revert", name = "revert: 🗑️ Reverte um commit anterior"}
+]
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "scope"
+message = "Qual é o escopo desta mudança (ex: auth, api, ui)? (opcional):"
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "subject"
+message = "Escreva uma descrição curta e imperativa da mudança (máx 50 chars):\n"
+filter = "lower"
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "body"
+message = "Forneça uma descrição mais longa da mudança (opcional). Use '|' para quebras de linha:\n"
+
+[[tool.commitizen.customize.questions]]
+type = "confirm"
+name = "is_breaking_change"
+message = "Esta mudança quebra compatibilidade com versões anteriores?"
+default = false
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "breaking_change_description"
+message = "Descreva a mudança que quebra compatibilidade:\n"
+when = "{{ answers.is_breaking_change }}"
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "footer"
+message = "Informações de rodapé (ex: issues fechadas). Use '|' para quebras de linha:\n"
+
+# Template da mensagem de commit
+[tool.commitizen.customize.commit_parser]
+pattern = "^(?P<change_type>feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(?:\((?P<scope>[^()
+]*)\)|\()?(?P<breaking>!)?:\s(?P<message>.*)?"
+
+[tool.commitizen.customize.info_path]
+path = "cz_customize_info.txt"
+
+[tool.commitizen.customize.info]
+"""
+Este é um projeto que usa Conventional Commits.
+
+Formato: <tipo>[escopo opcional]: <descrição>
+
+Exemplos:
+- feat(auth): adicionar autenticação OAuth
+- fix(api): corrigir erro de timeout na API GLPI
+- docs: atualizar README com instruções de instalação
+- test(dashboard): adicionar testes para métricas
+
+Tipos disponíveis:
+- feat: nova funcionalidade
+- fix: correção de bug
+- docs: documentação
+- style: formatação
+- refactor: refatoração
+- perf: melhoria de performance
+- test: testes
+- build: build/dependências
+- ci: integração contínua
+- chore: tarefas de manutenção
+- revert: reverter commit
+
+Escopos sugeridos:
+- auth: autenticação
+- api: endpoints da API
+- ui: interface do usuário
+- dashboard: funcionalidades do dashboard
+- glpi: integração com GLPI
+- cache: sistema de cache
+- db: banco de dados
+- config: configurações
+- test: testes
+- ci: CI/CD
+- docs: documentação
+"""
+
+# Template para mensagem de commit
+[tool.commitizen.customize.message_template]
+template = """{% if answers.scope %}{{answers.change_type}}({{answers.scope}}){% else %}{{answers.change_type}}{% endif %}{% if answers.is_breaking_change %}!{% endif %}: {{answers.subject}}
+{% if answers.body %}
+{{answers.body}}
+{% endif %}
+{% if answers.is_breaking_change %}
+BREAKING CHANGE: {{answers.breaking_change_description}}
+{% endif %}
+{% if answers.footer %}
+{{answers.footer}}
+{% endif %}"""
+
+# Configuração de bump de versão
+[tool.commitizen.customize.bump_pattern]
+pattern = "^(feat|fix|refactor|perf|BREAKING CHANGE)"
+
+[tool.commitizen.customize.bump_map]
+"BREAKING CHANGE" = "MAJOR"
+"feat" = "MINOR"
+"fix" = "PATCH"
+"refactor" = "PATCH"
+"perf" = "PATCH"
+
+# Configuração de changelog
+[tool.commitizen.customize.change_type_map]
+"feat" = "✨ Features"
+"fix" = "🐛 Bug Fixes"
+"refactor" = "📦 Code Refactoring"
+"perf" = "🚀 Performance Improvements"
+"docs" = "📚 Documentation"
+"style" = "💎 Styles"
+"test" = "🚨 Tests"
+"build" = "🛠️ Build System"
+"ci" = "⚙️ Continuous Integration"
+"chore" = "♻️ Chores"
+"revert" = "🗑️ Reverts"

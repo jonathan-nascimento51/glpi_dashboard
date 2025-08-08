@@ -7,14 +7,39 @@ from dotenv import load_dotenv
 # Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
 
+# Validação de variáveis críticas
+def validate_required_env_vars():
+    """Valida se as variáveis de ambiente críticas estão definidas"""
+    required_vars = ['GLPI_URL', 'GLPI_USER_TOKEN', 'GLPI_APP_TOKEN']
+    missing_vars = []
+    
+    for var in required_vars:
+        if not os.environ.get(var):
+            missing_vars.append(var)
+    
+    if missing_vars:
+        raise ValueError(f"Variáveis de ambiente obrigatórias não definidas: {', '.join(missing_vars)}")
+    
+    return True
+
 class Config:
     """Configuração base"""
+    
+    def __init__(self):
+        # Valida variáveis críticas na inicialização
+        validate_required_env_vars()
     
     # Flask
     SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
     DEBUG = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
     PORT = int(os.environ.get('PORT', 5000))
     HOST = os.environ.get('HOST', '0.0.0.0')
+    
+    # Timeouts e limites
+    REQUEST_TIMEOUT = int(os.environ.get('REQUEST_TIMEOUT', '30'))
+    MAX_CONTENT_LENGTH = int(os.environ.get('MAX_CONTENT_LENGTH', '16777216'))  # 16MB
+    MAX_RETRIES = int(os.environ.get('MAX_RETRIES', '3'))
+    RETRY_DELAY = int(os.environ.get('RETRY_DELAY', '2'))
     
     # GLPI API
     GLPI_URL = os.environ.get('GLPI_URL', 'http://10.73.0.79/glpi/apirest.php')
@@ -42,6 +67,16 @@ class Config:
     
     # Performance Settings
     PERFORMANCE_TARGET_P95 = int(os.environ.get('PERFORMANCE_TARGET_P95', '300'))  # 300ms target
+    PERFORMANCE_TARGET_P99 = int(os.environ.get('PERFORMANCE_TARGET_P99', '500'))  # 500ms target
+    SLOW_QUERY_THRESHOLD = int(os.environ.get('SLOW_QUERY_THRESHOLD', '1000'))  # 1s threshold
+    
+    # Rate Limiting
+    RATE_LIMIT_ENABLED = os.environ.get('RATE_LIMIT_ENABLED', 'True').lower() == 'true'
+    RATE_LIMIT_DEFAULT = os.environ.get('RATE_LIMIT_DEFAULT', '100 per hour')
+    
+    # Health Check
+    HEALTH_CHECK_ENABLED = os.environ.get('HEALTH_CHECK_ENABLED', 'True').lower() == 'true'
+    HEALTH_CHECK_INTERVAL = int(os.environ.get('HEALTH_CHECK_INTERVAL', '60'))  # 60 segundos
     
     @classmethod
     def configure_logging(cls):

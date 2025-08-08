@@ -1,20 +1,24 @@
 """Rotas específicas para análises de manutenção da Casa Civil"""
 
 import logging
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request
 from datetime import datetime
+from dependency_injector.wiring import inject, Provide
+
+from backend.containers import Container
 from backend.services.maintenance_analytics_service import MaintenanceAnalyticsService
 from backend.utils.response_formatter import ResponseFormatter
 from backend.utils.validators import validate_date_format
 
 logger = logging.getLogger(__name__)
 
-# Blueprint para rotas de manutenção
 maintenance_bp = Blueprint('maintenance', __name__, url_prefix='/api/maintenance')
-maintenance_service = MaintenanceAnalyticsService()
 
 @maintenance_bp.route('/metrics', methods=['GET'])
-def get_maintenance_metrics():
+@inject
+def get_maintenance_metrics(
+    maintenance_service: MaintenanceAnalyticsService = Provide[Container.maintenance_analytics_service]
+):
     """Endpoint para obter métricas específicas de manutenção"""
     try:
         # Obter parâmetros de data opcionais
@@ -66,7 +70,10 @@ def get_maintenance_metrics():
         )
 
 @maintenance_bp.route('/categories', methods=['GET'])
-def get_maintenance_categories():
+@inject
+def get_maintenance_categories(
+    maintenance_service: MaintenanceAnalyticsService = Provide[Container.maintenance_analytics_service]
+):
     """Endpoint para análise das categorias de manutenção"""
     try:
         logger.info("Solicitação de análise de categorias de manutenção")
@@ -94,7 +101,10 @@ def get_maintenance_categories():
         )
 
 @maintenance_bp.route('/groups', methods=['GET'])
-def get_technical_groups_performance():
+@inject
+def get_technical_groups_performance(
+    maintenance_service: MaintenanceAnalyticsService = Provide[Container.maintenance_analytics_service]
+):
     """Endpoint para análise de performance dos grupos técnicos"""
     try:
         logger.info("Solicitação de análise de performance dos grupos técnicos")
@@ -122,7 +132,11 @@ def get_technical_groups_performance():
         )
 
 @maintenance_bp.route('/categories/<category_id>/details', methods=['GET'])
-def get_category_details(category_id):
+@inject
+def get_category_details(
+    category_id: str,
+    maintenance_service: MaintenanceAnalyticsService = Provide[Container.maintenance_analytics_service]
+):
     """Endpoint para obter detalhes específicos de uma categoria"""
     try:
         logger.info(f"Solicitação de detalhes da categoria: {category_id}")
@@ -174,7 +188,11 @@ def get_category_details(category_id):
         )
 
 @maintenance_bp.route('/groups/<group_id>/performance', methods=['GET'])
-def get_group_performance_details(group_id):
+@inject
+def get_group_performance_details(
+    group_id: str,
+    maintenance_service: MaintenanceAnalyticsService = Provide[Container.maintenance_analytics_service]
+):
     """Endpoint para obter detalhes de performance de um grupo específico"""
     try:
         logger.info(f"Solicitação de detalhes de performance do grupo: {group_id}")
@@ -232,7 +250,10 @@ def get_group_performance_details(group_id):
         )
 
 @maintenance_bp.route('/dashboard/summary', methods=['GET'])
-def get_maintenance_dashboard_summary():
+@inject
+def get_maintenance_dashboard_summary(
+    maintenance_service: MaintenanceAnalyticsService = Provide[Container.maintenance_analytics_service]
+):
     """Endpoint para obter resumo completo do dashboard de manutenção"""
     try:
         logger.info("Solicitação de resumo completo do dashboard de manutenção")

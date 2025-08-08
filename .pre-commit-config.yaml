@@ -1,0 +1,234 @@
+# Pre-commit hooks configuration for GLPI Dashboard
+# Install with: pip install pre-commit && pre-commit install
+
+repos:
+  # General hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: '\.(md|rst)$'
+      - id: end-of-file-fixer
+        exclude: '\.(md|rst)$'
+      - id: check-yaml
+        args: ['--unsafe']
+      - id: check-json
+      - id: check-toml
+      - id: check-xml
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: check-symlinks
+      - id: destroyed-symlinks
+      - id: mixed-line-ending
+        args: ['--fix=lf']
+      - id: requirements-txt-fixer
+
+  # Python hooks
+  - repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+      - id: black
+        language_version: python3
+        files: ^backend/.*\.py$
+        args: ['--line-length=88', '--target-version=py311']
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        files: ^backend/.*\.py$
+        args: ['--profile=black', '--line-length=88']
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.0.0
+    hooks:
+      - id: flake8
+        files: ^backend/.*\.py$
+        args: [
+          '--max-line-length=88',
+          '--extend-ignore=E203,W503,E501',
+          '--max-complexity=10'
+        ]
+        additional_dependencies:
+          - flake8-docstrings
+          - flake8-import-order
+          - flake8-bugbear
+
+  - repo: https://github.com/pycqa/bandit
+    rev: 1.7.5
+    hooks:
+      - id: bandit
+        files: ^backend/.*\.py$
+        args: ['-r', '-f', 'json']
+        exclude: ^backend/tests/.*
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.3.0
+    hooks:
+      - id: mypy
+        files: ^backend/.*\.py$
+        additional_dependencies:
+          - types-requests
+          - types-python-dateutil
+        args: ['--ignore-missing-imports', '--strict-optional']
+
+  # JavaScript/TypeScript hooks
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.42.0
+    hooks:
+      - id: eslint
+        files: ^frontend/.*\.(js|jsx|ts|tsx)$
+        additional_dependencies:
+          - '@typescript-eslint/eslint-plugin@^5.59.0'
+          - '@typescript-eslint/parser@^5.59.0'
+          - 'eslint@^8.42.0'
+          - 'eslint-plugin-react@^7.32.0'
+          - 'eslint-plugin-react-hooks@^4.6.0'
+        args: ['--fix']
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.0.0
+    hooks:
+      - id: prettier
+        files: ^frontend/.*\.(js|jsx|ts|tsx|json|css|scss|md)$
+        args: ['--write']
+
+  # Security and secrets
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: .*\.lock$|^frontend/package-lock\.json$
+
+  # Commit message validation
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v2.3.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: [optional-scope]
+
+  # Docker
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.0
+    hooks:
+      - id: hadolint-docker
+        files: Dockerfile.*
+
+  # YAML/JSON formatting
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.0.0
+    hooks:
+      - id: prettier
+        files: \.(yaml|yml|json)$
+        exclude: ^frontend/package-lock\.json$
+
+  # Custom hooks for project-specific validations
+  - repo: local
+    hooks:
+      # Validate Python imports
+      - id: validate-python-imports
+        name: Validate Python imports
+        entry: python -c "import ast, sys; [ast.parse(open(f).read()) for f in sys.argv[1:]]"
+        language: system
+        files: ^backend/.*\.py$
+
+      # Check for TODO/FIXME comments
+      - id: check-todos
+        name: Check for TODO/FIXME comments
+        entry: bash -c 'if grep -r "TODO\|FIXME" --include="*.py" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" backend/ frontend/src/; then echo "Please resolve TODO/FIXME comments before committing"; exit 1; fi'
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+
+      # Validate environment variables
+      - id: validate-env-vars
+        name: Validate environment variables
+        entry: python scripts/validate_env_vars.py
+        language: system
+        files: \.(env|env\.example)$
+        pass_filenames: true
+
+      # Check for large files in git
+      - id: check-large-files-git
+        name: Check for large files in git
+        entry: bash -c 'find . -type f -size +10M | grep -v node_modules | grep -v \.git | head -10'
+        language: system
+        pass_filenames: false
+
+      # Validate API documentation
+      - id: validate-api-docs
+        name: Validate API documentation
+        entry: python scripts/validate_api_docs.py
+        language: system
+        files: ^backend/.*\.py$
+        pass_filenames: false
+
+      # Frontend type checking
+      - id: frontend-type-check
+        name: Frontend TypeScript type checking
+        entry: bash -c 'cd frontend && npm run type-check'
+        language: system
+        files: ^frontend/.*\.(ts|tsx)$
+        pass_filenames: false
+
+      # Backend tests
+      - id: backend-tests
+        name: Run backend tests
+        entry: bash -c 'cd backend && python -m pytest tests/ -x --tb=short'
+        language: system
+        files: ^backend/.*\.py$
+        pass_filenames: false
+        stages: [pre-push]
+
+      # Frontend tests
+      - id: frontend-tests
+        name: Run frontend tests
+        entry: bash -c 'cd frontend && npm run test:unit'
+        language: system
+        files: ^frontend/.*\.(ts|tsx|js|jsx)$
+        pass_filenames: false
+        stages: [pre-push]
+
+      # Check database migrations
+      - id: check-migrations
+        name: Check database migrations
+        entry: python scripts/check_migrations.py
+        language: system
+        files: ^backend/migrations/.*\.py$
+        pass_filenames: true
+
+      # Validate configuration files
+      - id: validate-configs
+        name: Validate configuration files
+        entry: python scripts/validate_configs.py
+        language: system
+        files: \.(yaml|yml|json|toml)$
+        pass_filenames: true
+
+# Configuration for specific tools
+default_language_version:
+  python: python3.11
+  node: '18.16.0'
+
+# Global configuration
+default_stages: [commit]
+fail_fast: false
+minimum_pre_commit_version: '3.0.0'
+
+# Exclude patterns
+exclude: |
+  (?x)^(
+    .*\.lock$|
+    .*\.min\.(js|css)$|
+    frontend/dist/.*|
+    frontend/node_modules/.*|
+    backend/__pycache__/.*|
+    backend/\.pytest_cache/.*|
+    \.git/.*|
+    \.vscode/.*|
+    \.idea/.*
+  )$
