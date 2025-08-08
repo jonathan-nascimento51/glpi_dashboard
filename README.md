@@ -38,6 +38,7 @@ Aplicação completa para dashboard de métricas do GLPI, com backend Flask e fr
 │   ├── AUDITORIA_COMPLETA_RESULTADOS.md # Resultados da auditoria
 │   └── GUIA_IMPLEMENTACAO_FILTROS_DATA_GLPI.md # Guia de filtros
 ├── scripts/               # Scripts auxiliares
+│   ├── analysis/          # Scripts de análise de dados
 │   ├── debug/             # Scripts de debug
 │   ├── tests/             # Scripts e arquivos de teste
 │   ├── validation/        # Scripts de validação
@@ -80,6 +81,10 @@ Use o script `run_scripts.py` para executar facilmente qualquer script auxiliar:
 ```bash
 # Listar todos os scripts disponíveis
 python run_scripts.py
+
+# Executar scripts de análise
+python run_scripts.py analysis check_dtic_users
+python run_scripts.py analysis compare_technicians
 
 # Executar scripts de debug
 python run_scripts.py debug metrics

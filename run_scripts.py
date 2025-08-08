@@ -18,18 +18,32 @@ from pathlib import Path
 
 # Mapeamento dos scripts disponíveis
 SCRIPTS = {
+    'analysis': {
+        'check_dtic_users': 'scripts/analysis/check_dtic_users.py',
+        'compare_technicians': 'scripts/analysis/compare_technicians.py',
+        'extract_technicians': 'scripts/analysis/extract_all_technicians.py',
+        'final_comparison': 'scripts/analysis/final_comparison.py',
+        'list_groups': 'scripts/analysis/list_all_groups.py',
+        'analyze_non_technicians': 'scripts/analysis/analyze_non_technicians_root.py',
+        'simple_user_analysis': 'scripts/analysis/simple_user_analysis_root.py'
+    },
     'debug': {
         'metrics': 'scripts/debug/debug_metrics.py',
         'trends': 'scripts/debug/debug_trends.py',
         'react_keys': 'scripts/debug/debug_react_keys.py',
-        'duplicate_keys': 'scripts/debug/check_duplicate_keys.py'
+        'duplicate_keys': 'scripts/debug/check_duplicate_keys.py',
+        'dtic_groups': 'scripts/debug/debug_dtic_groups.py'
     },
     'validation': {
         'frontend_trends': 'scripts/validation/validate_frontend_trends.py',
-        'trends_math': 'scripts/validation/validate_trends_math.py'
+        'trends_math': 'scripts/validation/validate_trends_math.py',
+        'final_validation': 'scripts/validation/final_validation_report_root.py',
+        'validation_fix': 'scripts/validation/validation_final_fix.py'
     },
     'tests': {
-        'trends': 'scripts/tests/test_trends.py'
+        'trends': 'scripts/tests/test_trends.py',
+        'active_technicians': 'scripts/tests/test_active_technicians.py',
+        'verify_endpoint': 'scripts/tests/verify_endpoint_technicians.py'
     }
 }
 
