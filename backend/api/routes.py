@@ -15,12 +15,8 @@ import logging
 from datetime import datetime
 import time
 
-# Importar cache do app principal
-try:
-    from app import cache
-except ImportError:
-    # Fallback caso não consiga importar
-    cache = None
+# Importar cache do módulo separado
+from backend.config.cache import get_cache
 
 api_bp = Blueprint('api', __name__, url_prefix='/api')
 
@@ -280,16 +276,17 @@ def get_technician_ranking():
         
         logger.info(f"Buscando ranking de técnicos com filtros: data={start_date} até {end_date}, nível={level}, limite={limit}")
         
-        # Busca ranking com filtros se fornecidos
-        if any([start_date, end_date, level]):
-            ranking_data = glpi_service.get_technician_ranking_with_filters(
-                start_date=start_date,
-                end_date=end_date,
-                level=level,
-                limit=limit
-            )
-        else:
-            ranking_data = glpi_service.get_technician_ranking(limit=limit)
+        # Sempre usar o método principal que suporta filtros de data
+        ranking_data = glpi_service.get_technician_ranking(
+            limit=limit,
+            start_date=start_date,
+            end_date=end_date
+        )
+        
+        # Se há filtro de nível, aplicar após obter os dados
+        if level and ranking_data:
+            # Filtrar por nível se especificado
+            ranking_data = [tech for tech in ranking_data if tech.get('level', 'N1') == level]
         
         if not ranking_data:
             print("AVISO: Nenhum dado de técnico retornado pelo GLPI")

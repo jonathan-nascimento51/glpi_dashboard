@@ -1,51 +1,25 @@
 from flask import Flask
 from flask_cors import CORS
-from flask_caching import Cache
 import logging
-import redis
 from backend.config.settings import active_config
+from backend.config.cache import init_cache
 from backend.api.routes import api_bp
 
-# Instância global do cache
-cache = Cache()
-
 def create_app(config=None):
-    """Cria e configura a aplicação Flask"""
+    """Factory para criar a aplicação Flask"""
     app = Flask(__name__)
     
-    # Carrega configurações
-    if config is None:
-        app.config.from_object(active_config)
+    # Configuração
+    if config:
+        app.config.update(config)
     else:
-        app.config.from_object(config)
+        app.config.update(active_config.to_dict())
     
-    # Configura cache com Redis e fallback
-    try:
-        # Tenta conectar ao Redis
-        redis_client = redis.from_url(app.config.get('REDIS_URL', 'redis://localhost:6379/0'))
-        redis_client.ping()  # Testa conexão
-        
-        cache_config = {
-            'CACHE_TYPE': 'RedisCache',
-            'CACHE_REDIS_URL': app.config.get('CACHE_REDIS_URL', 'redis://localhost:6379/0'),
-            'CACHE_DEFAULT_TIMEOUT': app.config.get('CACHE_DEFAULT_TIMEOUT', 300),
-            'CACHE_KEY_PREFIX': app.config.get('CACHE_KEY_PREFIX', 'glpi_dashboard:')
-        }
-        print("✓ Redis cache configurado com sucesso")
-        
-    except (redis.ConnectionError, redis.TimeoutError, Exception) as e:
-        # Fallback para SimpleCache se Redis não estiver disponível
-        print(f"⚠ Redis não disponível ({e}), usando SimpleCache como fallback")
-        cache_config = {
-            'CACHE_TYPE': 'SimpleCache',
-            'CACHE_DEFAULT_TIMEOUT': app.config.get('CACHE_DEFAULT_TIMEOUT', 300)
-        }
+    # CORS
+    CORS(app, origins=["http://localhost:3001", "http://127.0.0.1:3001"])
     
-    app.config.update(cache_config)
-    cache.init_app(app)
-    
-    # Configura CORS
-    CORS(app)
+    # Inicializa cache usando o módulo separado
+    init_cache(app)
     
     # Configura logging
     logging.basicConfig(
@@ -54,29 +28,16 @@ def create_app(config=None):
     )
     logger = logging.getLogger('app')
     
-    # Middleware para logar todas as requisições
+    # Middleware para logar requisições (simplificado)
     @app.before_request
     def log_request_info():
         from flask import request
-        import sys
-        print(f"\n=== REQUISIÇÃO RECEBIDA ===", flush=True)
-        print(f"Método: {request.method}", flush=True)
-        print(f"Path: {request.path}", flush=True)
-        print(f"URL completa: {request.url}", flush=True)
-        print(f"Headers: {dict(request.headers)}", flush=True)
-        print(f"================================\n", flush=True)
-        sys.stdout.flush()
-        logger.info(f"REQUISIÇÃO RECEBIDA: {request.method} {request.path}")
+        logger.info(f"REQUISIÇÃO: {request.method} {request.path}")
         
     @app.after_request
     def log_response_info(response):
         from flask import request
-        import sys
-        print(f"\n=== RESPOSTA ENVIADA ===", flush=True)
-        print(f"Status: {response.status_code}", flush=True)
-        print(f"Para: {request.method} {request.path}", flush=True)
-        print(f"============================\n", flush=True)
-        sys.stdout.flush()
+        logger.info(f"RESPOSTA: {response.status_code} para {request.method} {request.path}")
         return response
     
     # Registra blueprints
