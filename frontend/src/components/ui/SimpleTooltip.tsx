@@ -17,7 +17,7 @@ export const SimpleTooltip: React.FC<SimpleTooltipProps> = ({
   const triggerRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const showTooltip = (e: React.MouseEvent) => {
+  const showTooltip = () => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }

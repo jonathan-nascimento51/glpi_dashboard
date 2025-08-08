@@ -16,3 +16,6 @@ dependencies = [
     "redis>=5.0.0",
     "hiredis>=2.3.0",
 ]
+
+[tool.setuptools]
+packages = ["backend"]

@@ -44,6 +44,7 @@ Aplicação completa para dashboard de métricas do GLPI, com backend Flask e fr
 │   ├── validation/        # Scripts de validação
 │   └── README.md          # Documentação dos scripts
 ├── app.py                 # Ponto de entrada do backend
+├── run_scripts.py         # Executor de scripts auxiliares
 ├── pyproject.toml         # Configuração e dependências Python
 ├── .env.example           # Exemplo de variáveis de ambiente
 └── README.md              # Este arquivo
@@ -77,25 +78,13 @@ O projeto inclui diversos scripts organizados na pasta `scripts/` para debug, te
 ### Execução Rápida
 
 Use o script `run_scripts.py` para executar facilmente qualquer script auxiliar:
-
 ```bash
-# Listar todos os scripts disponíveis
-python run_scripts.py
+# Para ver a lista completa de scripts e obter ajuda, use -h
+python run_scripts.py -h
 
-# Executar scripts de análise
+# Para executar um script, informe a categoria e o nome
 python run_scripts.py analysis check_dtic_users
-python run_scripts.py analysis compare_technicians
-
-# Executar scripts de debug
 python run_scripts.py debug metrics
-python run_scripts.py debug trends
-
-# Executar scripts de validação
-python run_scripts.py validation frontend_trends
-python run_scripts.py validation trends_math
-
-# Executar scripts de teste
-python run_scripts.py tests trends
 ```
 
 ### Execução Manual

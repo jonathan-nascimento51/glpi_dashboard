@@ -181,7 +181,7 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
       animate="visible"
       className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 ${className || ''}`}
     >
-      {metricCards.map((card, index) => (
+      {metricCards.map((card) => (
         <motion.div
           key={generateMetricsKey(card.status, 'main-grid')}
           variants={itemVariants}

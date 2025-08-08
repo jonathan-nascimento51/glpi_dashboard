@@ -2,6 +2,15 @@
 
 Esta pasta contém todos os scripts auxiliares organizados por categoria.
 
+## 🚀 Execução Recomendada
+
+A forma recomendada de executar qualquer um desses scripts é através do executor principal na raiz do projeto, o `run_scripts.py`. Ele oferece ajuda e validação dos argumentos.
+
+```bash
+# Na raiz do projeto, execute:
+python run_scripts.py <categoria> <nome_do_script>
+```
+
 ## 📁 Estrutura
 
 ### `/debug`
@@ -23,7 +32,7 @@ Scripts de validação e verificação:
 - `validate_frontend_trends.py` - Validação das tendências no frontend
 - `validate_trends_math.py` - Validação dos cálculos matemáticos das tendências
 
-## 🚀 Como usar
+## 🚀 Como usar (Execução Manual)
 
 ### Scripts de Debug
 ```bash

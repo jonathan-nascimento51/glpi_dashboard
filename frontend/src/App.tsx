@@ -25,7 +25,6 @@ import { TicketStatus, Theme } from './types';
 
 function App() {
   const {
-    metrics,
     levelMetrics,
     systemStatus,
     technicianRanking,

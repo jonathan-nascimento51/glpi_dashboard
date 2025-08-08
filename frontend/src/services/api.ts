@@ -266,6 +266,12 @@ export const apiService = {
         console.error('API returned unsuccessful response:', response.data);
         // Return fallback data (não cachear)
         return {
+          api: 'offline',
+          glpi: 'offline',
+          glpi_message: 'Sistema indisponível',
+          glpi_response_time: 0,
+          last_update: new Date().toISOString(),
+          version: '1.0.0',
           status: 'offline',
           sistema_ativo: false,
           ultima_atualizacao: new Date().toISOString()
@@ -275,6 +281,12 @@ export const apiService = {
       console.error('Error fetching system status:', error);
       // Return fallback data instead of throwing (não cachear)
       return {
+        api: 'offline',
+        glpi: 'offline',
+        glpi_message: 'Sistema indisponível',
+        glpi_response_time: 0,
+        last_update: new Date().toISOString(),
+        version: '1.0.0',
         status: 'offline',
         sistema_ativo: false,
         ultima_atualizacao: new Date().toISOString()

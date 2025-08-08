@@ -105,9 +105,15 @@ export function validateSystemStatus(data: any): ValidationResult<SystemStatus> 
   const warnings: string[] = [];
   
   const defaultStatus: SystemStatus = {
+    api: 'offline',
+    glpi: 'offline',
+    glpi_message: 'Sistema indisponível',
+    glpi_response_time: 0,
+    last_update: new Date().toISOString(),
+    version: '1.0.0',
     status: 'offline',
     sistema_ativo: false,
-    ultima_atualizacao: ''
+    ultima_atualizacao: new Date().toISOString()
   };
 
   if (!data) {
@@ -128,9 +134,15 @@ export function validateSystemStatus(data: any): ValidationResult<SystemStatus> 
   }
 
   const sanitizedData: SystemStatus = {
+    api: String(data.api || 'offline'),
+    glpi: String(data.glpi || 'offline'),
+    glpi_message: String(data.glpi_message || 'Sistema indisponível'),
+    glpi_response_time: Number(data.glpi_response_time || 0),
+    last_update: String(data.last_update || new Date().toISOString()),
+    version: String(data.version || '1.0.0'),
     status: status as 'online' | 'offline' | 'maintenance',
     sistema_ativo: Boolean(data.sistema_ativo),
-    ultima_atualizacao: String(data.ultima_atualizacao || '')
+    ultima_atualizacao: String(data.ultima_atualizacao || data.last_update || new Date().toISOString())
   };
 
   return {

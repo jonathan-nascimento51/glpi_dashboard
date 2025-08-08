@@ -24,7 +24,7 @@ interface UseDashboardReturn {
   forceRefresh: () => Promise<void>;
   updateFilters: (newFilters: FilterParams) => void;
   search: (query: string) => void;
-  addNotification: (notification: any) => void;
+  addNotification: (notification: Partial<NotificationData>) => void;
   removeNotification: (id: string) => void;
   changeTheme: (theme: string) => void;
   updateDateRange: (dateRange: any) => void;

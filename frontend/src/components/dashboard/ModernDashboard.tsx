@@ -183,7 +183,7 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
         {/* Métricas por nível de atendimento - ocupando 2 colunas */}
         <motion.div variants={itemVariants} className="dashboard-levels-section">
           <LevelMetricsGrid 
-            metrics={{ niveis: levelMetrics }}
+            metrics={levelMetrics}
             className="h-full"
           />
         </motion.div>

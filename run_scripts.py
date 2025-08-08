@@ -3,7 +3,7 @@
 Script para executar facilmente os scripts auxiliares do projeto.
 Uso: python run_scripts.py <categoria> <script>
 
-Exemplos:
+Exemplos de uso:
   python run_scripts.py debug metrics
   python run_scripts.py debug trends
   python run_scripts.py validation frontend_trends

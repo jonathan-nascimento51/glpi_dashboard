@@ -13,7 +13,7 @@ def create_app(config=None):
     if config:
         app.config.update(config)
     else:
-        app.config.update(active_config.to_dict())
+        app.config.from_object(active_config)
     
     # CORS
     CORS(app, origins=["http://localhost:3001", "http://127.0.0.1:3001"])

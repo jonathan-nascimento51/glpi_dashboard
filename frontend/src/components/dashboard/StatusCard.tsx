@@ -4,8 +4,8 @@ import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn, formatNumber, getStatusIcon, getTrendIcon, getTrendColor } from "@/lib/utils"
-import { type LucideIcon, Info, TrendingUp, TrendingDown, Minus } from "lucide-react"
-import { SimpleTooltip } from "@/components/ui/SimpleTooltip"
+import { type LucideIcon, Info } from "lucide-react"
+import { Tooltip } from "@/components/ui/Tooltip"
 
 interface StatusCardProps {
   title: string
@@ -241,7 +241,7 @@ export const StatusCard = memo<StatusCardProps>(function StatusCard({
                     )}
                   </motion.div>
                   
-                  <SimpleTooltip content={getTrendExplanation(trend.value, title)}>
+                  <Tooltip content={getTrendExplanation(trend.value, title)}>
                     <motion.div
                       whileHover={{ scale: 1.1 }}
                       className="cursor-help"
@@ -252,7 +252,7 @@ export const StatusCard = memo<StatusCardProps>(function StatusCard({
                     >
                       <Info className="h-4 w-4 text-gray-400 hover:text-gray-600" />
                     </motion.div>
-                  </SimpleTooltip>
+                  </Tooltip>
                 </div>
               )}
             </div>

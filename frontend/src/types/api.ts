@@ -49,9 +49,16 @@ export interface DashboardMetrics {
 
 // Status do sistema
 export interface SystemStatus {
-  status: 'online' | 'offline' | 'maintenance';
-  sistema_ativo: boolean;
-  ultima_atualizacao: string;
+  api: string;
+  glpi: string;
+  glpi_message: string;
+  glpi_response_time: number;
+  last_update: string;
+  version: string;
+  // Campos de compatibilidade
+  status?: 'online' | 'offline' | 'maintenance';
+  sistema_ativo?: boolean;
+  ultima_atualizacao?: string;
 }
 
 // Ranking de técnicos
@@ -84,6 +91,7 @@ export interface FilterParams {
   category?: string;
   startDate?: string;
   endDate?: string;
+  limit?: number;
 }
 
 // Resposta da API
