@@ -22,7 +22,6 @@ import { useCacheNotifications } from './hooks/useCacheNotifications';
 import { usePerformanceProfiler } from './utils/performanceMonitor';
 import { performanceMonitor } from './utils/performanceMonitor';
 import { TicketStatus, Theme } from './types';
-// import { clearAllCaches } from './services/api'; // Não utilizado
 
 function App() {
   const {
