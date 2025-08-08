@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Trash2, 
@@ -26,33 +26,35 @@ const CacheManager: React.FC<CacheManagerProps> = ({ className = '' }) => {
     getCacheInfo 
   } = useCache();
 
-  const formatHitRate = (hitRate: number) => {
+  const formatHitRate = useCallback((hitRate: number) => {
     return `${(hitRate * 100).toFixed(1)}%`;
-  };
+  }, []);
 
-  const formatSize = (size: number) => {
+  const formatSize = useCallback((size: number) => {
     return `${size} ${size === 1 ? 'item' : 'itens'}`;
-  };
+  }, []);
 
-  const getCacheTypeLabel = (type: string) => {
-    const labels: Record<string, string> = {
-      metrics: 'Métricas',
-      systemStatus: 'Status do Sistema',
-      technicianRanking: 'Ranking de Técnicos',
-      newTickets: 'Novos Tickets'
-    };
-    return labels[type] || type;
-  };
+  const cacheTypeLabels = useMemo(() => ({
+    metrics: 'Métricas',
+    systemStatus: 'Status do Sistema',
+    technicianRanking: 'Ranking de Técnicos',
+    newTickets: 'Novos Tickets'
+  }), []);
 
-  const getCacheTypeIcon = (type: string) => {
-    const icons: Record<string, React.ReactNode> = {
-      metrics: <BarChart3 className="w-4 h-4" />,
-      systemStatus: <Database className="w-4 h-4" />,
-      technicianRanking: <TrendingUp className="w-4 h-4" />,
-      newTickets: <Clock className="w-4 h-4" />
-    };
-    return icons[type] || <Info className="w-4 h-4" />;
-  };
+  const getCacheTypeLabel = useCallback((type: string) => {
+    return cacheTypeLabels[type as keyof typeof cacheTypeLabels] || type;
+  }, [cacheTypeLabels]);
+
+  const cacheTypeIcons = useMemo(() => ({
+    metrics: <BarChart3 className="w-4 h-4" />,
+    systemStatus: <Database className="w-4 h-4" />,
+    technicianRanking: <TrendingUp className="w-4 h-4" />,
+    newTickets: <Clock className="w-4 h-4" />
+  }), []);
+
+  const getCacheTypeIcon = useCallback((type: string) => {
+    return cacheTypeIcons[type as keyof typeof cacheTypeIcons] || <Info className="w-4 h-4" />;
+  }, [cacheTypeIcons]);
 
   if (!stats) {
     return (
@@ -122,10 +124,10 @@ const CacheManager: React.FC<CacheManagerProps> = ({ className = '' }) => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Taxa de Acerto:</span>
-                  <span className={`font-medium ${
+                  <span className={useMemo(() => `font-medium ${
                     cacheStats.hitRate > 0.7 ? 'text-green-600' : 
                     cacheStats.hitRate > 0.4 ? 'text-yellow-600' : 'text-red-600'
-                  }`}>
+                  }`, [cacheStats.hitRate])}>
                     {formatHitRate(cacheStats.hitRate)}
                   </span>
                 </div>

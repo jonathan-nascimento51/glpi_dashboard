@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { AlertTriangle, CheckCircle, Info, X, Eye, EyeOff } from 'lucide-react';
 import { DataIntegrityReport } from '../utils/dataValidation';
 
@@ -8,6 +8,25 @@ interface DataIntegrityMonitorProps {
   onToggleVisibility: () => void;
 }
 
+// Helper functions moved outside component to prevent re-creation
+const getStatusColor = (totalErrors: number, totalWarnings: number) => {
+  if (totalErrors > 0) return 'text-red-600 bg-red-50 border-red-200';
+  if (totalWarnings > 0) return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+  return 'text-green-600 bg-green-50 border-green-200';
+};
+
+const getStatusIcon = (totalErrors: number, totalWarnings: number) => {
+  if (totalErrors > 0) return <AlertTriangle className="w-4 h-4" />;
+  if (totalWarnings > 0) return <Info className="w-4 h-4" />;
+  return <CheckCircle className="w-4 h-4" />;
+};
+
+const getStatusText = (totalErrors: number, totalWarnings: number) => {
+  if (totalErrors > 0) return `${totalErrors} erro(s)`;
+  if (totalWarnings > 0) return `${totalWarnings} aviso(s)`;
+  return 'Dados íntegros';
+};
+
 const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
   report,
   isVisible,
@@ -15,35 +34,43 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  // Memoize calculations to prevent unnecessary re-computations
+  const { totalErrors, totalWarnings } = useMemo(() => {
+    if (!report) return { totalErrors: 0, totalWarnings: 0 };
+    
+    const errors = report.metrics.errors.length + 
+                   report.systemStatus.errors.length + 
+                   report.technicianRanking.errors.length;
+    
+    const warnings = report.metrics.warnings.length + 
+                     report.systemStatus.warnings.length + 
+                     report.technicianRanking.warnings.length;
+    
+    return { totalErrors: errors, totalWarnings: warnings };
+  }, [report]);
+
+  // Memoize status values
+  const statusColor = useMemo(() => getStatusColor(totalErrors, totalWarnings), [totalErrors, totalWarnings]);
+  const statusIcon = useMemo(() => getStatusIcon(totalErrors, totalWarnings), [totalErrors, totalWarnings]);
+  const statusText = useMemo(() => getStatusText(totalErrors, totalWarnings), [totalErrors, totalWarnings]);
+
+  // Memoize event handlers
+  const handleToggleExpanded = useCallback(() => {
+    setIsExpanded(!isExpanded);
+  }, [isExpanded]);
+
+  const handleCloseExpanded = useCallback(() => {
+    setIsExpanded(false);
+  }, []);
+
+  const handleHideMonitor = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    onToggleVisibility();
+  }, [onToggleVisibility]);
+
   if (!report) {
     return null;
   }
-
-  const totalErrors = report.metrics.errors.length + 
-                     report.systemStatus.errors.length + 
-                     report.technicianRanking.errors.length;
-
-  const totalWarnings = report.metrics.warnings.length + 
-                       report.systemStatus.warnings.length + 
-                       report.technicianRanking.warnings.length;
-
-  const getStatusColor = () => {
-    if (totalErrors > 0) return 'text-red-600 bg-red-50 border-red-200';
-    if (totalWarnings > 0) return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-    return 'text-green-600 bg-green-50 border-green-200';
-  };
-
-  const getStatusIcon = () => {
-    if (totalErrors > 0) return <AlertTriangle className="w-4 h-4" />;
-    if (totalWarnings > 0) return <Info className="w-4 h-4" />;
-    return <CheckCircle className="w-4 h-4" />;
-  };
-
-  const getStatusText = () => {
-    if (totalErrors > 0) return `${totalErrors} erro(s)`;
-    if (totalWarnings > 0) return `${totalWarnings} aviso(s)`;
-    return 'Dados íntegros';
-  };
 
   if (!isVisible) {
     return (
@@ -62,15 +89,15 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
       {/* Compact Status Bar */}
       <div className={`
         flex items-center justify-between p-3 rounded-lg border shadow-lg cursor-pointer
-        ${getStatusColor()}
+        ${statusColor}
         transition-all duration-200 hover:shadow-xl
       `}
-      onClick={() => setIsExpanded(!isExpanded)}
+      onClick={handleToggleExpanded}
       >
         <div className="flex items-center space-x-2">
-          {getStatusIcon()}
+          {statusIcon}
           <span className="font-medium text-sm">
-            Integridade: {getStatusText()}
+            Integridade: {statusText}
           </span>
         </div>
         <div className="flex items-center space-x-1">
@@ -78,10 +105,7 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
             {new Date(report.timestamp).toLocaleTimeString('pt-BR')}
           </span>
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleVisibility();
-            }}
+            onClick={handleHideMonitor}
             className="p-1 hover:bg-black/10 rounded"
             title="Ocultar monitor"
           >
@@ -99,7 +123,7 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
                 Relatório de Integridade
               </h3>
               <button
-                onClick={() => setIsExpanded(false)}
+                onClick={handleCloseExpanded}
                 className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
               >
                 <X className="w-4 h-4" />

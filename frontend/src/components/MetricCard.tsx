@@ -125,19 +125,6 @@ export const MetricCard = React.memo<MetricCardProps>(function MetricCard({
   change,
   onClick,
 }) {
-  console.log('🔍 MetricCard - PROPS RECEBIDAS:', {
-    type,
-    value,
-    change,
-    'typeof value': typeof value,
-    'value === 0': value === 0,
-    'value == 0': value == 0,
-    'Number(value)': Number(value),
-    'value === null': value === null,
-    'value === undefined': value === undefined
-  });
-
-  
   // Memoizar configuração do tipo
   const config = useMemo(() => getMetricConfig(type), [type]);
   

@@ -57,18 +57,18 @@ export const Header: React.FC<HeaderProps> = ({
   const themeRef = useRef<HTMLDivElement>(null);
   const dateRef = useRef<HTMLDivElement>(null);
 
-  // Format date for display
-  const formatDate = (dateStr: string) => {
+  // Format date for display - memoized
+  const formatDate = useCallback((dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString('pt-BR', { 
       day: '2-digit', 
       month: '2-digit', 
       year: '2-digit' 
     });
-  };
+  }, []);
 
-  // Get date range label
-  const getDateRangeLabel = () => {
+  // Get date range label - memoized
+  const getDateRangeLabel = useMemo(() => {
     // ✅ Verificação de segurança
     if (!dateRange || !dateRange.startDate || !dateRange.endDate) {
       return 'Selecionar período';
@@ -83,7 +83,7 @@ export const Header: React.FC<HeaderProps> = ({
     if (predefined) return predefined.label;
     
     return `${formatDate(dateRange.startDate)} - ${formatDate(dateRange.endDate)}`;
-  };
+  }, [dateRange, formatDate]);
 
   // Handle predefined date range selection
   const handleDateRangeSelect = useCallback((days: number) => {
@@ -182,7 +182,16 @@ export const Header: React.FC<HeaderProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const currentTheme = themes.find(t => t.value === theme) || themes[0];
+  // Memoize current theme to prevent recalculation
+  const currentTheme = useMemo(() => 
+    themes.find(t => t.value === theme) || themes[0], 
+    [theme]
+  );
+
+  // Memoize search clear handler
+  const handleSearchClear = useCallback(() => {
+    onSearch('');
+  }, [onSearch]);
 
   return (
     <header className="figma-header w-full shadow-xl relative z-50">
@@ -223,7 +232,7 @@ export const Header: React.FC<HeaderProps> = ({
                 />
                 {searchQuery && (
                   <button
-                    onClick={() => onSearch('')}
+                    onClick={handleSearchClear}
                     className="absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 figma-body opacity-60 hover:opacity-100 transition-opacity"
                   >
                     <X className="w-4 h-4" />
@@ -254,7 +263,7 @@ export const Header: React.FC<HeaderProps> = ({
                 className="btn-secondary flex items-center space-x-3 px-4 py-3 rounded-xl font-medium"
               >
                 <Calendar className="w-4 h-4" />
-                <span className="text-sm whitespace-nowrap">{getDateRangeLabel()}</span>
+                <span className="text-sm whitespace-nowrap">{getDateRangeLabel}</span>
                 <ChevronDown className="w-4 h-4" />
               </button>
               

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { MetricCard } from './MetricCard';
 import { MetricsData, TicketStatus } from '../types';
 
@@ -7,60 +7,61 @@ interface MetricsGridProps {
   onFilterByStatus: (status: TicketStatus) => void;
 }
 
-export const MetricsGrid: React.FC<MetricsGridProps> = ({
+export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
   metrics,
   onFilterByStatus,
-}) => {
-  console.log('🔍 MetricsGrid - DADOS RECEBIDOS:', {
-    metrics,
-    'metrics.novos': metrics.novos,
-    'metrics.progresso': metrics.progresso,
-    'metrics.pendentes': metrics.pendentes,
-    'metrics.resolvidos': metrics.resolvidos,
-    'metrics.total': metrics.total,
-    'typeof metrics.novos': typeof metrics.novos,
-    'metrics === null': metrics === null,
-    'metrics === undefined': metrics === undefined
-  });
-
-    
-    // Verificação de segurança para evitar erros
+}) {
+  // Verificação de segurança para evitar erros
   if (!metrics) {
-    console.log('⚠️ MetricsGrid - Métricas não disponíveis');
     return <div>Carregando métricas...</div>;
   }
 
-  // Usa o total calculado pelo backend ou calcula se não estiver disponível
-  const total = metrics.total || (metrics.novos || 0) + (metrics.pendentes || 0) + (metrics.progresso || 0) + (metrics.resolvidos || 0);
+  // Memoizar o total calculado
+  const total = useMemo(() => {
+    return metrics.total || (metrics.novos || 0) + (metrics.pendentes || 0) + (metrics.progresso || 0) + (metrics.resolvidos || 0);
+  }, [metrics.total, metrics.novos, metrics.pendentes, metrics.progresso, metrics.resolvidos]);
 
-  const metricCards: Array<{
-    type: TicketStatus;
-    value: number;
-    change: string;
-  }> = [
+  // Memoizar os cards de métricas
+  const metricCards = useMemo(() => [
     {
-      type: 'new',
+      type: 'new' as TicketStatus,
       value: metrics.novos || 0,
       change: metrics.tendencias?.novos || '0',
     },
     {
-      type: 'progress',
+      type: 'progress' as TicketStatus,
       value: metrics.progresso || 0,
       change: metrics.tendencias?.progresso || '0',
     },
     {
-      type: 'pending',
+      type: 'pending' as TicketStatus,
       value: metrics.pendentes || 0,
       change: metrics.tendencias?.pendentes || '0',
     },
     {
-      type: 'resolved',
+      type: 'resolved' as TicketStatus,
       value: metrics.resolvidos || 0,
       change: metrics.tendencias?.resolvidos || '0',
     },
-  ];
-  
-  console.log('🔍 MetricsGrid - METRIC CARDS CRIADOS:', metricCards);
+  ], [metrics.novos, metrics.progresso, metrics.pendentes, metrics.resolvidos, metrics.tendencias]);
+
+  // Memoizar estatísticas calculadas
+  const stats = useMemo(() => ({
+    resolutionRate: total > 0 ? (((metrics.resolvidos || 0) / total) * 100).toFixed(1) : '0.0',
+    inProgressRate: total > 0 ? ((((metrics.novos || 0) + (metrics.pendentes || 0) + (metrics.progresso || 0)) / total) * 100).toFixed(1) : '0.0',
+    percentages: {
+      novos: total > 0 ? (((metrics.novos || 0) / total) * 100).toFixed(1) : '0.0',
+      progresso: total > 0 ? (((metrics.progresso || 0) / total) * 100).toFixed(1) : '0.0',
+      pendentes: total > 0 ? (((metrics.pendentes || 0) / total) * 100).toFixed(1) : '0.0',
+      resolvidos: total > 0 ? (((metrics.resolvidos || 0) / total) * 100).toFixed(1) : '0.0',
+    },
+    widths: {
+      novos: total > 0 ? `${((metrics.novos || 0) / total) * 100}%` : '0%',
+      progresso: total > 0 ? `${((metrics.progresso || 0) / total) * 100}%` : '0%',
+      pendentes: total > 0 ? `${((metrics.pendentes || 0) / total) * 100}%` : '0%',
+      resolvidos: total > 0 ? `${((metrics.resolvidos || 0) / total) * 100}%` : '0%',
+    }
+  }), [total, metrics.novos, metrics.progresso, metrics.pendentes, metrics.resolvidos]);
 
   return (
     <div className="space-y-6">
@@ -98,7 +99,7 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-4 text-center lg:min-w-0 lg:flex-shrink-0">
             <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 min-w-0">
               <div className="text-xl lg:text-2xl font-bold text-blue-600 dark:text-blue-400 truncate">
-                {total > 0 ? (((metrics.resolvidos || 0) / total) * 100).toFixed(1) : '0.0'}%
+                {stats.resolutionRate}%
               </div>
               <div className="text-xs text-blue-700 dark:text-blue-300 truncate">
                 Taxa de Resolução
@@ -106,7 +107,7 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
             </div>
             <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 min-w-0">
               <div className="text-xl lg:text-2xl font-bold text-green-600 dark:text-green-400 truncate">
-                {total > 0 ? ((((metrics.novos || 0) + (metrics.pendentes || 0) + (metrics.progresso || 0)) / total) * 100).toFixed(1) : '0.0'}%
+                {stats.inProgressRate}%
               </div>
               <div className="text-xs text-green-700 dark:text-green-300 truncate">
                 Em Andamento
@@ -125,23 +126,23 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
             <div className="h-full flex">
               <div 
                 className="bg-blue-500 transition-all duration-500"
-                style={{ width: total > 0 ? `${((metrics.novos || 0) / total) * 100}%` : '0%' }}
-                title={`Novos: ${metrics.novos || 0} (${total > 0 ? (((metrics.novos || 0) / total) * 100).toFixed(1) : '0.0'}%)`}
+                style={{ width: stats.widths.novos }}
+                title={`Novos: ${metrics.novos || 0} (${stats.percentages.novos}%)`}
               />
               <div 
                 className="bg-yellow-500 transition-all duration-500"
-                style={{ width: total > 0 ? `${((metrics.progresso || 0) / total) * 100}%` : '0%' }}
-                title={`Em Progresso: ${metrics.progresso || 0} (${total > 0 ? (((metrics.progresso || 0) / total) * 100).toFixed(1) : '0.0'}%)`}
+                style={{ width: stats.widths.progresso }}
+                title={`Em Progresso: ${metrics.progresso || 0} (${stats.percentages.progresso}%)`}
               />
               <div 
                 className="bg-orange-500 transition-all duration-500"
-                style={{ width: total > 0 ? `${((metrics.pendentes || 0) / total) * 100}%` : '0%' }}
-                title={`Pendentes: ${metrics.pendentes || 0} (${total > 0 ? (((metrics.pendentes || 0) / total) * 100).toFixed(1) : '0.0'}%)`}
+                style={{ width: stats.widths.pendentes }}
+                title={`Pendentes: ${metrics.pendentes || 0} (${stats.percentages.pendentes}%)`}
               />
               <div 
                 className="bg-green-500 transition-all duration-500"
-                style={{ width: total > 0 ? `${((metrics.resolvidos || 0) / total) * 100}%` : '0%' }}
-                title={`Resolvidos: ${metrics.resolvidos || 0} (${total > 0 ? (((metrics.resolvidos || 0) / total) * 100).toFixed(1) : '0.0'}%)`}
+                style={{ width: stats.widths.resolvidos }}
+                title={`Resolvidos: ${metrics.resolvidos || 0} (${stats.percentages.resolvidos}%)`}
               />
             </div>
           </div>
@@ -167,4 +168,4 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
       </div>
     </div>
   );
-};
+});

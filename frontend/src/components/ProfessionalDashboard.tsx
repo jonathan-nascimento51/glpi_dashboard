@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useTransition } from 'react';
+import React, { useState, useEffect, useTransition, useMemo, useCallback } from 'react';
 import { MetricsData, TechnicianRanking, NewTicket } from '../types';
 import { DateRange } from '../types/dashboard';
 import { apiService } from '../services/api';
@@ -32,27 +32,33 @@ interface StatusCardProps {
   trend?: number;
 }
 
-const StatusCard: React.FC<StatusCardProps> = ({ title, value, icon: Icon, color, bgColor, trend }) => (
-  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all duration-200">
-    <div className="flex items-center justify-between">
-      <div>
-        <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
-        <p className={`text-3xl font-bold ${color}`}>{value.toLocaleString()}</p>
-        {trend !== undefined && (
-          <div className="flex items-center mt-2">
-            <TrendingUp className={`w-4 h-4 mr-1 ${trend >= 0 ? 'text-green-500' : 'text-red-500'}`} />
-            <span className={`text-sm font-medium ${trend >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {trend >= 0 ? '+' : ''}{trend}%
-            </span>
-          </div>
-        )}
-      </div>
-      <div className={`p-3 rounded-lg ${bgColor}`}>
-        <Icon className={`w-6 h-6 ${color}`} />
+const StatusCard = React.memo<StatusCardProps>(({ title, value, icon: Icon, color, bgColor, trend }) => {
+  const formattedValue = useMemo(() => value.toLocaleString(), [value])
+  const trendColor = useMemo(() => trend !== undefined ? (trend >= 0 ? 'text-green-500' : 'text-red-500') : '', [trend])
+  const trendTextColor = useMemo(() => trend !== undefined ? (trend >= 0 ? 'text-green-600' : 'text-red-600') : '', [trend])
+  
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all duration-200">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
+          <p className={`text-3xl font-bold ${color}`}>{formattedValue}</p>
+          {trend !== undefined && (
+            <div className="flex items-center mt-2">
+              <TrendingUp className={`w-4 h-4 mr-1 ${trendColor}`} />
+              <span className={`text-sm font-medium ${trendTextColor}`}>
+                {trend >= 0 ? '+' : ''}{trend}%
+              </span>
+            </div>
+          )}
+        </div>
+        <div className={`p-3 rounded-lg ${bgColor}`}>
+          <Icon className={`w-6 h-6 ${color}`} />
+        </div>
       </div>
     </div>
-  </div>
-);
+  )
+});
 
 interface LevelSectionProps {
   level: string;
@@ -64,9 +70,9 @@ interface LevelSectionProps {
   };
 }
 
-const LevelSection: React.FC<LevelSectionProps> = ({ level, data }) => {
-  const total = data.novos + data.progresso + data.pendentes + data.resolvidos;
-  const resolvedPercentage = total > 0 ? ((data.resolvidos / total) * 100).toFixed(1) : '0';
+const LevelSection = React.memo<LevelSectionProps>(({ level, data }) => {
+  const total = useMemo(() => data.novos + data.progresso + data.pendentes + data.resolvidos, [data])
+  const resolvedPercentage = useMemo(() => total > 0 ? ((data.resolvidos / total) * 100).toFixed(1) : '0', [total, data.resolvidos])
   
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -227,9 +233,9 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
     );
   }
 
-  const totalActive = metrics.novos + metrics.progresso + metrics.pendentes;
-  const totalTickets = totalActive + metrics.resolvidos;
-  const resolutionRate = totalTickets > 0 ? ((metrics.resolvidos / totalTickets) * 100).toFixed(1) : '0';
+  const totalActive = useMemo(() => metrics.novos + metrics.progresso + metrics.pendentes, [metrics.novos, metrics.progresso, metrics.pendentes]);
+  const totalTickets = useMemo(() => totalActive + metrics.resolvidos, [totalActive, metrics.resolvidos]);
+  const resolutionRate = useMemo(() => totalTickets > 0 ? ((metrics.resolvidos / totalTickets) * 100).toFixed(1) : '0', [metrics.resolvidos, totalTickets]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -309,28 +315,34 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
           <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-6">Ranking de Técnicos</h3>
             <div className="space-y-4 max-h-96 overflow-y-auto">
-              {technicianRanking.map((tech, index) => (
-                <div key={tech.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                  <div className="flex items-center space-x-4">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white ${
-                      index === 0 ? 'bg-slate-600' :
-                      index === 1 ? 'bg-slate-500' :
-                      index === 2 ? 'bg-slate-700' :
-                      'bg-slate-800'
-                    }`}>
-                      {index + 1}
+              {technicianRanking.map((tech, index) => {
+                const rankBadgeColor = useMemo(() => {
+                  switch(index) {
+                    case 0: return 'bg-slate-600';
+                    case 1: return 'bg-slate-500';
+                    case 2: return 'bg-slate-700';
+                    default: return 'bg-slate-800';
+                  }
+                }, [index]);
+                
+                return (
+                  <div key={tech.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div className="flex items-center space-x-4">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white ${rankBadgeColor}`}>
+                        {index + 1}
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900">{tech.nome || tech.name}</div>
+                        <div className="text-sm text-gray-500">Técnico de Suporte</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="font-medium text-gray-900">{tech.nome || tech.name}</div>
-                      <div className="text-sm text-gray-500">Técnico de Suporte</div>
+                    <div className="text-right">
+                      <div className="text-lg font-semibold text-gray-900">{tech.total}</div>
+                      <div className="text-sm text-gray-500">chamados</div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-lg font-semibold text-gray-900">{tech.total}</div>
-                    <div className="text-sm text-gray-500">chamados</div>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -345,25 +357,29 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
             ) : (
               <div className="space-y-3 max-h-96 overflow-y-auto">
                 {newTickets.length > 0 ? (
-                  newTickets.map((ticket) => (
-                    <div key={ticket.id} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="text-sm font-medium text-gray-900 truncate flex-1 mr-2">
-                          #{ticket.id}
+                  newTickets.map((ticket) => {
+                    const formattedDate = useMemo(() => new Date(ticket.date).toLocaleDateString('pt-BR'), [ticket.date]);
+                    
+                    return (
+                      <div key={ticket.id} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="text-sm font-medium text-gray-900 truncate flex-1 mr-2">
+                            #{ticket.id}
+                          </div>
+                          <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium figma-badge-subtle">
+                            {ticket.priority}
+                          </span>
                         </div>
-                        <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium figma-badge-subtle">
-                          {ticket.priority}
-                        </span>
+                        <div className="text-sm text-gray-600 mb-2 line-clamp-2">
+                          {ticket.title}
+                        </div>
+                        <div className="flex items-center justify-between text-xs text-gray-500">
+                          <span>{ticket.requester}</span>
+                          <span>{formattedDate}</span>
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-600 mb-2 line-clamp-2">
-                        {ticket.title}
-                      </div>
-                      <div className="flex items-center justify-between text-xs text-gray-500">
-                        <span>{ticket.requester}</span>
-                        <span>{new Date(ticket.date).toLocaleDateString('pt-BR')}</span>
-                      </div>
-                    </div>
-                  ))
+                    );
+                  })
                 ) : (
                   <div className="text-center py-8 text-gray-500">
                     <Clock className="w-8 h-8 mx-auto mb-2 text-gray-400" />

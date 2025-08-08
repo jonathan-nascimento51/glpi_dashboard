@@ -10,6 +10,7 @@ interface PerformanceDashboardProps {
 
 type TabType = 'overview' | 'components' | 'api' | 'browser';
 
+// Helper functions moved outside component to prevent recreation
 const formatTime = (time: number): string => {
   if (time < 1000) return `${time.toFixed(2)}ms`;
   return `${(time / 1000).toFixed(2)}s`;
@@ -20,6 +21,14 @@ const getPerformanceColor = (time: number): string => {
   if (time < 500) return 'text-yellow-600';
   return 'text-red-600';
 };
+
+// Tab configuration moved outside component
+const TAB_CONFIG = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'components', label: 'Components' },
+  { id: 'api', label: 'API Calls' },
+  { id: 'browser', label: 'Browser Metrics' }
+] as const;
 
 const MetricCard = React.memo(({ title, value, description }: {
   title: string;
@@ -315,12 +324,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, 
 
           <div className="bg-white border-b px-6">
             <nav className="flex space-x-8">
-              {[
-                { id: 'overview', label: 'Overview' },
-                { id: 'components', label: 'Components' },
-                { id: 'api', label: 'API Calls' },
-                { id: 'browser', label: 'Browser Metrics' }
-              ].map((tab) => (
+              {TAB_CONFIG.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => handleTabChange(tab.id as TabType)}

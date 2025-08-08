@@ -1,3 +1,4 @@
+import React, { useMemo, useCallback } from "react"
 import { motion } from "framer-motion"
 import {
   ResponsiveContainer,
@@ -44,27 +45,36 @@ const COLORS = {
 
 const PIE_COLORS = ['#3B82F6', '#F59E0B', '#EF4444', '#10B981']
 
-export function TicketChart({ 
+// Variantes de animação movidas para fora do componente para evitar recriação
+const chartVariants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut"
+    }
+  }
+}
+
+// Configurações de margem memoizadas
+const chartMargins = {
+  top: 20,
+  right: 30,
+  left: 20,
+  bottom: 5
+}
+
+export const TicketChart = React.memo<TicketChartProps>(function TicketChart({ 
   data, 
   type = 'area', 
   title = "Evolução dos Tickets",
   className 
-}: TicketChartProps) {
-  const chartVariants = {
-    hidden: { opacity: 0, scale: 0.95 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut"
-      }
-    }
-  }
+}) {
 
-  // Adicionar tooltip customizado
-  
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  // Tooltip customizado memoizado
+  const CustomTooltip = useCallback(({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
         <div className="figma-glass-card rounded-lg p-3 shadow-none">
@@ -78,14 +88,45 @@ export function TicketChart({
       )
     }
     return null
-  }
+  }, [])
+
+  // Dados do gráfico de pizza memoizados
+  const pieData = useMemo(() => {
+    if (data.length === 0) return []
+    const lastDataPoint = data[data.length - 1]
+    return [
+      { name: 'Novos', value: lastDataPoint.novos, color: COLORS.novos },
+      { name: 'Em Progresso', value: lastDataPoint.progresso, color: COLORS.progresso },
+      { name: 'Pendentes', value: lastDataPoint.pendentes, color: COLORS.pendentes },
+      { name: 'Resolvidos', value: lastDataPoint.resolvidos, color: COLORS.resolvidos }
+    ]
+  }, [data])
+
+  // Ícone do gráfico memoizado
+  const chartIcon = useMemo(() => {
+    switch (type) {
+      case 'bar': return <BarChart3 className="h-5 w-5" />
+      case 'pie': return <PieChartIcon className="h-5 w-5" />
+      default: return <TrendingUp className="h-5 w-5" />
+    }
+  }, [type])
+
+  // Label do tipo de gráfico memoizado
+  const typeLabel = useMemo(() => {
+    switch (type) {
+      case 'area': return 'Área'
+      case 'bar': return 'Barras'
+      case 'pie': return 'Pizza'
+      default: return 'Área'
+    }
+  }, [type])
 
   const renderChart = () => {
     switch (type) {
       case 'bar':
         return (
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <BarChart data={data} margin={chartMargins}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis 
                 dataKey="name" 
@@ -111,12 +152,6 @@ export function TicketChart({
         )
       
       case 'pie':
-        const pieData = data.length > 0 ? [
-          { name: 'Novos', value: data[data.length - 1].novos, color: COLORS.novos },
-          { name: 'Em Progresso', value: data[data.length - 1].progresso, color: COLORS.progresso },
-          { name: 'Pendentes', value: data[data.length - 1].pendentes, color: COLORS.pendentes },
-          { name: 'Resolvidos', value: data[data.length - 1].resolvidos, color: COLORS.resolvidos }
-        ] : []
         
         return (
           <ResponsiveContainer width="100%" height={300}>
@@ -143,7 +178,7 @@ export function TicketChart({
       default: // area
         return (
           <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <AreaChart data={data} margin={chartMargins}>
               <defs>
                 <linearGradient id="colorNovos" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor={COLORS.novos} stopOpacity={0.3}/>
@@ -216,13 +251,7 @@ export function TicketChart({
     }
   }
 
-  const getChartIcon = () => {
-    switch (type) {
-      case 'bar': return <BarChart3 className="h-5 w-5" />
-      case 'pie': return <PieChartIcon className="h-5 w-5" />
-      default: return <TrendingUp className="h-5 w-5" />
-    }
-  }
+
 
   return (
     <motion.div
@@ -235,12 +264,12 @@ export function TicketChart({
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="figma-heading-large flex items-center gap-2">
-              {getChartIcon()}
+              {chartIcon}
               {title}
             </CardTitle>
             <div className="flex gap-2">
               <Badge variant="outline" className="text-xs">
-                {type === 'area' ? 'Área' : type === 'bar' ? 'Barras' : 'Pizza'}
+                {typeLabel}
               </Badge>
             </div>
           </div>
@@ -252,4 +281,4 @@ export function TicketChart({
       </Card>
     </motion.div>
   )
-}
+})

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useDashboard } from '../hooks/useDashboard';
 import { useThrottledCallback } from '../hooks/useDebounce';
 import type {
@@ -76,23 +76,33 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
     throttledUpdateFilters(updatedFilters);
   };
 
-  const renderMetricsCard = (title: string, value: number, trend?: number) => (
-    <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-      <h3 className="text-lg font-semibold text-gray-700 mb-2">{title}</h3>
-      <div className="flex items-center justify-between">
-        <span className="text-3xl font-bold text-blue-600">{value}</span>
-        {trend !== undefined && (
-          <span className={`text-sm font-medium ${
-            trend > 0 ? 'text-green-500' : trend < 0 ? 'text-red-500' : 'text-gray-500'
-          }`}>
-            {trend > 0 ? '↗' : trend < 0 ? '↘' : '→'} {Math.abs(trend)}%
-          </span>
-        )}
+  const renderMetricsCard = useCallback((title: string, value: number, trend?: number) => {
+    const trendColor = useMemo(() => {
+      if (trend === undefined) return '';
+      return trend > 0 ? 'text-green-500' : trend < 0 ? 'text-red-500' : 'text-gray-500';
+    }, [trend]);
+    
+    const trendIcon = useMemo(() => {
+      if (trend === undefined) return '';
+      return trend > 0 ? '↗' : trend < 0 ? '↘' : '→';
+    }, [trend]);
+    
+    return (
+      <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+        <h3 className="text-lg font-semibold text-gray-700 mb-2">{title}</h3>
+        <div className="flex items-center justify-between">
+          <span className="text-3xl font-bold text-blue-600">{value}</span>
+          {trend !== undefined && (
+            <span className={`text-sm font-medium ${trendColor}`}>
+              {trendIcon} {Math.abs(trend)}%
+            </span>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  }, []);
 
-  const renderLevelMetrics = (levelMetrics: any) => {
+  const renderLevelMetrics = useCallback((levelMetrics: any) => {
     if (!isValidLevelMetrics(levelMetrics)) {
       return <div className="text-red-500">Dados de nível inválidos</div>;
     }
@@ -105,9 +115,9 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
         {renderMetricsCard('Atrasados', levelMetrics.atrasados, levelMetrics.tendencia_atrasados)}
       </div>
     );
-  };
+  }, [renderMetricsCard]);
 
-  const renderNiveisMetrics = (niveisMetrics: any) => {
+  const renderNiveisMetrics = useCallback((niveisMetrics: any) => {
     if (!isValidNiveisMetrics(niveisMetrics)) {
       return <div className="text-red-500">Dados de níveis inválidos</div>;
     }
@@ -130,29 +140,34 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
         </div>
       </div>
     );
-  };
+  }, [renderLevelMetrics]);
 
-  const renderPerformanceMetrics = (perfMetrics: PerformanceMetrics) => (
-    <div className="bg-gray-50 rounded-lg p-4 mb-6">
-      <h3 className="text-lg font-semibold text-gray-700 mb-2">Métricas de Performance</h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-        <div>
-          <span className="text-gray-600">Tempo de Resposta:</span>
-          <span className="ml-2 font-medium">{perfMetrics.responseTime.toFixed(2)}ms</span>
-        </div>
-        <div>
-          <span className="text-gray-600">Cache Hit:</span>
-          <span className="ml-2 font-medium">{perfMetrics.cacheHit ? 'Sim' : 'Não'}</span>
-        </div>
-        <div>
-          <span className="text-gray-600">Endpoint:</span>
-          <span className="ml-2 font-medium">{perfMetrics.endpoint}</span>
+  const renderPerformanceMetrics = useCallback((perfMetrics: PerformanceMetrics) => {
+    const formattedResponseTime = useMemo(() => perfMetrics.responseTime.toFixed(2), [perfMetrics.responseTime]);
+    const cacheHitText = useMemo(() => perfMetrics.cacheHit ? 'Sim' : 'Não', [perfMetrics.cacheHit]);
+    
+    return (
+      <div className="bg-gray-50 rounded-lg p-4 mb-6">
+        <h3 className="text-lg font-semibold text-gray-700 mb-2">Métricas de Performance</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div>
+            <span className="text-gray-600">Tempo de Resposta:</span>
+            <span className="ml-2 font-medium">{formattedResponseTime}ms</span>
+          </div>
+          <div>
+            <span className="text-gray-600">Cache Hit:</span>
+            <span className="ml-2 font-medium">{cacheHitText}</span>
+          </div>
+          <div>
+            <span className="text-gray-600">Endpoint:</span>
+            <span className="ml-2 font-medium">{perfMetrics.endpoint}</span>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }, []);
 
-  const renderFilters = () => (
+  const renderFilters = useCallback(() => (
     <div className="bg-white rounded-lg shadow-md p-6 mb-6">
       <h3 className="text-lg font-semibold text-gray-700 mb-4">Filtros</h3>
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -226,7 +241,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
         </div>
       </div>
     </div>
-  );
+  ), [filters, handleFilterChange, refreshData, loading]);
 
   if (error) {
     return (
@@ -328,18 +343,22 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
       )}
 
       {/* Applied Filters Info */}
-      {data.filters_applied && Object.keys(data.filters_applied).length > 0 && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-800 mb-2">Filtros Aplicados:</h3>
-          <div className="flex flex-wrap gap-2">
-            {Object.entries(data.filters_applied).map(([key, value]) => (
-              <span key={key} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                {key}: {String(value)}
-              </span>
-            ))}
+      {useMemo(() => {
+        if (!data.filters_applied || Object.keys(data.filters_applied).length === 0) return null;
+        
+        return (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h3 className="text-sm font-medium text-blue-800 mb-2">Filtros Aplicados:</h3>
+            <div className="flex flex-wrap gap-2">
+              {Object.entries(data.filters_applied).map(([key, value]) => (
+                <span key={key} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  {key}: {String(value)}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      }, [data.filters_applied])}
     </div>
   );
 };

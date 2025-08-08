@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, Filter, ChevronDown } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -47,8 +47,8 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   const currentRange = value || selectedRange;
   const handleRangeChange = onChange || onRangeChange;
 
-  // Intervalos predefinidos unificados
-  const predefinedRanges = [
+  // Intervalos predefinidos unificados - memoized to prevent recreation
+  const predefinedRanges = useMemo(() => [
     {
       startDate: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       endDate: new Date().toISOString().split('T')[0],
@@ -77,7 +77,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
       end: new Date(),
       label: 'Últimos 90 dias'
     }
-  ];
+  ], []);
 
   // Throttle range changes to prevent rapid API calls
   const throttledRangeChange = useThrottledCallback((range: DateRange) => {
@@ -86,12 +86,12 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
     }
   }, 300);
 
-  const handlePredefinedRangeSelect = (range: DateRange) => {
+  const handlePredefinedRangeSelect = useCallback((range: DateRange) => {
     throttledRangeChange(range);
     setIsOpen(false);
-  };
+  }, [throttledRangeChange]);
 
-  const handleCustomRangeApply = () => {
+  const handleCustomRangeApply = useCallback(() => {
     if (customStartDate && customEndDate) {
       const customRange: DateRange = {
         startDate: customStartDate,
@@ -103,9 +103,9 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
       throttledRangeChange(customRange);
       setIsOpen(false);
     }
-  };
+  }, [customStartDate, customEndDate, throttledRangeChange]);
 
-  const formatDateForDisplay = (range: DateRange) => {
+  const formatDateForDisplay = useCallback((range: DateRange) => {
     if (!range) return 'Selecionar período';
     
     if (range.label !== "Personalizado") {
@@ -129,7 +129,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
     }
 
     return range.label;
-  };
+  }, []);
 
   // Renderização moderna (para ModernDashboard)
   if (variant === 'modern') {
