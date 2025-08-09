@@ -49,7 +49,7 @@ export const apiService = {
     console.log('🚫 Cache completamente desabilitado - sempre buscando dados frescos');
 
     try {
-      let url = '/metrics';
+      let url = '/kpis';
       if (dateRange && dateRange.startDate && dateRange.endDate) {
         const params = new URLSearchParams({
           start_date: dateRange.startDate,
@@ -203,7 +203,7 @@ export const apiService = {
     }
 
     try {
-      const response = await api.get<ApiResponse<SystemStatus>>('/status');
+      const response = await api.get<ApiResponse<SystemStatus>>('/kpis');
       
       // Monitora performance
       const responseTime = Date.now() - startTime;
@@ -238,7 +238,7 @@ export const apiService = {
   // Health check
   async healthCheck(): Promise<boolean> {
     try {
-      await api.head('/status');
+      await api.head('/kpis');
       return true;
     } catch (error) {
       console.error('Health check failed:', error);
@@ -258,7 +258,7 @@ export const apiService = {
     }
 
     try {
-      const response = await api.get<ApiResponse<any[]>>('/technicians/ranking');
+      const response = await api.get<ApiResponse<any[]>>('/kpis');
       
       // Monitora performance
       const responseTime = Date.now() - startTime;
@@ -473,8 +473,8 @@ export const fetchDashboardMetrics = async (
     });
     
     const url = queryParams.toString() 
-      ? `${API_BASE_URL}/metrics?${queryParams.toString()}`
-      : `${API_BASE_URL}/metrics`;
+      ? `${API_BASE_URL}/kpis?${queryParams.toString()}`
+      : `${API_BASE_URL}/kpis`;
     
     console.log('🔍 Filtros originais:', filters);
     console.log('🔍 Query params construídos:', queryParams.toString());
@@ -507,7 +507,7 @@ export const fetchDashboardMetrics = async (
       responseTime,
       cacheHit: false,
       timestamp: new Date(),
-      endpoint: '/metrics'
+      endpoint: '/kpis'
     };
     console.log('Métricas de performance:', perfMetrics);
     
@@ -533,7 +533,7 @@ export const fetchDashboardMetrics = async (
     console.error('Erro ao buscar métricas:', error);
     console.error('Tipo do erro:', typeof error);
     console.error('Stack trace:', error instanceof Error ? error.stack : 'N/A');
-    console.error('URL tentada:', url);
+    const attemptedUrl = queryParams.toString() ? \/kpis?\ : \/kpis; console.error('URL tentada:', attemptedUrl);
     return null;
   }
 };

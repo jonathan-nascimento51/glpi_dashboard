@@ -60,3 +60,5 @@ Thumbs.db
 # Arquivos de teste locais (não os da pasta scripts/tests)
 test_local_*
 debug_local_*
+*storybook.log
+storybook-static

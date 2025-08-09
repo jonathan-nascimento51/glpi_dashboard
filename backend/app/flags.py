@@ -1,5 +1,5 @@
 import os
-from unleash_client import UnleashClient
+from UnleashClient import UnleashClient
 
 
 class Flags:

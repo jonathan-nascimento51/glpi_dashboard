@@ -12,13 +12,13 @@ import type {
 
 // Configuração da API
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/v1',
   TIMEOUT: 30000, // 30 segundos
   RETRY_ATTEMPTS: 3,
   RETRY_DELAY: 1000, // 1 segundo
   ENDPOINTS: {
-    METRICS: '/metrics',
-    METRICS_FILTERED: '/metrics/filtered',
+    METRICS: '/kpis',
+    METRICS_FILTERED: '/kpis/filtered',
     HEALTH: '/health',
     TECHNICIAN_RANKING: '/technician-ranking',
     NEW_TICKETS: '/new-tickets'
