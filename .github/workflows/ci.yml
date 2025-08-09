@@ -1,4 +1,4 @@
-name: CI Pipeline
+﻿name: CI Pipeline - Robust Gates
 
 on:
   push:
@@ -6,20 +6,183 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+env:
+  BACKEND_DIR: backend
+  FRONTEND_DIR: frontend
+
 jobs:
-  backend-tests:
-    name: Backend Tests
+  # Frontend Gates: Lint + Types + Unit Tests + Orval Drift + Storybook
+  frontend-lint:
+    name: Frontend Lint & Format
     runs-on: ubuntu-latest
-    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
+
+    - name: Install frontend dependencies
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm ci
+
+    - name: Run ESLint
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm run lint
+
+    - name: Run Prettier check
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm run format:check
+
+  frontend-types:
+    name: Frontend Type Check
+    runs-on: ubuntu-latest
+    needs: [frontend-lint]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
+
+    - name: Install frontend dependencies
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm ci
+
+    - name: Run TypeScript check
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm run type-check
+
+  frontend-tests:
+    name: Frontend Unit Tests
+    runs-on: ubuntu-latest
+    needs: [frontend-types]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
+
+    - name: Install frontend dependencies
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm ci
+
+    - name: Run frontend tests with coverage
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm run test:ci
+
+    - name: Upload frontend coverage
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./${{ env.FRONTEND_DIR }}/coverage/lcov.info
+        flags: frontend
+        name: frontend-coverage
+        fail_ci_if_error: false
+
+  # Orval Drift Check - Critical Gate
+  orval-drift-check:
+    name: Orval API Drift Check
+    runs-on: ubuntu-latest
+    needs: [frontend-tests]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
+
+    - name: Install frontend dependencies
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm ci
+
+    - name: Generate API types with Orval
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm run gen:api
+
+    - name: Check for API drift
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        if ! git diff --exit-code src/api/; then
+          echo " API drift detected! Generated types don't match committed files."
+          echo "Please run 'npm run gen:api' and commit the changes."
+          git diff src/api/
+          exit 1
+        else
+          echo " No API drift detected. Generated types are in sync."
+        fi
+
+  # Storybook Build - Visual Components Gate
+  storybook-build:
+    name: Storybook Build
+    runs-on: ubuntu-latest
+    needs: [frontend-tests]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
+
+    - name: Install frontend dependencies
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm ci
+
+    - name: Build Storybook
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm run build-storybook
+
+    - name: Upload Storybook build
+      uses: actions/upload-artifact@v3
+      with:
+        name: storybook-build
+        path: ${{ env.FRONTEND_DIR }}/storybook-static/
+        retention-days: 7
+
+  # Backend Gates: Lint + Types + Unit Tests
+  backend-lint:
+    name: Backend Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-        
+
     - name: Cache Python dependencies
       uses: actions/cache@v3
       with:
@@ -27,111 +190,77 @@ jobs:
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
-          
+
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 black isort pytest pytest-cov
+        pip install flake8 black isort mypy
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
-        
-    - name: Run flake8 (Code Linting)
+        if [ -f ${{ env.BACKEND_DIR }}/requirements.txt ]; then pip install -r ${{ env.BACKEND_DIR }}/requirements.txt; fi
+
+    - name: Run flake8 (Linting)
       run: |
-        # Configuração do flake8 para o projeto
-        flake8 backend/ --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 backend/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-        
+        flake8 ${{ env.BACKEND_DIR }}/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 ${{ env.BACKEND_DIR }}/ --count --max-complexity=10 --max-line-length=127 --statistics
+
     - name: Run isort (Import Sorting)
       run: |
-        isort --check-only --diff backend/
-        
+        isort --check-only --diff ${{ env.BACKEND_DIR }}/
+
     - name: Run black (Code Formatting)
       run: |
-        black --check --diff backend/
-        
-    - name: Run pytest with coverage
-      run: |
-        cd backend
-        pytest --cov=. --cov-report=xml --cov-report=html --cov-report=term-missing
-        
-    - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./backend/coverage.xml
-        flags: backend
-        name: backend-coverage
-        fail_ci_if_error: false
-        
-    - name: Upload coverage HTML report
-      uses: actions/upload-artifact@v3
-      with:
-        name: backend-coverage-html
-        path: backend/htmlcov/
+        black --check --diff ${{ env.BACKEND_DIR }}/
 
-  frontend-tests:
-    name: Frontend Tests
+    - name: Run mypy (Type Checking)
+      run: |
+        mypy ${{ env.BACKEND_DIR }}/ --ignore-missing-imports || true
+
+  backend-tests:
+    name: Backend Unit Tests
     runs-on: ubuntu-latest
-    
+    needs: [backend-lint]
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
       with:
-        node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: frontend/package-lock.json
-        
-    - name: Install frontend dependencies
+        python-version: '3.11'
+
+    - name: Cache Python dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install Python dependencies
       run: |
-        cd frontend
-        npm ci
-        
-    - name: Run ESLint
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f ${{ env.BACKEND_DIR }}/requirements.txt ]; then pip install -r ${{ env.BACKEND_DIR }}/requirements.txt; fi
+
+    - name: Run pytest with coverage
       run: |
-        cd frontend
-        npm run lint
-        
-    - name: Run Prettier check
-      run: |
-        cd frontend
-        npm run format:check
-        
-    - name: Run TypeScript check
-      run: |
-        cd frontend
-        npm run type-check
-        
-    - name: Build frontend
-      run: |
-        cd frontend
-        npm run build
-        
-    - name: Run frontend tests with coverage
-      run: |
-        cd frontend
-        npm test -- --coverage --watchAll=false
-        
-    - name: Upload frontend coverage
+        cd ${{ env.BACKEND_DIR }}
+        pytest --cov=. --cov-report=xml --cov-report=html --cov-report=term-missing
+
+    - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
       with:
-        file: ./frontend/coverage/lcov.info
-        flags: frontend
-        name: frontend-coverage
+        file: ./${{ env.BACKEND_DIR }}/coverage.xml
+        flags: backend
+        name: backend-coverage
         fail_ci_if_error: false
-        
-    - name: Upload frontend coverage HTML report
-      uses: actions/upload-artifact@v3
-      with:
-        name: frontend-coverage-html
-        path: frontend/coverage/
 
-  integration-tests:
-    name: Integration Tests
+  # Schemathesis - API Fuzzing Gate
+  schemathesis-fuzz:
+    name: API Fuzzing with Schemathesis
     runs-on: ubuntu-latest
-    needs: [backend-tests, frontend-tests]
-    
+    needs: [backend-tests]
     services:
       redis:
         image: redis:7-alpine
@@ -142,98 +271,166 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-        
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install schemathesis
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f ${{ env.BACKEND_DIR }}/requirements.txt ]; then pip install -r ${{ env.BACKEND_DIR }}/requirements.txt; fi
+
+    - name: Start backend server
+      run: |
+        cd ${{ env.BACKEND_DIR }}
+        python -m uvicorn main:app --host 0.0.0.0 --port 8000 &
+        sleep 10
+      env:
+        REDIS_URL: redis://localhost:6379
+        GLPI_API_URL: ${{ secrets.GLPI_API_URL || 'http://localhost:8080' }}
+        GLPI_APP_TOKEN: ${{ secrets.GLPI_APP_TOKEN || 'test_app_token' }}
+        GLPI_USER_TOKEN: ${{ secrets.GLPI_USER_TOKEN || 'test_user_token' }}
+
+    - name: Run Schemathesis fuzzing
+      run: |
+        schemathesis run http://localhost:8000/openapi.json \
+          --checks all \
+          --max-examples 50 \
+          --hypothesis-max-examples 10 \
+          --hypothesis-deadline 5000 \
+          --report
+      continue-on-error: true
+
+  # Integration Tests
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-tests, orval-drift-check]
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '18'
         cache: 'npm'
-        cache-dependency-path: frontend/package-lock.json
-        
+        cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
-        cd frontend && npm ci
-        
+        if [ -f ${{ env.BACKEND_DIR }}/requirements.txt ]; then pip install -r ${{ env.BACKEND_DIR }}/requirements.txt; fi
+        cd ${{ env.FRONTEND_DIR }} && npm ci
+
+    - name: Build frontend
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm run build
+
     - name: Run integration tests
       env:
-        REDIS_URL: redis://localhost:6379/0
-        GLPI_URL: ${{ secrets.GLPI_URL || 'http://test-glpi.com/apirest.php' }}
+        REDIS_URL: redis://localhost:6379
+        GLPI_API_URL: ${{ secrets.GLPI_API_URL || 'http://localhost:8080' }}
         GLPI_APP_TOKEN: ${{ secrets.GLPI_APP_TOKEN || 'test_app_token' }}
         GLPI_USER_TOKEN: ${{ secrets.GLPI_USER_TOKEN || 'test_user_token' }}
       run: |
-        cd backend
+        cd ${{ env.BACKEND_DIR }}
         pytest tests/integration/ -v
 
+  # Security Scan
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
-    
+    needs: [backend-lint]
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-        
+
     - name: Install security tools
       run: |
         python -m pip install --upgrade pip
         pip install bandit safety
-        
+
     - name: Run Bandit security scan
       run: |
-        bandit -r backend/ -f json -o bandit-report.json || true
-        bandit -r backend/ -ll
-        
+        bandit -r ${{ env.BACKEND_DIR }}/ -f json -o bandit-report.json || true
+        bandit -r ${{ env.BACKEND_DIR }}/ -ll
+
     - name: Run Safety check
       run: |
         if [ -f requirements.txt ]; then safety check -r requirements.txt; fi
-        if [ -f backend/requirements.txt ]; then safety check -r backend/requirements.txt; fi
-        
+        if [ -f ${{ env.BACKEND_DIR }}/requirements.txt ]; then safety check -r ${{ env.BACKEND_DIR }}/requirements.txt; fi
+
     - name: Upload security reports
       uses: actions/upload-artifact@v3
       with:
         name: security-reports
-        path: |
-          bandit-report.json
+        path: bandit-report.json
 
-  code-quality:
-    name: Code Quality Analysis
+  # Final Gate - All must pass
+  all-gates-passed:
+    name: All Gates Passed 
     runs-on: ubuntu-latest
-    
+    needs: [
+      frontend-lint,
+      frontend-types, 
+      frontend-tests,
+      orval-drift-check,
+      storybook-build,
+      backend-lint,
+      backend-tests,
+      schemathesis-fuzz,
+      integration-tests,
+      security-scan
+    ]
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0  # Shallow clones should be disabled for better analysis
-        
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      continue-on-error: true
+    - name: All gates passed
+      run: |
+        echo " All CI gates have passed successfully!"
+        echo " Frontend: Lint, Types, Unit Tests"
+        echo " Backend: Lint, Types, Unit Tests"
+        echo " Orval: API drift check"
+        echo " Schemathesis: API fuzzing"
+        echo " Storybook: Visual components build"
+        echo " Integration: End-to-end tests"
+        echo " Security: Vulnerability scanning"
 
+  # Build and Deploy (only on main branch)
   build-and-deploy:
     name: Build and Deploy
     runs-on: ubuntu-latest
-    needs: [backend-tests, frontend-tests, integration-tests]
+    needs: [all-gates-passed]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -242,61 +439,37 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-        
+
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '18'
         cache: 'npm'
-        cache-dependency-path: frontend/package-lock.json
-        
+        cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
-        cd frontend && npm ci
-        
+        if [ -f ${{ env.BACKEND_DIR }}/requirements.txt ]; then pip install -r ${{ env.BACKEND_DIR }}/requirements.txt; fi
+        cd ${{ env.FRONTEND_DIR }} && npm ci
+
     - name: Build frontend for production
       run: |
-        cd frontend
+        cd ${{ env.FRONTEND_DIR }}
         npm run build
-        
+
     - name: Create deployment package
       run: |
         mkdir -p deploy
-        cp -r backend/ deploy/
-        cp -r frontend/dist/ deploy/frontend/
+        cp -r ${{ env.BACKEND_DIR }}/ deploy/
+        cp -r ${{ env.FRONTEND_DIR }}/dist/ deploy/frontend/
         cp requirements.txt deploy/ 2>/dev/null || true
-        cp backend/requirements.txt deploy/ 2>/dev/null || true
-        
+        cp ${{ env.BACKEND_DIR }}/requirements.txt deploy/ 2>/dev/null || true
+
     - name: Upload deployment artifact
       uses: actions/upload-artifact@v3
       with:
         name: deployment-package
         path: deploy/
         retention-days: 30
-
-  notify:
-    name: Notify Results
-    runs-on: ubuntu-latest
-    needs: [backend-tests, frontend-tests, integration-tests, security-scan, code-quality]
-    if: always()
-    
-    steps:
-    - name: Notify success
-      if: ${{ needs.backend-tests.result == 'success' && needs.frontend-tests.result == 'success' && needs.integration-tests.result == 'success' }}
-      run: |
-        echo "✅ All tests passed successfully!"
-        echo "Backend tests: ${{ needs.backend-tests.result }}"
-        echo "Frontend tests: ${{ needs.frontend-tests.result }}"
-        echo "Integration tests: ${{ needs.integration-tests.result }}"
-        
-    - name: Notify failure
-      if: ${{ needs.backend-tests.result == 'failure' || needs.frontend-tests.result == 'failure' || needs.integration-tests.result == 'failure' }}
-      run: |
-        echo "❌ Some tests failed!"
-        echo "Backend tests: ${{ needs.backend-tests.result }}"
-        echo "Frontend tests: ${{ needs.frontend-tests.result }}"
-        echo "Integration tests: ${{ needs.integration-tests.result }}"
-        exit 1

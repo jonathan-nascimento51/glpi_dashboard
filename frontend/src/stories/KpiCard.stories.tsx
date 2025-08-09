@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { KpiCard } from './KpiCard';
+import { KpiCard } from '../components/KpiCard';
 const meta: Meta<typeof KpiCard> = { title: 'Dashboard/KpiCard', component: KpiCard };
 export default meta;
 type Story = StoryObj<typeof KpiCard>;
