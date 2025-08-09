@@ -1,30 +1,38 @@
 from pydantic import BaseModel, Field
-from typing import Dict, List, Optional, Any
+from typing import List, Optional, Any
 from datetime import datetime
+
 
 class LevelMetrics(BaseModel):
     """Métricas de um nível específico (N1, N2, N3, N4)"""
+
     novos: int = Field(ge=0, description="Número de tickets novos")
     pendentes: int = Field(ge=0, description="Número de tickets pendentes")
     progresso: int = Field(ge=0, description="Número de tickets em progresso")
     resolvidos: int = Field(ge=0, description="Número de tickets resolvidos")
 
+
 class NiveisMetrics(BaseModel):
     """Métricas de todos os níveis"""
+
     n1: LevelMetrics
     n2: LevelMetrics
     n3: LevelMetrics
     n4: LevelMetrics
 
+
 class TendenciasMetrics(BaseModel):
     """Tendências das métricas"""
+
     novos: str = "0"
     pendentes: str = "0"
     progresso: str = "0"
     resolvidos: str = "0"
 
+
 class FiltersApplied(BaseModel):
     """Filtros aplicados na consulta"""
+
     start_date: Optional[str] = None
     end_date: Optional[str] = None
     status: Optional[str] = None
@@ -33,8 +41,10 @@ class FiltersApplied(BaseModel):
     technician: Optional[str] = None
     category: Optional[str] = None
 
+
 class DashboardMetrics(BaseModel):
     """Schema unificado para métricas do dashboard"""
+
     novos: int = Field(ge=0, description="Total de tickets novos")
     pendentes: int = Field(ge=0, description="Total de tickets pendentes")
     progresso: int = Field(ge=0, description="Total de tickets em progresso")
@@ -45,16 +55,20 @@ class DashboardMetrics(BaseModel):
     filters_applied: Optional[FiltersApplied] = None
     timestamp: datetime = Field(default_factory=datetime.now)
 
+
 class TechnicianRanking(BaseModel):
     """Ranking de técnico"""
+
     id: int
     name: str
     ticket_count: int = Field(ge=0)
     level: str
     performance_score: Optional[float] = None
 
+
 class NewTicket(BaseModel):
     """Ticket novo"""
+
     id: str
     title: str
     description: str
@@ -64,8 +78,10 @@ class NewTicket(BaseModel):
     status: str = "Novo"
     filters_applied: Optional[FiltersApplied] = None
 
+
 class ApiResponse(BaseModel):
     """Schema padrão para respostas da API"""
+
     success: bool = True
     data: Any
     message: Optional[str] = None
@@ -73,8 +89,10 @@ class ApiResponse(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.now)
     execution_time_ms: Optional[float] = None
 
+
 class ApiError(BaseModel):
     """Schema para erros da API"""
+
     success: bool = False
     data: None = None
     message: str
