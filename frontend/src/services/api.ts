@@ -106,8 +106,7 @@ const api = axios.create({
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'User-Agent': 'GLPI-Dashboard/1.0'
+    'Accept': 'application/json'
   },
   validateStatus: (status) => status < 500, // Não rejeitar automaticamente para status 4xx
 });
@@ -289,7 +288,7 @@ export const apiService = {
     }
 
     try {
-      let url = '/metrics';
+      let url = '/dashboard/metrics';
       if (dateRange && dateRange.startDate && dateRange.endDate) {
         // Sanitizar parâmetros de data
         const sanitizedParams = {
@@ -793,8 +792,8 @@ export const fetchDashboardMetrics = async (
       });
       
       const url = queryParams.toString() 
-        ? `${API_BASE_URL}/metrics?${queryParams.toString()}`
-        : `${API_BASE_URL}/metrics`;
+        ? `${API_BASE_URL}/dashboard/metrics?${queryParams.toString()}`
+        : `${API_BASE_URL}/dashboard/metrics`;
       
       console.log(`[${requestId}] 🔍 URL construída:`, url);
       console.log(`[${requestId}] 🔍 Tentativa ${retryCount + 1}/${RETRY_CONFIG.maxRetries + 1}`);
@@ -852,7 +851,7 @@ export const fetchDashboardMetrics = async (
         responseTime,
         cacheHit: false,
         timestamp: new Date(),
-        endpoint: '/metrics'
+        endpoint: '/dashboard/metrics'
       };
       
       if (responseTime > 5000) {

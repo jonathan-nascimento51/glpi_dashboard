@@ -280,7 +280,7 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
         responseTime,
         cacheHit: false, // TODO: implementar detecção de cache
         timestamp: new Date(),
-        endpoint: '/metrics'
+        endpoint: '/dashboard/metrics'
       };
       
       if (metricsResult) {

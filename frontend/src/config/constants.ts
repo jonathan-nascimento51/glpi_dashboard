@@ -17,8 +17,8 @@ export const API_CONFIG = {
   RETRY_ATTEMPTS: 3,
   RETRY_DELAY: 1000, // 1 segundo
   ENDPOINTS: {
-    METRICS: '/metrics',
-    METRICS_FILTERED: '/metrics/filtered',
+    METRICS: '/dashboard/metrics',
+  METRICS_FILTERED: '/dashboard/metrics/filtered',
     HEALTH: '/health',
     TECHNICIAN_RANKING: '/technician-ranking',
     NEW_TICKETS: '/new-tickets'

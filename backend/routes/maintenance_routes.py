@@ -3,9 +3,7 @@
 import logging
 from flask import Blueprint, request
 from datetime import datetime
-from dependency_injector.wiring import inject, Provide
 
-from backend.containers import Container
 from backend.services.maintenance_analytics_service import MaintenanceAnalyticsService
 from backend.utils.response_formatter import ResponseFormatter
 from backend.utils.validators import validate_date_format
@@ -15,12 +13,12 @@ logger = logging.getLogger(__name__)
 maintenance_bp = Blueprint('maintenance', __name__, url_prefix='/api/maintenance')
 
 @maintenance_bp.route('/metrics', methods=['GET'])
-@inject
-def get_maintenance_metrics(
-    maintenance_service: MaintenanceAnalyticsService = Provide[Container.maintenance_analytics_service]
-):
+def get_maintenance_metrics():
     """Endpoint para obter métricas específicas de manutenção"""
     try:
+        # Instanciar o serviço
+        maintenance_service = MaintenanceAnalyticsService()
+        
         # Obter parâmetros de data opcionais
         start_date = request.args.get('start_date')
         end_date = request.args.get('end_date')
@@ -70,12 +68,12 @@ def get_maintenance_metrics(
         )
 
 @maintenance_bp.route('/categories', methods=['GET'])
-@inject
-def get_maintenance_categories(
-    maintenance_service: MaintenanceAnalyticsService = Provide[Container.maintenance_analytics_service]
-):
+def get_maintenance_categories():
     """Endpoint para análise das categorias de manutenção"""
     try:
+        # Instanciar o serviço
+        maintenance_service = MaintenanceAnalyticsService()
+        
         logger.info("Solicitação de análise de categorias de manutenção")
         
         # Obter análise das categorias
@@ -101,12 +99,12 @@ def get_maintenance_categories(
         )
 
 @maintenance_bp.route('/groups', methods=['GET'])
-@inject
-def get_technical_groups_performance(
-    maintenance_service: MaintenanceAnalyticsService = Provide[Container.maintenance_analytics_service]
-):
+def get_technical_groups_performance():
     """Endpoint para análise de performance dos grupos técnicos"""
     try:
+        # Instanciar o serviço
+        maintenance_service = MaintenanceAnalyticsService()
+        
         logger.info("Solicitação de análise de performance dos grupos técnicos")
         
         # Obter análise dos grupos técnicos
@@ -132,13 +130,12 @@ def get_technical_groups_performance(
         )
 
 @maintenance_bp.route('/categories/<category_id>/details', methods=['GET'])
-@inject
-def get_category_details(
-    category_id: str,
-    maintenance_service: MaintenanceAnalyticsService = Provide[Container.maintenance_analytics_service]
-):
+def get_category_details(category_id: str):
     """Endpoint para obter detalhes específicos de uma categoria"""
     try:
+        # Instanciar o serviço
+        maintenance_service = MaintenanceAnalyticsService()
+        
         logger.info(f"Solicitação de detalhes da categoria: {category_id}")
         
         # Obter análise completa das categorias
@@ -188,13 +185,12 @@ def get_category_details(
         )
 
 @maintenance_bp.route('/groups/<group_id>/performance', methods=['GET'])
-@inject
-def get_group_performance_details(
-    group_id: str,
-    maintenance_service: MaintenanceAnalyticsService = Provide[Container.maintenance_analytics_service]
-):
+def get_group_performance_details(group_id: str):
     """Endpoint para obter detalhes de performance de um grupo específico"""
     try:
+        # Instanciar o serviço
+        maintenance_service = MaintenanceAnalyticsService()
+        
         logger.info(f"Solicitação de detalhes de performance do grupo: {group_id}")
         
         # Obter análise completa dos grupos
@@ -250,12 +246,12 @@ def get_group_performance_details(
         )
 
 @maintenance_bp.route('/dashboard/summary', methods=['GET'])
-@inject
-def get_maintenance_dashboard_summary(
-    maintenance_service: MaintenanceAnalyticsService = Provide[Container.maintenance_analytics_service]
-):
+def get_maintenance_dashboard_summary():
     """Endpoint para obter resumo completo do dashboard de manutenção"""
     try:
+        # Instanciar o serviço
+        maintenance_service = MaintenanceAnalyticsService()
+        
         logger.info("Solicitação de resumo completo do dashboard de manutenção")
         
         # Obter dados de todas as análises

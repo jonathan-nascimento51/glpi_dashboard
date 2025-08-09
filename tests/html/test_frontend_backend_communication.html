@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Comunicação Frontend-Backend</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .config {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .button:hover {
+            background: #1976D2;
+        }
+        .button.clear {
+            background: #f44336;
+        }
+        .button.clear:hover {
+            background: #d32f2f;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            color: #2e7d32;
+        }
+        .error {
+            background: #ffebee;
+            border: 1px solid #f44336;
+            color: #c62828;
+        }
+        .info {
+            background: #e3f2fd;
+            border: 1px solid #2196F3;
+            color: #1565c0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Teste de Comunicação Frontend-Backend</h1>
+        
+        <div class="config">
+            <h3>Configuração:</h3>
+            <p><strong>Frontend:</strong> http://localhost:3001</p>
+            <p><strong>Backend:</strong> http://localhost:5000</p>
+        </div>
+        
+        <div>
+            <button class="button" onclick="testBackendHealth()">Testar Saúde do Backend</button>
+            <button class="button" onclick="testDashboardMetrics()">Testar /api/dashboard/metrics</button>
+            <button class="button" onclick="testDashboardMetricsWithOptions()">Testar /api/dashboard/metrics (com OPTIONS)</button>
+            <button class="button" onclick="testOldMetrics()">Testar /api/metrics (URL antiga)</button>
+            <button class="button" onclick="testFromFrontendOrigin()">Testar com Origin do Frontend</button>
+            <button class="button clear" onclick="clearResults()">Limpar Resultados</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const resultsDiv = document.getElementById('results');
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.textContent = message;
+            resultsDiv.appendChild(div);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+        
+        function clearResults() {
+            resultsDiv.innerHTML = '';
+        }
+        
+        async function testBackendHealth() {
+            addResult('Testando saúde do backend...', 'info');
+            try {
+                const response = await fetch('http://localhost:5000/health', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': 'http://localhost:3001'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(`✅ Backend está saudável!\nStatus: ${response.status}\n${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    addResult(`❌ Backend retornou erro!\nStatus: ${response.status}\nStatusText: ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Erro ao conectar com o backend!\nErro: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testDashboardMetrics() {
+            addResult('Testando /api/dashboard/metrics...', 'info');
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/dashboard/metrics', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(`✅ /api/dashboard/metrics funcionando!`, 'success');
+                    addResult(`Status: ${response.status}`, 'info');
+                    addResult(JSON.stringify(data, null, 2), 'data');
+                } else {
+                    addResult(`❌ Erro HTTP ${response.status}: ${response.statusText}`, 'error');
+                    const errorText = await response.text();
+                    addResult(errorText, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Erro ao acessar /api/dashboard/metrics!`, 'error');
+                addResult(`Erro: ${error.message}`, 'error');
+                addResult(`Tipo do erro: ${error.name}`, 'error');
+                addResult(`Stack: ${error.stack}`, 'error');
+            }
+        }
+        
+        async function testDashboardMetricsWithOptions() {
+            addResult('Testando requisição OPTIONS para /api/dashboard/metrics...', 'info');
+            
+            try {
+                // Primeiro, testar OPTIONS
+                const optionsResponse = await fetch('http://localhost:5000/api/dashboard/metrics', {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Origin': 'http://localhost:3001',
+                        'Access-Control-Request-Method': 'GET',
+                        'Access-Control-Request-Headers': 'Content-Type'
+                    }
+                });
+                
+                addResult(`OPTIONS Response Status: ${optionsResponse.status}`, 'info');
+                addResult(`OPTIONS Headers:`, 'info');
+                for (let [key, value] of optionsResponse.headers.entries()) {
+                    addResult(`  ${key}: ${value}`, 'info');
+                }
+                
+                // Agora testar GET com Origin
+                const getResponse = await fetch('http://localhost:5000/api/dashboard/metrics', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Origin': 'http://localhost:3001'
+                    }
+                });
+                
+                if (getResponse.ok) {
+                    const data = await getResponse.json();
+                    addResult(`✅ GET com Origin funcionando!`, 'success');
+                    addResult(`Status: ${getResponse.status}`, 'info');
+                    addResult(JSON.stringify(data, null, 2), 'data');
+                } else {
+                    addResult(`❌ Erro HTTP ${getResponse.status}: ${getResponse.statusText}`, 'error');
+                    const errorText = await getResponse.text();
+                    addResult(errorText, 'error');
+                }
+                
+            } catch (error) {
+                addResult(`❌ Erro na requisição com OPTIONS!`, 'error');
+                addResult(`Erro: ${error.message}`, 'error');
+                addResult(`Tipo do erro: ${error.name}`, 'error');
+            }
+        }
+        
+        async function testOldMetrics() {
+            addResult('Testando /api/metrics (URL antiga)...', 'info');
+            try {
+                const response = await fetch('http://localhost:5000/api/metrics', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': 'http://localhost:3001'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(`✅ /api/metrics também funciona!\nStatus: ${response.status}\n${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    addResult(`❌ Erro ao acessar /api/metrics!\nStatus: ${response.status}\nStatusText: ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Erro ao acessar /api/metrics!\nErro: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testFromFrontendOrigin() {
+            addResult('Testando requisição simulando o frontend...', 'info');
+            try {
+                // Simular uma requisição como o frontend faria
+                const response = await fetch('http://localhost:5000/api/dashboard/metrics', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': 'http://localhost:3001',
+                        'Referer': 'http://localhost:3001/',
+                        'User-Agent': navigator.userAgent
+                    },
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(`✅ Requisição do frontend simulada com sucesso!\nStatus: ${response.status}\nCORS Headers: ${response.headers.get('Access-Control-Allow-Origin')}\n${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    addResult(`❌ Erro na requisição simulada do frontend!\nStatus: ${response.status}\nStatusText: ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Erro na requisição simulada do frontend!\nErro: ${error.message}`, 'error');
+            }
+        }
+        
+        // Executar teste inicial
+        window.onload = function() {
+            addResult('Página carregada. Clique nos botões para testar a comunicação.', 'info');
+        };
+    </script>
+</body>
+</html>

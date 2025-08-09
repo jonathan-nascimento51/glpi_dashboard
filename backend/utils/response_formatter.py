@@ -136,3 +136,27 @@ class ResponseFormatter:
             'message': message,
             'timestamp': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
         }
+    
+    @staticmethod
+    def success(data: Any, message: str = "Success", status_code: int = 200):
+        """Método de conveniência para respostas de sucesso"""
+        from flask import jsonify
+        response = {
+            'success': True,
+            'data': data,
+            'message': message,
+            'timestamp': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+        }
+        return jsonify(response), status_code
+    
+    @staticmethod
+    def error(message: str, status_code: int = 400, errors: Optional[List[str]] = None):
+        """Método de conveniência para respostas de erro"""
+        from flask import jsonify
+        response = {
+            'success': False,
+            'message': message,
+            'errors': errors or [],
+            'timestamp': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+        }
+        return jsonify(response), status_code

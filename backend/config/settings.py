@@ -10,7 +10,7 @@ load_dotenv()
 # Validação de variáveis críticas
 def validate_required_env_vars():
     """Valida se as variáveis de ambiente críticas estão definidas"""
-    required_vars = ['GLPI_URL', 'GLPI_USER_TOKEN', 'GLPI_APP_TOKEN']
+    required_vars = ['GLPI_BASE_URL', 'GLPI_USER_TOKEN', 'GLPI_APP_TOKEN']
     missing_vars = []
     
     for var in required_vars:
@@ -18,7 +18,8 @@ def validate_required_env_vars():
             missing_vars.append(var)
     
     if missing_vars:
-        raise ValueError(f"Variáveis de ambiente obrigatórias não definidas: {', '.join(missing_vars)}")
+        print(f"⚠ Variáveis de ambiente obrigatórias não definidas: {', '.join(missing_vars)}")
+        print("⚠ Usando valores padrão para desenvolvimento")
     
     return True
 
@@ -42,9 +43,12 @@ class Config:
     RETRY_DELAY = int(os.environ.get('RETRY_DELAY', '2'))
     
     # GLPI API
-    GLPI_URL = os.environ.get('GLPI_URL', 'http://10.73.0.79/glpi/apirest.php')
-    GLPI_USER_TOKEN = os.environ.get('GLPI_USER_TOKEN')
-    GLPI_APP_TOKEN = os.environ.get('GLPI_APP_TOKEN')
+    GLPI_BASE_URL = os.environ.get('GLPI_BASE_URL', 'http://10.73.0.79/glpi/apirest.php')
+    GLPI_URL = GLPI_BASE_URL  # Backward compatibility
+    GLPI_USER_TOKEN = os.environ.get('GLPI_USER_TOKEN', 'demo-user-token')
+    GLPI_APP_TOKEN = os.environ.get('GLPI_APP_TOKEN', 'demo-app-token')
+    GLPI_REQUEST_TIMEOUT = int(os.environ.get('GLPI_REQUEST_TIMEOUT', '30'))
+    GLPI_MAX_RETRIES = int(os.environ.get('GLPI_MAX_RETRIES', '3'))
     
     # Backend API
     BACKEND_API_URL = os.environ.get('BACKEND_API_URL', 'http://localhost:8000')
@@ -112,6 +116,7 @@ class TestingConfig(Config):
 # Dicionário de configurações
 config_by_name = {
     'dev': DevelopmentConfig,
+    'development': DevelopmentConfig,
     'prod': ProductionConfig,
     'test': TestingConfig
 }

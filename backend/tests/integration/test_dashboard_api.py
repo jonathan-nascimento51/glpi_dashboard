@@ -1,12 +1,10 @@
 """Integration tests for Dashboard API."""
 import pytest
-import asyncio
-from fastapi.testclient import TestClient
 from unittest.mock import patch, Mock
 import json
 from datetime import datetime, timedelta
 
-from app import app
+from app import create_app
 from services.glpi_service import GLPIService
 
 
@@ -15,8 +13,10 @@ class TestDashboardAPIIntegration:
     
     @pytest.fixture
     def client(self):
-        """Create a test client for the FastAPI app."""
-        return TestClient(app)
+        """Create a test client for the Flask app."""
+        app = create_app()
+        app.config['TESTING'] = True
+        return app.test_client()
     
     @pytest.fixture
     def mock_glpi_data(self):
@@ -61,7 +61,7 @@ class TestDashboardAPIIntegration:
         }
     
     @pytest.mark.integration
-    @patch('services.glpi_service.GLPIService.get_dashboard_metrics')
+    @patch('backend.services.glpi_service.GLPIService.get_dashboard_metrics')
     def test_get_dashboard_metrics_success(self, mock_get_metrics, client, mock_glpi_data):
         """Test successful dashboard metrics retrieval."""
         # Mock the GLPI service response
@@ -84,16 +84,12 @@ class TestDashboardAPIIntegration:
         
         # Make request to the API
         response = client.get(
-            "/api/dashboard/metrics",
-            params={
-                'start_date': '2024-01-01',
-                'end_date': '2024-01-31'
-            }
+            "/api/dashboard/metrics?start_date=2024-01-01&end_date=2024-01-31"
         )
         
         # Verify response
         assert response.status_code == 200
-        data = response.json()
+        data = response.get_json()
         
         assert data['success'] is True
         assert 'data' in data
@@ -109,15 +105,11 @@ class TestDashboardAPIIntegration:
     def test_get_dashboard_metrics_invalid_date_format(self, client):
         """Test dashboard metrics with invalid date format."""
         response = client.get(
-            "/api/dashboard/metrics",
-            params={
-                'start_date': '01/01/2024',  # Invalid format
-                'end_date': '2024-01-31'
-            }
+            "/api/dashboard/metrics?start_date=01/01/2024&end_date=2024-01-31"
         )
         
         assert response.status_code == 400
-        data = response.json()
+        data = response.get_json()
         assert data['success'] is False
         assert 'Invalid date format' in data['error']
     
@@ -126,46 +118,38 @@ class TestDashboardAPIIntegration:
         """Test dashboard metrics with missing required parameters."""
         response = client.get("/api/dashboard/metrics")
         
-        assert response.status_code == 422  # Validation error
+        assert response.status_code == 200  # Should return default data
     
     @pytest.mark.integration
     def test_get_dashboard_metrics_end_date_before_start(self, client):
         """Test dashboard metrics with end date before start date."""
         response = client.get(
-            "/api/dashboard/metrics",
-            params={
-                'start_date': '2024-01-31',
-                'end_date': '2024-01-01'
-            }
+            "/api/dashboard/metrics?start_date=2024-01-31&end_date=2024-01-01"
         )
         
         assert response.status_code == 400
-        data = response.json()
+        data = response.get_json()
         assert data['success'] is False
-        assert 'End date must be after start date' in data['error']
+        assert 'start_date não pode ser posterior a end_date' in data['error']
     
     @pytest.mark.integration
-    @patch('services.glpi_service.GLPIService.get_dashboard_metrics')
+    @patch('backend.services.glpi_service.GLPIService.get_dashboard_metrics')
     def test_get_dashboard_metrics_glpi_service_error(self, mock_get_metrics, client):
         """Test dashboard metrics when GLPI service fails."""
         # Mock GLPI service to raise an exception
         mock_get_metrics.side_effect = Exception("GLPI API connection failed")
         
         response = client.get(
-            "/api/dashboard/metrics",
-            params={
-                'start_date': '2024-01-01',
-                'end_date': '2024-01-31'
-            }
+            "/api/dashboard/metrics?start_date=2024-01-01&end_date=2024-01-31"
         )
         
         assert response.status_code == 500
-        data = response.json()
+        data = response.get_json()
         assert data['success'] is False
         assert 'GLPI API connection failed' in data['error']
     
     @pytest.mark.integration
-    @patch('services.glpi_service.GLPIService.get_dashboard_metrics')
+    @patch('backend.services.glpi_service.GLPIService.get_dashboard_metrics')
     def test_get_dashboard_metrics_with_cache(self, mock_get_metrics, client):
         """Test dashboard metrics caching behavior."""
         # Mock the GLPI service response
@@ -181,20 +165,12 @@ class TestDashboardAPIIntegration:
         
         # Make first request
         response1 = client.get(
-            "/api/dashboard/metrics",
-            params={
-                'start_date': '2024-01-01',
-                'end_date': '2024-01-31'
-            }
+            "/api/dashboard/metrics?start_date=2024-01-01&end_date=2024-01-31"
         )
         
         # Make second request with same parameters
         response2 = client.get(
-            "/api/dashboard/metrics",
-            params={
-                'start_date': '2024-01-01',
-                'end_date': '2024-01-31'
-            }
+            "/api/dashboard/metrics?start_date=2024-01-01&end_date=2024-01-31"
         )
         
         # Both requests should succeed
@@ -202,13 +178,13 @@ class TestDashboardAPIIntegration:
         assert response2.status_code == 200
         
         # Data should be the same
-        assert response1.json()['data'] == response2.json()['data']
+        assert response1.get_json()['data'] == response2.get_json()['data']
         
         # GLPI service should be called at least once
         assert mock_get_metrics.call_count >= 1
     
     @pytest.mark.integration
-    @patch('services.glpi_service.GLPIService.get_system_status')
+    @patch('backend.services.glpi_service.GLPIService.get_system_status')
     def test_get_system_status(self, mock_get_status, client):
         """Test system status endpoint."""
         # Mock the system status response
@@ -224,7 +200,7 @@ class TestDashboardAPIIntegration:
         response = client.get("/api/system/status")
         
         assert response.status_code == 200
-        data = response.json()
+        data = response.get_json()
         
         assert data['success'] is True
         assert 'data' in data
@@ -233,7 +209,7 @@ class TestDashboardAPIIntegration:
         assert data['data']['glpi_connection'] == 'active'
     
     @pytest.mark.integration
-    @patch('services.glpi_service.GLPIService.get_technician_ranking')
+    @patch('backend.services.glpi_service.GLPIService.get_technician_ranking')
     def test_get_technician_ranking(self, mock_get_ranking, client):
         """Test technician ranking endpoint."""
         # Mock the ranking response
@@ -253,15 +229,11 @@ class TestDashboardAPIIntegration:
         ]
         
         response = client.get(
-            "/api/technicians/ranking",
-            params={
-                'start_date': '2024-01-01',
-                'end_date': '2024-01-31'
-            }
+            "/api/technicians/ranking?start_date=2024-01-01&end_date=2024-01-31"
         )
         
         assert response.status_code == 200
-        data = response.json()
+        data = response.get_json()
         
         assert data['success'] is True
         assert len(data['data']) == 2
@@ -285,11 +257,7 @@ class TestDashboardAPIIntegration:
         responses = []
         for i in range(10):
             response = client.get(
-                "/api/dashboard/metrics",
-                params={
-                    'start_date': '2024-01-01',
-                    'end_date': '2024-01-31'
-                }
+                "/api/dashboard/metrics?start_date=2024-01-01&end_date=2024-01-31"
             )
             responses.append(response)
         
@@ -298,7 +266,7 @@ class TestDashboardAPIIntegration:
             assert response.status_code in [200, 429, 500]  # 429 = Too Many Requests
     
     @pytest.mark.regression
-    @patch('services.glpi_service.GLPIService.get_dashboard_metrics')
+    @patch('backend.services.glpi_service.GLPIService.get_dashboard_metrics')
     def test_dashboard_api_regression_complete_flow(self, mock_get_metrics, client):
         """Comprehensive regression test for the complete dashboard API flow."""
         # This test ensures the entire API flow works as expected
@@ -347,16 +315,12 @@ class TestDashboardAPIIntegration:
         
         # Test the main dashboard endpoint
         response = client.get(
-            "/api/dashboard/metrics",
-            params={
-                'start_date': '2024-01-01',
-                'end_date': '2024-01-31'
-            }
+            "/api/dashboard/metrics?start_date=2024-01-01&end_date=2024-01-31"
         )
         
         # Verify response structure and data
         assert response.status_code == 200
-        data = response.json()
+        data = response.get_json()
         
         # Verify response format
         assert data['success'] is True

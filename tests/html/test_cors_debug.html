@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug CORS - Dashboard Metrics</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .info { color: #17a2b8; }
+        .warning { color: #ffc107; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug CORS - Dashboard Metrics</h1>
+        <p><strong>Objetivo:</strong> Identificar exatamente onde está o problema de CORS</p>
+        
+        <div class="test-buttons">
+            <button class="button" onclick="testBasicFetch()">1. Teste Fetch Básico</button>
+            <button class="button" onclick="testWithHeaders()">2. Teste com Headers</button>
+            <button class="button" onclick="testXMLHttpRequest()">3. Teste XMLHttpRequest</button>
+            <button class="button" onclick="testAxiosLike()">4. Teste Axios-like</button>
+            <button class="button" onclick="testPreflight()">5. Teste Preflight Manual</button>
+            <button class="button" onclick="clearResults()">Limpar</button>
+        </div>
+        
+        <div id="results" class="results"></div>
+    </div>
+
+    <script>
+        function addResult(message, type = 'info') {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type;
+            results.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            results.scrollTop = results.scrollHeight;
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        // 1. Teste Fetch Básico
+        async function testBasicFetch() {
+            addResult('=== TESTE 1: Fetch Básico ===', 'info');
+            try {
+                const response = await fetch('http://localhost:5000/api/dashboard/metrics');
+                addResult(`Status: ${response.status}`, response.ok ? 'success' : 'error');
+                addResult(`Headers CORS:`, 'info');
+                addResult(`  Access-Control-Allow-Origin: ${response.headers.get('Access-Control-Allow-Origin')}`, 'info');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('✅ Fetch básico funcionou!', 'success');
+                } else {
+                    addResult('❌ Fetch básico falhou!', 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Erro no fetch básico: ${error.message}`, 'error');
+                addResult(`Tipo: ${error.name}`, 'error');
+                addResult(`Stack: ${error.stack}`, 'error');
+            }
+        }
+
+        // 2. Teste com Headers
+        async function testWithHeaders() {
+            addResult('=== TESTE 2: Fetch com Headers ===', 'info');
+            try {
+                const response = await fetch('http://localhost:5000/api/dashboard/metrics', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'User-Agent': 'GLPI-Dashboard/1.0'
+                    }
+                });
+                
+                addResult(`Status: ${response.status}`, response.ok ? 'success' : 'error');
+                addResult(`Headers CORS:`, 'info');
+                addResult(`  Access-Control-Allow-Origin: ${response.headers.get('Access-Control-Allow-Origin')}`, 'info');
+                addResult(`  Access-Control-Allow-Headers: ${response.headers.get('Access-Control-Allow-Headers')}`, 'info');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('✅ Fetch com headers funcionou!', 'success');
+                } else {
+                    addResult('❌ Fetch com headers falhou!', 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Erro no fetch com headers: ${error.message}`, 'error');
+                addResult(`Tipo: ${error.name}`, 'error');
+            }
+        }
+
+        // 3. Teste XMLHttpRequest
+        async function testXMLHttpRequest() {
+            addResult('=== TESTE 3: XMLHttpRequest ===', 'info');
+            
+            return new Promise((resolve) => {
+                const xhr = new XMLHttpRequest();
+                
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        addResult(`Status: ${xhr.status}`, xhr.status === 200 ? 'success' : 'error');
+                        addResult(`Response Headers:`, 'info');
+                        addResult(`  Access-Control-Allow-Origin: ${xhr.getResponseHeader('Access-Control-Allow-Origin')}`, 'info');
+                        
+                        if (xhr.status === 200) {
+                            addResult('✅ XMLHttpRequest funcionou!', 'success');
+                            try {
+                                const data = JSON.parse(xhr.responseText);
+                                addResult('Dados recebidos com sucesso!', 'success');
+                            } catch (e) {
+                                addResult(`❌ Erro ao parsear JSON: ${e.message}`, 'error');
+                            }
+                        } else {
+                            addResult('❌ XMLHttpRequest falhou!', 'error');
+                            addResult(`Response: ${xhr.responseText}`, 'error');
+                        }
+                        resolve();
+                    }
+                };
+                
+                xhr.onerror = function() {
+                    addResult('❌ Erro de rede no XMLHttpRequest', 'error');
+                    resolve();
+                };
+                
+                xhr.open('GET', 'http://localhost:5000/api/dashboard/metrics', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('Accept', 'application/json');
+                xhr.send();
+            });
+        }
+
+        // 4. Teste Axios-like (simulando o comportamento do frontend)
+        async function testAxiosLike() {
+            addResult('=== TESTE 4: Simulando Axios ===', 'info');
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+                
+                const response = await fetch('http://localhost:5000/api/dashboard/metrics', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'User-Agent': 'GLPI-Dashboard/1.0'
+                    },
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                addResult(`Status: ${response.status}`, response.ok ? 'success' : 'error');
+                addResult(`Headers CORS:`, 'info');
+                addResult(`  Access-Control-Allow-Origin: ${response.headers.get('Access-Control-Allow-Origin')}`, 'info');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('✅ Simulação Axios funcionou!', 'success');
+                    addResult(`Dados: ${JSON.stringify(data, null, 2).substring(0, 200)}...`, 'info');
+                } else {
+                    addResult('❌ Simulação Axios falhou!', 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Erro na simulação Axios: ${error.message}`, 'error');
+                addResult(`Tipo: ${error.name}`, 'error');
+                if (error.name === 'AbortError') {
+                    addResult('⚠️ Requisição foi abortada por timeout', 'warning');
+                }
+            }
+        }
+
+        // 5. Teste Preflight Manual
+        async function testPreflight() {
+            addResult('=== TESTE 5: Preflight Manual ===', 'info');
+            
+            // Primeiro, testar OPTIONS
+            try {
+                addResult('Testando OPTIONS...', 'info');
+                const optionsResponse = await fetch('http://localhost:5000/api/dashboard/metrics', {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Access-Control-Request-Method': 'GET',
+                        'Access-Control-Request-Headers': 'Content-Type,Accept,User-Agent'
+                    }
+                });
+                
+                addResult(`OPTIONS Status: ${optionsResponse.status}`, optionsResponse.ok ? 'success' : 'error');
+                addResult('OPTIONS Headers:', 'info');
+                for (let [key, value] of optionsResponse.headers.entries()) {
+                    if (key.toLowerCase().includes('access-control')) {
+                        addResult(`  ${key}: ${value}`, 'info');
+                    }
+                }
+                
+                // Agora testar GET
+                addResult('Testando GET após OPTIONS...', 'info');
+                const getResponse = await fetch('http://localhost:5000/api/dashboard/metrics', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'User-Agent': 'GLPI-Dashboard/1.0'
+                    }
+                });
+                
+                addResult(`GET Status: ${getResponse.status}`, getResponse.ok ? 'success' : 'error');
+                
+                if (getResponse.ok) {
+                    addResult('✅ Preflight + GET funcionou!', 'success');
+                } else {
+                    addResult('❌ GET após OPTIONS falhou!', 'error');
+                }
+                
+            } catch (error) {
+                addResult(`❌ Erro no teste preflight: ${error.message}`, 'error');
+                addResult(`Tipo: ${error.name}`, 'error');
+            }
+        }
+
+        // Inicializar página
+        window.onload = function() {
+            addResult('🔍 Debug CORS carregado. Clique nos botões para testar.', 'info');
+            addResult(`Frontend: ${window.location.origin}`, 'info');
+            addResult(`Backend: http://localhost:5000`, 'info');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste CORS Simples</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        button {
+            margin: 5px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Teste CORS Simples</h1>
+    <p>Este teste verifica especificamente o comportamento de CORS entre o navegador e o backend.</p>
+    
+    <div>
+        <button onclick="testSimpleGet()">GET Simples</button>
+        <button onclick="testWithOrigin()">GET com Origin</button>
+        <button onclick="testOptions()">OPTIONS Request</button>
+        <button onclick="testXMLHttpRequest()">XMLHttpRequest</button>
+        <button onclick="clearResults()">Limpar</button>
+    </div>
+    
+    <div id="results"></div>
+    
+    <script>
+        function addResult(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.textContent = message;
+            results.appendChild(div);
+        }
+        
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+        
+        async function testSimpleGet() {
+            addResult('Testando GET simples...', 'info');
+            try {
+                const response = await fetch('http://localhost:5000/api/dashboard/metrics');
+                addResult(`Status: ${response.status}`, response.ok ? 'success' : 'error');
+                addResult(`Headers: ${JSON.stringify([...response.headers.entries()])}`, 'info');
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('Dados recebidos com sucesso!', 'success');
+                }
+            } catch (error) {
+                addResult(`Erro: ${error.message}`, 'error');
+                addResult(`Tipo: ${error.name}`, 'error');
+            }
+        }
+        
+        async function testWithOrigin() {
+            addResult('Testando GET com Origin header...', 'info');
+            try {
+                const response = await fetch('http://localhost:5000/api/dashboard/metrics', {
+                    headers: {
+                        'Origin': 'http://localhost:3001'
+                    }
+                });
+                addResult(`Status: ${response.status}`, response.ok ? 'success' : 'error');
+                addResult(`CORS Headers:`, 'info');
+                addResult(`  Access-Control-Allow-Origin: ${response.headers.get('Access-Control-Allow-Origin')}`, 'info');
+                addResult(`  Access-Control-Allow-Methods: ${response.headers.get('Access-Control-Allow-Methods')}`, 'info');
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('Dados recebidos com sucesso!', 'success');
+                }
+            } catch (error) {
+                addResult(`Erro: ${error.message}`, 'error');
+                addResult(`Tipo: ${error.name}`, 'error');
+            }
+        }
+        
+        async function testOptions() {
+            addResult('Testando OPTIONS request...', 'info');
+            try {
+                const response = await fetch('http://localhost:5000/api/dashboard/metrics', {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Origin': 'http://localhost:3001',
+                        'Access-Control-Request-Method': 'GET'
+                    }
+                });
+                addResult(`Status: ${response.status}`, response.ok ? 'success' : 'error');
+                addResult('Headers de resposta:', 'info');
+                for (let [key, value] of response.headers.entries()) {
+                    addResult(`  ${key}: ${value}`, 'info');
+                }
+            } catch (error) {
+                addResult(`Erro: ${error.message}`, 'error');
+                addResult(`Tipo: ${error.name}`, 'error');
+            }
+        }
+        
+        function testXMLHttpRequest() {
+            addResult('Testando XMLHttpRequest...', 'info');
+            const xhr = new XMLHttpRequest();
+            
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    addResult(`XHR Status: ${xhr.status}`, xhr.status === 200 ? 'success' : 'error');
+                    addResult(`XHR Response: ${xhr.responseText.substring(0, 100)}...`, 'info');
+                }
+            };
+            
+            xhr.onerror = function() {
+                addResult('XHR Error occurred', 'error');
+            };
+            
+            try {
+                xhr.open('GET', 'http://localhost:5000/api/dashboard/metrics', true);
+                xhr.setRequestHeader('Origin', 'http://localhost:3001');
+                xhr.send();
+            } catch (error) {
+                addResult(`XHR Exception: ${error.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>
