@@ -6,6 +6,7 @@ import time
 from datetime import datetime, timedelta
 from config.settings import active_config
 from utils.response_formatter import ResponseFormatter
+from utils.logger import create_glpi_logger
 
 
 class GLPIService:
@@ -15,7 +16,7 @@ class GLPIService:
         self.glpi_url = active_config.GLPI_URL
         self.app_token = active_config.GLPI_APP_TOKEN
         self.user_token = active_config.GLPI_USER_TOKEN
-        self.structured_logger = create_glpi_logger(active_config.LOG_LEVEL)\n        self.logger = logging.getLogger('glpi_service')
+        self.structured_logger = create_glpi_logger(active_config.LOG_LEVEL)\n        self.logger = logging.getLogger("glpi_service")
         
         # Mapeamento de status dos tickets
         self.status_map = {

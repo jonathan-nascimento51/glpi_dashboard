@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { vi } from 'vitest';
 import '@testing-library/jest-dom';
 
 // Mock dos componentes que serão testados
@@ -228,7 +229,7 @@ describe('Button Component', () => {
   });
 
   test('handles click events', async () => {
-    const handleClick = jest.fn();
+    const handleClick = vi.fn();
     render(<Button onClick={handleClick}>Click me</Button>);
     
     await userEvent.click(screen.getByRole('button'));
@@ -258,7 +259,7 @@ describe('Input Component', () => {
   });
 
   test('handles value changes', async () => {
-    const handleChange = jest.fn();
+    const handleChange = vi.fn();
     render(<Input value="" onChange={handleChange} />);
     
     await userEvent.type(screen.getByRole('textbox'), 'test');
@@ -295,7 +296,7 @@ describe('Select Component', () => {
   });
 
   test('handles selection changes', async () => {
-    const handleChange = jest.fn();
+    const handleChange = vi.fn();
     render(<Select options={options} onChange={handleChange} />);
     
     await userEvent.selectOptions(screen.getByRole('combobox'), 'option1');
@@ -364,7 +365,7 @@ describe('Modal Component', () => {
   });
 
   test('calls onClose when close button is clicked', async () => {
-    const handleClose = jest.fn();
+    const handleClose = vi.fn();
     render(
       <Modal isOpen={true} onClose={handleClose} title="Modal">
         Content
@@ -376,7 +377,7 @@ describe('Modal Component', () => {
   });
 
   test('calls onClose when overlay is clicked', async () => {
-    const handleClose = jest.fn();
+    const handleClose = vi.fn();
     render(
       <Modal isOpen={true} onClose={handleClose} title="Modal">
         Content
@@ -403,7 +404,7 @@ describe('Alert Component', () => {
   });
 
   test('calls onClose when close button is clicked', async () => {
-    const handleClose = jest.fn();
+    const handleClose = vi.fn();
     render(<Alert onClose={handleClose}>Closable alert</Alert>);
     
     await userEvent.click(screen.getByText('×'));
@@ -432,7 +433,7 @@ describe('Table Component', () => {
   });
 
   test('handles row clicks', async () => {
-    const handleRowClick = jest.fn();
+    const handleRowClick = vi.fn();
     render(<Table columns={columns} data={data} onRowClick={handleRowClick} />);
     
     await userEvent.click(screen.getByText('John Doe'));
@@ -440,7 +441,7 @@ describe('Table Component', () => {
   });
 
   test('handles row selection', async () => {
-    const handleSelectionChange = jest.fn();
+    const handleSelectionChange = vi.fn();
     render(
       <Table
         columns={columns}
@@ -464,9 +465,9 @@ describe('Pagination Component', () => {
       <Pagination
         currentPage={2}
         totalPages={5}
-        onPageChange={jest.fn()}
+        onPageChange={vi.fn()}
         pageSize={10}
-        onPageSizeChange={jest.fn()}
+        onPageSizeChange={vi.fn()}
       />
     );
     
@@ -480,9 +481,9 @@ describe('Pagination Component', () => {
       <Pagination
         currentPage={1}
         totalPages={5}
-        onPageChange={jest.fn()}
+        onPageChange={vi.fn()}
         pageSize={10}
-        onPageSizeChange={jest.fn()}
+        onPageSizeChange={vi.fn()}
       />
     );
     
@@ -494,9 +495,9 @@ describe('Pagination Component', () => {
       <Pagination
         currentPage={5}
         totalPages={5}
-        onPageChange={jest.fn()}
+        onPageChange={vi.fn()}
         pageSize={10}
-        onPageSizeChange={jest.fn()}
+        onPageSizeChange={vi.fn()}
       />
     );
     
@@ -504,14 +505,14 @@ describe('Pagination Component', () => {
   });
 
   test('handles page changes', async () => {
-    const handlePageChange = jest.fn();
+    const handlePageChange = vi.fn();
     render(
       <Pagination
         currentPage={2}
         totalPages={5}
         onPageChange={handlePageChange}
         pageSize={10}
-        onPageSizeChange={jest.fn()}
+        onPageSizeChange={vi.fn()}
       />
     );
     
@@ -527,7 +528,7 @@ describe('Tabs Component', () => {
   ];
 
   test('renders tabs with content', () => {
-    render(<Tabs tabs={tabs} activeTab="tab1" onTabChange={jest.fn()} />);
+    render(<Tabs tabs={tabs} activeTab="tab1" onTabChange={vi.fn()} />);
     
     expect(screen.getByText('Tab 1')).toBeInTheDocument();
     expect(screen.getByText('Tab 2')).toBeInTheDocument();
@@ -535,7 +536,7 @@ describe('Tabs Component', () => {
   });
 
   test('handles tab changes', async () => {
-    const handleTabChange = jest.fn();
+    const handleTabChange = vi.fn();
     render(<Tabs tabs={tabs} activeTab="tab1" onTabChange={handleTabChange} />);
     
     await userEvent.click(screen.getByText('Tab 2'));
@@ -543,7 +544,7 @@ describe('Tabs Component', () => {
   });
 
   test('applies active class to current tab', () => {
-    render(<Tabs tabs={tabs} activeTab="tab1" onTabChange={jest.fn()} />);
+    render(<Tabs tabs={tabs} activeTab="tab1" onTabChange={vi.fn()} />);
     
     expect(screen.getByText('Tab 1')).toHaveClass('active');
     expect(screen.getByText('Tab 2')).not.toHaveClass('active');
