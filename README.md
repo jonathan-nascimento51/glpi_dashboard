@@ -239,6 +239,64 @@ VITE_UNLEASH_PROXY_CLIENT_KEY=
 3. A mudança é transparente para o usuário final
 4. Permite rollback instantâneo em caso de problemas
 
+## Observabilidade
+
+O projeto inclui integração com Sentry para monitoramento de erros e OpenTelemetry para observabilidade, ativados condicionalmente via variáveis de ambiente.
+
+### Configuração
+
+#### Backend
+
+As ferramentas de observabilidade são inicializadas apenas se as variáveis de ambiente estiverem definidas:
+
+- **Sentry**: Requer `SENTRY_DSN`
+- **OpenTelemetry**: Requer `OTEL_EXPORTER_OTLP_ENDPOINT`
+
+```bash
+# Exemplo de configuração no .env
+SENTRY_DSN=https://your-sentry-dsn@sentry.io/project-id
+ENVIRONMENT=production
+RELEASE=1.0.0
+SENTRY_TRACES_SAMPLE_RATE=0.1
+SENTRY_PROFILES_SAMPLE_RATE=0.1
+
+# OpenTelemetry
+OTEL_SERVICE_NAME=glpi-dashboard-backend
+OTEL_EXPORTER_OTLP_ENDPOINT=https://your-otel-endpoint
+```
+
+#### Frontend
+
+O Sentry é inicializado apenas se `VITE_SENTRY_DSN` estiver definido:
+
+```bash
+# Exemplo de configuração no .env.local
+VITE_SENTRY_DSN=https://your-sentry-dsn@sentry.io/project-id
+VITE_ENVIRONMENT=production
+VITE_RELEASE=1.0.0
+VITE_SENTRY_TRACES_SAMPLE_RATE=0.1
+VITE_SENTRY_REPLAYS_SESSION_SAMPLE_RATE=0.1
+VITE_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE=1.0
+```
+
+### Sourcemaps
+
+Para melhor debugging em produção, configure sourcemaps no build:
+
+```bash
+# Frontend - gerar sourcemaps
+npm run build -- --sourcemap
+
+# Upload automático via GitHub Actions (opcional)
+# Descomente a seção "Create Sentry release" no arquivo .github/workflows/ci.yml
+```
+
+### Critérios
+
+- **Sem DSN**: Nenhum tráfego de eventos é enviado
+- **Com DSN**: Eventos de erro e performance são capturados e enviados
+- **Desenvolvimento**: Observabilidade desabilitada por padrão para não poluir o ambiente
+
 ## Endpoints da API
 
 ### Métricas

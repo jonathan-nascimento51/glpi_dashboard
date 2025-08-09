@@ -28,6 +28,10 @@ def init_sentry(dsn: str | None, environment: str, release: str):
 
 
 def init_otel(service_name: str, otlp_endpoint: str):
+    # Only initialize OpenTelemetry if OTEL_EXPORTER_OTLP_ENDPOINT is set
+    if not os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT"):
+        return
+    
     resource = Resource(attributes={SERVICE_NAME: service_name})
     provider = TracerProvider(resource=resource)
     processor = BatchSpanProcessor(
