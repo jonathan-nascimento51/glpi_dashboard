@@ -1,0 +1,35 @@
+{
+  "name": "gadpi-frontend",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "gen:api": "orval --config orval.config.ts",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "test": "vitest run",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "msw": "node -e \"console.log('MSW ativo em dev/test via src/mocks')\""
+  },
+  "devDependencies": {
+    "@tanstack/react-query": "^5.51.21",
+    "@storybook/react-vite": "^8.1.0",
+    "@storybook/addon-essentials": "^8.1.0",
+    "orval": "^6.30.0",
+    "msw": "^2.3.1",
+    "zod": "^3.23.8",
+    "vitest": "^1.6.0",
+    "@testing-library/react": "^14.2.1",
+    "typescript": "^5.5.4",
+    "eslint": "^9.9.0",
+    "@typescript-eslint/eslint-plugin": "^8.1.0",
+    "@typescript-eslint/parser": "^8.1.0",
+    "biome": "^1.8.0",
+    "@sentry/browser": "^8.18.0",
+    "@unleash/proxy-client-js": "^2.7.0",
+    "vite": "^5.4.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "@storybook/addon-interactions": "^8.1.0"
+  }
+}

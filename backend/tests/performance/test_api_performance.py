@@ -7,9 +7,9 @@ from unittest.mock import Mock, patch
 import requests
 from fastapi.testclient import TestClient
 
-from src.main import app
-from src.services.glpi_service import GLPIService
-from tests.conftest import mock_glpi_service, sample_metrics_data
+from main import app
+from services.glpi_service import GLPIService
+from tests.conftest import glpi_service, sample_metrics_data
 
 
 class TestAPIPerformance:

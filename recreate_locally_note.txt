@@ -1,0 +1,1 @@
+Peça ao assistente para enviar a versão em shell com heredocs se preferir reconstruir sem baixar ZIP.
