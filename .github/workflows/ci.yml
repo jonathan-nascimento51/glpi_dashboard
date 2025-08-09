@@ -63,7 +63,7 @@ jobs:
         fail_ci_if_error: false
         
     - name: Upload coverage HTML report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: backend-coverage-html
         path: backend/htmlcov/
@@ -122,7 +122,7 @@ jobs:
         fail_ci_if_error: false
         
     - name: Upload frontend coverage HTML report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: frontend-coverage-html
         path: frontend/coverage/
@@ -205,7 +205,7 @@ jobs:
         if [ -f backend/requirements.txt ]; then safety check -r backend/requirements.txt; fi
         
     - name: Upload security reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: security-reports
         path: |
@@ -271,7 +271,7 @@ jobs:
         cp backend/requirements.txt deploy/ 2>/dev/null || true
         
     - name: Upload deployment artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: deployment-package
         path: deploy/
