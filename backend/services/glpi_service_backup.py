@@ -15,7 +15,7 @@ class GLPIService:
         self.glpi_url = active_config.GLPI_URL
         self.app_token = active_config.GLPI_APP_TOKEN
         self.user_token = active_config.GLPI_USER_TOKEN
-        self.structured_logger = create_glpi_logger(active_config.LOG_LEVEL)\n        self.logger = logging.getLogger('glpi_service')
+        self.logger = logging.getLogger('glpi_service')
         
         # Mapeamento de status dos tickets
         self.status_map = {
@@ -120,7 +120,7 @@ class GLPIService:
             return self._authenticate_with_retry()
         return True
     
-    @log_api_call(self.structured_logger)\n    def _authenticate_with_retry(self) -> bool:
+    def _authenticate_with_retry(self) -> bool:
         """Autentica com retry automático e backoff exponencial"""
         for attempt in range(self.max_retries):
             try:
