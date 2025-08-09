@@ -182,6 +182,63 @@ O frontend será executado em `http://localhost:3000` (ou próxima porta dispon�
 - **Frontend (Interface)**: `http://localhost:3000`
 - **Backend (API)**: `http://localhost:5000`
 
+## Feature Flags
+
+O projeto utiliza feature flags para permitir deploys seguros e migração gradual de funcionalidades.
+
+### Sistema de Flags
+
+- **Backend**: Utiliza Unleash com fallback para variáveis de ambiente
+- **Frontend**: Integração com Unleash via `@unleash/proxy-client-js`
+
+### Configuração
+
+#### Backend
+
+As flags são configuradas em `backend/app/flags.py` e podem ser controladas via:
+
+1. **Unleash** (produção): Configure as variáveis de ambiente do Unleash
+2. **Fallback** (desenvolvimento): Use variáveis de ambiente diretas
+
+```bash
+# Exemplo: ativar flag v2 de KPIs localmente
+export FLAG_USE_V2_KPIS=true
+```
+
+#### Frontend
+
+Configure as variáveis de ambiente no arquivo `.env.local`:
+
+```bash
+# Configuração do Unleash (quando disponível)
+VITE_UNLEASH_PROXY_URL=
+VITE_UNLEASH_PROXY_CLIENT_KEY=
+```
+
+### Flags Disponíveis
+
+#### `use_v2_kpis`
+
+- **Descrição**: Migração dos KPIs da API v1 para v2
+- **Comportamento**: 
+  - `false` (padrão): Usa endpoint `/v1/kpis`
+  - `true`: Usa endpoint `/v2/kpis`
+- **Teste local**: 
+  ```bash
+  # Windows PowerShell
+  $env:FLAG_USE_V2_KPIS="true"; npm run dev
+  
+  # Linux/Mac
+  export FLAG_USE_V2_KPIS=true && npm run dev
+  ```
+
+### Como Funciona
+
+1. O componente `KpiContainer` verifica a flag `use_v2_kpis`
+2. O hook `useKpisRaw` alterna automaticamente entre `/v1/kpis` e `/v2/kpis`
+3. A mudança é transparente para o usuário final
+4. Permite rollback instantâneo em caso de problemas
+
 ## Endpoints da API
 
 ### Métricas
@@ -191,6 +248,15 @@ GET /api/metrics
 ```
 
 Retorna as métricas do dashboard do GLPI.
+
+### KPIs
+
+```
+GET /v1/kpis
+GET /v2/kpis  # Disponível quando flag use_v2_kpis está ativa
+```
+
+Retorna os indicadores-chave de performance.
 
 ### Status
 

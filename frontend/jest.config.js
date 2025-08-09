@@ -4,7 +4,7 @@ module.exports = {
   testEnvironment: 'jsdom',
   
   // Configuração de setup
-  setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/src/test-setup.tsx'],
   
   // Padrões de arquivos de teste
   testMatch: [
@@ -167,37 +167,37 @@ module.exports = {
     {
       displayName: 'unit',
       testMatch: ['<rootDir>/src/**/__tests__/unit/**/*.{js,jsx,ts,tsx}'],
-      setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts']
+      setupFilesAfterEnv: ['<rootDir>/src/test-setup.tsx']
     },
     {
       displayName: 'integration',
       testMatch: ['<rootDir>/src/**/__tests__/integration/**/*.{js,jsx,ts,tsx}'],
-      setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts']
+      setupFilesAfterEnv: ['<rootDir>/src/test-setup.tsx']
     },
     {
       displayName: 'accessibility',
       testMatch: ['<rootDir>/src/**/__tests__/accessibility/**/*.{js,jsx,ts,tsx}'],
-      setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts']
+      setupFilesAfterEnv: ['<rootDir>/src/test-setup.tsx']
     },
     {
       displayName: 'visual',
       testMatch: ['<rootDir>/src/**/__tests__/visual/**/*.{js,jsx,ts,tsx}'],
-      setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts']
+      setupFilesAfterEnv: ['<rootDir>/src/test-setup.tsx']
     },
     {
       displayName: 'mutation',
       testMatch: ['<rootDir>/src/**/__tests__/mutation/**/*.{js,jsx,ts,tsx}'],
-      setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts']
+      setupFilesAfterEnv: ['<rootDir>/src/test-setup.tsx']
     },
     {
       displayName: 'contract',
       testMatch: ['<rootDir>/src/**/__tests__/contract/**/*.{js,jsx,ts,tsx}'],
-      setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts']
+      setupFilesAfterEnv: ['<rootDir>/src/test-setup.tsx']
     },
     {
       displayName: 'snapshot',
       testMatch: ['<rootDir>/src/**/__tests__/snapshot/**/*.{js,jsx,ts,tsx}'],
-      setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts']
+      setupFilesAfterEnv: ['<rootDir>/src/test-setup.tsx']
     }
   ],
   

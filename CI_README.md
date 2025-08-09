@@ -1,188 +1,540 @@
-﻿# CI/CD Pipeline - Robust Gates
+﻿name: CI Pipeline - Robust Gates
 
-Este documento descreve o pipeline de CI/CD robusto implementado para o projeto GLPI Dashboard, que inclui múltiplos gates de qualidade para garantir a integridade do código.
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
 
-##  Gates Implementados
+env:
+  BACKEND_DIR: backend
+  FRONTEND_DIR: frontend
 
-### Frontend Gates
-1. **Lint & Format** - ESLint e Prettier
-2. **Type Check** - TypeScript type checking
-3. **Unit Tests** - Vitest com cobertura
-4. **Orval Drift Check** - Verificação de sincronização da API
-5. **Storybook Build** - Build dos componentes visuais
+jobs:
+  # Frontend Gates: Lint + Types + Unit Tests + Orval Drift + Storybook
+  frontend-lint:
+    name: Frontend Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-### Backend Gates
-1. **Lint & Format** - flake8, black, isort
-2. **Type Check** - mypy
-3. **Unit Tests** - pytest com cobertura
-4. **Security Scan** - bandit e safety
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
 
-### Integration Gates
-1. **Schemathesis** - API fuzzing e testes de propriedades
-2. **Integration Tests** - Testes end-to-end
+    - name: Install frontend dependencies
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm ci
 
-##  Secrets Necessários
+    - name: Run ESLint
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm run lint
 
-Para configurar o pipeline no GitHub Actions, você precisa definir os seguintes secrets no repositório:
+    - name: Run Prettier check
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm run format:check
 
-### Obrigatórios
-- `GITHUB_TOKEN` - Token automático do GitHub (já disponível)
+  frontend-types:
+    name: Frontend Type Check
+    runs-on: ubuntu-latest
+    needs: [frontend-lint]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-### Opcionais (com fallbacks)
-- `GLPI_API_URL` - URL da API GLPI (fallback: `http://localhost:8080`)
-- `GLPI_APP_TOKEN` - Token da aplicação GLPI (fallback: `test_app_token`)
-- `GLPI_USER_TOKEN` - Token do usuário GLPI (fallback: `test_user_token`)
-- `SONAR_TOKEN` - Token do SonarCloud (opcional para análise de qualidade)
-- `CHROMATIC_PROJECT_TOKEN` - Token do Chromatic (opcional para testes visuais)
-- `SENTRY_DSN` - DSN do Sentry (opcional para monitoramento)
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
 
-### Como Configurar os Secrets
+    - name: Install frontend dependencies
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm ci
 
-1. Acesse o repositório no GitHub
-2. Vá em **Settings** > **Secrets and variables** > **Actions**
-3. Clique em **New repository secret**
-4. Adicione cada secret necessário
+    - name: Run TypeScript check
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm run type-check
 
-##  Estrutura do Pipeline
+  frontend-tests:
+    name: Frontend Unit Tests
+    runs-on: ubuntu-latest
+    needs: [frontend-types]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-### Ordem de Execução
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
 
-```mermaid
-graph TD
-    A[frontend-lint] --> B[frontend-types]
-    B --> C[frontend-tests]
-    C --> D[orval-drift-check]
-    C --> E[storybook-build]
-    
-    F[backend-lint] --> G[backend-tests]
-    F --> H[security-scan]
-    
-    G --> I[schemathesis-fuzz]
-    
-    D --> J[integration-tests]
-    C --> J
-    G --> J
-    
-    D --> K[all-gates-passed]
-    E --> K
-    G --> K
-    I --> K
-    J --> K
-    H --> K
-    
-    K --> L[build-and-deploy]
-```
+    - name: Install frontend dependencies
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm ci
 
-### Gates Críticos
+    - name: Run frontend tests with coverage
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm run test:ci
 
-Os seguintes gates **DEVEM** passar para que o pipeline seja considerado bem-sucedido:
+    - name: Upload frontend coverage
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./${{ env.FRONTEND_DIR }}/coverage/lcov.info
+        flags: frontend
+        name: frontend-coverage
+        fail_ci_if_error: false
 
-1. **Orval Drift Check** - Falha se a API não estiver sincronizada
-2. **Unit Tests** - Falha se algum teste unitário quebrar
-3. **Storybook Build** - Falha se o Storybook não conseguir buildar
-4. **Type Check** - Falha se houver erros de tipagem
-5. **Lint** - Falha se houver problemas de linting
+  # Orval Drift Check - Critical Gate
+  orval-drift-check:
+    name: Orval API Drift Check
+    runs-on: ubuntu-latest
+    needs: [frontend-tests]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-##  Comandos Locais
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
 
-Antes de fazer push, execute localmente:
+    - name: Install frontend dependencies
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm ci
 
-### Frontend
+    - name: Generate API types with Orval
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm run gen:api
+
+    - name: Check for API drift
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        if ! git diff --exit-code src/api/; then
+          echo " API drift detected! Generated types don't match committed files."
+          echo "Please run 'npm run gen:api' and commit the changes."
+          git diff src/api/
+          exit 1
+        else
+          echo " No API drift detected. Generated types are in sync."
+        fi
+
+  # Storybook Build - Visual Components Gate
+  storybook-build:
+    name: Storybook Build
+    runs-on: ubuntu-latest
+    needs: [frontend-tests]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
+
+    - name: Install frontend dependencies
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm ci
+
+    - name: Build Storybook
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm run build-storybook
+
+    - name: Upload Storybook build
+      uses: actions/upload-artifact@v3
+      with:
+        name: storybook-build
+        path: ${{ env.FRONTEND_DIR }}/storybook-static/
+        retention-days: 7
+
+  # Backend Gates: Lint + Types + Unit Tests
+  backend-lint:
+    name: Backend Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Cache Python dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 black isort mypy
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f ${{ env.BACKEND_DIR }}/requirements.txt ]; then pip install -r ${{ env.BACKEND_DIR }}/requirements.txt; fi
+
+    - name: Run flake8 (Linting)
+      run: |
+        flake8 ${{ env.BACKEND_DIR }}/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 ${{ env.BACKEND_DIR }}/ --count --max-complexity=10 --max-line-length=127 --statistics
+
+    - name: Run isort (Import Sorting)
+      run: |
+        isort --check-only --diff ${{ env.BACKEND_DIR }}/
+
+    - name: Run black (Code Formatting)
+      run: |
+        black --check --diff ${{ env.BACKEND_DIR }}/
+
+    - name: Run mypy (Type Checking)
+      run: |
+        mypy ${{ env.BACKEND_DIR }}/ --ignore-missing-imports || true
+
+  backend-tests:
+    name: Backend Unit Tests
+    runs-on: ubuntu-latest
+    needs: [backend-lint]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Cache Python dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f ${{ env.BACKEND_DIR }}/requirements.txt ]; then pip install -r ${{ env.BACKEND_DIR }}/requirements.txt; fi
+
+    - name: Run pytest with coverage
+      run: |
+        cd ${{ env.BACKEND_DIR }}
+        pytest --cov=. --cov-report=xml --cov-report=html --cov-report=term-missing
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./${{ env.BACKEND_DIR }}/coverage.xml
+        flags: backend
+        name: backend-coverage
+        fail_ci_if_error: false
+
+  # Schemathesis - API Fuzzing Gate
+  schemathesis-fuzz:
+    name: API Fuzzing with Schemathesis
+    runs-on: ubuntu-latest
+    needs: [backend-tests]
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install schemathesis
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f ${{ env.BACKEND_DIR }}/requirements.txt ]; then pip install -r ${{ env.BACKEND_DIR }}/requirements.txt; fi
+
+    - name: Start backend server
+      run: |
+        cd ${{ env.BACKEND_DIR }}
+        python -m uvicorn main:app --host 0.0.0.0 --port 8000 &
+        sleep 10
+      env:
+        REDIS_URL: redis://localhost:6379
+        GLPI_API_URL: ${{ secrets.GLPI_API_URL || 'http://localhost:8080' }}
+        GLPI_APP_TOKEN: ${{ secrets.GLPI_APP_TOKEN || 'test_app_token' }}
+        GLPI_USER_TOKEN: ${{ secrets.GLPI_USER_TOKEN || 'test_user_token' }}
+
+    - name: Run Schemathesis fuzzing
+      run: |
+        schemathesis run http://localhost:8000/openapi.json \
+          --checks all \
+          --max-examples 50 \
+          --hypothesis-max-examples 10 \
+          --hypothesis-deadline 5000 \
+          --report
+      continue-on-error: true
+
+  # Integration Tests
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-tests, orval-drift-check]
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f ${{ env.BACKEND_DIR }}/requirements.txt ]; then pip install -r ${{ env.BACKEND_DIR }}/requirements.txt; fi
+        cd ${{ env.FRONTEND_DIR }} && npm ci
+
+    - name: Build frontend
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm run build
+
+    - name: Run integration tests
+      env:
+        REDIS_URL: redis://localhost:6379
+        GLPI_API_URL: ${{ secrets.GLPI_API_URL || 'http://localhost:8080' }}
+        GLPI_APP_TOKEN: ${{ secrets.GLPI_APP_TOKEN || 'test_app_token' }}
+        GLPI_USER_TOKEN: ${{ secrets.GLPI_USER_TOKEN || 'test_user_token' }}
+      run: |
+        cd ${{ env.BACKEND_DIR }}
+        pytest tests/integration/ -v
+
+  # Security Scan
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: [backend-lint]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install security tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install bandit safety
+
+    - name: Run Bandit security scan
+      run: |
+        bandit -r ${{ env.BACKEND_DIR }}/ -f json -o bandit-report.json || true
+        bandit -r ${{ env.BACKEND_DIR }}/ -ll
+
+    - name: Run Safety check
+      run: |
+        if [ -f requirements.txt ]; then safety check -r requirements.txt; fi
+        if [ -f ${{ env.BACKEND_DIR }}/requirements.txt ]; then safety check -r ${{ env.BACKEND_DIR }}/requirements.txt; fi
+
+    - name: Upload security reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-reports
+        path: bandit-report.json
+
+  # Final Gate - All must pass
+  all-gates-passed:
+    name: All Gates Passed 
+    runs-on: ubuntu-latest
+    needs: [
+      frontend-lint,
+      frontend-types, 
+      frontend-tests,
+      orval-drift-check,
+      storybook-build,
+      backend-lint,
+      backend-tests,
+      schemathesis-fuzz,
+      integration-tests,
+      security-scan
+    ]
+    steps:
+    - name: All gates passed
+      run: |
+        echo " All CI gates have passed successfully!"
+        echo " Frontend: Lint, Types, Unit Tests"
+        echo " Backend: Lint, Types, Unit Tests"
+        echo " Orval: API drift check"
+        echo " Schemathesis: API fuzzing"
+        echo " Storybook: Visual components build"
+        echo " Integration: End-to-end tests"
+        echo " Security: Vulnerability scanning"
+
+
+  # Visual Regression Testing with Chromatic
+  visual-regression:
+    name: Visual Regression - Chromatic
+    runs-on: ubuntu-latest
+    needs: [storybook-build]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Required for Chromatic
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
+
+    - name: Install dependencies
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm ci
+
+    - name: Run Chromatic
+      uses: chromaui/action@v1
+      with:
+        projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        workingDir: ${{ env.FRONTEND_DIR }}
+        exitZeroOnChanges: false  # Fail on visual changes
+        onlyChanged: true  # Only test changed stories
+        autoAcceptChanges: false  # Require manual approval  # Build and Deploy (only on main branch)
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    needs: [all-gates-passed]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f ${{ env.BACKEND_DIR }}/requirements.txt ]; then pip install -r ${{ env.BACKEND_DIR }}/requirements.txt; fi
+        cd ${{ env.FRONTEND_DIR }} && npm ci
+
+    - name: Build frontend for production
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm run build
+
+    - name: Create deployment package
+      run: |
+        mkdir -p deploy
+        cp -r ${{ env.BACKEND_DIR }}/ deploy/
+        cp -r ${{ env.FRONTEND_DIR }}/dist/ deploy/frontend/
+        cp requirements.txt deploy/ 2>/dev/null || true
+        cp ${{ env.BACKEND_DIR }}/requirements.txt deploy/ 2>/dev/null || true
+
+    - name: Upload deployment artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: deployment-package
+        path: deploy/
+        retention-days: 30
+
+
+
+## Visual Regression Testing (Chromatic)
+
+### Objetivo
+Detectar regressões visuais em componentes UI através de comparação automática de screenshots.
+
+### Configuração
+- **Ferramenta**: Chromatic
+- **Secret necessário**: `CHROMATIC_PROJECT_TOKEN` nos secrets do repositório
+- **Dependência**: chromatic (instalado como devDependency)
+
+### Comportamento
+- Falha em caso de mudanças visuais não aprovadas
+- Requer aprovação manual de diffs no Chromatic UI
+- Testa apenas stories alteradas para otimização
+- Executa após o build do Storybook
+
+### Stories Cobertas
+- **KpiCard**: Estados loading, empty, error, ok
+- **KpiContainer**: Estados loading, empty, error, ok  
+- **RankingTable**: Estados loading, empty, error, ok
+- **NewTicketsList**: Estados loading, empty, error, ok
+
+### Comando Local
 ```bash
-cd frontend
-npm run lint
-npm run format:check
-npm run type-check
-npm test
-npm run gen:api
-npm run build-storybook
+npm run chromatic
 ```
 
-### Backend
-```bash
-cd backend
-flake8 . --count --max-complexity=10 --max-line-length=127
-isort --check-only --diff .
-black --check --diff .
-mypy . --ignore-missing-imports
-pytest --cov=. --cov-report=term-missing
-```
-
-##  Troubleshooting
-
-### Orval Drift Detectado
-```bash
-cd frontend
-npm run gen:api
-git add src/api/
-git commit -m "fix: sync API types with orval"
-```
-
-### Testes Falhando
-```bash
-# Frontend
-cd frontend
-npm test
-
-# Backend
-cd backend
-pytest -v
-```
-
-### Storybook Não Builda
-```bash
-cd frontend
-npm run storybook
-# Verifique os erros no console
-npm run build-storybook
-```
-
-### Problemas de Lint
-```bash
-# Frontend
-cd frontend
-npm run lint:fix
-npm run format
-
-# Backend
-cd backend
-black .
-isort .
-```
-
-##  Cobertura e Relatórios
-
-- **Frontend Coverage**: Enviado para Codecov com flag `frontend`
-- **Backend Coverage**: Enviado para Codecov com flag `backend`
-- **Security Reports**: Bandit JSON report como artifact
-- **Storybook Build**: Artifact disponível por 7 dias
-
-##  Critérios de Sucesso
-
- **Pipeline Passando Localmente**: Todos os comandos acima devem executar sem erro
-
- **PR com Checks Acionados**: O pipeline deve rodar automaticamente em PRs
-
- **Gates Falhando Corretamente**: 
-- Orval drift deve falhar se API não sincronizada
-- Testes devem falhar se quebrados
-- Storybook deve falhar se não buildar
-
-##  Workflow de Desenvolvimento
-
-1. **Desenvolvimento Local**: Execute os comandos locais antes do commit
-2. **Commit**: Use conventional commits
-3. **Push**: O pipeline roda automaticamente
-4. **PR**: Todos os gates devem passar
-5. **Merge**: Deploy automático apenas na branch `main`
-
-##  Notas Importantes
-
-- O deploy só acontece na branch `main` após todos os gates passarem
-- Schemathesis roda com `continue-on-error: true` para não bloquear o pipeline
-- Security scan é executado em paralelo para otimizar tempo
-- Artifacts são mantidos por períodos específicos para economizar espaço
-
----
-
-**Última atualização**: Pipeline implementado com gates robustos para lint, types, unit, orval drift, schemathesis e storybook.
+### Troubleshooting
+- **Token inválido**: Verificar se CHROMATIC_PROJECT_TOKEN está configurado
+- **Build falha**: Verificar se Storybook build está funcionando
+- **Diffs não aprovados**: Acessar Chromatic UI para revisar e aprovar mudanças

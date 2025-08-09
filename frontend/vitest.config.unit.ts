@@ -7,7 +7,7 @@ export default defineConfig({
   test: {
     name: 'unit',
     environment: 'jsdom',
-    setupFiles: ['./src/test-setup.ts'],
+    setupFiles: ['./src/test-setup.tsx'],
     include: [
       'src/**/*.unit.test.{ts,tsx}',
       'src/__tests__/unit/**/*.test.{ts,tsx}'
@@ -30,7 +30,7 @@ export default defineConfig({
       exclude: [
         'src/**/*.test.{ts,tsx}',
         'src/**/*.spec.{ts,tsx}',
-        'src/test-setup.ts',
+        'src/test-setup.tsx',
         'src/vite-env.d.ts',
         'src/**/*.d.ts',
         'src/__tests__/**'
