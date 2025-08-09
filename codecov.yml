@@ -1,0 +1,98 @@
+# Codecov configuration for GLPI Dashboard
+
+coverage:
+  precision: 2
+  round: down
+  range: "70...100"
+  
+  status:
+    project:
+      default:
+        target: 80%
+        threshold: 1%
+        if_ci_failed: error
+      backend:
+        target: 85%
+        threshold: 2%
+        paths:
+          - "backend/"
+        if_ci_failed: error
+      frontend:
+        target: 75%
+        threshold: 2%
+        paths:
+          - "frontend/src/"
+        if_ci_failed: error
+    
+    patch:
+      default:
+        target: 70%
+        threshold: 5%
+        if_ci_failed: error
+
+comment:
+  layout: "reach,diff,flags,tree,reach"
+  behavior: default
+  require_changes: false
+  require_base: no
+  require_head: yes
+  branches:
+    - main
+    - develop
+
+flags:
+  backend:
+    paths:
+      - backend/
+    carryforward: false
+  frontend:
+    paths:
+      - frontend/src/
+    carryforward: false
+
+ignore:
+  - "backend/tests/"
+  - "backend/migrations/"
+  - "backend/conftest.py"
+  - "frontend/src/**/*.test.ts"
+  - "frontend/src/**/*.test.tsx"
+  - "frontend/src/**/*.spec.ts"
+  - "frontend/src/**/*.spec.tsx"
+  - "frontend/src/test-utils/"
+  - "frontend/src/__mocks__/"
+  - "frontend/dist/"
+  - "frontend/build/"
+  - "frontend/coverage/"
+  - "**/node_modules/"
+  - "**/.venv/"
+  - "**/venv/"
+  - "**/__pycache__/"
+  - "**/*.pyc"
+
+fixes:
+  - "backend/::"
+  - "frontend/src/::"
+
+notification:
+  email:
+    default:
+      only_pulls: false
+      layout: "reach, diff, flags, files"
+      flags: null
+      paths: null
+      branches: null
+      threshold: null
+      message: null
+      
+  slack:
+    default:
+      only_pulls: false
+      threshold: 1%
+      message: |
+        Coverage for {{ owner.username }}/{{ repo.name }} changed by {{ range delta }}% ({{ after }}%)
+        {{ commit.message }}
+        
+  webhook:
+    default:
+      only_pulls: false
+      url: null

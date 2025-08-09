@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import { httpClient, apiUtils, API_CONFIG, updateAuthTokens } from './httpClient';
 import { SystemStatus, DateRange } from '../types';
 import type {
   ApiResult,
@@ -18,60 +18,13 @@ import {
   newTicketsCache 
 } from './cache';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+// Base URL for API (mantido para compatibilidade)
+const API_BASE_URL = API_CONFIG.BASE_URL;
 
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+// Cliente HTTP (alias para compatibilidade)
+const api = httpClient;
 
-// Request interceptor
-api.interceptors.request.use(
-  (config) => {
-    console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
-    return config;
-  },
-  (error) => {
-    console.error('API Request Error:', error);
-    return Promise.reject(error);
-  }
-);
-
-// Response interceptor
-api.interceptors.response.use(
-  (response: AxiosResponse) => {
-    console.log(`API Response: ${response.status} ${response.config.url}`);
-    return response;
-  },
-  (error) => {
-    // Log mais detalhado do erro
-    const errorInfo = {
-      url: error.config?.url,
-      method: error.config?.method,
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      message: error.message,
-      code: error.code
-    };
-    
-    if (error.code === 'ECONNABORTED') {
-      console.warn('⏱️ Request timeout:', errorInfo.url);
-    } else if (error.response?.status === 404) {
-      console.warn('🔍 Endpoint not found:', errorInfo.url);
-    } else if (error.response?.status >= 500) {
-      console.error('🚨 Server error:', errorInfo);
-    } else if (error.response?.status >= 400) {
-      console.warn('⚠️ Client error:', errorInfo);
-    } else {
-      console.error('🔌 Network/Connection error:', errorInfo);
-    }
-    
-    return Promise.reject(error);
-  }
-);
+// Os interceptadores agora estão centralizados no httpClient.ts
 
 // API Response wrapper interface
 interface ApiResponse<T> {
@@ -478,6 +431,12 @@ export const getNewTickets = apiService.getNewTickets;
 export const search = apiService.search;
 export const healthCheck = apiService.healthCheck;
 export const clearAllCaches = apiService.clearAllCaches;
+
+// Export utilities from httpClient
+export { updateAuthTokens, apiUtils, API_CONFIG } from './httpClient';
+
+// Export the centralized HTTP client
+export { httpClient } from './httpClient';
 
 // Função para buscar métricas do dashboard com tipagem forte
 export const fetchDashboardMetrics = async (

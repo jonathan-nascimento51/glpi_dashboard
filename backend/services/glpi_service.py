@@ -4,8 +4,8 @@ from typing import Dict, Optional, Tuple, List
 import requests
 import time
 from datetime import datetime, timedelta
-from backend.config.settings import active_config
-from backend.utils.response_formatter import ResponseFormatter
+from config.settings import active_config
+from utils.response_formatter import ResponseFormatter
 
 
 class GLPIService:
@@ -278,9 +278,17 @@ class GLPIService:
     
     def get_ticket_count(self, group_id: int, status_id: int, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Optional[int]:
         """Busca o total de tickets para um grupo e status específicos, com filtro de data opcional"""
+        import datetime
+        
         if not self.field_ids:
             if not self.discover_field_ids():
-                return None
+                timestamp = datetime.datetime.now().isoformat()
+                self.logger.error(
+                    f"[{timestamp}] Falha ao descobrir field_ids - "
+                    f"group_id: {group_id}, status_id: {status_id}, "
+                    f"start_date: {start_date}, end_date: {end_date}"
+                )
+                return 0
             
         search_params = {
             "is_deleted": 0,
@@ -319,22 +327,41 @@ class GLPIService:
             )
             
             if not response:
-                return None
+                timestamp = datetime.datetime.now().isoformat()
+                self.logger.error(
+                    f"[{timestamp}] Resposta vazia da API GLPI - "
+                    f"group_id: {group_id}, status_id: {status_id}, "
+                    f"start_date: {start_date}, end_date: {end_date}"
+                )
+                return 0
+            
+            # Verificar se o status code é diferente de 200
+            if response.status_code != 200:
+                timestamp = datetime.datetime.now().isoformat()
+                self.logger.error(
+                    f"[{timestamp}] API GLPI retornou status {response.status_code} - "
+                    f"group_id: {group_id}, status_id: {status_id}, "
+                    f"start_date: {start_date}, end_date: {end_date}"
+                )
+                return 0
             
             if "Content-Range" in response.headers:
                 total = int(response.headers["Content-Range"].split("/")[-1])
                 return total
             
-            if 200 <= response.status_code < 300:
-                return 0
+            # Se chegou até aqui com status 200 mas sem Content-Range, retornar 0
+            return 0
                 
-            response.raise_for_status()
-            
         except Exception as e:
-            self.logger.error(f"Erro ao buscar contagem de tickets: {e}")
-            return None
+            timestamp = datetime.datetime.now().isoformat()
+            self.logger.error(
+                f"[{timestamp}] Exceção ao buscar contagem de tickets: {str(e)} - "
+                f"group_id: {group_id}, status_id: {status_id}, "
+                f"start_date: {start_date}, end_date: {end_date}"
+            )
+            return 0
         
-        return None
+        return 0
     
     def get_metrics_by_level(self) -> Dict[str, Dict[str, int]]:
         """Retorna métricas de tickets agrupadas por nível de atendimento"""
