@@ -456,7 +456,51 @@ jobs:
         workingDir: ${{ env.FRONTEND_DIR }}
         exitZeroOnChanges: false  # Fail on visual changes
         onlyChanged: true  # Only test changed stories
-        autoAcceptChanges: false  # Require manual approval  # Build and Deploy (only on main branch)
+        autoAcceptChanges: false  # Require manual approval
+
+  # E2E Tests with Playwright (commented until preview environment is available)
+  # e2e-tests:
+  #   name: E2E Tests
+  #   runs-on: ubuntu-latest
+  #   needs: [all-gates-passed]
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v4
+  #
+  #   - name: Set up Node.js
+  #     uses: actions/setup-node@v4
+  #     with:
+  #       node-version: '18'
+  #       cache: 'npm'
+  #       cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
+  #
+  #   - name: Install dependencies
+  #     run: |
+  #       cd ${{ env.FRONTEND_DIR }}
+  #       npm ci
+  #
+  #   - name: Install Playwright browsers
+  #     run: |
+  #       cd ${{ env.FRONTEND_DIR }}
+  #       npx playwright install --with-deps
+  #
+  #   - name: Run Playwright tests
+  #     run: |
+  #       cd ${{ env.FRONTEND_DIR }}
+  #       npm run test:e2e
+  #     env:
+  #       # Add environment variables for preview environment
+  #       PLAYWRIGHT_BASE_URL: ${{ secrets.PREVIEW_URL || 'http://localhost:3001' }}
+  #
+  #   - name: Upload Playwright report
+  #     uses: actions/upload-artifact@v3
+  #     if: always()
+  #     with:
+  #       name: playwright-report
+  #       path: ${{ env.FRONTEND_DIR }}/playwright-report/
+  #       retention-days: 30
+
+  # Build and Deploy (only on main branch)
   build-and-deploy:
     name: Build and Deploy
     runs-on: ubuntu-latest

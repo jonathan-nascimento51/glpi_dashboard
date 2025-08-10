@@ -21,7 +21,11 @@
     "test:ci": "vitest run --coverage --reporter=verbose --reporter=json --outputFile=coverage/test-results.json",
     "gen:api": "orval",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
