@@ -1,4 +1,4 @@
-[tool.black]
+﻿[tool.black]
 line-length = 88
 target-version = ['py39']
 include = '\.pyi?$'
@@ -90,6 +90,8 @@ show_missing = true
 skip_covered = false
 skip_empty = false
 sort = "Cover"
+# Limiares de cobertura mínima
+fail_under = 80
 
 [tool.coverage.html]
 directory = "htmlcov"

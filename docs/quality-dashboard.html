@@ -1,0 +1,313 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Qualidade - GLPI Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+        
+        .metric-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            border-left: 4px solid #3498db;
+            transition: transform 0.2s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .metric-card.success {
+            border-left-color: #27ae60;
+        }
+        
+        .metric-card.warning {
+            border-left-color: #f39c12;
+        }
+        
+        .metric-card.error {
+            border-left-color: #e74c3c;
+        }
+        
+        .metric-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .metric-value.success {
+            color: #27ae60;
+        }
+        
+        .metric-value.warning {
+            color: #f39c12;
+        }
+        
+        .metric-value.error {
+            color: #e74c3c;
+        }
+        
+        .metric-description {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .actions {
+            background: #ecf0f1;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 0 10px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background 0.2s ease;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+        }
+        
+        .btn.success {
+            background: #27ae60;
+        }
+        
+        .btn.success:hover {
+            background: #229954;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-indicator.success {
+            background: #27ae60;
+        }
+        
+        .status-indicator.warning {
+            background: #f39c12;
+        }
+        
+        .status-indicator.error {
+            background: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1> Dashboard de Qualidade</h1>
+            <p>Monitoramento em tempo real dos Quality Gates - GLPI Dashboard</p>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card success">
+                <div class="metric-title">
+                    <span class="status-indicator success"></span>
+                    Cobertura Backend
+                </div>
+                <div class="metric-value success" id="backend-coverage">--</div>
+                <div class="metric-description">Meta:  80% | Atual: Carregando...</div>
+            </div>
+            
+            <div class="metric-card success">
+                <div class="metric-title">
+                    <span class="status-indicator success"></span>
+                    Cobertura Frontend
+                </div>
+                <div class="metric-value success" id="frontend-coverage">--</div>
+                <div class="metric-description">Meta:  80% | Atual: Carregando...</div>
+            </div>
+            
+            <div class="metric-card success">
+                <div class="metric-title">
+                    <span class="status-indicator success"></span>
+                    Issues de Lint
+                </div>
+                <div class="metric-value success" id="lint-issues">--</div>
+                <div class="metric-description">Meta: 0 issues | Backend + Frontend</div>
+            </div>
+            
+            <div class="metric-card success">
+                <div class="metric-title">
+                    <span class="status-indicator success"></span>
+                    Tamanho do Build
+                </div>
+                <div class="metric-value success" id="build-size">--</div>
+                <div class="metric-description">Meta:  5MB | Frontend build otimizado</div>
+            </div>
+            
+            <div class="metric-card success">
+                <div class="metric-title">
+                    <span class="status-indicator success"></span>
+                    Segurança
+                </div>
+                <div class="metric-value success" id="security-score">--</div>
+                <div class="metric-description">Bandit + Safety | Vulnerabilidades detectadas</div>
+            </div>
+            
+            <div class="metric-card success">
+                <div class="metric-title">
+                    <span class="status-indicator success"></span>
+                    Tipos
+                </div>
+                <div class="metric-value success" id="type-coverage">--</div>
+                <div class="metric-description">MyPy + TypeScript | Cobertura de tipos</div>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <h3 style="margin-bottom: 20px; color: #2c3e50;"> Ações Rápidas</h3>
+            <a href="#" class="btn" onclick="runValidation()"> Executar Validação</a>
+            <a href="#" class="btn success" onclick="generateReport()"> Gerar Relatório</a>
+            <a href="#" class="btn" onclick="refreshMetrics()"> Atualizar Métricas</a>
+        </div>
+        
+        <div class="footer">
+            <p>Última atualização: <span id="last-update">--</span> | 
+            Sistema de Qualidade v1.0 | 
+            <a href="docs/METODOLOGIA_REVISAO_CICLOS.md" style="color: #3498db;"> Documentação</a></p>
+        </div>
+    </div>
+    
+    <script>
+        // Simular dados de métricas (em produção, viria de uma API)
+        function updateMetrics() {
+            const metrics = {
+                backendCoverage: 85,
+                frontendCoverage: 78,
+                lintIssues: 3,
+                buildSize: 4.2,
+                securityIssues: 0,
+                typeErrors: 1
+            };
+            
+            // Atualizar valores
+            document.getElementById('backend-coverage').textContent = metrics.backendCoverage + '%';
+            document.getElementById('frontend-coverage').textContent = metrics.frontendCoverage + '%';
+            document.getElementById('lint-issues').textContent = metrics.lintIssues;
+            document.getElementById('build-size').textContent = metrics.buildSize + ' MB';
+            document.getElementById('security-score').textContent = metrics.securityIssues + ' issues';
+            document.getElementById('type-coverage').textContent = metrics.typeErrors + ' errors';
+            
+            // Atualizar cores baseado nos valores
+            updateMetricStatus('backend-coverage', metrics.backendCoverage >= 80);
+            updateMetricStatus('frontend-coverage', metrics.frontendCoverage >= 80);
+            updateMetricStatus('lint-issues', metrics.lintIssues === 0);
+            updateMetricStatus('build-size', metrics.buildSize <= 5);
+            updateMetricStatus('security-score', metrics.securityIssues === 0);
+            updateMetricStatus('type-coverage', metrics.typeErrors === 0);
+            
+            document.getElementById('last-update').textContent = new Date().toLocaleString('pt-BR');
+        }
+        
+        function updateMetricStatus(elementId, isSuccess) {
+            const element = document.getElementById(elementId);
+            const card = element.closest('.metric-card');
+            const indicator = card.querySelector('.status-indicator');
+            
+            // Remover classes existentes
+            element.classList.remove('success', 'warning', 'error');
+            card.classList.remove('success', 'warning', 'error');
+            indicator.classList.remove('success', 'warning', 'error');
+            
+            // Adicionar classe apropriada
+            const statusClass = isSuccess ? 'success' : 'error';
+            element.classList.add(statusClass);
+            card.classList.add(statusClass);
+            indicator.classList.add(statusClass);
+        }
+        
+        function runValidation() {
+            alert(' Executando validação local...\n\nEste comando executaria:\n.\\scripts\\validate-quality-gates.ps1');
+        }
+        
+        function generateReport() {
+            alert(' Gerando relatório de qualidade...\n\nEste comando executaria:\n.\\scripts\\monitor-quality.ps1');
+        }
+        
+        function refreshMetrics() {
+            updateMetrics();
+            alert(' Métricas atualizadas com sucesso!');
+        }
+        
+        // Atualizar métricas ao carregar a página
+        document.addEventListener('DOMContentLoaded', updateMetrics);
+        
+        // Atualizar métricas a cada 30 segundos
+        setInterval(updateMetrics, 30000);
+    </script>
+</body>
+</html>

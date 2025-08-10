@@ -1,22 +1,18 @@
-## 📋 Descrição
+﻿##  Descrição
 
-<!-- Descreva brevemente as mudanças implementadas neste PR -->
+<!-- Descreva brevemente as mudanças implementadas -->
 
-## 🔄 Tipo de Mudança
+### Tipo de Mudança
+- [ ]  Bug fix (mudança que corrige um problema)
+- [ ]  Nova feature (mudança que adiciona funcionalidade)
+- [ ]  Breaking change (mudança que quebra compatibilidade)
+- [ ]  Documentação (mudanças apenas na documentação)
+- [ ]  Refatoração (mudança que não adiciona feature nem corrige bug)
+- [ ]  Performance (mudança que melhora performance)
+- [ ]  Testes (adição ou correção de testes)
+- [ ]  Chore (mudanças em build, CI, dependências, etc.)
 
-<!-- Marque o tipo de mudança com [x] -->
-
-- [ ] 🐛 Bug fix (correção que resolve um problema)
-- [ ] ✨ Nova funcionalidade (mudança que adiciona funcionalidade)
-- [ ] 💥 Breaking change (correção ou funcionalidade que causa mudança incompatível)
-- [ ] 📚 Documentação (mudanças apenas na documentação)
-- [ ] 🎨 Estilo (formatação, ponto e vírgula ausente, etc; sem mudança de código)
-- [ ] ♻️ Refatoração (mudança de código que não corrige bug nem adiciona funcionalidade)
-- [ ] ⚡ Performance (mudança que melhora performance)
-- [ ] ✅ Testes (adição ou correção de testes)
-- [ ] 🔧 Chore (mudanças no processo de build, ferramentas auxiliares, etc)
-
-## 🧪 Como Testar
+##  Como Testar
 
 <!-- Descreva os passos para testar as mudanças -->
 
@@ -24,49 +20,48 @@
 2. 
 3. 
 
-## 📸 Screenshots (se aplicável)
+##  Checklist de Qualidade
 
-<!-- Adicione screenshots para mudanças visuais -->
-
-## ✅ Checklist
-
-<!-- Marque todos os itens aplicáveis com [x] -->
-
-### Código
-- [ ] Meu código segue as diretrizes de estilo do projeto
-- [ ] Realizei uma auto-revisão do meu código
-- [ ] Comentei meu código, especialmente em áreas difíceis de entender
-- [ ] Minhas mudanças não geram novos warnings
-- [ ] Adicionei testes que provam que minha correção é efetiva ou que minha funcionalidade funciona
-
-### Backend (Python)
-- [ ] Executei `flake8 backend/` sem erros
-- [ ] Executei `black --check backend/` sem erros
-- [ ] Executei `isort --check-only backend/` sem erros
-- [ ] Executei `pytest backend/tests/` e todos os testes passaram
-- [ ] Executei `bandit -r backend/` sem problemas críticos
-- [ ] A cobertura de testes não diminuiu significativamente
+### Backend (Python/FastAPI)
+- [ ]  **Lint OK**: Executei `ruff check` sem erros
+- [ ]  **Format OK**: Executei `ruff format --check` sem erros
+- [ ]  **Types OK**: Executei `mypy` sem erros
+- [ ]  **Tests OK**: Executei `pytest` e todos os testes passaram
+- [ ]  A cobertura de testes não diminuiu significativamente
+- [ ]  Executei `bandit` e `safety` sem vulnerabilidades críticas
 
 ### Frontend (TypeScript/React)
-- [ ] Executei `npm run lint` sem erros
-- [ ] Executei `npm run format:check` sem erros
-- [ ] Executei `npm run type-check` sem erros
-- [ ] Executei `npm test` e todos os testes passaram
-- [ ] Executei `npm run build` com sucesso
-- [ ] Executei `npm run check:drift` sem detectar drift da API
-- [ ] A cobertura de testes atende aos limites mínimos (80% global, 85% components/services, 90% hooks)
+- [ ]  **Lint OK**: Executei `npm run lint` sem erros
+- [ ]  **Format OK**: Executei `npm run format:check` sem erros
+- [ ]  **Types OK**: Executei `npm run type-check` sem erros
+- [ ]  **Tests OK**: Executei `npm test` e todos os testes passaram
+- [ ]  **Build OK**: Executei `npm run build` com sucesso
+- [ ]  **Storybook OK**: Executei `npm run storybook:build` com sucesso
+- [ ]  **Orval sem drift**: Executei `npm run check:drift` sem detectar drift da API
+- [ ]  A cobertura de testes atende aos limites mínimos (80% global, 85% components/services, 90% hooks)
+
+### CI/CD & Quality Gates
+- [ ]  **CI Verde**: O pipeline CI passou completamente em todos os jobs
+- [ ]  **Quality Gates**: Todos os quality gates (SonarQube, segurança, etc.) passaram
+- [ ]  **Visual Regression**: Chromatic passou ou mudanças visuais foram aprovadas
+- [ ]  **Integration Tests**: Testes de integração passaram
+- [ ]  **Schemathesis**: Fuzzing da API passou sem erros críticos
+- [ ]  **Security Scan**: Varredura de segurança passou
+- [ ]  **Performance**: Não há degradação significativa de performance
 
 ### Documentação
-- [ ] Atualizei a documentação relevante
-- [ ] Atualizei comentários no código quando necessário
-- [ ] Adicionei/atualizei docstrings para novas funções/classes
+- [ ]  Atualizei a documentação relevante
+- [ ]  Atualizei comentários no código quando necessário
+- [ ]  Adicionei/atualizei docstrings para novas funções/classes
+- [ ]  Atualizei o Storybook com novos componentes/stories
 
-### CI/CD
-- [ ] O pipeline CI passou completamente
-- [ ] Não há conflitos de merge
-- [ ] O branch está atualizado com a branch base
+### Git & Merge
+- [ ]  Não há conflitos de merge
+- [ ]  O branch está atualizado com a branch base
+- [ ]  Commit messages seguem o padrão conventional commits
+- [ ]  PR está adequadamente taggeado e categorizado
 
-## 🔗 Issues Relacionadas
+##  Issues Relacionadas
 
 <!-- Referencie issues relacionadas usando "Closes #123" ou "Fixes #123" -->
 
@@ -74,11 +69,15 @@ Closes #
 Fixes #
 Related to #
 
-## 📝 Notas Adicionais
+##  Screenshots/Videos
+
+<!-- Adicione screenshots ou videos das mudanças visuais, se aplicável -->
+
+##  Notas Adicionais
 
 <!-- Adicione qualquer informação adicional relevante -->
 
-## 🔍 Revisão
+##  Revisão
 
 <!-- Para os revisores -->
 
@@ -88,14 +87,24 @@ Related to #
 - [ ] Verificar se não há vazamentos de memória
 - [ ] Verificar se as mudanças não afetam a performance
 - [ ] Verificar se a segurança não foi comprometida
+- [ ] Verificar se as feature flags estão sendo usadas corretamente
 
 ### Checklist do Revisor
-- [ ] O código está limpo e bem estruturado
-- [ ] Os testes são adequados e passam
-- [ ] A documentação está atualizada
-- [ ] Não há problemas de segurança óbvios
-- [ ] O PR resolve o problema descrito
+- [ ]  **Código Limpo**: O código está limpo e bem estruturado
+- [ ]  **Testes Adequados**: Os testes são adequados e passam
+- [ ]  **Documentação**: A documentação está atualizada
+- [ ]  **Segurança**: Não há problemas de segurança óbvios
+- [ ]  **Resolve o Problema**: O PR resolve o problema descrito
+- [ ]  **Performance**: Não há degradação de performance
+- [ ]  **UI/UX**: Mudanças visuais estão consistentes com o design system
 
 ---
 
-**Lembrete**: Este PR será automaticamente testado pelo CI. Certifique-se de que todos os checks passem antes de solicitar revisão.
+** Lembrete Importante**: 
+- Este PR será automaticamente testado pelo CI com múltiplos quality gates
+- **Todos os checks devem estar  VERDES** antes de solicitar revisão
+- Quality gates incluem: lint, types, tests, security scan, visual regression
+- PRs com quality gates falhando serão **automaticamente bloqueados**
+- Para mudanças visuais, aprovação explícita no Chromatic é **obrigatória**
+
+** Pipeline Status**: Verifique se todos os jobs do CI estão passando antes de marcar como ready for review.

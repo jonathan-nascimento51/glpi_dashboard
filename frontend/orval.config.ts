@@ -1,4 +1,4 @@
-export default {
+﻿export default {
   api: {
     input: process.env.OPENAPI_URL ?? 'http://localhost:8000/openapi.json',
     output: {
@@ -7,7 +7,15 @@ export default {
       client: 'react-query',
       override: {
         mutator: { path: 'src/api/http.ts', name: 'customInstance' }
-      }
+      },
+      // Configurações para verificação de drift
+      clean: true,
+      prettier: true,
+      tsconfig: './tsconfig.json'
+    },
+    // Configurações para verificação de drift
+    hooks: {
+      afterAllFilesWrite: 'prettier --write',
     }
   }
 }

@@ -62,3 +62,27 @@ test_local_*
 debug_local_*
 *storybook.log
 storybook-static
+
+# Arquivos temporários e de desenvolvimento
+temp/
+*.log
+*.tmp
+*.cache
+
+# Configurações locais
+config/*.local.*
+config/.env.*
+
+# Assets temporários
+docs/assets/*.tmp
+
+# Arquivos de build e temporários
+frontend/dist/
+frontend/storybook-static/
+TEMP_INFO/
+*.log.large
+debug_*.log
+
+# Arquivos de análise temporários
+screenshot_*.png
+analysis_*.png

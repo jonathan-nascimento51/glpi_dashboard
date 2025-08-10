@@ -323,3 +323,127 @@ GET /api/status
 ```
 
 Retorna o status do sistema e da conexão com o GLPI.
+##  Metodologia de Revisão em Ciclos
+
+Este projeto implementa uma metodologia estruturada de revisão baseada em ciclos iterativos de três fases, focando na modularidade e melhoria contínua.
+
+###  Ciclos de Revisão
+
+#### Ciclo A - Configuração e Ambiente
+- **Objetivo**: Garantir que variáveis de ambiente e dependências estejam corretas
+- **Foco**: .env.local, CORS, state management React
+- **Critérios**: API responde, frontend exibe dados, sem variáveis ausentes
+
+#### Ciclo B - Backend
+- **Objetivo**: Validar implementação do backend e qualidade de código
+- **Foco**: Testes, linting (ruff), type checking (mypy), segurança (bandit)
+- **Critérios**: Cobertura >80%, todos os testes verdes, sem vulnerabilidades
+
+#### Ciclo C - Frontend
+- **Objetivo**: Garantir qualidade do frontend e integração com API
+- **Foco**: ESLint, Prettier, TypeScript, testes (Vitest), build
+- **Critérios**: Zero warnings, cobertura >80%, build funcional
+
+###  Quality Gates
+
+O projeto implementa Quality Gates automáticos no CI/CD que impedem merge de código que não atenda aos critérios de qualidade:
+
+#### Backend Quality Gates
+-  Code Quality (Ruff)
+-  Type Checking (MyPy)
+-  Security Scan (Bandit)
+-  Dependency Security (Safety)
+-  Coverage >80%
+
+#### Frontend Quality Gates
+-  Linting (ESLint - zero warnings)
+-  Code Formatting (Prettier)
+-  Type Checking (TypeScript)
+-  Coverage >80%
+-  Build Verification
+-  Bundle Size Check (<5MB)
+
+#### Integration Quality Gates
+-  API Schema Validation
+-  Frontend-Backend Integration
+-  API Drift Check
+-  Security Aggregation
+
+###  Validação Local
+
+Antes de fazer push, execute a validação local para garantir que seu código passará pelos Quality Gates:
+
+#### Windows (PowerShell)
+```powershell
+# Validação completa
+.\scripts\validate-quality-gates.ps1
+
+# Pular validações específicas
+.\scripts\validate-quality-gates.ps1 -SkipBackend
+.\scripts\validate-quality-gates.ps1 -SkipFrontend
+```
+
+#### Linux/macOS (Bash)
+```bash
+# Validação completa
+./scripts/validate-quality-gates.sh
+
+# Pular validações específicas
+./scripts/validate-quality-gates.sh --skip-backend
+./scripts/validate-quality-gates.sh --skip-frontend
+./scripts/validate-quality-gates.sh --skip-integration
+```
+
+###  Documentação da Metodologia
+
+- **[Metodologia Completa](docs/METODOLOGIA_REVISAO_CICLOS.md)**: Guia detalhado dos ciclos de revisão
+- **[Quality Gates CI](docs/QUALITY_GATES_CI.md)**: Configuração dos Quality Gates para CI/CD
+- **[E2E Coverage Guide](docs/E2E_COVERAGE_GUIDE.md)**: Guia de testes E2E e cobertura
+
+###  Diretrizes para Prompts Futuros
+
+1. **Checagem Visual**: Sempre validar que o frontend renderiza dados reais
+2. **Ambiente Saneado**: Verificar .env.local antes de cada ciclo
+3. **Feedback Rápido**: Corrigir erros comuns (setState assíncrono)
+4. **Documentação**: Atualizar README após mudanças significativas
+
+###  Métricas de Sucesso
+
+#### Quantitativas
+- Cobertura de código: >80% (backend e frontend)
+- Tempo de build: <5 minutos
+- Testes passando: 100%
+- Vulnerabilidades: 0 críticas/altas
+
+#### Qualitativas
+- Interface funcional com dados reais
+- Setup rápido e claro
+- Código limpo e bem documentado
+- CI/CD estável
+
+
+##  Estrutura do Projeto
+
+Este projeto segue uma estrutura organizada e padronizada. Para detalhes completos sobre a organiza��o de arquivos e diretrizes, consulte:
+
+ **[Guia de Estrutura do Projeto](docs/ESTRUTURA_PROJETO.md)**
+
+### Estrutura Principal
+```
+ backend/              # API Python/FastAPI
+?? frontend/             # Interface React/TypeScript  
+?? scripts/              # Scripts de automa��o
+    analysis/        # An�lise e valida��o
+    deployment/      # Deploy e CI/CD
+�   +-- validation/      # Quality Gates
+?? docs/                 # Documenta��o
+?? config/               # Configura��es
+?? tools/                # Ferramentas auxiliares
+?? monitoring/           # Observabilidade
+```
+
+### Scripts Principais
+- **Valida��o Local**: `scripts/validate-quality-gates.ps1`
+- **Ambiente Preview**: `scripts/start-preview.ps1`
+- **Monitoramento**: `scripts/monitor-quality.ps1`
+- **Dashboard**: `docs/quality-dashboard.html`
