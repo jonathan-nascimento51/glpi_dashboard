@@ -20,6 +20,7 @@
     "test:watch": "vitest --watch",
     "test:ci": "vitest run --coverage --reporter=verbose --reporter=json --outputFile=coverage/test-results.json",
     "gen:api": "orval",
+    "check:drift": "npm run gen:api && git diff --exit-code --name-only src/api/ || (echo 'API drift detected! Run npm run gen:api and commit changes.' && exit 1)",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test:e2e": "playwright test",

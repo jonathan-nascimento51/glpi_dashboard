@@ -53,7 +53,8 @@
 - [ ] Executei `npm run type-check` sem erros
 - [ ] Executei `npm test` e todos os testes passaram
 - [ ] Executei `npm run build` com sucesso
-- [ ] A cobertura de testes não diminuiu significativamente
+- [ ] Executei `npm run check:drift` sem detectar drift da API
+- [ ] A cobertura de testes atende aos limites mínimos (80% global, 85% components/services, 90% hooks)
 
 ### Documentação
 - [ ] Atualizei a documentação relevante

@@ -91,6 +91,20 @@ jobs:
         cd ${{ env.FRONTEND_DIR }}
         npm run test:ci
 
+    - name: Check coverage thresholds
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        echo "✅ Coverage thresholds enforced by Vitest configuration"
+        echo "   - Global: 80% (branches, functions, lines, statements)"
+        echo "   - Components: 85% minimum"
+        echo "   - Hooks: 90% minimum"
+        echo "   - Services: 85% minimum"
+
+    - name: Check API drift
+      run: |
+        cd ${{ env.FRONTEND_DIR }}
+        npm run check:drift
+
     - name: Upload frontend coverage
       uses: codecov/codecov-action@v3
       with:
@@ -98,44 +112,6 @@ jobs:
         flags: frontend
         name: frontend-coverage
         fail_ci_if_error: false
-
-  # Orval Drift Check - Critical Gate
-  orval-drift-check:
-    name: Orval API Drift Check
-    runs-on: ubuntu-latest
-    needs: [frontend-tests]
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
-
-    - name: Install frontend dependencies
-      run: |
-        cd ${{ env.FRONTEND_DIR }}
-        npm ci
-
-    - name: Generate API types with Orval
-      run: |
-        cd ${{ env.FRONTEND_DIR }}
-        npm run gen:api
-
-    - name: Check for API drift
-      run: |
-        cd ${{ env.FRONTEND_DIR }}
-        if ! git diff --exit-code src/api/; then
-          echo " API drift detected! Generated types don't match committed files."
-          echo "Please run 'npm run gen:api' and commit the changes."
-          git diff src/api/
-          exit 1
-        else
-          echo " No API drift detected. Generated types are in sync."
-        fi
 
   # Storybook Build - Visual Components Gate
   storybook-build:

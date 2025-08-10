@@ -1,0 +1,366 @@
+<testsuites id="" name="" tests="42" failures="0" skipped="42" errors="0" time="0.37142399999999975">
+<testsuite name="api-error-handling.spec.ts" timestamp="2025-08-10T00:13:58.169Z" hostname="chromium" tests="4" failures="0" skipped="4" time="0" errors="0">
+<testcase name="API Error Handling › should show error state when API is down" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="API Error Handling › should allow retry after API error" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="API Error Handling › should show network error state when offline" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="API Error Handling › should handle partial API failures gracefully" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="kpi-updates.spec.ts" timestamp="2025-08-10T00:13:58.169Z" hostname="chromium" tests="2" failures="0" skipped="2" time="0" errors="0">
+<testcase name="KPI Updates on Period Selection › should update KPIs when selecting different time periods" classname="kpi-updates.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="KPI Updates on Period Selection › should show loading state during KPI updates" classname="kpi-updates.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="api-error-handling.spec.ts" timestamp="2025-08-10T00:13:58.169Z" hostname="firefox" tests="4" failures="0" skipped="4" time="0" errors="0">
+<testcase name="API Error Handling › should show error state when API is down" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="API Error Handling › should allow retry after API error" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="API Error Handling › should show network error state when offline" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="API Error Handling › should handle partial API failures gracefully" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="kpi-updates.spec.ts" timestamp="2025-08-10T00:13:58.169Z" hostname="firefox" tests="2" failures="0" skipped="2" time="0" errors="0">
+<testcase name="KPI Updates on Period Selection › should update KPIs when selecting different time periods" classname="kpi-updates.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="KPI Updates on Period Selection › should show loading state during KPI updates" classname="kpi-updates.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="api-error-handling.spec.ts" timestamp="2025-08-10T00:13:58.169Z" hostname="webkit" tests="4" failures="0" skipped="4" time="0" errors="0">
+<testcase name="API Error Handling › should show error state when API is down" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="API Error Handling › should allow retry after API error" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="API Error Handling › should show network error state when offline" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="API Error Handling › should handle partial API failures gracefully" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="kpi-updates.spec.ts" timestamp="2025-08-10T00:13:58.169Z" hostname="webkit" tests="2" failures="0" skipped="2" time="0" errors="0">
+<testcase name="KPI Updates on Period Selection › should update KPIs when selecting different time periods" classname="kpi-updates.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="KPI Updates on Period Selection › should show loading state during KPI updates" classname="kpi-updates.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="api-error-handling.spec.ts" timestamp="2025-08-10T00:13:58.169Z" hostname="Mobile Chrome" tests="4" failures="0" skipped="4" time="0" errors="0">
+<testcase name="API Error Handling › should show error state when API is down" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="API Error Handling › should allow retry after API error" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="API Error Handling › should show network error state when offline" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="API Error Handling › should handle partial API failures gracefully" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="kpi-updates.spec.ts" timestamp="2025-08-10T00:13:58.169Z" hostname="Mobile Chrome" tests="2" failures="0" skipped="2" time="0" errors="0">
+<testcase name="KPI Updates on Period Selection › should update KPIs when selecting different time periods" classname="kpi-updates.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="KPI Updates on Period Selection › should show loading state during KPI updates" classname="kpi-updates.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="api-error-handling.spec.ts" timestamp="2025-08-10T00:13:58.169Z" hostname="Mobile Safari" tests="4" failures="0" skipped="4" time="0" errors="0">
+<testcase name="API Error Handling › should show error state when API is down" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="API Error Handling › should allow retry after API error" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="API Error Handling › should show network error state when offline" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="API Error Handling › should handle partial API failures gracefully" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="kpi-updates.spec.ts" timestamp="2025-08-10T00:13:58.169Z" hostname="Mobile Safari" tests="2" failures="0" skipped="2" time="0" errors="0">
+<testcase name="KPI Updates on Period Selection › should update KPIs when selecting different time periods" classname="kpi-updates.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="KPI Updates on Period Selection › should show loading state during KPI updates" classname="kpi-updates.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="api-error-handling.spec.ts" timestamp="2025-08-10T00:13:58.169Z" hostname="Microsoft Edge" tests="4" failures="0" skipped="4" time="0" errors="0">
+<testcase name="API Error Handling › should show error state when API is down" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="API Error Handling › should allow retry after API error" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="API Error Handling › should show network error state when offline" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="API Error Handling › should handle partial API failures gracefully" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="kpi-updates.spec.ts" timestamp="2025-08-10T00:13:58.169Z" hostname="Microsoft Edge" tests="2" failures="0" skipped="2" time="0" errors="0">
+<testcase name="KPI Updates on Period Selection › should update KPIs when selecting different time periods" classname="kpi-updates.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="KPI Updates on Period Selection › should show loading state during KPI updates" classname="kpi-updates.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="api-error-handling.spec.ts" timestamp="2025-08-10T00:13:58.169Z" hostname="Google Chrome" tests="4" failures="0" skipped="4" time="0" errors="0">
+<testcase name="API Error Handling › should show error state when API is down" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="API Error Handling › should allow retry after API error" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="API Error Handling › should show network error state when offline" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="API Error Handling › should handle partial API failures gracefully" classname="api-error-handling.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="kpi-updates.spec.ts" timestamp="2025-08-10T00:13:58.169Z" hostname="Google Chrome" tests="2" failures="0" skipped="2" time="0" errors="0">
+<testcase name="KPI Updates on Period Selection › should update KPIs when selecting different time periods" classname="kpi-updates.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="KPI Updates on Period Selection › should show loading state during KPI updates" classname="kpi-updates.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+</testsuites>
