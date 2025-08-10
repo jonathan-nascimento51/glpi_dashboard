@@ -154,7 +154,6 @@ exclude_lines =
 format = text
 
 # Configurações de ordenação
-sort = Name
 
 [html]
 # Configurações de relatório HTML

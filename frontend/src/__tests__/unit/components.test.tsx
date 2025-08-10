@@ -16,20 +16,25 @@ const Button = ({ children, onClick, disabled, variant = 'primary', size = 'medi
   </button>
 );
 
-const Input = ({ label, error, value, onChange, type = 'text', placeholder, ...props }: any) => (
-  <div className="input-group">
-    {label && <label>{label}</label>}
-    <input
-      type={type}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      className={error ? 'input-error' : 'input'}
-      {...props}
-    />
-    {error && <span className="error-message">{error}</span>}
-  </div>
-);
+const Input = ({ label, error, value, onChange, type = 'text', placeholder, ...props }: any) => {
+  const inputId = label ? `input-${label.toLowerCase().replace(/\s+/g, '-')}` : undefined;
+  return (
+    <div className="input-group">
+      {label && <label htmlFor={inputId}>{label}</label>}
+      <input
+        id={inputId}
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className={error ? 'input input-error' : 'input'}
+        role={type === 'password' ? undefined : 'textbox'}
+        {...props}
+      />
+      {error && <span className="error-message">{error}</span>}
+    </div>
+  );
+};
 
 const Select = ({ label, options, value, onChange, error, placeholder, ...props }: any) => (
   <div className="select-group">
@@ -278,7 +283,8 @@ describe('Input Component', () => {
 
   test('renders different input types', () => {
     render(<Input type="password" />);
-    expect(screen.getByRole('textbox')).toHaveAttribute('type', 'password');
+    const passwordInput = screen.getByDisplayValue('');
+    expect(passwordInput).toHaveAttribute('type', 'password');
   });
 });
 
@@ -669,3 +675,4 @@ describe('EmptyState Component', () => {
     expect(screen.getByTestId('empty-icon')).toBeInTheDocument();
   });
 });
+

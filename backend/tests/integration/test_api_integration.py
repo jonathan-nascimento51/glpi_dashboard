@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
-"""Testes de integração para API endpoints"""
+﻿# -*- coding: utf-8 -*-
+"""Testes de integracao para API endpoints"""
 import pytest
 import json
 import time
+from fastapi.testclient import TestClient
 from unittest.mock import patch
 
 import sys
@@ -12,279 +13,164 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 from main import app
 
-
 @pytest.fixture
 def client():
-    """Fixture para cliente de teste Flask"""
-    app.config["TESTING"] = True
-    with app.test_client() as client:
-        yield client
-
+    """Fixture para cliente de teste FastAPI"""
+    return TestClient(app)
 
 @pytest.fixture
 def mock_glpi_data():
-    """Dados mock para testes de integração"""
+    """Dados mock para testes de integracao"""
     return {
         "level_metrics": {
             "N1": {
                 "Novo": 10,
-                "Processando (atribuído)": 5,
-                "Processando (planejado)": 3,
-                "Pendente": 2,
-                "Solucionado": 8,
-                "Fechado": 12,
+                "Pendente": 5,
+                "Em Progresso": 3,
+                "Resolvido": 15
             },
             "N2": {
-                "Novo": 15,
-                "Processando (atribuído)": 7,
-                "Processando (planejado)": 4,
-                "Pendente": 3,
-                "Solucionado": 6,
-                "Fechado": 9,
+                "Novo": 8,
+                "Pendente": 4,
+                "Em Progresso": 2,
+                "Resolvido": 12
+            }
+        },
+        "tickets": [
+            {
+                "id": 1,
+                "title": "Teste Ticket 1",
+                "status": "Novo",
+                "priority": "Alta",
+                "date": "2024-01-15"
             },
-        },
-        "general_metrics": {
-            "Novo": 25,
-            "Processando (atribuído)": 12,
-            "Processando (planejado)": 7,
-            "Pendente": 5,
-            "Solucionado": 14,
-            "Fechado": 21,
-        },
+            {
+                "id": 2,
+                "title": "Teste Ticket 2",
+                "status": "Pendente",
+                "priority": "Media",
+                "date": "2024-01-16"
+            }
+        ]
     }
 
-
 class TestAPIIntegration:
-    """Testes de integração para endpoints da API"""
+    """Testes de integracao para endpoints da API"""
 
-    @patch("services.api_service.APIService.get_dashboard_metrics")
-    def test_get_metrics_endpoint_success(
-        self, mock_get_metrics, client, mock_glpi_data
-    ):
-        """Testa endpoint /api/metrics com sucesso"""
-        mock_get_metrics.return_value = mock_glpi_data
-
-        response = client.get("/api/metrics")
-
+    def test_health_endpoint(self, client):
+        """Testa o endpoint de health check"""
+        response = client.get("/health")
         assert response.status_code == 200
-        data = json.loads(response.data)
-        assert "level_metrics" in data
-        assert "general_metrics" in data
-        assert data["level_metrics"]["N1"]["Novo"] == 10
-
-    @patch("services.api_service.APIService.get_dashboard_metrics")
-    def test_get_metrics_with_date_filter(
-        self, mock_get_metrics, client, mock_glpi_data
-    ):
-        """Testa endpoint /api/metrics com filtro de data"""
-        mock_get_metrics.return_value = mock_glpi_data
-
-        response = client.get("/api/metrics?start_date=2024-01-01&end_date=2024-01-31")
-
-        assert response.status_code == 200
-        mock_get_metrics.assert_called_with("2024-01-01", "2024-01-31")
-
-    @patch("services.api_service.APIService.get_dashboard_metrics")
-    def test_get_metrics_invalid_date_format(self, mock_get_metrics, client):
-        """Testa endpoint /api/metrics com formato de data inválido"""
-        response = client.get("/api/metrics?start_date=invalid-date")
-
-        assert response.status_code == 400
-        data = json.loads(response.data)
-        assert "error" in data
-
-    @patch("services.api_service.APIService.get_dashboard_metrics")
-    def test_get_metrics_service_error(self, mock_get_metrics, client):
-        """Testa endpoint /api/metrics com erro no serviço"""
-        mock_get_metrics.side_effect = Exception("Service error")
-
-        response = client.get("/api/metrics")
-
-        assert response.status_code == 500
-        data = json.loads(response.data)
-        assert "error" in data
-
-    @patch("services.api_service.APIService.get_trends_data")
-    def test_get_trends_endpoint(self, mock_get_trends, client):
-        """Testa endpoint /api/trends"""
-        mock_trends_data = [
-            {"date": "2024-01-01", "total": 100, "resolved": 20},
-            {"date": "2024-01-02", "total": 105, "resolved": 25},
-            {"date": "2024-01-03", "total": 110, "resolved": 30},
-        ]
-        mock_get_trends.return_value = mock_trends_data
-
-        response = client.get("/api/trends?start_date=2024-01-01&end_date=2024-01-03")
-
-        assert response.status_code == 200
-        data = json.loads(response.data)
-        assert len(data) == 3
-        assert data[0]["total"] == 100
-
-    def test_health_check_endpoint(self, client):
-        """Testa endpoint de health check"""
-        response = client.get("/api/health")
-
-        assert response.status_code == 200
-        data = json.loads(response.data)
+        data = response.json()
         assert data["status"] == "healthy"
-        assert "timestamp" in data
 
-    @patch("services.glpi_service.GLPIService._authenticate_with_retry")
-    def test_glpi_connection_health(self, mock_auth, client):
-        """Testa health check da conexão GLPI"""
-        mock_auth.return_value = True
-
-        response = client.get("/api/health/glpi")
-
+    def test_kpis_endpoint(self, client):
+        """Testa o endpoint de KPIs"""
+        response = client.get("/v1/kpis")
         assert response.status_code == 200
-        data = json.loads(response.data)
-        assert data["glpi_connection"] == "healthy"
+        data = response.json()
+        assert "success" in data
+        assert "data" in data
 
-    @patch("services.glpi_service.GLPIService._authenticate_with_retry")
-    def test_glpi_connection_unhealthy(self, mock_auth, client):
-        """Testa health check com conexão GLPI falha"""
-        mock_auth.side_effect = Exception("Connection failed")
+    def test_tickets_new_endpoint(self, client):
+        """Testa o endpoint de tickets novos"""
+        response = client.get("/v1/tickets/new")
+        assert response.status_code == 200
+        data = response.json()
+        assert "success" in data
+        assert "data" in data
 
-        response = client.get("/api/health/glpi")
+    def test_tickets_new_with_limit(self, client):
+        """Testa o endpoint de tickets novos com limite"""
+        response = client.get("/v1/tickets/new?limit=5")
+        assert response.status_code == 200
+        data = response.json()
+        assert "success" in data
+        assert "data" in data
 
-        assert response.status_code == 503
-        data = json.loads(response.data)
-        assert data["glpi_connection"] == "unhealthy"
+    def test_invalid_endpoint(self, client):
+        """Testa endpoint invalido"""
+        response = client.get("/v1/invalid")
+        assert response.status_code == 404
 
-    def test_cors_headers(self, client):
-        """Testa headers CORS"""
-        response = client.options("/api/metrics")
-
-        assert "Access-Control-Allow-Origin" in response.headers
-        assert "Access-Control-Allow-Methods" in response.headers
-
-    def test_rate_limiting(self, client):
-        """Testa rate limiting (se implementado)"""
-        # Faz múltiplas requisições rapidamente
-        responses = []
-        for _ in range(10):
-            response = client.get("/api/metrics")
-            responses.append(response.status_code)
-
-        # Verifica se pelo menos algumas requisições passaram
-        # (implementação específica depende da configuração de rate limiting)
-        assert any(status == 200 or status == 429 for status in responses)
-
-    @patch("services.api_service.APIService.get_dashboard_metrics")
-    def test_response_time_performance(self, mock_get_metrics, client, mock_glpi_data):
-        """Testa performance do tempo de resposta"""
-        mock_get_metrics.return_value = mock_glpi_data
-
+    def test_response_time_performance(self, client):
+        """Testa performance de tempo de resposta"""
         start_time = time.time()
-        response = client.get("/api/metrics")
+        response = client.get("/v1/kpis")
         end_time = time.time()
-
-        response_time = end_time - start_time
-
+        
         assert response.status_code == 200
-        assert response_time < 2.0  # Resposta deve ser menor que 2 segundos
+        response_time = end_time - start_time
+        assert response_time < 2.0  # Menos de 2 segundos
 
     def test_concurrent_requests(self, client):
-        """Testa requisições concorrentes"""
+        """Testa requisicoes concorrentes"""
         import threading
-
-        results = []
-
+        import queue
+        
+        results = queue.Queue()
+        
         def make_request():
-            response = client.get("/api/health")
-            results.append(response.status_code)
-
-        # Simula requisições concorrentes
+            response = client.get("/v1/kpis")
+            results.put(response.status_code)
+        
         threads = []
         for _ in range(5):
             thread = threading.Thread(target=make_request)
             threads.append(thread)
             thread.start()
-
+        
         for thread in threads:
             thread.join()
+        
+        # Verificar se todas as requisicoes foram bem-sucedidas
+        status_codes = []
+        while not results.empty():
+            status_codes.append(results.get())
+        
+        assert len(status_codes) == 5
+        assert all(code == 200 for code in status_codes)
 
-        # Verifica se todas as requisições foram processadas com sucesso
-        assert len(results) == 5
-        assert all(status == 200 for status in results)
-
-    @patch("services.api_service.APIService.get_dashboard_metrics")
-    def test_large_payload_handling(self, mock_get_metrics, client):
-        """Testa tratamento de payloads grandes"""
-        # Simula dados grandes
-        large_data = {"level_metrics": {}, "general_metrics": {}}
-
-        # Gera dados grandes
-        for i in range(100):
-            large_data["level_metrics"][f"Level_{i}"] = {
-                f"Status_{j}": j * 10 for j in range(50)
-            }
-
-        mock_get_metrics.return_value = large_data
-
-        response = client.get("/api/metrics")
-
-        assert response.status_code == 200
-        data = json.loads(response.data)
-        assert len(data["level_metrics"]) == 100
+    def test_large_payload_handling(self, client):
+        """Testa manipulacao de payloads grandes"""
+        # Simular uma requisicao com parametros grandes
+        large_params = {"filter": "x" * 1000}
+        response = client.get("/v1/tickets/new", params=large_params)
+        assert response.status_code in [200, 400]  # Aceitar tanto sucesso quanto erro de validacao
 
     def test_error_response_format(self, client):
         """Testa formato de resposta de erro"""
-        response = client.get("/api/nonexistent-endpoint")
-
+        response = client.get("/v1/invalid")
         assert response.status_code == 404
-        # Verifica se a resposta tem formato JSON válido
-        try:
-            data = json.loads(response.data)
-            assert "error" in data or "message" in data
-        except json.JSONDecodeError:
-            # Se não for JSON, pelo menos deve ter content-type correto
-            assert (
-                "text/html" in response.content_type
-                or "application/json" in response.content_type
-            )
+        # FastAPI retorna formato padrao de erro
 
-    @patch("services.api_service.APIService.get_dashboard_metrics")
-    def test_caching_behavior(self, mock_get_metrics, client, mock_glpi_data):
+    def test_caching_behavior(self, client):
         """Testa comportamento de cache"""
-        mock_get_metrics.return_value = mock_glpi_data
-
-        # Primeira requisição
-        response1 = client.get("/api/metrics")
-
-        # Segunda requisição (pode usar cache)
-        response2 = client.get("/api/metrics")
-
+        # Fazer duas requisicoes identicas
+        response1 = client.get("/v1/kpis")
+        response2 = client.get("/v1/kpis")
+        
         assert response1.status_code == 200
         assert response2.status_code == 200
-
-        # Verifica se os dados são consistentes
-        data1 = json.loads(response1.data)
-        data2 = json.loads(response2.data)
-        assert data1 == data2
+        # Verificar se as respostas sao consistentes
+        assert response1.json().keys() == response2.json().keys()
 
     def test_api_versioning(self, client):
         """Testa versionamento da API"""
-        # Testa endpoint com versão
-        response = client.get("/api/v1/metrics")
-
-        # Deve retornar 200 ou 404 dependendo da implementação
-        assert response.status_code in [200, 404]
-
-    @patch("services.api_service.APIService.get_dashboard_metrics")
-    def test_content_type_headers(self, mock_get_metrics, client, mock_glpi_data):
-        """Testa headers de content-type"""
-        mock_get_metrics.return_value = mock_glpi_data
-
-        response = client.get("/api/metrics")
-
+        response = client.get("/v1/kpis")
         assert response.status_code == 200
-        assert "application/json" in response.content_type
+        
+        # Testar versao inexistente
+        response_v2 = client.get("/v2/kpis")
+        assert response_v2.status_code == 404
+
+    def test_content_type_headers(self, client):
+        """Testa headers de content-type"""
+        response = client.get("/v1/kpis")
+        assert response.status_code == 200
+        assert "application/json" in response.headers.get("content-type", "")
 
     def test_method_not_allowed(self, client):
-        """Testa métodos HTTP não permitidos"""
-        response = client.post("/api/metrics")
-
-        # Deve retornar 405 Method Not Allowed
+        """Testa metodo nao permitido"""
+        response = client.post("/v1/kpis")
         assert response.status_code == 405

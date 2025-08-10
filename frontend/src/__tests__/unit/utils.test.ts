@@ -1,5 +1,30 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
+// Mock do localStorage
+const localStorageMock = (() => {
+  let store: Record<string, string> = {};
+  
+  return {
+    getItem: (key: string) => {
+      return store[key] || null;
+    },
+    setItem: (key: string, value: string) => {
+      store[key] = value.toString();
+    },
+    removeItem: (key: string) => {
+      delete store[key];
+    },
+    clear: () => {
+      store = {};
+    }
+  };
+})();
+
+// Aplicar o mock globalmente
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock
+});
+
 // Utilitários de formatação
 export const formatters = {
   // Formatação de data
@@ -95,15 +120,15 @@ export const formatters = {
   }
 };
 
-// Utilitários de validação
+// Utilitários de Valida��o
 export const validators = {
-  // Validação de email
+  // Valida��o de email
   isValidEmail: (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@\.]+(?:\.[^\s@\.]+)*@[^\s@\.]+(?:\.[^\s@\.]+)+$/;
     return emailRegex.test(email);
   },
   
-  // Validação de senha
+  // Valida��o de senha
   isValidPassword: (password: string): { valid: boolean; errors: string[] } => {
     const errors: string[] = [];
     
@@ -133,7 +158,7 @@ export const validators = {
     };
   },
   
-  // Validação de CPF
+  // Valida��o de CPF
   isValidCPF: (cpf: string): boolean => {
     const cleanCPF = cpf.replace(/\D/g, '');
     
@@ -161,13 +186,13 @@ export const validators = {
     return true;
   },
   
-  // Validação de telefone
+  // Valida��o de telefone
   isValidPhone: (phone: string): boolean => {
     const cleanPhone = phone.replace(/\D/g, '');
     return cleanPhone.length === 10 || cleanPhone.length === 11;
   },
   
-  // Validação de URL
+  // Valida��o de URL
   isValidURL: (url: string): boolean => {
     try {
       new URL(url);
@@ -516,7 +541,7 @@ describe('Testes Unitários de Utilitários', () => {
         expect(formatters.formatPercentage(1, 3, 2)).toBe('33.33%');
       });
       
-      it('deve lidar com divisão por zero', () => {
+      it('deve lidar com divis�o por zero', () => {
         expect(formatters.formatPercentage(10, 0)).toBe('0%');
       });
     });
@@ -654,7 +679,7 @@ describe('Testes Unitários de Utilitários', () => {
       it('deve remover acentos', () => {
         expect(stringUtils.removeAccents('café')).toBe('cafe');
         expect(stringUtils.removeAccents('açúcar')).toBe('acucar');
-        expect(stringUtils.removeAccents('coração')).toBe('coracao');
+        expect(stringUtils.removeAccents('cora��o')).toBe('coracao');
       });
     });
     
@@ -830,7 +855,7 @@ describe('Testes Unitários de Utilitários', () => {
         const result = objectUtils.omit(obj, ['b', 'c']);
         
         expect(result).toEqual({ a: 1 });
-        expect(obj).toEqual({ a: 1, b: 2, c: 3 }); // Original não modificado
+        expect(obj).toEqual({ a: 1, b: 2, c: 3 }); // Original N�o modificado
       });
     });
     
@@ -858,7 +883,7 @@ describe('Testes Unitários de Utilitários', () => {
         expect(retrieved).toEqual(data);
       });
       
-      it('deve retornar valor padrão para chave inexistente', () => {
+      it('deve retornar valor padr�o para chave inexistente', () => {
         const defaultValue = { name: 'Default' };
         const result = storageUtils.get('nonexistent', defaultValue);
         
@@ -899,7 +924,7 @@ describe('Testes Unitários de Utilitários', () => {
     });
     
     describe('debounce', () => {
-      it('deve atrasar execução da função', () => {
+      it('deve atrasar execu��o da fun��o', () => {
         const mockFn = vi.fn();
         const debouncedFn = performanceUtils.debounce(mockFn, 100);
         
@@ -917,7 +942,7 @@ describe('Testes Unitários de Utilitários', () => {
     });
     
     describe('throttle', () => {
-      it('deve limitar execução da função', () => {
+      it('deve limitar execu��o da fun��o', () => {
         const mockFn = vi.fn();
         const throttledFn = performanceUtils.throttle(mockFn, 100);
         

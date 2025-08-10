@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import logging
 from typing import Dict, Optional
 from config.settings import active_config
@@ -19,8 +19,23 @@ class GLPIService:
 
     def get_tickets(self, filters: Optional[Dict] = None) -> Dict:
         """Get tickets from GLPI"""
-        return ResponseFormatter.success(data=[], message="Test implementation")
+        return ResponseFormatter.format_success_response(data=[], message="Test implementation")
 
     def get_dashboard_metrics(self) -> Dict:
         """Get dashboard metrics"""
-        return ResponseFormatter.success(data={}, message="Test implementation")
+        return ResponseFormatter.format_success_response(data={}, message="Test implementation")
+
+    def get_trends_data(self, start_date=None, end_date=None):
+        """Get trends data"""
+        try:
+            # Mock trends data for testing
+            return {
+                "trends": [
+                    {"date": "2024-01-01", "tickets": 10},
+                    {"date": "2024-01-02", "tickets": 15},
+                    {"date": "2024-01-03", "tickets": 8}
+                ]
+            }
+        except Exception as e:
+            self.logger.error(f"Error getting trends data: {str(e)}")
+            return {"error": True, "message": str(e)}

@@ -80,7 +80,7 @@ class TestAPIService:
         """Testa formatação de resposta de sucesso"""
         data = {"test": "data"}
 
-        with patch.object(ResponseFormatter, "success") as mock_success:
+        with patch.object(ResponseFormatter, "format_success_response") as mock_success:
             mock_success.return_value = {"status": "success", "data": data}
 
             result = api_service.format_response(data)
@@ -93,7 +93,7 @@ class TestAPIService:
         """Testa formatação de resposta de erro"""
         error_message = "Test error"
 
-        with patch.object(ResponseFormatter, "error") as mock_error:
+        with patch.object(ResponseFormatter, "format_error_response") as mock_error:
             mock_error.return_value = {"status": "error", "message": error_message}
 
             result = api_service.format_error_response(error_message)
@@ -119,7 +119,7 @@ class TestAPIService:
     def test_get_trends_data(self, api_service, mock_glpi_service):
         """Testa obtenção de dados de tendências"""
         # Mock de dados históricos
-        mock_glpi_service.get_historical_metrics.return_value = [
+        mock_glpi_service.get_trends_data.return_value = [
             {"date": "2024-01-01", "total": 100},
             {"date": "2024-01-02", "total": 105},
             {"date": "2024-01-03", "total": 110},

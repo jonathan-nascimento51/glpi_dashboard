@@ -2,8 +2,36 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
+// Mock do localStorage
+const localStorageMock = {
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
+};
+
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock,
+  writable: true,
+});
+
+// Mock do window.matchMedia
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
 // Hook para gerenciar estado local com localStorage
-export const useLocalStorage = <T>(
+export const useLocalStorage = <T,>(
   key: string,
   initialValue: T
 ): [T, (value: T | ((prev: T) => T)) => void] => {
@@ -34,7 +62,7 @@ export const useLocalStorage = <T>(
 };
 
 // Hook para debounce
-export const useDebounce = <T>(value: T, delay: number): T => {
+export const useDebounce = <T,>(value: T, delay: number): T => {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {
@@ -51,7 +79,7 @@ export const useDebounce = <T>(value: T, delay: number): T => {
 };
 
 // Hook para fazer requisições HTTP
-export const useFetch = <T>(
+export const useFetch = <T,>(
   url: string,
   options?: RequestInit
 ): {
@@ -92,7 +120,7 @@ export const useFetch = <T>(
 };
 
 // Hook para gerenciar estado de formulário
-export const useForm = <T extends Record<string, any>>(
+export const useForm = <T extends Record<string, any>,>(
   initialValues: T,
   validationRules?: Partial<Record<keyof T, (value: any) => string | null>>
 ) => {
@@ -104,7 +132,7 @@ export const useForm = <T extends Record<string, any>>(
     (name: keyof T, value: any) => {
       setValues(prev => ({ ...prev, [name]: value }));
       
-      // Validar campo se há regras de validação
+      // Validar campo se há regras de Valida��o
       if (validationRules?.[name]) {
         const error = validationRules[name]!(value);
         setErrors(prev => ({ ...prev, [name]: error || undefined }));
@@ -113,7 +141,7 @@ export const useForm = <T extends Record<string, any>>(
     [validationRules]
   );
 
-  const setTouched = useCallback(
+  const setFieldTouched = useCallback(
     (name: keyof T) => {
       setTouched(prev => ({ ...prev, [name]: true }));
     },
@@ -152,7 +180,7 @@ export const useForm = <T extends Record<string, any>>(
     errors,
     touched,
     setValue,
-    setTouched,
+    setTouched: setFieldTouched,
     validate,
     reset,
     isValid: Object.keys(errors).length === 0
@@ -179,7 +207,7 @@ export const useClickOutside = (
 };
 
 // Hook para gerenciar estado de loading
-export const useAsync = <T, Args extends any[]>(
+export const useAsync = <T, Args extends any[],>(
   asyncFunction: (...args: Args) => Promise<T>
 ) => {
   const [data, setData] = useState<T | null>(null);
@@ -363,12 +391,15 @@ export const useInterval = (callback: () => void, delay: number | null) => {
 
 describe('Testes Unitários de Hooks', () => {
   beforeEach(() => {
-    localStorage.clear();
+    localStorageMock.clear();
+    localStorageMock.getItem.mockClear();
+    localStorageMock.setItem.mockClear();
+    localStorageMock.removeItem.mockClear();
     vi.clearAllMocks();
   });
 
   describe('useLocalStorage', () => {
-    it('deve inicializar com valor padrão', () => {
+    it('deve inicializar com valor padr�o', () => {
       const { result } = renderHook(() => useLocalStorage('test-key', 'default-value'));
       
       expect(result.current[0]).toBe('default-value');
@@ -382,18 +413,20 @@ describe('Testes Unitários de Hooks', () => {
       });
       
       expect(result.current[0]).toBe('new-value');
-      expect(localStorage.getItem('test-key')).toBe('"new-value"');
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('test-key', '"new-value"');
     });
 
     it('deve carregar valor existente do localStorage', () => {
-      localStorage.setItem('existing-key', '"existing-value"');
+      localStorageMock.getItem.mockReturnValue('"existing-value"');
       
       const { result } = renderHook(() => useLocalStorage('existing-key', 'default'));
       
       expect(result.current[0]).toBe('existing-value');
     });
 
-    it('deve lidar com função como valor', () => {
+    it('deve lidar com fun��o como valor', () => {
+      localStorageMock.getItem.mockReturnValue(null);
+      
       const { result } = renderHook(() => useLocalStorage('counter', 0));
       
       act(() => {
@@ -407,8 +440,7 @@ describe('Testes Unitários de Hooks', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       
       // Simular erro no localStorage
-      const originalSetItem = Storage.prototype.setItem;
-      Storage.prototype.setItem = vi.fn(() => {
+      localStorageMock.setItem.mockImplementation(() => {
         throw new Error('Storage error');
       });
       
@@ -420,8 +452,8 @@ describe('Testes Unitários de Hooks', () => {
       
       expect(consoleSpy).toHaveBeenCalled();
       
-      // Restaurar método original
-      Storage.prototype.setItem = originalSetItem;
+      // Restaurar comportamento normal
+      localStorageMock.setItem.mockRestore();
       consoleSpy.mockRestore();
     });
   });
@@ -450,7 +482,7 @@ describe('Testes Unitários de Hooks', () => {
       expect(result.current).toBe('initial');
       
       rerender({ value: 'updated', delay: 500 });
-      expect(result.current).toBe('initial'); // Ainda não mudou
+      expect(result.current).toBe('initial'); // Ainda N�o mudou
       
       act(() => {
         vi.advanceTimersByTime(500);
@@ -564,7 +596,7 @@ describe('Testes Unitários de Hooks', () => {
       age: (value: number) => value < 18 ? 'Idade deve ser maior que 18' : null
     };
 
-    it('deve inicializar com valores padrão', () => {
+    it('deve inicializar com valores padr�o', () => {
       const { result } = renderHook(() => useForm(initialValues));
       
       expect(result.current.values).toEqual(initialValues);
@@ -668,7 +700,7 @@ describe('Testes Unitários de Hooks', () => {
       document.body.removeChild(outsideElement);
     });
 
-    it('não deve chamar callback quando clica dentro', () => {
+    it('N�o deve chamar callback quando clica dentro', () => {
       const callback = vi.fn();
       const ref = { current: document.createElement('div') };
       const insideElement = document.createElement('span');
@@ -693,7 +725,7 @@ describe('Testes Unitários de Hooks', () => {
   });
 
   describe('useAsync', () => {
-    it('deve executar função assíncrona com sucesso', async () => {
+    it('deve executar fun��o assíncrona com sucesso', async () => {
       const asyncFn = vi.fn().mockResolvedValue('success');
       const { result } = renderHook(() => useAsync(asyncFn));
       
@@ -713,7 +745,7 @@ describe('Testes Unitários de Hooks', () => {
       expect(asyncFn).toHaveBeenCalledWith('arg1', 'arg2');
     });
 
-    it('deve lidar com erro na função assíncrona', async () => {
+    it('deve lidar com erro na fun��o assíncrona', async () => {
       const error = new Error('Async error');
       const asyncFn = vi.fn().mockRejectedValue(error);
       const { result } = renderHook(() => useAsync(asyncFn));
@@ -803,7 +835,7 @@ describe('Testes Unitários de Hooks', () => {
       search: ''
     };
 
-    it('deve inicializar com filtros padrão', () => {
+    it('deve inicializar com filtros padr�o', () => {
       const { result } = renderHook(() => useFilters(initialFilters));
       
       expect(result.current.filters).toEqual(initialFilters);
@@ -874,7 +906,7 @@ describe('Testes Unitários de Hooks', () => {
   });
 
   describe('useToggle', () => {
-    it('deve inicializar com valor padrão', () => {
+    it('deve inicializar com valor padr�o', () => {
       const { result } = renderHook(() => useToggle());
       
       expect(result.current.value).toBe(false);
@@ -972,7 +1004,7 @@ describe('Testes Unitários de Hooks', () => {
         vi.advanceTimersByTime(1000);
       });
       
-      expect(callback).toHaveBeenCalledTimes(1); // Não deve ter chamado novamente
+      expect(callback).toHaveBeenCalledTimes(1); // N�o deve ter chamado novamente
     });
   });
 });

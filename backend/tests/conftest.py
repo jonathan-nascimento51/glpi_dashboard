@@ -33,6 +33,7 @@ def mock_glpi_config():
     config.GLPI_URL = "https://test-glpi.com/apirest.php"
     config.GLPI_APP_TOKEN = "test_app_token"
     config.GLPI_USER_TOKEN = "test_user_token"
+    config.LOG_LEVEL = "INFO"
     return config
 
 
