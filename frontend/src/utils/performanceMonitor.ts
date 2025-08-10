@@ -29,7 +29,7 @@ export interface ComponentMetric {
   totalRenderTime: number;
   averageRenderTime: number;
   lastRenderTime: number;
-  props?: any;
+  props?: unknown;
 }
 
 class PerformanceMonitor {
@@ -126,7 +126,7 @@ class PerformanceMonitor {
   recordComponentRender(
     componentName: string, 
     renderTime: number, 
-    props?: any
+    props?: unknown
   ): void {
     if (!this.isEnabled) return;
 

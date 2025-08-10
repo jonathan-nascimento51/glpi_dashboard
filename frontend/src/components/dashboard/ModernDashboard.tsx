@@ -101,8 +101,13 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
 
   // Memoizar dados do ranking processados
   const processedRankingData = useMemo(() => {
-    // console.log('ðŸ“Š ModernDashboard - Processando ranking de', technicianRanking?.length || 0, 'tÃ©cnicos')
+    // console.log(" ModernDashboard - Processando ranking de", technicianRanking?.length || 0, "técnicos")
     
+    if (!Array.isArray(technicianRanking)) {
+      console.warn(" technicianRanking não é um array:", technicianRanking)
+      return []
+    }
+
     const result = technicianRanking.map((tech) => ({
       id: tech.id || String(tech.name),
       name: tech.name || tech.nome || 'TÃ©cnico',

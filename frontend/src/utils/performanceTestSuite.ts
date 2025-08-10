@@ -393,7 +393,7 @@ class PerformanceTestSuite {
    */
   async generateReleaseReport(): Promise<{
     suiteResult: PerformanceTestSuiteResult;
-    baselineComparison: any;
+    baselineComparison: unknown;
     recommendations: string[];
     releaseApproved: boolean;
   }> {
@@ -453,7 +453,7 @@ class PerformanceTestSuite {
    */
   private generateReleaseRecommendations(
     suiteResult: PerformanceTestSuiteResult,
-    baselineComparison: any
+    baselineComparison: unknown
   ): string[] {
     const recommendations: string[] = [];
 
@@ -470,9 +470,9 @@ class PerformanceTestSuite {
 
     // Verificar degradação em relação à linha de base
     if (baselineComparison?.comparisons) {
-      const degraded = baselineComparison.comparisons.filter((c: any) => c.status === 'degraded');
+      const degraded = baselineComparison.comparisons.filter((c: unknown) => c.status === 'degraded');
       if (degraded.length > 0) {
-        recommendations.push(`📉 Performance degradou em: ${degraded.map((d: any) => d.metric).join(', ')}`);
+        recommendations.push(`📉 Performance degradou em: ${degraded.map((d: unknown) => d.metric).join(', ')}`);
       }
     }
 

@@ -533,7 +533,7 @@ export const fetchDashboardMetrics = async (
     console.error('Erro ao buscar métricas:', error);
     console.error('Tipo do erro:', typeof error);
     console.error('Stack trace:', error instanceof Error ? error.stack : 'N/A');
-    const attemptedUrl = queryParams.toString() ? "/kpis?" : "/kpis"; console.error('URL tentada:', attemptedUrl);
+    console.error('URL tentada:', `${API_BASE_URL}/kpis`);
     return null;
   }
 };

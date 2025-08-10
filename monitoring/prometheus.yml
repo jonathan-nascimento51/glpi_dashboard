@@ -1,0 +1,62 @@
+# Configuração do Prometheus para GLPI Dashboard
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "rules/*.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: ''prometheus''
+    static_configs:
+      - targets: [''localhost:9090'']
+
+  # Node Exporter - Métricas do sistema
+  - job_name: ''node-exporter''
+    static_configs:
+      - targets: [''node-exporter:9100'']
+    scrape_interval: 5s
+    metrics_path: /metrics
+
+  # GLPI Dashboard Backend
+  - job_name: ''glpi-backend''
+    static_configs:
+      - targets: [''backend:8000'']
+    scrape_interval: 10s
+    metrics_path: /metrics
+    scrape_timeout: 5s
+
+  # GLPI Dashboard Frontend
+  - job_name: ''glpi-frontend''
+    static_configs:
+      - targets: [''frontend:3001'']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    scrape_timeout: 10s
+
+  # Redis Exporter
+  - job_name: ''redis''
+    static_configs:
+      - targets: [''redis-exporter:9121'']
+    scrape_interval: 15s
+
+  # Nginx Exporter
+  - job_name: ''nginx''
+    static_configs:
+      - targets: [''nginx-exporter:9113'']
+    scrape_interval: 15s
+
+  # GLPI API Health Check
+  - job_name: ''glpi-api-health''
+    static_configs:
+      - targets: [''glpi-server:80'']
+    scrape_interval: 30s
+    metrics_path: /apirest.php/status
+    scrape_timeout: 10s

@@ -13,7 +13,7 @@ import type {
  */
 
 // Validação de métricas de nível
-export const validateLevelMetrics = (data: any): ValidationResult<LevelMetrics> => {
+export const validateLevelMetrics = (data: unknown): ValidationResult<LevelMetrics> => {
   const errors: string[] = [];
   
   if (typeof data !== 'object' || data === null) {
@@ -45,7 +45,7 @@ export const validateLevelMetrics = (data: any): ValidationResult<LevelMetrics> 
 };
 
 // Validação de métricas de níveis
-export const validateNiveisMetrics = (data: any): ValidationResult<NiveisMetrics> => {
+export const validateNiveisMetrics = (data: unknown): ValidationResult<NiveisMetrics> => {
   const errors: string[] = [];
   
   if (typeof data !== 'object' || data === null) {
@@ -71,7 +71,7 @@ export const validateNiveisMetrics = (data: any): ValidationResult<NiveisMetrics
 };
 
 // Validação de tendências
-export const validateTendenciasMetrics = (data: any): ValidationResult<TendenciasMetrics> => {
+export const validateTendenciasMetrics = (data: unknown): ValidationResult<TendenciasMetrics> => {
   const errors: string[] = [];
   
   if (typeof data !== 'object' || data === null) {
@@ -99,7 +99,7 @@ export const validateTendenciasMetrics = (data: any): ValidationResult<Tendencia
 };
 
 // Validação completa de métricas do dashboard
-export const validateDashboardMetrics = (data: any): ValidationResult<DashboardMetrics> => {
+export const validateDashboardMetrics = (data: unknown): ValidationResult<DashboardMetrics> => {
   const errors: string[] = [];
   
   if (typeof data !== 'object' || data === null) {
@@ -135,7 +135,7 @@ export const validateDashboardMetrics = (data: any): ValidationResult<DashboardM
 };
 
 // Validação de parâmetros de filtro
-export const validateFilterParams = (params: any): ValidationResult<FilterParams> => {
+export const validateFilterParams = (params: unknown): ValidationResult<FilterParams> => {
   const errors: string[] = [];
   
   if (typeof params !== 'object' || params === null) {
@@ -187,7 +187,7 @@ export const validateFilterParams = (params: any): ValidationResult<FilterParams
 };
 
 // Sanitização de dados de entrada
-export const sanitizeFilterParams = (params: any): FilterParams => {
+export const sanitizeFilterParams = (params: unknown): FilterParams => {
   const sanitized: FilterParams = {};
   
   if (params.startDate && typeof params.startDate === 'string') {
@@ -222,7 +222,7 @@ export const sanitizeFilterParams = (params: any): FilterParams => {
 };
 
 // Validação de erro da API
-export const validateApiError = (error: any): ValidationResult<ApiError> => {
+export const validateApiError = (error: unknown): ValidationResult<ApiError> => {
   const errors: string[] = [];
   
   if (typeof error !== 'object' || error === null) {
@@ -258,11 +258,11 @@ export const validateApiError = (error: any): ValidationResult<ApiError> => {
 
 // Utilitário para validação em lote
 export const validateBatch = <T>(
-  items: any[],
-  validator: (item: any) => ValidationResult<T>
-): { valid: T[], invalid: { item: any, errors: string[] }[] } => {
+  items: unknown[],
+  validator: (item: unknown) => ValidationResult<T>
+): { valid: T[], invalid: { item: unknown, errors: string[] }[] } => {
   const valid: T[] = [];
-  const invalid: { item: any, errors: string[] }[] = [];
+  const invalid: { item: unknown, errors: string[] }[] = [];
   
   for (const item of items) {
     const result = validator(item);
@@ -278,10 +278,10 @@ export const validateBatch = <T>(
 
 // Validação de schema genérica
 export const createValidator = <T>(
-  schema: Record<string, (value: any) => boolean>,
+  schema: Record<string, (value: unknown) => boolean>,
   requiredFields: string[] = []
 ) => {
-  return (data: any): ValidationResult<T> => {
+  return (data: unknown): ValidationResult<T> => {
     const errors: string[] = [];
     
     if (typeof data !== 'object' || data === null) {

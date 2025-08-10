@@ -1,0 +1,79 @@
+groups:
+- name: glpi-dashboard-alerts
+  rules:
+  # Alerta para alta latência da API
+  - alert: HighAPILatency
+    expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job="glpi-backend"}[5m])) by (le)) > 0.5
+    for: 2m
+    labels:
+      severity: warning
+      service: glpi-backend
+    annotations:
+      summary: "Alta latência detectada na API do GLPI Dashboard"
+      description: "A latência da API está acima de 500ms por mais de 2 minutos. Valor atual: {{ $value }}s"
+
+  # Alerta para alta taxa de erro
+  - alert: HighErrorRate
+    expr: sum(rate(http_requests_total{job="glpi-backend",status=~"5.."}[5m])) / sum(rate(http_requests_total{job="glpi-backend"}[5m])) > 0.05
+    for: 1m
+    labels:
+      severity: critical
+      service: glpi-backend
+    annotations:
+      summary: "Alta taxa de erro na API do GLPI Dashboard"
+      description: "Taxa de erro HTTP 5xx está acima de 5% por mais de 1 minuto. Taxa atual: {{ $value | humanizePercentage }}"
+
+  # Alerta para serviço indisponível
+  - alert: ServiceDown
+    expr: up{job="glpi-backend"} == 0
+    for: 30s
+    labels:
+      severity: critical
+      service: glpi-backend
+    annotations:
+      summary: "Serviço GLPI Dashboard está indisponível"
+      description: "O serviço {{ $labels.job }} está down por mais de 30 segundos."
+
+  # Alerta para alto uso de CPU
+  - alert: HighCPUUsage
+    expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+    for: 5m
+    labels:
+      severity: warning
+      service: system
+    annotations:
+      summary: "Alto uso de CPU detectado"
+      description: "Uso de CPU está acima de 80% por mais de 5 minutos. Valor atual: {{ $value }}%"
+
+  # Alerta para alto uso de memória
+  - alert: HighMemoryUsage
+    expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+    for: 5m
+    labels:
+      severity: warning
+      service: system
+    annotations:
+      summary: "Alto uso de memória detectado"
+      description: "Uso de memória está acima de 85% por mais de 5 minutos. Valor atual: {{ $value }}%"
+
+  # Alerta para pouco espaço em disco
+  - alert: LowDiskSpace
+    expr: (1 - (node_filesystem_avail_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"})) * 100 > 90
+    for: 5m
+    labels:
+      severity: critical
+      service: system
+    annotations:
+      summary: "Pouco espaço em disco"
+      description: "Espaço em disco está acima de 90% de uso. Filesystem: {{ $labels.mountpoint }}, Valor atual: {{ $value }}%"
+
+  # Alerta para falha na conexão com GLPI
+  - alert: GLPIConnectionFailure
+    expr: probe_success{job="glpi-api-health"} == 0
+    for: 1m
+    labels:
+      severity: critical
+      service: glpi-api
+    annotations:
+      summary: "Falha na conexão com a API do GLPI"
+      description: "Não foi possível conectar com a API do GLPI por mais de 1 minuto."

@@ -85,7 +85,7 @@ class WebVitalsMonitor {
   /**
    * Processa uma métrica recebida
    */
-  private handleMetric(metric: any): void {
+  private handleMetric(metric: unknown): void {
     const webVitalMetric: WebVitalsMetric = {
       name: metric.name as WebVitalsMetric['name'],
       value: metric.value,

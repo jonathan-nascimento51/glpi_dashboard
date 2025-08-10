@@ -21,7 +21,7 @@ interface MonitoringRule {
   }) => {
     passed: boolean;
     message?: string;
-    details?: any;
+    details?: unknown;
   };
 }
 
@@ -31,7 +31,7 @@ interface MonitoringAlert {
   ruleName: string;
   severity: 'low' | 'medium' | 'high' | 'critical';
   message: string;
-  details: any;
+  details: unknown;
   timestamp: Date;
   acknowledged: boolean;
 }

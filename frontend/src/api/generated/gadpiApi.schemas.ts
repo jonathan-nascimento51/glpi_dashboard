@@ -7,7 +7,7 @@
 export type KpiLevel = typeof KpiLevel[keyof typeof KpiLevel];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const KpiLevel = {
   N1: 'N1',
   N2: 'N2',

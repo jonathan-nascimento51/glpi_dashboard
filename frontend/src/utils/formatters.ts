@@ -275,7 +275,7 @@ export const formatFriendlyUrl = (text: string): string => {
 };
 
 // Formatação de placeholder para campos vazios
-export const formatPlaceholder = (value: any, placeholder: string = 'N/A'): string => {
+export const formatPlaceholder = (value: unknown, placeholder: string = 'N/A'): string => {
   if (value === null || value === undefined || value === '') {
     return placeholder;
   }
