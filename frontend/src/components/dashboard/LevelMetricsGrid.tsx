@@ -1,4 +1,4 @@
-﻿import React, { useMemo } from "react"
+import React, { useMemo } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -82,42 +82,33 @@ export const LevelMetricsGrid: React.FC<LevelMetricsGridProps> = ({
   className 
 }) => {
   // Debug: Log dos dados recebidos
-  console.log(" LevelMetricsGrid - metrics recebido:", metrics);
-  console.log(" LevelMetricsGrid - Tipo de metrics:", typeof metrics);
+  console.log("🔍 LevelMetricsGrid - metrics recebido:", metrics);
+  console.log("🔍 LevelMetricsGrid - Tipo de metrics:", typeof metrics);
   if (metrics) {
-    console.log(" LevelMetricsGrid - Keys de metrics:", Object.keys(metrics));
+    console.log("🔍 LevelMetricsGrid - Keys de metrics:", Object.keys(metrics));
+    console.log("🔍 LevelMetricsGrid - metrics.niveis:", metrics.niveis);
+    if (metrics.niveis) {
+      console.log("🔍 LevelMetricsGrid - Keys de metrics.niveis:", Object.keys(metrics.niveis));
+      console.log("🔍 LevelMetricsGrid - metrics.niveis.geral:", metrics.niveis.geral);
+    }
   } else {
-    console.log(" LevelMetricsGrid - metrics e null/undefined");
+    console.log("🔍 LevelMetricsGrid - metrics é null/undefined");
   }
 
   const levelMetrics = useMemo(() => {
     if (!metrics) {
-      console.log(" LevelMetricsGrid - Sem metrics, retornando objeto vazio");
+      console.log("🔍 LevelMetricsGrid - Sem metrics, retornando objeto vazio");
       return {};
     }
     
-    console.log(" LevelMetricsGrid - Processando metrics:", metrics);
-    return metrics;
+    console.log("🔍 LevelMetricsGrid - Processando metrics:", metrics);
+    // Se metrics já é o objeto com os níveis, retorna diretamente
+    // Se metrics tem uma propriedade niveis, usa ela
+    return metrics.niveis || metrics;
   }, [metrics]);
 
   if (!metrics) {
-    return (
-      <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4", className)}>
-        {Object.entries(levelConfig).map(([level, config]) => (
-          <Card key={level} className="animate-pulse">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {config.title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="h-4 bg-muted rounded w-3/4"></div>
-              <div className="h-4 bg-muted rounded w-1/2"></div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -209,3 +200,4 @@ export const LevelMetricsGrid: React.FC<LevelMetricsGridProps> = ({
     </div>
   );
 };
+

@@ -207,7 +207,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:26.264Z",
+                      "startTime": "2025-08-11T14:13:47.618Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -250,7 +250,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:26.306Z",
+                      "startTime": "2025-08-11T14:13:47.640Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -293,7 +293,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:26.316Z",
+                      "startTime": "2025-08-11T14:13:47.651Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -336,7 +336,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:26.319Z",
+                      "startTime": "2025-08-11T14:13:47.652Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -379,7 +379,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:38.004Z",
+                      "startTime": "2025-08-11T14:13:56.357Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -422,7 +422,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:38.007Z",
+                      "startTime": "2025-08-11T14:13:56.359Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -465,7 +465,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:38.012Z",
+                      "startTime": "2025-08-11T14:13:56.360Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -508,7 +508,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:38.015Z",
+                      "startTime": "2025-08-11T14:13:56.361Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -551,7 +551,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:07.019Z",
+                      "startTime": "2025-08-11T14:14:17.880Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -594,7 +594,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:07.021Z",
+                      "startTime": "2025-08-11T14:14:17.889Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -637,7 +637,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:07.024Z",
+                      "startTime": "2025-08-11T14:14:17.891Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -680,7 +680,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:07.027Z",
+                      "startTime": "2025-08-11T14:14:17.892Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -723,7 +723,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:20.770Z",
+                      "startTime": "2025-08-11T14:14:28.698Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -766,7 +766,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:20.779Z",
+                      "startTime": "2025-08-11T14:14:28.699Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -809,7 +809,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:20.782Z",
+                      "startTime": "2025-08-11T14:14:28.701Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -852,7 +852,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:20.789Z",
+                      "startTime": "2025-08-11T14:14:28.702Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -895,7 +895,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:32.172Z",
+                      "startTime": "2025-08-11T14:14:36.446Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -938,7 +938,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:32.175Z",
+                      "startTime": "2025-08-11T14:14:36.447Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -981,7 +981,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:32.178Z",
+                      "startTime": "2025-08-11T14:14:36.449Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1024,7 +1024,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:32.182Z",
+                      "startTime": "2025-08-11T14:14:36.450Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1067,7 +1067,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:42.676Z",
+                      "startTime": "2025-08-11T14:14:44.378Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1110,7 +1110,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:42.690Z",
+                      "startTime": "2025-08-11T14:14:44.379Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1153,7 +1153,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:42.694Z",
+                      "startTime": "2025-08-11T14:14:44.380Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1196,7 +1196,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:42.701Z",
+                      "startTime": "2025-08-11T14:14:44.382Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1239,7 +1239,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:02.802Z",
+                      "startTime": "2025-08-11T14:14:57.535Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1282,7 +1282,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:02.804Z",
+                      "startTime": "2025-08-11T14:14:57.536Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1325,7 +1325,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:02.806Z",
+                      "startTime": "2025-08-11T14:14:57.538Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1368,7 +1368,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:02.808Z",
+                      "startTime": "2025-08-11T14:14:57.539Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1414,7 +1414,7 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 1194,
+                      "duration": 935,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:47:16",
@@ -1438,7 +1438,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:27.747Z",
+                      "startTime": "2025-08-11T14:13:49.154Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -1483,7 +1483,7 @@
                       "workerIndex": 1,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 1136,
+                      "duration": 937,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:97:16",
@@ -1507,7 +1507,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:27.746Z",
+                      "startTime": "2025-08-11T14:13:48.968Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -1552,7 +1552,7 @@
                       "workerIndex": 2,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 369,
+                      "duration": 432,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:124:16",
@@ -1576,7 +1576,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:32.392Z",
+                      "startTime": "2025-08-11T14:13:52.100Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -1621,7 +1621,7 @@
                       "workerIndex": 3,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 429,
+                      "duration": 380,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:161:16",
@@ -1645,7 +1645,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:32.892Z",
+                      "startTime": "2025-08-11T14:13:52.113Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -1690,7 +1690,7 @@
                       "workerIndex": 4,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 330,
+                      "duration": 368,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:169:16",
@@ -1714,7 +1714,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:35.039Z",
+                      "startTime": "2025-08-11T14:13:53.770Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -1759,7 +1759,7 @@
                       "workerIndex": 5,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 339,
+                      "duration": 373,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:190:16",
@@ -1783,7 +1783,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:35.462Z",
+                      "startTime": "2025-08-11T14:13:53.802Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -1828,7 +1828,7 @@
                       "workerIndex": 6,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 315,
+                      "duration": 389,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:219:16",
@@ -1852,7 +1852,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:37.073Z",
+                      "startTime": "2025-08-11T14:13:55.541Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -1897,7 +1897,7 @@
                       "workerIndex": 9,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 1878,
+                      "duration": 2081,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Invalid url: \"/\"\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Invalid url: \"/\"\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:47:16",
@@ -1921,7 +1921,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:39.242Z",
+                      "startTime": "2025-08-11T14:13:57.396Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -1966,7 +1966,7 @@
                       "workerIndex": 10,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 1558,
+                      "duration": 2060,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Invalid url: \"/\"\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Invalid url: \"/\"\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:97:16",
@@ -1990,7 +1990,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:42.425Z",
+                      "startTime": "2025-08-11T14:13:58.881Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -2035,7 +2035,7 @@
                       "workerIndex": 11,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 2365,
+                      "duration": 1744,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Invalid url: \"/\"\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Invalid url: \"/\"\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:124:16",
@@ -2059,7 +2059,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:47.689Z",
+                      "startTime": "2025-08-11T14:14:03.349Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -2104,7 +2104,7 @@
                       "workerIndex": 12,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 2186,
+                      "duration": 2178,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Invalid url: \"/\"\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Invalid url: \"/\"\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:161:16",
@@ -2128,7 +2128,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:47.696Z",
+                      "startTime": "2025-08-11T14:14:03.781Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -2171,9 +2171,9 @@
                   "results": [
                     {
                       "workerIndex": 13,
-                      "parallelIndex": 0,
+                      "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 2023,
+                      "duration": 1745,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Invalid url: \"/\"\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Invalid url: \"/\"\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:169:16",
@@ -2197,7 +2197,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:53.630Z",
+                      "startTime": "2025-08-11T14:14:08.517Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -2240,9 +2240,9 @@
                   "results": [
                     {
                       "workerIndex": 14,
-                      "parallelIndex": 1,
+                      "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 2542,
+                      "duration": 1906,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Invalid url: \"/\"\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Invalid url: \"/\"\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:190:16",
@@ -2266,7 +2266,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:53.614Z",
+                      "startTime": "2025-08-11T14:14:09.266Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -2311,7 +2311,7 @@
                       "workerIndex": 15,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 2566,
+                      "duration": 1870,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Invalid url: \"/\"\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Invalid url: \"/\"\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:219:16",
@@ -2335,7 +2335,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:00.602Z",
+                      "startTime": "2025-08-11T14:14:13.372Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -2380,7 +2380,7 @@
                       "workerIndex": 18,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 1218,
+                      "duration": 1196,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:47:16",
@@ -2404,7 +2404,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:08.626Z",
+                      "startTime": "2025-08-11T14:14:19.307Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -2449,7 +2449,7 @@
                       "workerIndex": 19,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 791,
+                      "duration": 466,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:97:16",
@@ -2473,7 +2473,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:12.517Z",
+                      "startTime": "2025-08-11T14:14:22.880Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -2518,7 +2518,7 @@
                       "workerIndex": 20,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 522,
+                      "duration": 505,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:124:16",
@@ -2542,7 +2542,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:14.012Z",
+                      "startTime": "2025-08-11T14:14:23.215Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -2587,7 +2587,7 @@
                       "workerIndex": 21,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 539,
+                      "duration": 503,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:161:16",
@@ -2611,7 +2611,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:14.991Z",
+                      "startTime": "2025-08-11T14:14:24.639Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -2656,7 +2656,7 @@
                       "workerIndex": 22,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 550,
+                      "duration": 464,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:169:16",
@@ -2680,7 +2680,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:16.006Z",
+                      "startTime": "2025-08-11T14:14:25.062Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -2725,7 +2725,7 @@
                       "workerIndex": 23,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 761,
+                      "duration": 516,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:190:16",
@@ -2749,7 +2749,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:16.992Z",
+                      "startTime": "2025-08-11T14:14:26.383Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -2794,7 +2794,7 @@
                       "workerIndex": 24,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 567,
+                      "duration": 446,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:219:16",
@@ -2818,7 +2818,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:18.401Z",
+                      "startTime": "2025-08-11T14:14:26.874Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -2863,7 +2863,7 @@
                       "workerIndex": 27,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 476,
+                      "duration": 342,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:47:16",
@@ -2887,7 +2887,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:22.692Z",
+                      "startTime": "2025-08-11T14:14:29.926Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -2932,7 +2932,7 @@
                       "workerIndex": 28,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 431,
+                      "duration": 363,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:97:16",
@@ -2956,7 +2956,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:24.066Z",
+                      "startTime": "2025-08-11T14:14:30.511Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -3001,7 +3001,7 @@
                       "workerIndex": 29,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 364,
+                      "duration": 454,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:124:16",
@@ -3025,7 +3025,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:26.291Z",
+                      "startTime": "2025-08-11T14:14:31.649Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -3070,7 +3070,7 @@
                       "workerIndex": 30,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 407,
+                      "duration": 346,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:161:16",
@@ -3094,7 +3094,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:26.840Z",
+                      "startTime": "2025-08-11T14:14:32.280Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -3139,7 +3139,7 @@
                       "workerIndex": 31,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 449,
+                      "duration": 361,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:169:16",
@@ -3163,7 +3163,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:28.562Z",
+                      "startTime": "2025-08-11T14:14:33.448Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -3208,7 +3208,7 @@
                       "workerIndex": 32,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 391,
+                      "duration": 371,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:190:16",
@@ -3232,7 +3232,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:29.204Z",
+                      "startTime": "2025-08-11T14:14:33.991Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -3277,7 +3277,7 @@
                       "workerIndex": 33,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 494,
+                      "duration": 315,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:219:16",
@@ -3301,7 +3301,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:30.906Z",
+                      "startTime": "2025-08-11T14:14:35.225Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -3346,7 +3346,7 @@
                       "workerIndex": 36,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 589,
+                      "duration": 432,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:47:16",
@@ -3370,7 +3370,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:33.433Z",
+                      "startTime": "2025-08-11T14:14:37.647Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -3413,9 +3413,9 @@
                   "results": [
                     {
                       "workerIndex": 37,
-                      "parallelIndex": 1,
+                      "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 730,
+                      "duration": 421,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:97:16",
@@ -3439,7 +3439,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:35.504Z",
+                      "startTime": "2025-08-11T14:14:38.667Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -3482,9 +3482,9 @@
                   "results": [
                     {
                       "workerIndex": 38,
-                      "parallelIndex": 0,
+                      "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 762,
+                      "duration": 422,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:124:16",
@@ -3508,7 +3508,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:35.592Z",
+                      "startTime": "2025-08-11T14:14:39.354Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -3551,9 +3551,9 @@
                   "results": [
                     {
                       "workerIndex": 39,
-                      "parallelIndex": 1,
+                      "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 523,
+                      "duration": 429,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:161:16",
@@ -3577,7 +3577,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:37.653Z",
+                      "startTime": "2025-08-11T14:14:40.363Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -3620,9 +3620,9 @@
                   "results": [
                     {
                       "workerIndex": 40,
-                      "parallelIndex": 0,
+                      "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 540,
+                      "duration": 434,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:169:16",
@@ -3646,7 +3646,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:37.817Z",
+                      "startTime": "2025-08-11T14:14:41.069Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -3689,9 +3689,9 @@
                   "results": [
                     {
                       "workerIndex": 41,
-                      "parallelIndex": 1,
+                      "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 494,
+                      "duration": 416,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:190:16",
@@ -3715,7 +3715,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:39.701Z",
+                      "startTime": "2025-08-11T14:14:42.053Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -3758,9 +3758,9 @@
                   "results": [
                     {
                       "workerIndex": 42,
-                      "parallelIndex": 0,
+                      "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 547,
+                      "duration": 403,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:219:16",
@@ -3784,7 +3784,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:39.825Z",
+                      "startTime": "2025-08-11T14:14:42.860Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -3827,9 +3827,9 @@
                   "results": [
                     {
                       "workerIndex": 45,
-                      "parallelIndex": 1,
+                      "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 2173,
+                      "duration": 1205,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:47:16",
@@ -3853,7 +3853,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:44.756Z",
+                      "startTime": "2025-08-11T14:14:45.496Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -3896,9 +3896,9 @@
                   "results": [
                     {
                       "workerIndex": 46,
-                      "parallelIndex": 0,
+                      "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 1333,
+                      "duration": 972,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:97:16",
@@ -3922,7 +3922,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:45.053Z",
+                      "startTime": "2025-08-11T14:14:46.122Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -3965,9 +3965,9 @@
                   "results": [
                     {
                       "workerIndex": 47,
-                      "parallelIndex": 0,
+                      "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 1498,
+                      "duration": 1179,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:124:16",
@@ -3991,7 +3991,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:50.395Z",
+                      "startTime": "2025-08-11T14:14:49.085Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -4034,9 +4034,9 @@
                   "results": [
                     {
                       "workerIndex": 48,
-                      "parallelIndex": 1,
+                      "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 915,
+                      "duration": 1366,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:161:16",
@@ -4060,7 +4060,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:50.509Z",
+                      "startTime": "2025-08-11T14:14:49.072Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -4105,7 +4105,7 @@
                       "workerIndex": 49,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 1494,
+                      "duration": 955,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:169:16",
@@ -4129,7 +4129,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:55.199Z",
+                      "startTime": "2025-08-11T14:14:52.489Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -4174,7 +4174,7 @@
                       "workerIndex": 50,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 798,
+                      "duration": 1042,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:190:16",
@@ -4198,7 +4198,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:55.287Z",
+                      "startTime": "2025-08-11T14:14:52.537Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -4243,7 +4243,7 @@
                       "workerIndex": 51,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 1694,
+                      "duration": 1161,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:219:16",
@@ -4267,7 +4267,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:59.494Z",
+                      "startTime": "2025-08-11T14:14:55.347Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -4310,9 +4310,9 @@
                   "results": [
                     {
                       "workerIndex": 54,
-                      "parallelIndex": 0,
+                      "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 573,
+                      "duration": 911,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:47:16",
@@ -4336,7 +4336,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:04.424Z",
+                      "startTime": "2025-08-11T14:14:58.589Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -4381,7 +4381,7 @@
                       "workerIndex": 55,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 888,
+                      "duration": 789,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:97:16",
@@ -4405,7 +4405,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:07.670Z",
+                      "startTime": "2025-08-11T14:15:01.414Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -4450,7 +4450,7 @@
                       "workerIndex": 56,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 632,
+                      "duration": 641,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:124:16",
@@ -4474,7 +4474,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:07.781Z",
+                      "startTime": "2025-08-11T14:15:01.519Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -4519,7 +4519,7 @@
                       "workerIndex": 57,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 887,
+                      "duration": 674,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:161:16",
@@ -4543,7 +4543,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:10.247Z",
+                      "startTime": "2025-08-11T14:15:03.939Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -4588,7 +4588,7 @@
                       "workerIndex": 58,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 609,
+                      "duration": 631,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:169:16",
@@ -4612,7 +4612,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:10.321Z",
+                      "startTime": "2025-08-11T14:15:04.043Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -4655,9 +4655,9 @@
                   "results": [
                     {
                       "workerIndex": 59,
-                      "parallelIndex": 0,
+                      "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 564,
+                      "duration": 703,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:190:16",
@@ -4681,7 +4681,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:13.503Z",
+                      "startTime": "2025-08-11T14:15:06.286Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -4724,9 +4724,9 @@
                   "results": [
                     {
                       "workerIndex": 60,
-                      "parallelIndex": 1,
+                      "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 504,
+                      "duration": 525,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-advanced.spec.ts:219:16",
@@ -4750,7 +4750,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:14.468Z",
+                      "startTime": "2025-08-11T14:15:06.350Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -4812,7 +4812,7 @@
                       "workerIndex": 7,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 286,
+                      "duration": 328,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-updates.spec.ts:58:16",
@@ -4836,7 +4836,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:37.389Z",
+                      "startTime": "2025-08-11T14:13:55.753Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -4881,7 +4881,7 @@
                       "workerIndex": 8,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 468,
+                      "duration": 320,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-updates.spec.ts:93:16",
@@ -4905,7 +4905,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:39.162Z",
+                      "startTime": "2025-08-11T14:13:57.257Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -4964,7 +4964,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:37.990Z",
+                      "startTime": "2025-08-11T14:13:56.351Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -5007,7 +5007,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:37.993Z",
+                      "startTime": "2025-08-11T14:13:56.352Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -5050,7 +5050,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:37.997Z",
+                      "startTime": "2025-08-11T14:13:56.353Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -5093,7 +5093,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:38.000Z",
+                      "startTime": "2025-08-11T14:13:56.355Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -5136,7 +5136,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:48:38.002Z",
+                      "startTime": "2025-08-11T14:13:56.356Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -5165,7 +5165,7 @@
                       "workerIndex": 16,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 3210,
+                      "duration": 2165,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Invalid url: \"/\"\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Invalid url: \"/\"\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-updates.spec.ts:58:16",
@@ -5189,7 +5189,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:00.588Z",
+                      "startTime": "2025-08-11T14:14:13.940Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -5234,7 +5234,7 @@
                       "workerIndex": 17,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 2147,
+                      "duration": 2009,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Invalid url: \"/\"\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Invalid url: \"/\"\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-updates.spec.ts:93:16",
@@ -5258,7 +5258,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:07.931Z",
+                      "startTime": "2025-08-11T14:14:18.207Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -5317,7 +5317,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:07.002Z",
+                      "startTime": "2025-08-11T14:14:17.868Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -5360,7 +5360,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:07.004Z",
+                      "startTime": "2025-08-11T14:14:17.870Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -5403,7 +5403,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:07.008Z",
+                      "startTime": "2025-08-11T14:14:17.874Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -5446,7 +5446,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:07.011Z",
+                      "startTime": "2025-08-11T14:14:17.876Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -5489,7 +5489,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:07.014Z",
+                      "startTime": "2025-08-11T14:14:17.878Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -5518,7 +5518,7 @@
                       "workerIndex": 25,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 763,
+                      "duration": 455,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-updates.spec.ts:58:16",
@@ -5542,7 +5542,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:19.532Z",
+                      "startTime": "2025-08-11T14:14:28.136Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -5587,7 +5587,7 @@
                       "workerIndex": 26,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 797,
+                      "duration": 460,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-updates.spec.ts:93:16",
@@ -5611,7 +5611,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:21.256Z",
+                      "startTime": "2025-08-11T14:14:28.697Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -5670,7 +5670,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:20.524Z",
+                      "startTime": "2025-08-11T14:14:28.692Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -5713,7 +5713,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:20.573Z",
+                      "startTime": "2025-08-11T14:14:28.693Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -5756,7 +5756,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:20.649Z",
+                      "startTime": "2025-08-11T14:14:28.694Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -5799,7 +5799,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:20.706Z",
+                      "startTime": "2025-08-11T14:14:28.695Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -5842,7 +5842,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:20.732Z",
+                      "startTime": "2025-08-11T14:14:28.697Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -5871,7 +5871,7 @@
                       "workerIndex": 34,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 425,
+                      "duration": 397,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-updates.spec.ts:58:16",
@@ -5895,7 +5895,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:31.401Z",
+                      "startTime": "2025-08-11T14:14:35.852Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -5940,7 +5940,7 @@
                       "workerIndex": 35,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 415,
+                      "duration": 345,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-updates.spec.ts:93:16",
@@ -5964,7 +5964,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:33.220Z",
+                      "startTime": "2025-08-11T14:14:36.997Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -6023,7 +6023,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:32.155Z",
+                      "startTime": "2025-08-11T14:14:36.440Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6066,7 +6066,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:32.157Z",
+                      "startTime": "2025-08-11T14:14:36.441Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6109,7 +6109,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:32.160Z",
+                      "startTime": "2025-08-11T14:14:36.442Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6152,7 +6152,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:32.163Z",
+                      "startTime": "2025-08-11T14:14:36.443Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6195,7 +6195,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:32.169Z",
+                      "startTime": "2025-08-11T14:14:36.444Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6222,9 +6222,9 @@
                   "results": [
                     {
                       "workerIndex": 43,
-                      "parallelIndex": 1,
+                      "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 567,
+                      "duration": 465,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-updates.spec.ts:58:16",
@@ -6248,7 +6248,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:41.905Z",
+                      "startTime": "2025-08-11T14:14:43.817Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -6291,9 +6291,9 @@
                   "results": [
                     {
                       "workerIndex": 44,
-                      "parallelIndex": 0,
+                      "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 896,
+                      "duration": 438,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-updates.spec.ts:93:16",
@@ -6317,7 +6317,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:42.064Z",
+                      "startTime": "2025-08-11T14:14:44.552Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -6376,7 +6376,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:42.636Z",
+                      "startTime": "2025-08-11T14:14:44.371Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6419,7 +6419,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:42.640Z",
+                      "startTime": "2025-08-11T14:14:44.373Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6462,7 +6462,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:42.645Z",
+                      "startTime": "2025-08-11T14:14:44.374Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6505,7 +6505,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:42.654Z",
+                      "startTime": "2025-08-11T14:14:44.375Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6548,7 +6548,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:42.659Z",
+                      "startTime": "2025-08-11T14:14:44.377Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6577,7 +6577,7 @@
                       "workerIndex": 52,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 1049,
+                      "duration": 1124,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-updates.spec.ts:58:16",
@@ -6601,7 +6601,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:49:59.493Z",
+                      "startTime": "2025-08-11T14:14:55.345Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -6644,9 +6644,9 @@
                   "results": [
                     {
                       "workerIndex": 53,
-                      "parallelIndex": 1,
+                      "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 725,
+                      "duration": 1004,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-updates.spec.ts:93:16",
@@ -6670,7 +6670,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:04.156Z",
+                      "startTime": "2025-08-11T14:14:58.516Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -6729,7 +6729,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:02.786Z",
+                      "startTime": "2025-08-11T14:14:57.522Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6772,7 +6772,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:02.788Z",
+                      "startTime": "2025-08-11T14:14:57.523Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6815,7 +6815,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:02.792Z",
+                      "startTime": "2025-08-11T14:14:57.524Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6858,7 +6858,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:02.794Z",
+                      "startTime": "2025-08-11T14:14:57.525Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6901,7 +6901,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:02.800Z",
+                      "startTime": "2025-08-11T14:14:57.533Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6928,9 +6928,9 @@
                   "results": [
                     {
                       "workerIndex": 61,
-                      "parallelIndex": 0,
+                      "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 557,
+                      "duration": 700,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-updates.spec.ts:58:16",
@@ -6954,7 +6954,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:16.986Z",
+                      "startTime": "2025-08-11T14:15:08.660Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -6997,9 +6997,9 @@
                   "results": [
                     {
                       "workerIndex": 62,
-                      "parallelIndex": 1,
+                      "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 576,
+                      "duration": 595,
                       "error": {
                         "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n",
                         "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\e2e\\kpi-updates.spec.ts:93:16",
@@ -7023,7 +7023,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:17.764Z",
+                      "startTime": "2025-08-11T14:15:08.733Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -7082,7 +7082,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:18.674Z",
+                      "startTime": "2025-08-11T14:15:09.836Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -7125,7 +7125,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:18.677Z",
+                      "startTime": "2025-08-11T14:15:09.837Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -7168,7 +7168,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:18.679Z",
+                      "startTime": "2025-08-11T14:15:09.838Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -7211,7 +7211,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:18.682Z",
+                      "startTime": "2025-08-11T14:15:09.839Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -7254,7 +7254,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-10T22:50:18.689Z",
+                      "startTime": "2025-08-11T14:15:09.841Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -7274,8 +7274,8 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-08-10T22:48:25.936Z",
-    "duration": 113003.92,
+    "startTime": "2025-08-11T14:13:42.277Z",
+    "duration": 87664.086,
     "expected": 0,
     "skipped": 63,
     "unexpected": 63,

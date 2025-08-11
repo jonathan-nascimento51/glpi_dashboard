@@ -18,6 +18,7 @@ import {
   technicianRankingCache, 
   newTicketsCache 
 } from './cache';
+import { API_ENDPOINTS, buildApiUrl, DEFAULT_PARAMS, debugLog, errorLog, successLog } from '../config/apiConfig';
 
 // Base URL for API (mantido para compatibilidade)
 const API_BASE_URL = API_CONFIG.BASE_URL;
@@ -67,9 +68,18 @@ export const apiService = {
       metricsCache.recordRequestTime(cacheKey, responseTime);
         
         if (response.data && response.data.success && response.data.data) {
+          // A API retorna dados em response.data.data
           const rawData = response.data.data;
           
+          console.log('🔍 API Service - rawData:', rawData);
+          console.log('🔍 API Service - rawData.niveis:', rawData.niveis);
+          console.log('🔍 API Service - Keys de rawData:', Object.keys(rawData || {}));
           
+          if (rawData.niveis) {
+            console.log('🔍 API Service - Dados dos níveis encontrados:', rawData.niveis);
+          } else {
+            console.log('🔍 API Service - PROBLEMA: rawData.niveis não existe!');
+          }
           
           // Verificar se há filtros aplicados (estrutura diferente)
           let processedNiveis: import('../types/api').NiveisMetrics;
@@ -129,6 +139,16 @@ export const apiService = {
             // Processar dados dos níveis
             if (rawData.niveis) {
               processedNiveis = rawData.niveis;
+              
+              // Garantir que todos os níveis tenham a propriedade 'total'
+              Object.keys(processedNiveis).forEach(nivel => {
+                const nivelData = processedNiveis[nivel as keyof typeof processedNiveis];
+                if (nivelData && typeof nivelData === 'object') {
+                  nivelData.total = nivelData.novos + nivelData.progresso + nivelData.pendentes + nivelData.resolvidos;
+                }
+              });
+              
+              console.log('🔍 API Service - Níveis processados com totais:', processedNiveis);
             } else if (rawData.levels) {
               // Caso os dados venham como 'levels' ao invés de 'niveis'
               processedNiveis = rawData.levels;
@@ -204,7 +224,8 @@ export const apiService = {
     }
 
     try {
-      const response = await api.get<ApiResponse<SystemStatus>>('/system/status');
+      debugLog('getSystemStatus - Buscando status do sistema...');
+      const response = await api.get<ApiResponse<SystemStatus>>(API_ENDPOINTS.SYSTEM_STATUS);
       
       // Monitora performance
       const responseTime = Date.now() - startTime;
@@ -215,9 +236,10 @@ export const apiService = {
         const data = response.data.data;
         // Armazenar no cache
         systemStatusCache.set(cacheParams, data);
+        successLog('getSystemStatus - Status do sistema obtido com sucesso');
         return data;
       } else {
-        console.error('API returned unsuccessful response:', response.data);
+        errorLog('getSystemStatus - API returned unsuccessful response:', response.data);
         // Return fallback data (não cachear)
         return {
           api: 'offline',
@@ -232,7 +254,7 @@ export const apiService = {
         };
       }
     } catch (error) {
-      console.error('Error fetching system status:', error);
+      errorLog('getSystemStatus - Error fetching system status:', error);
       // Return fallback data instead of throwing (não cachear)
       return {
         api: 'offline',
@@ -271,7 +293,8 @@ export const apiService = {
     }
 
     try {
-      const response = await api.get<ApiResponse<any[]>>('/technicians/ranking');
+      debugLog('getTechnicianRanking - Buscando ranking de técnicos...');
+      const response = await api.get<ApiResponse<any[]>>(API_ENDPOINTS.TECHNICIANS_RANKING);
       
       // Monitora performance
       const responseTime = Date.now() - startTime;
@@ -282,31 +305,34 @@ export const apiService = {
         const data = response.data.data;
         // Armazenar no cache
         technicianRankingCache.set(cacheParams, data);
+        successLog('getTechnicianRanking - Ranking de técnicos obtido com sucesso');
         return data;
       } else {
-        console.error('API returned unsuccessful response:', response.data);
+        errorLog('getTechnicianRanking - API returned unsuccessful response:', response.data);
         return [];
       }
     } catch (error) {
-      console.error('Error fetching technician ranking:', error);
+      errorLog('getTechnicianRanking - Error fetching technician ranking:', error);
       return [];
     }
   },
 
   // Get new tickets
-  async getNewTickets(limit: number = 5): Promise<any[]> {
+  async getNewTickets(limit: number = DEFAULT_PARAMS.TICKETS_LIMIT): Promise<any[]> {
     const startTime = Date.now();
     const cacheParams = { endpoint: 'tickets/new', limit: limit.toString() };
 
     // Verificar cache primeiro
     const cachedData = newTicketsCache.get(cacheParams);
     if (cachedData) {
-      console.log('📦 Retornando dados do cache para novos tickets');
+      debugLog('getNewTickets - Retornando dados do cache para novos tickets');
       return cachedData;
     }
 
     try {
-      const response = await api.get<ApiResponse<any[]>>(`/tickets/new?limit=${limit}`);
+      debugLog('getNewTickets - Buscando novos tickets...', { limit });
+      const url = buildApiUrl(API_ENDPOINTS.TICKETS_NEW, { limit });
+      const response = await api.get<ApiResponse<any[]>>(url);
       
       // Monitora performance
       const responseTime = Date.now() - startTime;
@@ -317,9 +343,10 @@ export const apiService = {
         const data = response.data.data;
         // Armazenar no cache
         newTicketsCache.set(cacheParams, data);
+        successLog('getNewTickets - Novos tickets obtidos com sucesso', { count: data.length });
         return data;
       } else {
-        console.error('API returned unsuccessful response:', response.data);
+        errorLog('getNewTickets - API returned unsuccessful response:', response.data);
         // Return mock data as fallback (não cachear)
         return [
           {
@@ -346,7 +373,7 @@ export const apiService = {
         ];
       }
     } catch (error) {
-      console.error('Error fetching new tickets:', error);
+      errorLog('getNewTickets - Error fetching new tickets:', error);
       // Return mock data instead of throwing error (não cachear)
       return [
         {

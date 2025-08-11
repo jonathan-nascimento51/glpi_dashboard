@@ -1,4 +1,4 @@
-Ôªøimport { useState, useEffect, Profiler, Suspense, ProfilerOnRenderCallback } from 'react';
+import { useState, useEffect, Profiler, Suspense, ProfilerOnRenderCallback } from 'react';
 import { Header } from './components/Header';
 import DebugPanel from './components/DebugPanel';
 import { NotificationSystem } from './components/NotificationSystem';
@@ -25,7 +25,7 @@ import { useCacheNotifications } from './hooks/useCacheNotifications';
 import { usePerformanceProfiler } from './utils/performanceMonitor';
 import { performanceMonitor } from './utils/performanceMonitor';
 import { TicketStatus, Theme } from './types';
-// import { clearAllCaches } from './services/api'; // N√£o utilizado
+// import { clearAllCaches } from './services/api'; // N„o utilizado
 
 function App() {
   const {
@@ -42,7 +42,7 @@ function App() {
     theme,
     dataIntegrityReport,
     loadData,
-    // forceRefresh, // N√£o utilizado
+    // forceRefresh, // N„o utilizado
     updateFilters,
     search,
     addNotification,
@@ -176,7 +176,7 @@ function App() {
         systemActive={true}
         searchQuery={searchQuery}
         searchResults={[]}
-        dateRange={filters?.dateRange || { startDate: '', endDate: '', label: 'Selecionar per√≠odo' }}
+        dateRange={filters?.dateRange || { startDate: '', endDate: '', label: 'Selecionar perÌodo' }}
         onSearch={search}
         theme={theme as Theme}
         onThemeChange={(newTheme: Theme) => changeTheme(newTheme)}
@@ -196,7 +196,7 @@ function App() {
       
       {/* Dashboard Principal */}
       <div className="flex-1 overflow-hidden">
-        {levelMetrics ? (
+        {metrics && levelMetrics ? (
           <Profiler id="ModernDashboard" onRender={profilerCallback}>
             <ModernDashboard
               metrics={{
@@ -221,7 +221,7 @@ function App() {
             />
           </Profiler>
         ) : (
-          // Fallback para quando n√£o h√° dados
+          // Fallback para quando n„o h· dados
           <div className="h-full bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center">
             <div className="text-center py-12">
               <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
@@ -230,10 +230,10 @@ function App() {
                 </svg>
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Nenhum dado dispon√≠vel
+                Nenhum dado disponÌvel
               </h3>
               <p className="text-gray-600 mb-4">
-                N√£o foi poss√≠vel carregar os dados do dashboard.
+                N„o foi possÌvel carregar os dados do dashboard.
               </p>
               <button 
                 onClick={() => loadData()} 

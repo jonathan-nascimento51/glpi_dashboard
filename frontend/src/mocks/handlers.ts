@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw';
 import { mockData } from './mockData';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = '/api';
 
 export const handlers = [
   // KPIs endpoint v1

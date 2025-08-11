@@ -4,7 +4,7 @@ import { vi } from 'vitest';
 // Mock das variáveis de ambiente para testes
 Object.defineProperty(import.meta, 'env', {
   value: {
-    VITE_API_BASE_URL: 'http://localhost:8000/v1',
+    VITE_API_BASE_URL: '/api',
     VITE_API_TIMEOUT: '10000',
     VITE_API_RETRY_ATTEMPTS: '3',
     VITE_API_RETRY_DELAY: '1000',

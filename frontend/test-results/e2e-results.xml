@@ -1,5 +1,5 @@
-<testsuites id="" name="" tests="126" failures="63" skipped="63" errors="0" time="113.00392">
-<testsuite name="api-error-handling.spec.ts" timestamp="2025-08-10T22:48:26.261Z" hostname="chromium" tests="4" failures="0" skipped="4" time="0" errors="0">
+<testsuites id="" name="" tests="126" failures="63" skipped="63" errors="0" time="87.664086">
+<testsuite name="api-error-handling.spec.ts" timestamp="2025-08-11T14:13:47.616Z" hostname="chromium" tests="4" failures="0" skipped="4" time="0" errors="0">
 <testcase name="API Error Handling › should show error state when API is down" classname="api-error-handling.spec.ts" time="0">
 <properties>
 <property name="skip" value="">
@@ -33,8 +33,8 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="kpi-advanced.spec.ts" timestamp="2025-08-10T22:48:26.261Z" hostname="chromium" tests="7" failures="7" skipped="0" time="4.112" errors="0">
-<testcase name="KPI Updates - Advanced E2E Tests › should handle API errors gracefully" classname="kpi-advanced.spec.ts" time="1.194">
+<testsuite name="kpi-advanced.spec.ts" timestamp="2025-08-11T14:13:47.616Z" hostname="chromium" tests="7" failures="7" skipped="0" time="3.814" errors="0">
+<testcase name="KPI Updates - Advanced E2E Tests › should handle API errors gracefully" classname="kpi-advanced.spec.ts" time="0.935">
 <failure message="kpi-advanced.spec.ts:34:3 should handle API errors gracefully" type="FAILURE">
 <![CDATA[  [chromium] › kpi-advanced.spec.ts:34:3 › KPI Updates - Advanced E2E Tests › should handle API errors gracefully 
 
@@ -69,7 +69,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should display different data based on feature flags" classname="kpi-advanced.spec.ts" time="1.136">
+<testcase name="KPI Updates - Advanced E2E Tests › should display different data based on feature flags" classname="kpi-advanced.spec.ts" time="0.937">
 <failure message="kpi-advanced.spec.ts:58:3 should display different data based on feature flags" type="FAILURE">
 <![CDATA[  [chromium] › kpi-advanced.spec.ts:58:3 › KPI Updates - Advanced E2E Tests › should display different data based on feature flags 
 
@@ -104,7 +104,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should handle network timeouts" classname="kpi-advanced.spec.ts" time="0.369">
+<testcase name="KPI Updates - Advanced E2E Tests › should handle network timeouts" classname="kpi-advanced.spec.ts" time="0.432">
 <failure message="kpi-advanced.spec.ts:110:3 should handle network timeouts" type="FAILURE">
 <![CDATA[  [chromium] › kpi-advanced.spec.ts:110:3 › KPI Updates - Advanced E2E Tests › should handle network timeouts 
 
@@ -139,7 +139,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should retry failed requests" classname="kpi-advanced.spec.ts" time="0.429">
+<testcase name="KPI Updates - Advanced E2E Tests › should retry failed requests" classname="kpi-advanced.spec.ts" time="0.38">
 <failure message="kpi-advanced.spec.ts:133:3 should retry failed requests" type="FAILURE">
 <![CDATA[  [chromium] › kpi-advanced.spec.ts:133:3 › KPI Updates - Advanced E2E Tests › should retry failed requests 
 
@@ -174,7 +174,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should validate accessibility" classname="kpi-advanced.spec.ts" time="0.33">
+<testcase name="KPI Updates - Advanced E2E Tests › should validate accessibility" classname="kpi-advanced.spec.ts" time="0.368">
 <failure message="kpi-advanced.spec.ts:168:3 should validate accessibility" type="FAILURE">
 <![CDATA[  [chromium] › kpi-advanced.spec.ts:168:3 › KPI Updates - Advanced E2E Tests › should validate accessibility 
 
@@ -209,7 +209,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should handle rapid filter changes" classname="kpi-advanced.spec.ts" time="0.339">
+<testcase name="KPI Updates - Advanced E2E Tests › should handle rapid filter changes" classname="kpi-advanced.spec.ts" time="0.373">
 <failure message="kpi-advanced.spec.ts:189:3 should handle rapid filter changes" type="FAILURE">
 <![CDATA[  [chromium] › kpi-advanced.spec.ts:189:3 › KPI Updates - Advanced E2E Tests › should handle rapid filter changes 
 
@@ -244,7 +244,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should maintain state during navigation" classname="kpi-advanced.spec.ts" time="0.315">
+<testcase name="KPI Updates - Advanced E2E Tests › should maintain state during navigation" classname="kpi-advanced.spec.ts" time="0.389">
 <failure message="kpi-advanced.spec.ts:218:3 should maintain state during navigation" type="FAILURE">
 <![CDATA[  [chromium] › kpi-advanced.spec.ts:218:3 › KPI Updates - Advanced E2E Tests › should maintain state during navigation 
 
@@ -280,8 +280,8 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="kpi-updates.spec.ts" timestamp="2025-08-10T22:48:26.261Z" hostname="chromium" tests="7" failures="2" skipped="5" time="0.754" errors="0">
-<testcase name="KPI Updates - E2E Tests › should update KPIs when date period is changed" classname="kpi-updates.spec.ts" time="0.286">
+<testsuite name="kpi-updates.spec.ts" timestamp="2025-08-11T14:13:47.616Z" hostname="chromium" tests="7" failures="2" skipped="5" time="0.648" errors="0">
+<testcase name="KPI Updates - E2E Tests › should update KPIs when date period is changed" classname="kpi-updates.spec.ts" time="0.328">
 <failure message="kpi-updates.spec.ts:57:3 should update KPIs when date period is changed" type="FAILURE">
 <![CDATA[  [chromium] › kpi-updates.spec.ts:57:3 › KPI Updates - E2E Tests › should update KPIs when date period is changed 
 
@@ -316,7 +316,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - E2E Tests › should show loading state during KPI updates" classname="kpi-updates.spec.ts" time="0.468">
+<testcase name="KPI Updates - E2E Tests › should show loading state during KPI updates" classname="kpi-updates.spec.ts" time="0.32">
 <failure message="kpi-updates.spec.ts:92:3 should show loading state during KPI updates" type="FAILURE">
 <![CDATA[  [chromium] › kpi-updates.spec.ts:92:3 › KPI Updates - E2E Tests › should show loading state during KPI updates 
 
@@ -392,7 +392,7 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="api-error-handling.spec.ts" timestamp="2025-08-10T22:48:26.261Z" hostname="firefox" tests="4" failures="0" skipped="4" time="0" errors="0">
+<testsuite name="api-error-handling.spec.ts" timestamp="2025-08-11T14:13:47.616Z" hostname="firefox" tests="4" failures="0" skipped="4" time="0" errors="0">
 <testcase name="API Error Handling › should show error state when API is down" classname="api-error-handling.spec.ts" time="0">
 <properties>
 <property name="skip" value="">
@@ -426,8 +426,8 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="kpi-advanced.spec.ts" timestamp="2025-08-10T22:48:26.261Z" hostname="firefox" tests="7" failures="7" skipped="0" time="15.118" errors="0">
-<testcase name="KPI Updates - Advanced E2E Tests › should handle API errors gracefully" classname="kpi-advanced.spec.ts" time="1.878">
+<testsuite name="kpi-advanced.spec.ts" timestamp="2025-08-11T14:13:47.616Z" hostname="firefox" tests="7" failures="7" skipped="0" time="13.584" errors="0">
+<testcase name="KPI Updates - Advanced E2E Tests › should handle API errors gracefully" classname="kpi-advanced.spec.ts" time="2.081">
 <failure message="kpi-advanced.spec.ts:34:3 should handle API errors gracefully" type="FAILURE">
 <![CDATA[  [firefox] › kpi-advanced.spec.ts:34:3 › KPI Updates - Advanced E2E Tests › should handle API errors gracefully 
 
@@ -462,7 +462,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should display different data based on feature flags" classname="kpi-advanced.spec.ts" time="1.558">
+<testcase name="KPI Updates - Advanced E2E Tests › should display different data based on feature flags" classname="kpi-advanced.spec.ts" time="2.06">
 <failure message="kpi-advanced.spec.ts:58:3 should display different data based on feature flags" type="FAILURE">
 <![CDATA[  [firefox] › kpi-advanced.spec.ts:58:3 › KPI Updates - Advanced E2E Tests › should display different data based on feature flags 
 
@@ -497,7 +497,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should handle network timeouts" classname="kpi-advanced.spec.ts" time="2.365">
+<testcase name="KPI Updates - Advanced E2E Tests › should handle network timeouts" classname="kpi-advanced.spec.ts" time="1.744">
 <failure message="kpi-advanced.spec.ts:110:3 should handle network timeouts" type="FAILURE">
 <![CDATA[  [firefox] › kpi-advanced.spec.ts:110:3 › KPI Updates - Advanced E2E Tests › should handle network timeouts 
 
@@ -532,7 +532,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should retry failed requests" classname="kpi-advanced.spec.ts" time="2.186">
+<testcase name="KPI Updates - Advanced E2E Tests › should retry failed requests" classname="kpi-advanced.spec.ts" time="2.178">
 <failure message="kpi-advanced.spec.ts:133:3 should retry failed requests" type="FAILURE">
 <![CDATA[  [firefox] › kpi-advanced.spec.ts:133:3 › KPI Updates - Advanced E2E Tests › should retry failed requests 
 
@@ -567,7 +567,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should validate accessibility" classname="kpi-advanced.spec.ts" time="2.023">
+<testcase name="KPI Updates - Advanced E2E Tests › should validate accessibility" classname="kpi-advanced.spec.ts" time="1.745">
 <failure message="kpi-advanced.spec.ts:168:3 should validate accessibility" type="FAILURE">
 <![CDATA[  [firefox] › kpi-advanced.spec.ts:168:3 › KPI Updates - Advanced E2E Tests › should validate accessibility 
 
@@ -602,7 +602,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should handle rapid filter changes" classname="kpi-advanced.spec.ts" time="2.542">
+<testcase name="KPI Updates - Advanced E2E Tests › should handle rapid filter changes" classname="kpi-advanced.spec.ts" time="1.906">
 <failure message="kpi-advanced.spec.ts:189:3 should handle rapid filter changes" type="FAILURE">
 <![CDATA[  [firefox] › kpi-advanced.spec.ts:189:3 › KPI Updates - Advanced E2E Tests › should handle rapid filter changes 
 
@@ -637,7 +637,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should maintain state during navigation" classname="kpi-advanced.spec.ts" time="2.566">
+<testcase name="KPI Updates - Advanced E2E Tests › should maintain state during navigation" classname="kpi-advanced.spec.ts" time="1.87">
 <failure message="kpi-advanced.spec.ts:218:3 should maintain state during navigation" type="FAILURE">
 <![CDATA[  [firefox] › kpi-advanced.spec.ts:218:3 › KPI Updates - Advanced E2E Tests › should maintain state during navigation 
 
@@ -673,8 +673,8 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="kpi-updates.spec.ts" timestamp="2025-08-10T22:48:26.261Z" hostname="firefox" tests="7" failures="2" skipped="5" time="5.357" errors="0">
-<testcase name="KPI Updates - E2E Tests › should update KPIs when date period is changed" classname="kpi-updates.spec.ts" time="3.21">
+<testsuite name="kpi-updates.spec.ts" timestamp="2025-08-11T14:13:47.616Z" hostname="firefox" tests="7" failures="2" skipped="5" time="4.174" errors="0">
+<testcase name="KPI Updates - E2E Tests › should update KPIs when date period is changed" classname="kpi-updates.spec.ts" time="2.165">
 <failure message="kpi-updates.spec.ts:57:3 should update KPIs when date period is changed" type="FAILURE">
 <![CDATA[  [firefox] › kpi-updates.spec.ts:57:3 › KPI Updates - E2E Tests › should update KPIs when date period is changed 
 
@@ -709,7 +709,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - E2E Tests › should show loading state during KPI updates" classname="kpi-updates.spec.ts" time="2.147">
+<testcase name="KPI Updates - E2E Tests › should show loading state during KPI updates" classname="kpi-updates.spec.ts" time="2.009">
 <failure message="kpi-updates.spec.ts:92:3 should show loading state during KPI updates" type="FAILURE">
 <![CDATA[  [firefox] › kpi-updates.spec.ts:92:3 › KPI Updates - E2E Tests › should show loading state during KPI updates 
 
@@ -785,7 +785,7 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="api-error-handling.spec.ts" timestamp="2025-08-10T22:48:26.261Z" hostname="webkit" tests="4" failures="0" skipped="4" time="0" errors="0">
+<testsuite name="api-error-handling.spec.ts" timestamp="2025-08-11T14:13:47.616Z" hostname="webkit" tests="4" failures="0" skipped="4" time="0" errors="0">
 <testcase name="API Error Handling › should show error state when API is down" classname="api-error-handling.spec.ts" time="0">
 <properties>
 <property name="skip" value="">
@@ -819,8 +819,8 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="kpi-advanced.spec.ts" timestamp="2025-08-10T22:48:26.261Z" hostname="webkit" tests="7" failures="7" skipped="0" time="4.948" errors="0">
-<testcase name="KPI Updates - Advanced E2E Tests › should handle API errors gracefully" classname="kpi-advanced.spec.ts" time="1.218">
+<testsuite name="kpi-advanced.spec.ts" timestamp="2025-08-11T14:13:47.616Z" hostname="webkit" tests="7" failures="7" skipped="0" time="4.096" errors="0">
+<testcase name="KPI Updates - Advanced E2E Tests › should handle API errors gracefully" classname="kpi-advanced.spec.ts" time="1.196">
 <failure message="kpi-advanced.spec.ts:34:3 should handle API errors gracefully" type="FAILURE">
 <![CDATA[  [webkit] › kpi-advanced.spec.ts:34:3 › KPI Updates - Advanced E2E Tests › should handle API errors gracefully 
 
@@ -855,7 +855,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should display different data based on feature flags" classname="kpi-advanced.spec.ts" time="0.791">
+<testcase name="KPI Updates - Advanced E2E Tests › should display different data based on feature flags" classname="kpi-advanced.spec.ts" time="0.466">
 <failure message="kpi-advanced.spec.ts:58:3 should display different data based on feature flags" type="FAILURE">
 <![CDATA[  [webkit] › kpi-advanced.spec.ts:58:3 › KPI Updates - Advanced E2E Tests › should display different data based on feature flags 
 
@@ -890,7 +890,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should handle network timeouts" classname="kpi-advanced.spec.ts" time="0.522">
+<testcase name="KPI Updates - Advanced E2E Tests › should handle network timeouts" classname="kpi-advanced.spec.ts" time="0.505">
 <failure message="kpi-advanced.spec.ts:110:3 should handle network timeouts" type="FAILURE">
 <![CDATA[  [webkit] › kpi-advanced.spec.ts:110:3 › KPI Updates - Advanced E2E Tests › should handle network timeouts 
 
@@ -925,7 +925,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should retry failed requests" classname="kpi-advanced.spec.ts" time="0.539">
+<testcase name="KPI Updates - Advanced E2E Tests › should retry failed requests" classname="kpi-advanced.spec.ts" time="0.503">
 <failure message="kpi-advanced.spec.ts:133:3 should retry failed requests" type="FAILURE">
 <![CDATA[  [webkit] › kpi-advanced.spec.ts:133:3 › KPI Updates - Advanced E2E Tests › should retry failed requests 
 
@@ -960,7 +960,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should validate accessibility" classname="kpi-advanced.spec.ts" time="0.55">
+<testcase name="KPI Updates - Advanced E2E Tests › should validate accessibility" classname="kpi-advanced.spec.ts" time="0.464">
 <failure message="kpi-advanced.spec.ts:168:3 should validate accessibility" type="FAILURE">
 <![CDATA[  [webkit] › kpi-advanced.spec.ts:168:3 › KPI Updates - Advanced E2E Tests › should validate accessibility 
 
@@ -995,7 +995,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should handle rapid filter changes" classname="kpi-advanced.spec.ts" time="0.761">
+<testcase name="KPI Updates - Advanced E2E Tests › should handle rapid filter changes" classname="kpi-advanced.spec.ts" time="0.516">
 <failure message="kpi-advanced.spec.ts:189:3 should handle rapid filter changes" type="FAILURE">
 <![CDATA[  [webkit] › kpi-advanced.spec.ts:189:3 › KPI Updates - Advanced E2E Tests › should handle rapid filter changes 
 
@@ -1030,7 +1030,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should maintain state during navigation" classname="kpi-advanced.spec.ts" time="0.567">
+<testcase name="KPI Updates - Advanced E2E Tests › should maintain state during navigation" classname="kpi-advanced.spec.ts" time="0.446">
 <failure message="kpi-advanced.spec.ts:218:3 should maintain state during navigation" type="FAILURE">
 <![CDATA[  [webkit] › kpi-advanced.spec.ts:218:3 › KPI Updates - Advanced E2E Tests › should maintain state during navigation 
 
@@ -1066,8 +1066,8 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="kpi-updates.spec.ts" timestamp="2025-08-10T22:48:26.261Z" hostname="webkit" tests="7" failures="2" skipped="5" time="1.56" errors="0">
-<testcase name="KPI Updates - E2E Tests › should update KPIs when date period is changed" classname="kpi-updates.spec.ts" time="0.763">
+<testsuite name="kpi-updates.spec.ts" timestamp="2025-08-11T14:13:47.616Z" hostname="webkit" tests="7" failures="2" skipped="5" time="0.915" errors="0">
+<testcase name="KPI Updates - E2E Tests › should update KPIs when date period is changed" classname="kpi-updates.spec.ts" time="0.455">
 <failure message="kpi-updates.spec.ts:57:3 should update KPIs when date period is changed" type="FAILURE">
 <![CDATA[  [webkit] › kpi-updates.spec.ts:57:3 › KPI Updates - E2E Tests › should update KPIs when date period is changed 
 
@@ -1102,7 +1102,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - E2E Tests › should show loading state during KPI updates" classname="kpi-updates.spec.ts" time="0.797">
+<testcase name="KPI Updates - E2E Tests › should show loading state during KPI updates" classname="kpi-updates.spec.ts" time="0.46">
 <failure message="kpi-updates.spec.ts:92:3 should show loading state during KPI updates" type="FAILURE">
 <![CDATA[  [webkit] › kpi-updates.spec.ts:92:3 › KPI Updates - E2E Tests › should show loading state during KPI updates 
 
@@ -1178,7 +1178,7 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="api-error-handling.spec.ts" timestamp="2025-08-10T22:48:26.261Z" hostname="Mobile Chrome" tests="4" failures="0" skipped="4" time="0" errors="0">
+<testsuite name="api-error-handling.spec.ts" timestamp="2025-08-11T14:13:47.616Z" hostname="Mobile Chrome" tests="4" failures="0" skipped="4" time="0" errors="0">
 <testcase name="API Error Handling › should show error state when API is down" classname="api-error-handling.spec.ts" time="0">
 <properties>
 <property name="skip" value="">
@@ -1212,8 +1212,8 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="kpi-advanced.spec.ts" timestamp="2025-08-10T22:48:26.261Z" hostname="Mobile Chrome" tests="7" failures="7" skipped="0" time="3.012" errors="0">
-<testcase name="KPI Updates - Advanced E2E Tests › should handle API errors gracefully" classname="kpi-advanced.spec.ts" time="0.476">
+<testsuite name="kpi-advanced.spec.ts" timestamp="2025-08-11T14:13:47.616Z" hostname="Mobile Chrome" tests="7" failures="7" skipped="0" time="2.552" errors="0">
+<testcase name="KPI Updates - Advanced E2E Tests › should handle API errors gracefully" classname="kpi-advanced.spec.ts" time="0.342">
 <failure message="kpi-advanced.spec.ts:34:3 should handle API errors gracefully" type="FAILURE">
 <![CDATA[  [Mobile Chrome] › kpi-advanced.spec.ts:34:3 › KPI Updates - Advanced E2E Tests › should handle API errors gracefully 
 
@@ -1248,7 +1248,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should display different data based on feature flags" classname="kpi-advanced.spec.ts" time="0.431">
+<testcase name="KPI Updates - Advanced E2E Tests › should display different data based on feature flags" classname="kpi-advanced.spec.ts" time="0.363">
 <failure message="kpi-advanced.spec.ts:58:3 should display different data based on feature flags" type="FAILURE">
 <![CDATA[  [Mobile Chrome] › kpi-advanced.spec.ts:58:3 › KPI Updates - Advanced E2E Tests › should display different data based on feature flags 
 
@@ -1283,7 +1283,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should handle network timeouts" classname="kpi-advanced.spec.ts" time="0.364">
+<testcase name="KPI Updates - Advanced E2E Tests › should handle network timeouts" classname="kpi-advanced.spec.ts" time="0.454">
 <failure message="kpi-advanced.spec.ts:110:3 should handle network timeouts" type="FAILURE">
 <![CDATA[  [Mobile Chrome] › kpi-advanced.spec.ts:110:3 › KPI Updates - Advanced E2E Tests › should handle network timeouts 
 
@@ -1318,7 +1318,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should retry failed requests" classname="kpi-advanced.spec.ts" time="0.407">
+<testcase name="KPI Updates - Advanced E2E Tests › should retry failed requests" classname="kpi-advanced.spec.ts" time="0.346">
 <failure message="kpi-advanced.spec.ts:133:3 should retry failed requests" type="FAILURE">
 <![CDATA[  [Mobile Chrome] › kpi-advanced.spec.ts:133:3 › KPI Updates - Advanced E2E Tests › should retry failed requests 
 
@@ -1353,7 +1353,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should validate accessibility" classname="kpi-advanced.spec.ts" time="0.449">
+<testcase name="KPI Updates - Advanced E2E Tests › should validate accessibility" classname="kpi-advanced.spec.ts" time="0.361">
 <failure message="kpi-advanced.spec.ts:168:3 should validate accessibility" type="FAILURE">
 <![CDATA[  [Mobile Chrome] › kpi-advanced.spec.ts:168:3 › KPI Updates - Advanced E2E Tests › should validate accessibility 
 
@@ -1388,7 +1388,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should handle rapid filter changes" classname="kpi-advanced.spec.ts" time="0.391">
+<testcase name="KPI Updates - Advanced E2E Tests › should handle rapid filter changes" classname="kpi-advanced.spec.ts" time="0.371">
 <failure message="kpi-advanced.spec.ts:189:3 should handle rapid filter changes" type="FAILURE">
 <![CDATA[  [Mobile Chrome] › kpi-advanced.spec.ts:189:3 › KPI Updates - Advanced E2E Tests › should handle rapid filter changes 
 
@@ -1423,7 +1423,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should maintain state during navigation" classname="kpi-advanced.spec.ts" time="0.494">
+<testcase name="KPI Updates - Advanced E2E Tests › should maintain state during navigation" classname="kpi-advanced.spec.ts" time="0.315">
 <failure message="kpi-advanced.spec.ts:218:3 should maintain state during navigation" type="FAILURE">
 <![CDATA[  [Mobile Chrome] › kpi-advanced.spec.ts:218:3 › KPI Updates - Advanced E2E Tests › should maintain state during navigation 
 
@@ -1459,8 +1459,8 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="kpi-updates.spec.ts" timestamp="2025-08-10T22:48:26.261Z" hostname="Mobile Chrome" tests="7" failures="2" skipped="5" time="0.84" errors="0">
-<testcase name="KPI Updates - E2E Tests › should update KPIs when date period is changed" classname="kpi-updates.spec.ts" time="0.425">
+<testsuite name="kpi-updates.spec.ts" timestamp="2025-08-11T14:13:47.616Z" hostname="Mobile Chrome" tests="7" failures="2" skipped="5" time="0.742" errors="0">
+<testcase name="KPI Updates - E2E Tests › should update KPIs when date period is changed" classname="kpi-updates.spec.ts" time="0.397">
 <failure message="kpi-updates.spec.ts:57:3 should update KPIs when date period is changed" type="FAILURE">
 <![CDATA[  [Mobile Chrome] › kpi-updates.spec.ts:57:3 › KPI Updates - E2E Tests › should update KPIs when date period is changed 
 
@@ -1495,7 +1495,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - E2E Tests › should show loading state during KPI updates" classname="kpi-updates.spec.ts" time="0.415">
+<testcase name="KPI Updates - E2E Tests › should show loading state during KPI updates" classname="kpi-updates.spec.ts" time="0.345">
 <failure message="kpi-updates.spec.ts:92:3 should show loading state during KPI updates" type="FAILURE">
 <![CDATA[  [Mobile Chrome] › kpi-updates.spec.ts:92:3 › KPI Updates - E2E Tests › should show loading state during KPI updates 
 
@@ -1571,7 +1571,7 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="api-error-handling.spec.ts" timestamp="2025-08-10T22:48:26.261Z" hostname="Mobile Safari" tests="4" failures="0" skipped="4" time="0" errors="0">
+<testsuite name="api-error-handling.spec.ts" timestamp="2025-08-11T14:13:47.616Z" hostname="Mobile Safari" tests="4" failures="0" skipped="4" time="0" errors="0">
 <testcase name="API Error Handling › should show error state when API is down" classname="api-error-handling.spec.ts" time="0">
 <properties>
 <property name="skip" value="">
@@ -1605,8 +1605,8 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="kpi-advanced.spec.ts" timestamp="2025-08-10T22:48:26.261Z" hostname="Mobile Safari" tests="7" failures="7" skipped="0" time="4.185" errors="0">
-<testcase name="KPI Updates - Advanced E2E Tests › should handle API errors gracefully" classname="kpi-advanced.spec.ts" time="0.589">
+<testsuite name="kpi-advanced.spec.ts" timestamp="2025-08-11T14:13:47.616Z" hostname="Mobile Safari" tests="7" failures="7" skipped="0" time="2.957" errors="0">
+<testcase name="KPI Updates - Advanced E2E Tests › should handle API errors gracefully" classname="kpi-advanced.spec.ts" time="0.432">
 <failure message="kpi-advanced.spec.ts:34:3 should handle API errors gracefully" type="FAILURE">
 <![CDATA[  [Mobile Safari] › kpi-advanced.spec.ts:34:3 › KPI Updates - Advanced E2E Tests › should handle API errors gracefully 
 
@@ -1641,7 +1641,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should display different data based on feature flags" classname="kpi-advanced.spec.ts" time="0.73">
+<testcase name="KPI Updates - Advanced E2E Tests › should display different data based on feature flags" classname="kpi-advanced.spec.ts" time="0.421">
 <failure message="kpi-advanced.spec.ts:58:3 should display different data based on feature flags" type="FAILURE">
 <![CDATA[  [Mobile Safari] › kpi-advanced.spec.ts:58:3 › KPI Updates - Advanced E2E Tests › should display different data based on feature flags 
 
@@ -1676,7 +1676,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should handle network timeouts" classname="kpi-advanced.spec.ts" time="0.762">
+<testcase name="KPI Updates - Advanced E2E Tests › should handle network timeouts" classname="kpi-advanced.spec.ts" time="0.422">
 <failure message="kpi-advanced.spec.ts:110:3 should handle network timeouts" type="FAILURE">
 <![CDATA[  [Mobile Safari] › kpi-advanced.spec.ts:110:3 › KPI Updates - Advanced E2E Tests › should handle network timeouts 
 
@@ -1711,7 +1711,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should retry failed requests" classname="kpi-advanced.spec.ts" time="0.523">
+<testcase name="KPI Updates - Advanced E2E Tests › should retry failed requests" classname="kpi-advanced.spec.ts" time="0.429">
 <failure message="kpi-advanced.spec.ts:133:3 should retry failed requests" type="FAILURE">
 <![CDATA[  [Mobile Safari] › kpi-advanced.spec.ts:133:3 › KPI Updates - Advanced E2E Tests › should retry failed requests 
 
@@ -1746,7 +1746,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should validate accessibility" classname="kpi-advanced.spec.ts" time="0.54">
+<testcase name="KPI Updates - Advanced E2E Tests › should validate accessibility" classname="kpi-advanced.spec.ts" time="0.434">
 <failure message="kpi-advanced.spec.ts:168:3 should validate accessibility" type="FAILURE">
 <![CDATA[  [Mobile Safari] › kpi-advanced.spec.ts:168:3 › KPI Updates - Advanced E2E Tests › should validate accessibility 
 
@@ -1781,7 +1781,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should handle rapid filter changes" classname="kpi-advanced.spec.ts" time="0.494">
+<testcase name="KPI Updates - Advanced E2E Tests › should handle rapid filter changes" classname="kpi-advanced.spec.ts" time="0.416">
 <failure message="kpi-advanced.spec.ts:189:3 should handle rapid filter changes" type="FAILURE">
 <![CDATA[  [Mobile Safari] › kpi-advanced.spec.ts:189:3 › KPI Updates - Advanced E2E Tests › should handle rapid filter changes 
 
@@ -1816,7 +1816,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should maintain state during navigation" classname="kpi-advanced.spec.ts" time="0.547">
+<testcase name="KPI Updates - Advanced E2E Tests › should maintain state during navigation" classname="kpi-advanced.spec.ts" time="0.403">
 <failure message="kpi-advanced.spec.ts:218:3 should maintain state during navigation" type="FAILURE">
 <![CDATA[  [Mobile Safari] › kpi-advanced.spec.ts:218:3 › KPI Updates - Advanced E2E Tests › should maintain state during navigation 
 
@@ -1852,8 +1852,8 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="kpi-updates.spec.ts" timestamp="2025-08-10T22:48:26.261Z" hostname="Mobile Safari" tests="7" failures="2" skipped="5" time="1.463" errors="0">
-<testcase name="KPI Updates - E2E Tests › should update KPIs when date period is changed" classname="kpi-updates.spec.ts" time="0.567">
+<testsuite name="kpi-updates.spec.ts" timestamp="2025-08-11T14:13:47.616Z" hostname="Mobile Safari" tests="7" failures="2" skipped="5" time="0.903" errors="0">
+<testcase name="KPI Updates - E2E Tests › should update KPIs when date period is changed" classname="kpi-updates.spec.ts" time="0.465">
 <failure message="kpi-updates.spec.ts:57:3 should update KPIs when date period is changed" type="FAILURE">
 <![CDATA[  [Mobile Safari] › kpi-updates.spec.ts:57:3 › KPI Updates - E2E Tests › should update KPIs when date period is changed 
 
@@ -1888,7 +1888,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - E2E Tests › should show loading state during KPI updates" classname="kpi-updates.spec.ts" time="0.896">
+<testcase name="KPI Updates - E2E Tests › should show loading state during KPI updates" classname="kpi-updates.spec.ts" time="0.438">
 <failure message="kpi-updates.spec.ts:92:3 should show loading state during KPI updates" type="FAILURE">
 <![CDATA[  [Mobile Safari] › kpi-updates.spec.ts:92:3 › KPI Updates - E2E Tests › should show loading state during KPI updates 
 
@@ -1964,7 +1964,7 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="api-error-handling.spec.ts" timestamp="2025-08-10T22:48:26.261Z" hostname="Microsoft Edge" tests="4" failures="0" skipped="4" time="0" errors="0">
+<testsuite name="api-error-handling.spec.ts" timestamp="2025-08-11T14:13:47.616Z" hostname="Microsoft Edge" tests="4" failures="0" skipped="4" time="0" errors="0">
 <testcase name="API Error Handling › should show error state when API is down" classname="api-error-handling.spec.ts" time="0">
 <properties>
 <property name="skip" value="">
@@ -1998,8 +1998,8 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="kpi-advanced.spec.ts" timestamp="2025-08-10T22:48:26.261Z" hostname="Microsoft Edge" tests="7" failures="7" skipped="0" time="9.905" errors="0">
-<testcase name="KPI Updates - Advanced E2E Tests › should handle API errors gracefully" classname="kpi-advanced.spec.ts" time="2.173">
+<testsuite name="kpi-advanced.spec.ts" timestamp="2025-08-11T14:13:47.616Z" hostname="Microsoft Edge" tests="7" failures="7" skipped="0" time="7.88" errors="0">
+<testcase name="KPI Updates - Advanced E2E Tests › should handle API errors gracefully" classname="kpi-advanced.spec.ts" time="1.205">
 <failure message="kpi-advanced.spec.ts:34:3 should handle API errors gracefully" type="FAILURE">
 <![CDATA[  [Microsoft Edge] › kpi-advanced.spec.ts:34:3 › KPI Updates - Advanced E2E Tests › should handle API errors gracefully 
 
@@ -2034,7 +2034,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should display different data based on feature flags" classname="kpi-advanced.spec.ts" time="1.333">
+<testcase name="KPI Updates - Advanced E2E Tests › should display different data based on feature flags" classname="kpi-advanced.spec.ts" time="0.972">
 <failure message="kpi-advanced.spec.ts:58:3 should display different data based on feature flags" type="FAILURE">
 <![CDATA[  [Microsoft Edge] › kpi-advanced.spec.ts:58:3 › KPI Updates - Advanced E2E Tests › should display different data based on feature flags 
 
@@ -2069,7 +2069,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should handle network timeouts" classname="kpi-advanced.spec.ts" time="1.498">
+<testcase name="KPI Updates - Advanced E2E Tests › should handle network timeouts" classname="kpi-advanced.spec.ts" time="1.179">
 <failure message="kpi-advanced.spec.ts:110:3 should handle network timeouts" type="FAILURE">
 <![CDATA[  [Microsoft Edge] › kpi-advanced.spec.ts:110:3 › KPI Updates - Advanced E2E Tests › should handle network timeouts 
 
@@ -2104,7 +2104,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should retry failed requests" classname="kpi-advanced.spec.ts" time="0.915">
+<testcase name="KPI Updates - Advanced E2E Tests › should retry failed requests" classname="kpi-advanced.spec.ts" time="1.366">
 <failure message="kpi-advanced.spec.ts:133:3 should retry failed requests" type="FAILURE">
 <![CDATA[  [Microsoft Edge] › kpi-advanced.spec.ts:133:3 › KPI Updates - Advanced E2E Tests › should retry failed requests 
 
@@ -2139,7 +2139,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should validate accessibility" classname="kpi-advanced.spec.ts" time="1.494">
+<testcase name="KPI Updates - Advanced E2E Tests › should validate accessibility" classname="kpi-advanced.spec.ts" time="0.955">
 <failure message="kpi-advanced.spec.ts:168:3 should validate accessibility" type="FAILURE">
 <![CDATA[  [Microsoft Edge] › kpi-advanced.spec.ts:168:3 › KPI Updates - Advanced E2E Tests › should validate accessibility 
 
@@ -2174,7 +2174,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should handle rapid filter changes" classname="kpi-advanced.spec.ts" time="0.798">
+<testcase name="KPI Updates - Advanced E2E Tests › should handle rapid filter changes" classname="kpi-advanced.spec.ts" time="1.042">
 <failure message="kpi-advanced.spec.ts:189:3 should handle rapid filter changes" type="FAILURE">
 <![CDATA[  [Microsoft Edge] › kpi-advanced.spec.ts:189:3 › KPI Updates - Advanced E2E Tests › should handle rapid filter changes 
 
@@ -2209,7 +2209,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should maintain state during navigation" classname="kpi-advanced.spec.ts" time="1.694">
+<testcase name="KPI Updates - Advanced E2E Tests › should maintain state during navigation" classname="kpi-advanced.spec.ts" time="1.161">
 <failure message="kpi-advanced.spec.ts:218:3 should maintain state during navigation" type="FAILURE">
 <![CDATA[  [Microsoft Edge] › kpi-advanced.spec.ts:218:3 › KPI Updates - Advanced E2E Tests › should maintain state during navigation 
 
@@ -2245,8 +2245,8 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="kpi-updates.spec.ts" timestamp="2025-08-10T22:48:26.261Z" hostname="Microsoft Edge" tests="7" failures="2" skipped="5" time="1.774" errors="0">
-<testcase name="KPI Updates - E2E Tests › should update KPIs when date period is changed" classname="kpi-updates.spec.ts" time="1.049">
+<testsuite name="kpi-updates.spec.ts" timestamp="2025-08-11T14:13:47.616Z" hostname="Microsoft Edge" tests="7" failures="2" skipped="5" time="2.128" errors="0">
+<testcase name="KPI Updates - E2E Tests › should update KPIs when date period is changed" classname="kpi-updates.spec.ts" time="1.124">
 <failure message="kpi-updates.spec.ts:57:3 should update KPIs when date period is changed" type="FAILURE">
 <![CDATA[  [Microsoft Edge] › kpi-updates.spec.ts:57:3 › KPI Updates - E2E Tests › should update KPIs when date period is changed 
 
@@ -2281,7 +2281,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - E2E Tests › should show loading state during KPI updates" classname="kpi-updates.spec.ts" time="0.725">
+<testcase name="KPI Updates - E2E Tests › should show loading state during KPI updates" classname="kpi-updates.spec.ts" time="1.004">
 <failure message="kpi-updates.spec.ts:92:3 should show loading state during KPI updates" type="FAILURE">
 <![CDATA[  [Microsoft Edge] › kpi-updates.spec.ts:92:3 › KPI Updates - E2E Tests › should show loading state during KPI updates 
 
@@ -2357,7 +2357,7 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="api-error-handling.spec.ts" timestamp="2025-08-10T22:48:26.261Z" hostname="Google Chrome" tests="4" failures="0" skipped="4" time="0" errors="0">
+<testsuite name="api-error-handling.spec.ts" timestamp="2025-08-11T14:13:47.616Z" hostname="Google Chrome" tests="4" failures="0" skipped="4" time="0" errors="0">
 <testcase name="API Error Handling › should show error state when API is down" classname="api-error-handling.spec.ts" time="0">
 <properties>
 <property name="skip" value="">
@@ -2391,8 +2391,8 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="kpi-advanced.spec.ts" timestamp="2025-08-10T22:48:26.261Z" hostname="Google Chrome" tests="7" failures="7" skipped="0" time="4.657" errors="0">
-<testcase name="KPI Updates - Advanced E2E Tests › should handle API errors gracefully" classname="kpi-advanced.spec.ts" time="0.573">
+<testsuite name="kpi-advanced.spec.ts" timestamp="2025-08-11T14:13:47.616Z" hostname="Google Chrome" tests="7" failures="7" skipped="0" time="4.874" errors="0">
+<testcase name="KPI Updates - Advanced E2E Tests › should handle API errors gracefully" classname="kpi-advanced.spec.ts" time="0.911">
 <failure message="kpi-advanced.spec.ts:34:3 should handle API errors gracefully" type="FAILURE">
 <![CDATA[  [Google Chrome] › kpi-advanced.spec.ts:34:3 › KPI Updates - Advanced E2E Tests › should handle API errors gracefully 
 
@@ -2427,7 +2427,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should display different data based on feature flags" classname="kpi-advanced.spec.ts" time="0.888">
+<testcase name="KPI Updates - Advanced E2E Tests › should display different data based on feature flags" classname="kpi-advanced.spec.ts" time="0.789">
 <failure message="kpi-advanced.spec.ts:58:3 should display different data based on feature flags" type="FAILURE">
 <![CDATA[  [Google Chrome] › kpi-advanced.spec.ts:58:3 › KPI Updates - Advanced E2E Tests › should display different data based on feature flags 
 
@@ -2462,7 +2462,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should handle network timeouts" classname="kpi-advanced.spec.ts" time="0.632">
+<testcase name="KPI Updates - Advanced E2E Tests › should handle network timeouts" classname="kpi-advanced.spec.ts" time="0.641">
 <failure message="kpi-advanced.spec.ts:110:3 should handle network timeouts" type="FAILURE">
 <![CDATA[  [Google Chrome] › kpi-advanced.spec.ts:110:3 › KPI Updates - Advanced E2E Tests › should handle network timeouts 
 
@@ -2497,7 +2497,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should retry failed requests" classname="kpi-advanced.spec.ts" time="0.887">
+<testcase name="KPI Updates - Advanced E2E Tests › should retry failed requests" classname="kpi-advanced.spec.ts" time="0.674">
 <failure message="kpi-advanced.spec.ts:133:3 should retry failed requests" type="FAILURE">
 <![CDATA[  [Google Chrome] › kpi-advanced.spec.ts:133:3 › KPI Updates - Advanced E2E Tests › should retry failed requests 
 
@@ -2532,7 +2532,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should validate accessibility" classname="kpi-advanced.spec.ts" time="0.609">
+<testcase name="KPI Updates - Advanced E2E Tests › should validate accessibility" classname="kpi-advanced.spec.ts" time="0.631">
 <failure message="kpi-advanced.spec.ts:168:3 should validate accessibility" type="FAILURE">
 <![CDATA[  [Google Chrome] › kpi-advanced.spec.ts:168:3 › KPI Updates - Advanced E2E Tests › should validate accessibility 
 
@@ -2567,7 +2567,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should handle rapid filter changes" classname="kpi-advanced.spec.ts" time="0.564">
+<testcase name="KPI Updates - Advanced E2E Tests › should handle rapid filter changes" classname="kpi-advanced.spec.ts" time="0.703">
 <failure message="kpi-advanced.spec.ts:189:3 should handle rapid filter changes" type="FAILURE">
 <![CDATA[  [Google Chrome] › kpi-advanced.spec.ts:189:3 › KPI Updates - Advanced E2E Tests › should handle rapid filter changes 
 
@@ -2602,7 +2602,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - Advanced E2E Tests › should maintain state during navigation" classname="kpi-advanced.spec.ts" time="0.504">
+<testcase name="KPI Updates - Advanced E2E Tests › should maintain state during navigation" classname="kpi-advanced.spec.ts" time="0.525">
 <failure message="kpi-advanced.spec.ts:218:3 should maintain state during navigation" type="FAILURE">
 <![CDATA[  [Google Chrome] › kpi-advanced.spec.ts:218:3 › KPI Updates - Advanced E2E Tests › should maintain state during navigation 
 
@@ -2638,8 +2638,8 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="kpi-updates.spec.ts" timestamp="2025-08-10T22:48:26.261Z" hostname="Google Chrome" tests="7" failures="2" skipped="5" time="1.133" errors="0">
-<testcase name="KPI Updates - E2E Tests › should update KPIs when date period is changed" classname="kpi-updates.spec.ts" time="0.557">
+<testsuite name="kpi-updates.spec.ts" timestamp="2025-08-11T14:13:47.616Z" hostname="Google Chrome" tests="7" failures="2" skipped="5" time="1.295" errors="0">
+<testcase name="KPI Updates - E2E Tests › should update KPIs when date period is changed" classname="kpi-updates.spec.ts" time="0.7">
 <failure message="kpi-updates.spec.ts:57:3 should update KPIs when date period is changed" type="FAILURE">
 <![CDATA[  [Google Chrome] › kpi-updates.spec.ts:57:3 › KPI Updates - E2E Tests › should update KPIs when date period is changed 
 
@@ -2674,7 +2674,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="KPI Updates - E2E Tests › should show loading state during KPI updates" classname="kpi-updates.spec.ts" time="0.576">
+<testcase name="KPI Updates - E2E Tests › should show loading state during KPI updates" classname="kpi-updates.spec.ts" time="0.595">
 <failure message="kpi-updates.spec.ts:92:3 should show loading state during KPI updates" type="FAILURE">
 <![CDATA[  [Google Chrome] › kpi-updates.spec.ts:92:3 › KPI Updates - E2E Tests › should show loading state during KPI updates 
 
