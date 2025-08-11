@@ -1,9 +1,15 @@
-import { useState, useEffect, Profiler, Suspense, ProfilerOnRenderCallback } from 'react';
+import { useState, useEffect, Profiler, Suspense, ProfilerOnRenderCallback, memo, lazy } from 'react';
 import { Header } from './components/Header';
 import { NotificationSystem } from './components/NotificationSystem';
 import CacheNotification from './components/CacheNotification';
-import { ModernDashboard } from './components/dashboard/ModernDashboard';
 import { LoadingSpinner, SkeletonMetricsGrid, SkeletonLevelsSection, ErrorState } from './components/LoadingSpinner';
+
+// Lazy loading otimizado para componentes pesados
+const ModernDashboard = lazy(() => 
+  import('./components/dashboard/ModernDashboard').then(module => ({
+    default: module.ModernDashboard
+  }))
+);
 
 // Componentes lazy centralizados
 import { 
@@ -23,6 +29,17 @@ import { usePerformanceProfiler } from './utils/performanceMonitor';
 import { performanceMonitor } from './utils/performanceMonitor';
 import { TicketStatus, Theme } from './types';
 
+// Debug tools (comentado para melhorar performance)
+// import './debug/rankingDiagnostic';
+// import { rankingMonitor } from './debug/rankingMonitor';
+// import './debug/quickRankingTest';
+// import './debug/testRankingAPI';
+// import './debug/directAPITest';
+
+// Script de correção simples
+import './debug/simpleFix';
+import './debug/rankingFixValidation';
+
 function App() {
   const {
     metrics,
@@ -32,6 +49,9 @@ function App() {
     isLoading,
     isPending,
     error,
+    // Novos estados específicos do ranking
+    rankingLoading,
+    rankingError,
     notifications,
     searchQuery,
     filters,
@@ -107,12 +127,12 @@ function App() {
 
 
 
-  // Show loading state on initial load
+  // Loading otimizado com skeleton mais leve
   if (isLoading && !metrics) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
         <div className="animate-pulse">
-          {/* Header skeleton */}
+          {/* Header skeleton simplificado */}
           <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200 px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
@@ -129,10 +149,18 @@ function App() {
             </div>
           </div>
           
-          {/* Content skeleton */}
-          <div className="p-6 space-y-8">
-            <SkeletonMetricsGrid />
-            <SkeletonLevelsSection />
+          {/* Content skeleton otimizado */}
+          <div className="p-6 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-32 bg-gray-200 rounded-lg" />
+              ))}
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="h-64 bg-gray-200 rounded-lg" />
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -178,40 +206,58 @@ function App() {
 
 
       
-      {/* Dashboard Principal */}
+      {/* Dashboard Principal com Suspense otimizado */}
       <div className="flex-1 overflow-hidden">
         {metrics ? (
-          <Profiler id="ModernDashboard" onRender={profilerCallback}>
-            <ModernDashboard
-              metrics={{
-                novos: metrics?.niveis?.geral?.novos || 0,
-                pendentes: metrics?.niveis?.geral?.pendentes || 0,
-                progresso: metrics?.niveis?.geral?.progresso || 0,
-                resolvidos: metrics?.niveis?.geral?.resolvidos || 0,
-                total: (metrics?.niveis?.geral?.novos || 0) + (metrics?.niveis?.geral?.pendentes || 0) + (metrics?.niveis?.geral?.progresso || 0) + (metrics?.niveis?.geral?.resolvidos || 0),
-                niveis: metrics?.niveis || {},
-                tendencias: metrics?.tendencias || {
-                  novos: '0%',
-                  pendentes: '0%',
-                  progresso: '0%',
-                  resolvidos: '0%'
-                }
-              }}
-              levelMetrics={{
-                niveis: levelMetrics || {}
-              }}
-              systemStatus={systemStatus}
-              technicianRanking={technicianRanking}
-              onFilterByStatus={handleFilterByStatus}
-              isLoading={isLoading}
-            />
-          </Profiler>
+          <Suspense fallback={
+            <div className="p-6 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="h-32 bg-gray-100 rounded-lg animate-pulse" />
+                ))}
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="h-64 bg-gray-100 rounded-lg animate-pulse" />
+                ))}
+              </div>
+            </div>
+          }>
+            <Profiler id="ModernDashboard" onRender={profilerCallback}>
+              <ModernDashboard
+                metrics={{
+                  novos: metrics?.niveis?.geral?.novos || 0,
+                  pendentes: metrics?.niveis?.geral?.pendentes || 0,
+                  progresso: metrics?.niveis?.geral?.progresso || 0,
+                  resolvidos: metrics?.niveis?.geral?.resolvidos || 0,
+                  total: (metrics?.niveis?.geral?.novos || 0) + (metrics?.niveis?.geral?.pendentes || 0) + (metrics?.niveis?.geral?.progresso || 0) + (metrics?.niveis?.geral?.resolvidos || 0),
+                  niveis: metrics?.niveis || {},
+                  tendencias: metrics?.tendencias || {
+                    novos: '0%',
+                    pendentes: '0%',
+                    progresso: '0%',
+                    resolvidos: '0%'
+                  }
+                }}
+                levelMetrics={{
+                  niveis: levelMetrics || {}
+                }}
+                systemStatus={systemStatus}
+                technicianRanking={technicianRanking}
+                onFilterByStatus={handleFilterByStatus}
+                isLoading={isLoading}
+                // Novos props para estados específicos do ranking
+                rankingLoading={rankingLoading}
+                rankingError={rankingError}
+              />
+            </Profiler>
+          </Suspense>
         ) : (
-          // Fallback para quando não há dados
+          // Fallback otimizado para quando não há dados
           <div className="h-full bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center">
             <div className="text-center py-12">
-              <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
@@ -223,7 +269,7 @@ function App() {
               </p>
               <button 
                 onClick={() => loadData()} 
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 Tentar Novamente
               </button>

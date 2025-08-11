@@ -11,21 +11,25 @@ import {
   isApiResponse,
   transformLegacyData
 } from '../types/api';
-import { 
+import {
   metricsCache, 
   systemStatusCache, 
   technicianRankingCache, 
   newTicketsCache 
 } from './cache';
+import { RankingDebugger } from '../debug/rankingDebug';
 
 const API_BASE_URL = 'http://localhost:5000/api';
 
+// Configuração da instância do Axios com otimizações
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 60000, // Aumentado para 60 segundos
+  timeout: 60000, // Aumentado para 60 segundos para acomodar ranking lento
   headers: {
-    'Content-Type': 'application/json',
-  },
+    'Cache-Control': 'public, max-age=30', // Cache HTTP de 30 segundos
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  }
 });
 
 // Request interceptor
@@ -92,8 +96,12 @@ export const apiService = {
       end_date: dateRange?.endDate || 'none'
     };
 
-    // Cache completamente desabilitado para forçar novas requisições
-    console.log('🚫 Cache completamente desabilitado - sempre buscando dados frescos');
+    // Verificar cache primeiro
+    const cachedData = metricsCache.get(cacheParams);
+    if (cachedData) {
+      console.log('📊 Métricas carregadas do cache');
+      return cachedData;
+    }
 
     try {
       let url = '/metrics';
@@ -105,11 +113,24 @@ export const apiService = {
         url += `?${params.toString()}`;
       }
       
-      const response = await api.get(url);
+      // Configurar headers condicionais
+      const headers: any = {};
+      const cacheKey = JSON.stringify(cacheParams);
+      const existingCache = metricsCache.get(cacheParams);
+      if (existingCache && (existingCache as any).etag) {
+        headers['If-None-Match'] = (existingCache as any).etag;
+      }
+      
+      const response = await api.get(url, { headers });
+      
+      // Se retornou 304 (Not Modified), usar cache
+      if (response.status === 304 && existingCache) {
+        console.log('📊 Dados não modificados, usando cache');
+        return existingCache;
+      }
       
       // Monitora performance
       const responseTime = Date.now() - startTime;
-      const cacheKey = JSON.stringify(cacheParams);
       metricsCache.recordRequestTime(cacheKey, responseTime);
         
         if (response.data && response.data.success && response.data.data) {
@@ -201,8 +222,9 @@ export const apiService = {
             }
           };
           
-          // Armazenar no cache
-          metricsCache.set(cacheParams, data);
+          // Armazenar no cache com ETag
+          const cacheData = { ...data, etag: response.headers.etag };
+          metricsCache.set(cacheParams, cacheData);
           return data;
       } else {
         console.error('API returned unsuccessful response:', response.data);
@@ -246,11 +268,24 @@ export const apiService = {
     // Verificar cache primeiro
     const cachedData = systemStatusCache.get(cacheParams);
     if (cachedData) {
+      console.log('🔧 Status do sistema carregado do cache');
       return cachedData;
     }
 
     try {
-      const response = await api.get<ApiResponse<SystemStatus>>('/status', { signal });
+      // Configurar headers condicionais
+      const headers: any = {};
+      if (cachedData && (cachedData as any).etag) {
+        headers['If-None-Match'] = (cachedData as any).etag;
+      }
+      
+      const response = await api.get<ApiResponse<SystemStatus>>('/status', { signal, headers });
+      
+      // Se retornou 304, usar cache
+      if (response.status === 304 && cachedData) {
+        console.log('🔧 Status não modificado, usando cache');
+        return cachedData;
+      }
       
       // Monitora performance
       const responseTime = Date.now() - startTime;
@@ -259,8 +294,9 @@ export const apiService = {
       
       if (response.data.success && response.data.data) {
         const data = response.data.data;
-        // Armazenar no cache
-        systemStatusCache.set(cacheParams, data);
+        // Armazenar no cache com ETag
+        const cacheData = { ...data, etag: response.headers.etag };
+        systemStatusCache.set(cacheParams, cacheData);
         return data;
       } else {
         console.error('API returned unsuccessful response:', response.data);
@@ -310,6 +346,11 @@ export const apiService = {
     const startTime = Date.now();
     console.log('🔍 API - getTechnicianRanking chamado com filtros:', filters);
     
+    RankingDebugger.log('api_getTechnicianRanking_start', {
+      filters,
+      hasSignal: !!signal
+    }, 'api');
+    
     // Construir parâmetros de query
     const queryParams = new URLSearchParams();
     
@@ -342,15 +383,29 @@ export const apiService = {
     // Verificar cache primeiro (com filtros)
     const cachedData = technicianRankingCache.get(cacheParams);
     if (cachedData) {
-      console.log('📦 Retornando ranking de técnicos do cache com filtros:', filters);
+      console.log('👥 Ranking de técnicos carregado do cache');
       return cachedData;
     }
 
     try {
       console.log('🔍 Buscando ranking de técnicos com URL:', url);
+      
+      // Configurar headers condicionais
+      const headers: any = {};
+      if (cachedData && (cachedData as any).etag) {
+        headers['If-None-Match'] = (cachedData as any).etag;
+      }
+      
       const response = await api.get<ApiResponse<any[]>>(url, {
-        signal // Passar o AbortSignal para o axios
+        signal, // Passar o AbortSignal para o axios
+        headers
       });
+      
+      // Se retornou 304, usar cache
+      if (response.status === 304 && cachedData) {
+        console.log('👥 Ranking não modificado, usando cache');
+        return cachedData;
+      }
       
       // Monitora performance
       const responseTime = Date.now() - startTime;
@@ -380,10 +435,17 @@ export const apiService = {
           tickets_pendentes: tech.pendentes || tech.tickets_pendentes || 0
         }))
         
-
+        RankingDebugger.log('api_data_mapped', {
+          originalDataLength: data.length,
+          mappedDataLength: mappedData.length,
+          sampleOriginal: data[0],
+          sampleMapped: mappedData[0]
+        }, 'api');
         
-        // Armazenar no cache
-        technicianRankingCache.set(cacheParams, mappedData);
+        // Armazenar no cache com ETag
+        const cacheData = { ...mappedData, etag: response.headers.etag };
+        technicianRankingCache.set(cacheParams, cacheData);
+        RankingDebugger.trackCacheOperation('api_set', JSON.stringify(cacheParams), cacheData);
         return mappedData;
       } else {
         console.error('API returned unsuccessful response:', response.data);

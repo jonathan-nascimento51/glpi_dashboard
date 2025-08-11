@@ -56,22 +56,27 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
   onFilterByStatus,
   className
 }) {
-  // Performance monitoring hooks
+  // Performance monitoring hooks (apenas em desenvolvimento)
   const { measureRender } = usePerformanceMonitoring('MetricsGrid')
   const { trackRender } = useRenderTracker('MetricsGrid')
   
-  // Track component renders
+  // Track component renders apenas em desenvolvimento e com debounce
   useEffect(() => {
-    // Performance tracking
-    trackRender();
+    if (process.env.NODE_ENV !== 'development') return;
     
-    measureRender(() => {
-      performanceMonitor.markComponentRender('MetricsGrid', {
-        hasMetrics: !!metrics,
-        metricsKeys: metrics ? Object.keys(metrics).length : 0
+    const timeoutId = setTimeout(() => {
+      trackRender();
+      
+      measureRender(() => {
+        performanceMonitor.markComponentRender('MetricsGrid', {
+          hasMetrics: !!metrics,
+          metricsKeys: metrics ? Object.keys(metrics).length : 0
+        })
       })
-    })
-  }, [metrics, trackRender, measureRender, onFilterByStatus])
+    }, 100); // Debounce de 100ms
+    
+    return () => clearTimeout(timeoutId);
+  }, [metrics?.novos, metrics?.progresso, metrics?.pendentes, metrics?.resolvidos]) // Apenas dependências essenciais
   
   // Componente renderizado com métricas válidas
 

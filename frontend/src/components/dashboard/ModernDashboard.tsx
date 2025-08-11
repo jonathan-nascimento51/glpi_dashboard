@@ -11,6 +11,8 @@ import {
   TableSkeleton 
 } from '../LazyComponents';
 
+import { RankingDebugPanel } from '../debug/RankingDebugPanel'
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 import { MetricsData, TicketStatus, SystemStatus, TechnicianRanking } from "@/types"
@@ -25,6 +27,9 @@ interface ModernDashboardProps {
   technicianRanking?: TechnicianRanking[]
   onFilterByStatus?: (status: TicketStatus) => void
   isLoading?: boolean
+  // Novos props para estados específicos do ranking
+  rankingLoading?: boolean
+  rankingError?: string | null
   className?: string
 }
 
@@ -78,6 +83,9 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
   technicianRanking = [],
   onFilterByStatus,
   isLoading = false,
+  // Novos props para estados específicos do ranking
+  rankingLoading = false,
+  rankingError = null,
   className
 }) {
   // Sistema funcionando corretamente
@@ -87,16 +95,23 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
   
   // Performance monitoring hooks
   const { measureRender } = usePerformanceMonitoring('ModernDashboard')
+  const [showDebugPanel, setShowDebugPanel] = React.useState(false)
   
-  // Track component renders
+  // Track component renders (apenas em desenvolvimento e com throttling)
   useEffect(() => {
-    measureRender(() => {
-      performanceMonitor.markComponentRender('ModernDashboard', {
-        metricsCount: Object.keys(metrics || {}).length,
-        technicianCount: technicianRanking.length,
-        isLoading
-      })
-    })
+    if (process.env.NODE_ENV === 'development') {
+      const timeoutId = setTimeout(() => {
+        measureRender(() => {
+          performanceMonitor.markComponentRender('ModernDashboard', {
+            metricsCount: Object.keys(metrics || {}).length,
+            technicianCount: technicianRanking.length,
+            isLoading
+          })
+        })
+      }, 100); // Debounce de 100ms para evitar chamadas excessivas
+      
+      return () => clearTimeout(timeoutId);
+    }
   }, [metrics, technicianRanking, isLoading, measureRender])
 
   // Memoizar dados do ranking processados
@@ -202,13 +217,36 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
       {/* Ranking de técnicos - ocupando toda a largura na parte inferior */}
       <motion.div variants={itemVariants} className="dashboard-ranking-section">
         <Suspense fallback={<TableSkeleton />}>
-          <LazyRankingTable 
-            data={processedRankingData}
-            title="Ranking de Técnicos"
-            className="w-full h-full"
-          />
+          {rankingError ? (
+            <Card className="w-full h-full figma-glass-card">
+              <CardHeader>
+                <CardTitle className="text-red-600">Erro no Ranking</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-red-500">{rankingError}</p>
+                <button 
+                  onClick={() => window.location.reload()} 
+                  className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  Tentar Novamente
+                </button>
+              </CardContent>
+            </Card>
+          ) : (
+            <LazyRankingTable 
+              data={processedRankingData}
+              title={rankingLoading ? "Ranking de Técnicos (Carregando...)" : "Ranking de Técnicos"}
+              className={`w-full h-full ${rankingLoading ? 'opacity-50' : ''}`}
+            />
+          )}
         </Suspense>
       </motion.div>
+      
+      {/* Debug Panel */}
+      <RankingDebugPanel 
+        isVisible={showDebugPanel}
+        onToggle={() => setShowDebugPanel(!showDebugPanel)}
+      />
     </motion.div>
   )
 })

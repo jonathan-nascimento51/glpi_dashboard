@@ -6,6 +6,7 @@ import { cn, formatNumber } from "@/lib/utils"
 import { Trophy, Medal, Award, Star, Users, Zap, Shield, Wrench, Settings } from "lucide-react"
 import { usePerformanceMonitoring, useRenderTracker } from "../../hooks/usePerformanceMonitoring"
 import { performanceMonitor } from "../../utils/performanceMonitor"
+import { RankingDebugger } from "../../debug/rankingDebug"
 
 interface TechnicianRanking {
   id: string
@@ -240,16 +241,29 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
   const { measureRender } = usePerformanceMonitoring('RankingTable')
   const { trackRender } = useRenderTracker('RankingTable')
   
-  // Track component renders
+  // Track component renders apenas em desenvolvimento com debounce
   useEffect(() => {
-    trackRender()
-    measureRender(() => {
-      performanceMonitor.markComponentRender('RankingTable', {
-        technicianCount: data.length,
-        hasData: data.length > 0
+    if (process.env.NODE_ENV !== 'development') return;
+    
+    const timeoutId = setTimeout(() => {
+      trackRender()
+      measureRender(() => {
+        performanceMonitor.markComponentRender('RankingTable', {
+          technicianCount: data.length,
+          hasData: data.length > 0
+        })
       })
-    })
-  }, [data, trackRender, measureRender])
+      
+      // Debug: rastrear dados recebidos pelo componente
+      RankingDebugger.log('component_data_received', {
+        dataLength: data.length,
+        hasData: data.length > 0,
+        sampleData: data[0]
+      }, 'RankingTable')
+    }, 100); // Debounce de 100ms
+    
+    return () => clearTimeout(timeoutId);
+  }, [data.length]) // Apenas o comprimento dos dados
   
   // Pegar todos os técnicos e ordenar por número de chamados - memoizado
   const topTechnicians = useMemo(() => {

@@ -3,6 +3,11 @@ import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 
+// Importar ferramentas de debug em desenvolvimento
+if (import.meta.env.DEV) {
+  import('./debug/rankingTestScript')
+}
+
 // Global error handler
 window.addEventListener('error', (event) => {
   console.error('Global error:', event.error);

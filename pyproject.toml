@@ -3,6 +3,14 @@ requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
+version = "0.1.0"
+description = "A dashboard for monitoring GLPI tickets and assets"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "Your Organization", email = "your.email@example.com"}
+]
 name = "glpi-dashboard"
 keywords = ["glpi", "dashboard", "monitoring", "api", "flask"]
 classifiers = [
@@ -218,7 +226,7 @@ exclude_lines = [
     "if 0:",
     "if __name__ == .__main__.:",
     "class .*\\bProtocol\\):",
-    "@(abc\.)?abstractmethod",
+    "@(abc\\.)?abstractmethod",
     "@overload",
     "TYPE_CHECKING",
 ]

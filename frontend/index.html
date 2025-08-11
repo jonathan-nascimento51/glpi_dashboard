@@ -5,12 +5,84 @@
     <link rel="icon" type="image/svg+xml" href="/tech-logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard GLPI • Departamento de Tecnologia do Estado</title>
+    
+    <!-- Preconnect para otimização de fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Preload de fonts críticas -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
+    
+    <!-- Meta tags para performance e SEO -->
+    <meta name="description" content="Dashboard de monitoramento GLPI - Departamento de Tecnologia do Estado">
+    <meta name="theme-color" content="#1e40af">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="GLPI Dashboard">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Preload de recursos críticos -->
+    <link rel="modulepreload" href="/src/main.tsx">
+    
+    <!-- DNS Prefetch para APIs -->
+    <link rel="dns-prefetch" href="//localhost:5000">
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Loading inicial otimizado -->
+      <div style="display: flex; align-items: center; justify-content: center; height: 100vh; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);">
+        <div style="text-align: center;">
+          <div style="width: 40px; height: 40px; border: 3px solid #e2e8f0; border-top: 3px solid #1e40af; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px;"></div>
+          <p style="color: #64748b; font-family: Inter, sans-serif; font-size: 14px; margin: 0;">Carregando Dashboard...</p>
+        </div>
+      </div>
+      <style>
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      </style>
+    </div>
+    
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('✅ Service Worker registrado:', registration.scope);
+              
+              // Verificar atualizações
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                if (newWorker) {
+                  newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                      // Nova versão disponível
+                      if (confirm('Nova versão disponível! Recarregar página?')) {
+                        newWorker.postMessage({ type: 'SKIP_WAITING' });
+                        window.location.reload();
+                      }
+                    }
+                  });
+                }
+              });
+            })
+            .catch((error) => {
+              console.warn('⚠️ Falha ao registrar Service Worker:', error);
+            });
+        });
+        
+        // Escutar mudanças do Service Worker
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          window.location.reload();
+        });
+      }
+    </script>
   </body>
 </html>

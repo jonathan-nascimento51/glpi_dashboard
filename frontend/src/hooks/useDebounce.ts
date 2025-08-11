@@ -35,10 +35,8 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const callbackRef = useRef(callback);
 
-  // Atualizar a referência do callback
-  useEffect(() => {
-    callbackRef.current = callback;
-  }, [callback]);
+  // Atualizar a referência do callback apenas quando necessário
+  callbackRef.current = callback;
 
   // Limpar timeout ao desmontar
   useEffect(() => {
@@ -77,10 +75,8 @@ export function useThrottledCallback<T extends (...args: any[]) => any>(
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const callbackRef = useRef(callback);
 
-  // Atualizar a referência do callback
-  useEffect(() => {
-    callbackRef.current = callback;
-  }, [callback]);
+  // Atualizar a referência do callback apenas quando necessário
+  callbackRef.current = callback;
 
   // Limpar timeout ao desmontar
   useEffect(() => {

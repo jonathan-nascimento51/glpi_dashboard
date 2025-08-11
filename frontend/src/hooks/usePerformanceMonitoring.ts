@@ -293,19 +293,23 @@ export const useRenderTracker = (componentName: string, dependencies: any[] = []
   const prevDeps = useRef(dependencies);
 
   const trackRender = useCallback(() => {
+    // Só executar em desenvolvimento
+    if (process.env.NODE_ENV !== 'development') return;
+    
     renderCount.current++;
     const now = performance.now();
     const timeSinceLastRender = now - lastRenderTime.current;
     lastRenderTime.current = now;
 
-    // Detectar mudanças nas dependências
-    const depsChanged = dependencies.some((dep, index) => 
+    // Detectar mudanças nas dependências apenas se necessário
+    const depsChanged = dependencies.length > 0 ? dependencies.some((dep, index) => 
       dep !== prevDeps.current[index]
-    );
+    ) : false;
     
     prevDeps.current = dependencies;
 
-    if (process.env.NODE_ENV === 'development') {
+    // Log apenas se houve mudanças significativas ou a cada 10 renders
+    if (depsChanged || renderCount.current % 10 === 0) {
       console.log(`🔄 ${componentName} render #${renderCount.current}`, {
         timeSinceLastRender: timeSinceLastRender.toFixed(2) + 'ms',
         depsChanged,
@@ -322,7 +326,7 @@ export const useRenderTracker = (componentName: string, dependencies: any[] = []
         dependencies: depsChanged ? dependencies : null
       }
     );
-  }, [componentName, dependencies]);
+  }, [componentName]); // Remover dependencies da dependência do useCallback
 
   return {
     trackRender,
