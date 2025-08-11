@@ -4,7 +4,8 @@ import type {
   ApiResult,
   DashboardMetrics,
   FilterParams,
-  PerformanceMetrics
+  PerformanceMetrics,
+  LevelMetrics
 } from '../types/api';
 import {
   isApiError,
@@ -203,7 +204,7 @@ export const apiService = {
     }
 
     try {
-      const response = await api.get<ApiResponse<SystemStatus>>('/kpis');
+      const response = await api.get<ApiResponse<SystemStatus>>('/system/status');
       
       // Monitora performance
       const responseTime = Date.now() - startTime;
@@ -219,6 +220,12 @@ export const apiService = {
         console.error('API returned unsuccessful response:', response.data);
         // Return fallback data (não cachear)
         return {
+          api: 'offline',
+          glpi: 'offline',
+          glpi_message: 'Sistema indisponível',
+          glpi_response_time: 0,
+          last_update: new Date().toISOString(),
+          version: '1.0.0',
           status: 'offline',
           sistema_ativo: false,
           ultima_atualizacao: new Date().toISOString()
@@ -228,6 +235,12 @@ export const apiService = {
       console.error('Error fetching system status:', error);
       // Return fallback data instead of throwing (não cachear)
       return {
+        api: 'offline',
+        glpi: 'offline',
+        glpi_message: 'Erro de conexão',
+        glpi_response_time: 0,
+        last_update: new Date().toISOString(),
+        version: '1.0.0',
         status: 'offline',
         sistema_ativo: false,
         ultima_atualizacao: new Date().toISOString()
@@ -258,7 +271,7 @@ export const apiService = {
     }
 
     try {
-      const response = await api.get<ApiResponse<any[]>>('/kpis');
+      const response = await api.get<ApiResponse<any[]>>('/technicians/ranking');
       
       // Monitora performance
       const responseTime = Date.now() - startTime;
@@ -432,6 +445,59 @@ export const search = apiService.search;
 export const healthCheck = apiService.healthCheck;
 export const clearAllCaches = apiService.clearAllCaches;
 
+
+// Fun��o para transformar array da API em m�tricas do dashboard
+const transformArrayToMetrics = (data: any[]): DashboardMetrics => {
+  const defaultLevel: LevelMetrics = {
+    novos: 0,
+    progresso: 0,
+    pendentes: 0,
+    resolvidos: 0,
+    total: 0
+  };
+
+  const processedNiveis = {
+    n1: { ...defaultLevel },
+    n2: { ...defaultLevel },
+    n3: { ...defaultLevel },
+    n4: { ...defaultLevel },
+    geral: { ...defaultLevel }
+  };
+
+  // Processar dados do array
+  data.forEach((item: any) => {
+    if (item.by_level) {
+      Object.entries(item.by_level).forEach(([level, levelData]: [string, any]) => {
+        const levelKey = level.toLowerCase() as keyof typeof processedNiveis;
+        if (processedNiveis[levelKey]) {
+          const novos = levelData['Novo'] || 0;
+          const progresso = (levelData['Processando (atribu�do)'] || 0) + (levelData['Processando (planejado)'] || 0);
+          const pendentes = levelData['Pendente'] || 0;
+          const resolvidos = (levelData['Solucionado'] || 0) + (levelData['Fechado'] || 0);
+          
+          processedNiveis[levelKey] = {
+            novos,
+            progresso,
+            pendentes,
+            resolvidos,
+            total: novos + progresso + pendentes + resolvidos
+          };
+        }
+      });
+    }
+  });
+
+  return {
+    niveis: processedNiveis,
+    tendencias: {
+      novos: '0',
+      progresso: '0',
+      pendentes: '0',
+      resolvidos: '0'
+    }
+  };
+};
+
 // Export utilities from httpClient
 export { updateAuthTokens, apiUtils, API_CONFIG } from './httpClient';
 
@@ -473,8 +539,8 @@ export const fetchDashboardMetrics = async (
     });
     
     const url = queryParams.toString() 
-      ? `${API_BASE_URL}/kpis?${queryParams.toString()}`
-      : `${API_BASE_URL}/kpis`;
+      ? `\/kpis?${queryParams.toString()}`
+      : `\/kpis`;
     
     console.log('🔍 Filtros originais:', filters);
     console.log('🔍 Query params construídos:', queryParams.toString());
@@ -482,25 +548,13 @@ export const fetchDashboardMetrics = async (
     
     const startTime = performance.now();
     
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      // Adicionar timeout
-      signal: AbortSignal.timeout(60000) // 60 segundos
-    });
+    const response = await httpClient.get(url);
     
     const endTime = performance.now();
     const responseTime = endTime - startTime;
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const result: ApiResult<DashboardMetrics> = await response.json();
-    console.log('Resposta da API recebida:', result);
+    console.log('Resposta da API recebida:', response.data);
+    const rawData = response.data;
     
     // Log de performance
     const perfMetrics: PerformanceMetrics = {
@@ -511,29 +565,38 @@ export const fetchDashboardMetrics = async (
     };
     console.log('Métricas de performance:', perfMetrics);
     
-    // Verificar se a resposta é um erro
-    if (isApiError(result)) {
-      console.error('API retornou erro:', result.error);
-      return null;
-    }
-    
-    // Verificar se é uma resposta de sucesso
-    if (isApiResponse(result)) {
-      // Processar dados para garantir estrutura consistente
-      const processedData = transformLegacyData(result.data);
+    if (Array.isArray(rawData)) {
+      const processedData = transformArrayToMetrics(rawData);
       console.log('Dados processados:', processedData);
-      
       return processedData;
     }
-    
-    console.error('Resposta da API em formato inesperado:', result);
+
+    if (rawData && typeof rawData === 'object' && 'data' in rawData) {
+      const processedData = transformLegacyData(rawData.data);
+      console.log('Dados processados:', processedData);
+      return processedData;
+    }
+
+    console.error('Resposta da API em formato inesperado:', rawData);
     return null;
     
   } catch (error) {
     console.error('Erro ao buscar métricas:', error);
     console.error('Tipo do erro:', typeof error);
     console.error('Stack trace:', error instanceof Error ? error.stack : 'N/A');
-    console.error('URL tentada:', `${API_BASE_URL}/kpis`);
+    console.error('URL tentada:', `\/kpis`);
     return null;
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+

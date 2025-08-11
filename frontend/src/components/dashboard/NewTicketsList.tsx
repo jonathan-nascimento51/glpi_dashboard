@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useTransition } from "react"
+﻿import React, { useState, useEffect, useMemo, useTransition } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -21,39 +21,39 @@ interface NewTicketsListProps {
   limit?: number
 }
 
-// Configuração de prioridades movida para fora do componente
+// ConfiguraÃ§Ã£o de prioridades movida para fora do componente
 const priorityConfig = {
-  'Crítica': {
+  'CrÃ­tica': {
     color: 'figma-status-badge-red',
-    icon: '🔴'
+    icon: 'ðŸ”´'
   },
   'Muito Alta': {
     color: 'figma-status-badge-red',
-    icon: '🔴'
+    icon: 'ðŸ”´'
   },
   'Alta': {
     color: 'figma-priority-badge text-orange-700 dark:text-orange-300',
-    icon: '🟠'
+    icon: 'ðŸŸ '
   },
-  'Média': {
+  'MÃ©dia': {
     color: 'figma-status-badge-yellow',
-    icon: '🟡'
+    icon: 'ðŸŸ¡'
   },
   'Baixa': {
     color: 'figma-status-badge-green',
-    icon: '🟢'
+    icon: 'ðŸŸ¢'
   },
   'Muito Baixa': {
     color: 'figma-status-badge-blue',
-    icon: '🔵'
+    icon: 'ðŸ”µ'
   },
   'Normal': {
     color: 'figma-status-badge-blue',
-    icon: '🔵'
+    icon: 'ðŸ”µ'
   }
 }
 
-// Variantes de animação movidas para fora do componente
+// Variantes de animaÃ§Ã£o movidas para fora do componente
 const itemVariants = {
   hidden: { opacity: 0, x: -20 },
   visible: {
@@ -76,12 +76,12 @@ const containerVariants = {
   }
 } as const
 
-// Função auxiliar para obter configuração de prioridade
+// FunÃ§Ã£o auxiliar para obter configuraÃ§Ã£o de prioridade
 const getPriorityConfig = (priority: string) => {
   return priorityConfig[priority as keyof typeof priorityConfig] || priorityConfig['Normal']
 }
 
-// Função auxiliar para formatação de data
+// FunÃ§Ã£o auxiliar para formataÃ§Ã£o de data
 const formatDate = (dateString: string) => {
   try {
     const date = new Date(dateString)
@@ -92,7 +92,7 @@ const formatDate = (dateString: string) => {
       minute: '2-digit'
     })
   } catch {
-    return 'Data inválida'
+    return 'Data invÃ¡lida'
   }
 }
 
@@ -105,10 +105,10 @@ const TicketItem = React.memo<{ ticket: NewTicket; index: number }>(({ ticket })
     <motion.div
       key={ticket.id}
       variants={itemVariants}
-      className="group p-5 figma-glass-card rounded-lg transition-all duration-200 border border-transparent shadow-none"
+      className="group p-5 glass-card rounded-xl transition-all duration-300 premium-border premium-shadow"
     >
       <div className="flex items-start gap-4">
-        {/* Ícone de prioridade */}
+        {/* Ãcone de prioridade */}
         <div className="flex-shrink-0 mt-0.5">
           <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${priorityConf.color}`}>
             <span className="mr-1">{priorityConf.icon}</span>
@@ -116,7 +116,7 @@ const TicketItem = React.memo<{ ticket: NewTicket; index: number }>(({ ticket })
           </div>
         </div>
         
-        {/* Conteúdo do ticket */}
+        {/* ConteÃºdo do ticket */}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-2">
             <div className="flex items-center gap-2">
@@ -192,12 +192,12 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
   useEffect(() => {
     fetchTickets()
     
-    // CORREÇÃO: Auto-refresh otimizado para 5 minutos com controle de interação
+    // CORREÃ‡ÃƒO: Auto-refresh otimizado para 5 minutos com controle de interaÃ§Ã£o
     const interval = setInterval(() => {
-      // Verificar se auto-refresh está habilitado
+      // Verificar se auto-refresh estÃ¡ habilitado
       const autoRefreshEnabled = localStorage.getItem('autoRefreshEnabled')
       if (autoRefreshEnabled === 'false') {
-        console.log('⏸️ Auto-refresh de tickets desabilitado pelo usuário')
+        console.log('â¸ï¸ Auto-refresh de tickets desabilitado pelo usuÃ¡rio')
         return
       }
 
@@ -205,12 +205,12 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
       const now = Date.now()
       const timeSinceInteraction = lastInteraction ? now - parseInt(lastInteraction) : Infinity
       
-      // Só atualiza se não houver interação recente (últimos 2 minutos)
+      // SÃ³ atualiza se nÃ£o houver interaÃ§Ã£o recente (Ãºltimos 2 minutos)
       if (timeSinceInteraction > 120000) {
-        console.log('🎫 Atualizando lista de tickets novos')
+        console.log('ðŸŽ« Atualizando lista de tickets novos')
         fetchTickets()
       } else {
-        console.log('⏸️ Atualização da lista de tickets pausada (interação recente)')
+        console.log('â¸ï¸ AtualizaÃ§Ã£o da lista de tickets pausada (interaÃ§Ã£o recente)')
       }
     }, 300000) // 5 minutos
     
@@ -265,7 +265,7 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
           <div className="space-y-3 flex-1 overflow-y-auto">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="animate-pulse">
-                <div className="flex items-start gap-3 p-3 figma-glass-card rounded-lg">
+                <div className="flex items-start gap-3 p-3 glass-card rounded-lg">
                   <div className="w-8 h-8 bg-gray-200 rounded-full" />
                   <div className="flex-1 space-y-2">
                     <div className="h-4 bg-gray-200 rounded w-3/4" />

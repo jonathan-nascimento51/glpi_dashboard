@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo, useCallback } from "react"
+﻿import React, { useRef, useEffect, useMemo, useCallback } from "react"
 import { motion } from "framer-motion"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -21,7 +21,7 @@ interface RankingTableProps {
   className?: string
 }
 
-// Função auxiliar para obter estilos de nível movida para fora do componente
+// FunÃ§Ã£o auxiliar para obter estilos de nÃ­vel movida para fora do componente
 function getLevelStyle(level?: string) {
   switch (level) {
     case 'N4': // Expert - Azul profissional
@@ -34,7 +34,7 @@ function getLevelStyle(level?: string) {
         iconBg: 'bg-blue-100',
         iconColor: 'text-blue-600'
       }
-    case 'N3': // Sênior - Verde confiável
+    case 'N3': // SÃªnior - Verde confiÃ¡vel
       return {
         bgColor: 'bg-emerald-50',
         borderColor: 'border-emerald-200',
@@ -54,7 +54,7 @@ function getLevelStyle(level?: string) {
         iconBg: 'bg-orange-100',
         iconColor: 'text-orange-600'
       }
-    case 'N1': // Júnior - Roxo motivacional
+    case 'N1': // JÃºnior - Roxo motivacional
       return {
         bgColor: 'bg-purple-50',
         borderColor: 'border-purple-200',
@@ -77,7 +77,7 @@ function getLevelStyle(level?: string) {
   }
 }
 
-// Variantes de animação movidas para fora do componente
+// Variantes de animaÃ§Ã£o movidas para fora do componente
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -157,9 +157,9 @@ const TechnicianCard = React.memo<{
         isTopThree && position === 3 && "ring-amber-400"
       )}
     >
-      {/* Header - Posição e Nível */}
+      {/* Header - PosiÃ§Ã£o e NÃ­vel */}
       <div className="flex items-center justify-between mb-3">
-        {/* Indicador de posição */}
+        {/* Indicador de posiÃ§Ã£o */}
         <div className={cn(
           "w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm",
           isTopThree ? "text-white" : "text-gray-600 bg-gray-100",
@@ -174,7 +174,7 @@ const TechnicianCard = React.memo<{
           {position > 3 && position}
         </div>
         
-        {/* Nível */}
+        {/* NÃ­vel */}
         {technician.level && (
           <div className="flex items-center space-x-1">
             <div className={cn(
@@ -193,7 +193,7 @@ const TechnicianCard = React.memo<{
         )}
       </div>
 
-      {/* Nome do técnico */}
+      {/* Nome do tÃ©cnico */}
       <div className="text-center mb-3">
         <div className="font-medium text-gray-900 text-sm leading-tight">
           {formattedName}
@@ -231,7 +231,7 @@ const TechnicianCard = React.memo<{
 
 export const RankingTable = React.memo<RankingTableProps>(function RankingTable({ 
   data, 
-  title: _ = "Ranking de Técnicos", 
+  title: _ = "Ranking de TÃ©cnicos", 
   className 
 }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -251,12 +251,12 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
     })
   }, [data, trackRender, measureRender])
   
-  // Pegar todos os técnicos e ordenar por número de chamados - memoizado
+  // Pegar todos os tÃ©cnicos e ordenar por nÃºmero de chamados - memoizado
   const topTechnicians = useMemo(() => {
     return [...data].sort((a, b) => b.total - a.total)
   }, [data])
 
-  // Estatísticas por nível para o cabeçalho - memoizado
+  // EstatÃ­sticas por nÃ­vel para o cabeÃ§alho - memoizado
   const levelStats = useMemo(() => {
     return topTechnicians.reduce((acc, tech) => {
       const level = tech.level || 'Outros'
@@ -289,14 +289,14 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
 
 
   return (
-    <Card className={cn("figma-ranking-tecnicos w-full h-full flex flex-col rounded-2xl shadow-none", className)}>
+    <Card className={cn("glass-card w-full h-full flex flex-col rounded-xl premium-shadow", className)}>
       <CardHeader className="px-5 pt-4 pb-2 flex-shrink-0">
         <div className="flex items-center justify-between">
           <CardTitle className="figma-heading-large flex items-center gap-2">
             <div className="p-2 rounded-xl bg-gradient-to-br from-slate-500 to-slate-600 shadow-lg">
               <Users className="h-5 w-5 text-white" />
             </div>
-            Ranking de Técnicos
+            Ranking de TÃ©cnicos
           </CardTitle>
           <div className="flex items-center gap-2">
             {Object.entries(levelStats).map(([level, count]) => {
@@ -341,3 +341,4 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
     </Card>
   )
 })
+

@@ -182,7 +182,7 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
     >
       {metricCards.map((card) => (
         <motion.div
-          key={`metrics-${card.status}`}
+          key={`metrics-${card.status}`} data-testid={`${card.status}-tickets`}
           variants={itemVariants}
         >
           <StatusCard

@@ -183,8 +183,8 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     }
   };
   
-  // Debug logs comentados para evitar erros de sintaxe
-  // console.log('useDashboard - Retornando dados:', returnData);
+  // Debug logs comentados para evitar erros de sintaxe\n  // console.log('useDashboard - Retornando dados:', returnData);
   
   return returnData;
 };
+

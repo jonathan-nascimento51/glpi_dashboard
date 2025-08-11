@@ -1,87 +1,94 @@
-﻿from fastapi import APIRouter, HTTPException
-from typing import Dict, Any
+# -*- coding: utf-8 -*-
+import os
+from fastapi import APIRouter, HTTPException, Query
+from typing import Optional, Dict, Any
+from services.glpi_service import GLPIService
+from services.api_service import APIService
+from utils.response_formatter import ResponseFormatter
 import logging
 
+logger = logging.getLogger("fastapi_routes")
+glpi_service = GLPIService()
+api_service = APIService()
+USE_REAL_GLPI_DATA = os.getenv("FLAG_USE_REAL_GLPI_DATA", "false").lower() == "true"
 router = APIRouter()
-logger = logging.getLogger(__name__)
 
 @router.get("/kpis")
-async def get_kpis() -> Dict[str, Any]:
-    """Endpoint para obter KPIs do dashboard"""
+async def get_kpis(start_date: Optional[str] = Query(None), end_date: Optional[str] = Query(None)):
     try:
-        # Mock data para teste - substitua pela l�gica real
-        kpis_data = {
-            "total_tickets": 150,
-            "open_tickets": 45,
-            "resolved_tickets": 105,
-            "avg_resolution_time": 2.5,
-            "satisfaction_rate": 85.2,
-            "technician_efficiency": 78.9
-        }
-        
-        return {
-            "success": True,
-            "data": kpis_data
-        }
+        if USE_REAL_GLPI_DATA:
+            metrics = glpi_service.get_dashboard_metrics()
+            return ResponseFormatter.format_success_response(data=metrics, message="KPIs obtidos do GLPI")
+        else:
+            mock_data = {
+                "total_tickets": 150,
+                "open_tickets": 45,
+                "resolved_tickets": 105,
+                "avg_resolution_time": 2.5,
+                "satisfaction_rate": 85.2,
+                "technician_efficiency": 78.9
+            }
+            return ResponseFormatter.format_success_response(data=mock_data, message="KPIs mockados")
     except Exception as e:
-        logger.error(f"Erro ao obter KPIs: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Erro interno do servidor: {str(e)}")
+        logger.error(f"Erro ao buscar KPIs: {str(e)}")
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
 
 @router.get("/system/status")
-async def get_system_status() -> Dict[str, Any]:
-    """Endpoint para verificar status do sistema"""
+async def get_system_status():
     try:
-        status_data = {
-            "api": "online",
-            "glpi": "online",
-            "database": "online",
-            "last_update": "2024-01-15 10:30:00",
-            "version": "1.0.0"
-        }
-        
-        return {
-            "success": True,
-            "data": status_data
-        }
+        if USE_REAL_GLPI_DATA:
+            try:
+                if glpi_service._init_session():
+                    glpi_service._kill_session()
+                    glpi_status = "online"
+                else:
+                    glpi_status = "offline"
+            except:
+                glpi_status = "offline"
+            status_data = {
+                "api": "online",
+                "glpi": glpi_status,
+                "database": "online",
+                "last_update": "2024-01-15T10:30:00Z",
+                "version": "1.0.0"
+            }
+        else:
+            status_data = {
+                "api": "online",
+                "glpi": "online",
+                "database": "online",
+                "last_update": "2024-01-15T10:30:00Z",
+                "version": "1.0.0"
+            }
+        return ResponseFormatter.format_success_response(data=status_data, message="Status do sistema")
     except Exception as e:
-        logger.error(f"Erro ao verificar status: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Erro interno do servidor: {str(e)}")
+        logger.error(f"Erro ao buscar status: {str(e)}")
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
 
 @router.get("/technicians/ranking")
-async def get_technician_ranking() -> Dict[str, Any]:
-    """Endpoint para obter ranking de t�cnicos"""
+async def get_technician_ranking(limit: Optional[int] = Query(10)):
     try:
         ranking_data = [
-            {"id": 1, "name": "Jo�o Silva", "tickets_resolved": 25, "avg_time": 2.1, "satisfaction": 92.5},
-            {"id": 2, "name": "Maria Santos", "tickets_resolved": 22, "avg_time": 1.8, "satisfaction": 89.3},
-            {"id": 3, "name": "Pedro Costa", "tickets_resolved": 20, "avg_time": 2.3, "satisfaction": 87.1}
+            {"name": "Joao Silva", "tickets_resolved": 25, "avg_time": 2.1, "satisfaction": 4.8},
+            {"name": "Maria Santos", "tickets_resolved": 22, "avg_time": 2.3, "satisfaction": 4.7}
         ]
-        
-        return {
-            "success": True,
-            "data": ranking_data
-        }
+        return ResponseFormatter.format_success_response(data=ranking_data[:limit], message="Ranking de tecnicos")
     except Exception as e:
-        logger.error(f"Erro ao obter ranking: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Erro interno do servidor: {str(e)}")
+        logger.error(f"Erro ao buscar ranking: {str(e)}")
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
 
 @router.get("/tickets/new")
-async def get_new_tickets(limit: int = 6) -> Dict[str, Any]:
-    """Endpoint para obter novos tickets"""
+async def get_new_tickets(limit: Optional[int] = Query(10)):
     try:
-        tickets_data = [
-            {"id": 1, "title": "Problema de rede", "priority": "Alta", "status": "Aberto", "created_at": "2024-01-15T10:30:00Z"},
-            {"id": 2, "title": "Instala��o de software", "priority": "M�dia", "status": "Em andamento", "created_at": "2024-01-15T09:15:00Z"},
-            {"id": 3, "title": "Manuten��o preventiva", "priority": "Baixa", "status": "Pendente", "created_at": "2024-01-15T08:45:00Z"},
-            {"id": 4, "title": "Suporte t�cnico", "priority": "Alta", "status": "Aberto", "created_at": "2024-01-15T08:00:00Z"},
-            {"id": 5, "title": "Configura��o de email", "priority": "M�dia", "status": "Em andamento", "created_at": "2024-01-15T07:30:00Z"},
-            {"id": 6, "title": "Backup de dados", "priority": "Baixa", "status": "Conclu�do", "created_at": "2024-01-15T07:00:00Z"}
-        ][:limit]
-        
-        return {
-            "success": True,
-            "data": tickets_data
-        }
+        if USE_REAL_GLPI_DATA:
+            tickets_data = glpi_service.get_new_tickets(limit=limit)
+            return ResponseFormatter.format_success_response(data=tickets_data, message="Novos tickets do GLPI")
+        else:
+            mock_tickets = [
+                {"id": 1, "title": "Problema de rede", "priority": "Alta", "status": "Aberto", "created_at": "2024-01-15T10:00:00Z"},
+                {"id": 2, "title": "Instalacao de software", "priority": "Media", "status": "Em andamento", "created_at": "2024-01-15T09:30:00Z"}
+            ]
+            return ResponseFormatter.format_success_response(data=mock_tickets[:limit], message="Novos tickets mockados")
     except Exception as e:
-        logger.error(f"Erro ao obter tickets: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Erro interno do servidor: {str(e)}")
+        logger.error(f"Erro ao buscar tickets: {str(e)}")
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")

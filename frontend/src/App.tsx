@@ -1,5 +1,6 @@
 import { useState, useEffect, Profiler, Suspense, ProfilerOnRenderCallback } from 'react';
 import { Header } from './components/Header';
+import DebugPanel from './components/DebugPanel';
 import { NotificationSystem } from './components/NotificationSystem';
 import CacheNotification from './components/CacheNotification';
 import { ModernDashboard } from './components/dashboard/ModernDashboard';
@@ -158,6 +159,7 @@ function App() {
   return (
     <div className={`h-screen overflow-hidden transition-all duration-300 ${theme}`}>
       {/* Header */}
+        <DebugPanel />
       <Header
         currentTime={new Date().toLocaleTimeString('pt-BR')}
         systemActive={true}

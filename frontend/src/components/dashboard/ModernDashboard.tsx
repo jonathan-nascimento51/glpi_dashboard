@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, Suspense } from 'react';
+﻿import React, { useEffect, useMemo, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { MetricsGrid } from './MetricsGrid';
 import { LevelMetricsGrid } from './LevelMetricsGrid';
@@ -28,7 +28,7 @@ interface ModernDashboardProps {
   className?: string
 }
 
-// Variantes de animação movidas para fora do componente
+// Variantes de animaÃ§Ã£o movidas para fora do componente
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -81,7 +81,7 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
   className
 }) {
   // Sistema funcionando corretamente
-    // console.log('✅ ModernDashboard carregado - correção dos níveis aplicada');
+    // console.log('âœ… ModernDashboard carregado - correÃ§Ã£o dos nÃ­veis aplicada');
 
 
   
@@ -101,22 +101,22 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
 
   // Memoizar dados do ranking processados
   const processedRankingData = useMemo(() => {
-    // console.log(" ModernDashboard - Processando ranking de", technicianRanking?.length || 0, "t�cnicos")
+    // console.log(" ModernDashboard - Processando ranking de", technicianRanking?.length || 0, "técnicos")
     
     if (!Array.isArray(technicianRanking)) {
-      console.warn(" technicianRanking n�o � um array:", technicianRanking)
+      console.warn(" technicianRanking não é um array:", technicianRanking)
       return []
     }
 
     const result = technicianRanking.map((tech) => ({
       id: tech.id || String(tech.name),
-      name: tech.name || tech.nome || 'Técnico',
+      name: tech.name || tech.nome || 'TÃ©cnico',
       level: tech.level || 'N1',
       total: tech.total || 0,
       rank: tech.rank || 0
     }))
     
-    // console.log('✅ ModernDashboard - Ranking processado:', result.length, 'técnicos')
+    // console.log('âœ… ModernDashboard - Ranking processado:', result.length, 'tÃ©cnicos')
     return result
   }, [technicianRanking])
 
@@ -174,17 +174,17 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
     >
 
       
-      {/* Cards de métricas principais */}
-      <motion.div variants={itemVariants} className="dashboard-metrics-section">
+      {/* Cards de mÃ©tricas principais */}
+      <motion.div variants={itemVariants} className="dashboard-metrics-section" data-testid="metrics-grid">
         <MetricsGrid 
           metrics={metrics}
           onFilterByStatus={onFilterByStatus}
         />
       </motion.div>
       
-      {/* Layout principal com métricas por nível e tickets novos */}
+      {/* Layout principal com mÃ©tricas por nÃ­vel e tickets novos */}
       <div className="dashboard-main-grid">
-        {/* Métricas por nível de atendimento - ocupando 2 colunas */}
+        {/* MÃ©tricas por nÃ­vel de atendimento - ocupando 2 colunas */}
         <motion.div variants={itemVariants} className="dashboard-levels-section">
           <LevelMetricsGrid 
             metrics={{ niveis: levelMetrics }}
@@ -203,12 +203,12 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
         </motion.div>
       </div>
 
-      {/* Ranking de técnicos - ocupando toda a largura na parte inferior */}
+      {/* Ranking de tÃ©cnicos - ocupando toda a largura na parte inferior */}
       <motion.div variants={itemVariants} className="dashboard-ranking-section">
         <Suspense fallback={<TableSkeleton />}>
           <LazyRankingTable 
             data={processedRankingData}
-            title="Ranking de Técnicos"
+            title="Ranking de TÃ©cnicos"
             className="w-full h-full"
           />
         </Suspense>
@@ -216,3 +216,4 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
     </motion.div>
   )
 })
+

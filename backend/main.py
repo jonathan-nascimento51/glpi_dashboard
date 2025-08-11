@@ -2,6 +2,7 @@
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import os
+from api.fastapi_routes import router as api_route
 from api.fastapi_routes import router as api_router
 from api.v2_routes import router as v2_router
 
@@ -26,6 +27,12 @@ if os.getenv("FLAG_USE_V2_KPIS", "false").lower() == "true":
 @app.get("/")
 def read_root():
     return {"message": "GLPI Dashboard API"}
+
+@app.get("/api/metrics")
+async def get_metrics_compat():
+    """Endpoint de compatibilidade para /api/metrics -> /v1/kpis"""
+    from api.fastapi_routes import get_kpis
+    return await get_kpis()
 
 @app.get("/health")
 def health_check():

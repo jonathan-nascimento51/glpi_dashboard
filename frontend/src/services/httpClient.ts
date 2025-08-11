@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosError, AxiosRequestConfig, AxiosResponse } f
 
 // Configuração da API usando variáveis de ambiente
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/v1',
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || '/api/v1',
   TIMEOUT: parseInt(import.meta.env.VITE_API_TIMEOUT || '30000'),
   RETRY_ATTEMPTS: parseInt(import.meta.env.VITE_API_RETRY_ATTEMPTS || '3'),
   RETRY_DELAY: parseInt(import.meta.env.VITE_API_RETRY_DELAY || '1000'),
