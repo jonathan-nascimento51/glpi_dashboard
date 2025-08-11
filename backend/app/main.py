@@ -1,10 +1,15 @@
 ﻿import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
 from typing import Literal, List, Dict, Any
 from .telemetry import init_sentry, init_otel
 from .flags import Flags
+
+# Importar modelos consolidados
+from models.validation import (
+    TechnicianRanking, Ticket, SystemStatus, 
+    LevelMetrics, MetricsData
+)
 
 init_sentry(
     dsn=os.getenv("SENTRY_DSN"),
@@ -27,31 +32,15 @@ app.add_middleware(
 )
 flags = Flags()
 
+# Modelo específico para KPIs (não duplicado)
+from pydantic import BaseModel, Field
+
 class KPI(BaseModel):
     level: Literal["N1", "N2", "N3", "N4"]
     total: int = Field(ge=0)
     open: int = Field(ge=0)
     in_progress: int = Field(ge=0)
     closed: int = Field(ge=0)
-
-class SystemStatus(BaseModel):
-    status: str
-    uptime: str
-    version: str
-
-class TechnicianRanking(BaseModel):
-    name: str
-    tickets_resolved: int
-    avg_resolution_time: str
-    satisfaction_score: float
-
-class Ticket(BaseModel):
-    id: int
-    title: str
-    status: str
-    priority: str
-    created_at: str
-    assigned_to: str
 
 class Metrics(BaseModel):
     total_tickets: int

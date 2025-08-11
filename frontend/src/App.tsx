@@ -200,11 +200,11 @@ function App() {
           <Profiler id="ModernDashboard" onRender={profilerCallback}>
             <ModernDashboard
               metrics={{
-                novos: levelMetrics?.niveis?.geral?.novos || 0,
-                pendentes: levelMetrics?.niveis?.geral?.pendentes || 0,
-                progresso: levelMetrics?.niveis?.geral?.progresso || 0,
-                resolvidos: levelMetrics?.niveis?.geral?.resolvidos || 0,
-                total: levelMetrics?.niveis?.geral?.total || 0,
+                novos: (levelMetrics?.niveis?.n1?.novos || 0) + (levelMetrics?.niveis?.n2?.novos || 0) + (levelMetrics?.niveis?.n3?.novos || 0) + (levelMetrics?.niveis?.n4?.novos || 0),
+                pendentes: (levelMetrics?.niveis?.n1?.pendentes || 0) + (levelMetrics?.niveis?.n2?.pendentes || 0) + (levelMetrics?.niveis?.n3?.pendentes || 0) + (levelMetrics?.niveis?.n4?.pendentes || 0),
+                progresso: (levelMetrics?.niveis?.n1?.progresso || 0) + (levelMetrics?.niveis?.n2?.progresso || 0) + (levelMetrics?.niveis?.n3?.progresso || 0) + (levelMetrics?.niveis?.n4?.progresso || 0),
+                resolvidos: (levelMetrics?.niveis?.n1?.resolvidos || 0) + (levelMetrics?.niveis?.n2?.resolvidos || 0) + (levelMetrics?.niveis?.n3?.resolvidos || 0) + (levelMetrics?.niveis?.n4?.resolvidos || 0),
+                total: (levelMetrics?.niveis?.n1?.total || 0) + (levelMetrics?.niveis?.n2?.total || 0) + (levelMetrics?.niveis?.n3?.total || 0) + (levelMetrics?.niveis?.n4?.total || 0),
                 niveis: levelMetrics?.niveis || {},
                 tendencias: levelMetrics?.tendencias || {
                   novos: '0',
@@ -314,4 +314,9 @@ function App() {
 }
 
 export default App;
+
+
+
+
+
 

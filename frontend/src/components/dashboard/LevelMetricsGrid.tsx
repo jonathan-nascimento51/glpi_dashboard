@@ -3,7 +3,7 @@ import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
-  Users, 
+  Users,
   Clock,
   AlertCircle,
   CheckCircle,
@@ -41,12 +41,6 @@ const levelConfig = {
     color: "from-slate-900 to-black",
     bgColor: "bg-slate-100 dark:bg-slate-800",
     textColor: "text-slate-900 dark:text-slate-100 font-bold"
-  },
-  geral: {
-    title: "Geral",
-    color: "from-blue-600 to-blue-700",
-    bgColor: "bg-blue-50 dark:bg-blue-900/20",
-    textColor: "text-blue-900 dark:text-blue-100 font-bold"
   }
 }
 
@@ -77,34 +71,34 @@ const statusConfig = {
   }
 }
 
-export const LevelMetricsGrid: React.FC<LevelMetricsGridProps> = ({ 
-  metrics, 
-  className 
+export const LevelMetricsGrid: React.FC<LevelMetricsGridProps> = ({
+  metrics,
+  className
 }) => {
   // Debug: Log dos dados recebidos
-  console.log("🔍 LevelMetricsGrid - metrics recebido:", metrics);
-  console.log("🔍 LevelMetricsGrid - Tipo de metrics:", typeof metrics);
+  console.log(" LevelMetricsGrid - metrics recebido:", metrics);
+  console.log(" LevelMetricsGrid - Tipo de metrics:", typeof metrics);
   if (metrics) {
-    console.log("🔍 LevelMetricsGrid - Keys de metrics:", Object.keys(metrics));
-    console.log("🔍 LevelMetricsGrid - metrics.niveis:", metrics.niveis);
+    console.log(" LevelMetricsGrid - Keys de metrics:", Object.keys(metrics));
+    console.log(" LevelMetricsGrid - metrics.niveis:", metrics.niveis);
     if (metrics.niveis) {
-      console.log("🔍 LevelMetricsGrid - Keys de metrics.niveis:", Object.keys(metrics.niveis));
-      console.log("🔍 LevelMetricsGrid - metrics.niveis.geral:", metrics.niveis.geral);
+      console.log(" LevelMetricsGrid - Keys de metrics.niveis:", Object.keys(metrics.niveis));
     }
   } else {
-    console.log("🔍 LevelMetricsGrid - metrics é null/undefined");
+    console.log(" LevelMetricsGrid - metrics � null/undefined");
   }
 
   const levelMetrics = useMemo(() => {
     if (!metrics) {
-      console.log("🔍 LevelMetricsGrid - Sem metrics, retornando objeto vazio");
+      console.log(" LevelMetricsGrid - Sem metrics, retornando objeto vazio");
       return {};
     }
-    
-    console.log("🔍 LevelMetricsGrid - Processando metrics:", metrics);
-    // Se metrics já é o objeto com os níveis, retorna diretamente
-    // Se metrics tem uma propriedade niveis, usa ela
-    return metrics.niveis || metrics;
+
+    console.log(" LevelMetricsGrid - Processando metrics:", metrics);
+    // A API retorna os dados na estrutura: { niveis: { n1: {...}, n2: {...}, ... } }
+    const niveisDados = metrics.niveis || {};
+    console.log(" LevelMetricsGrid - Dados dos n�veis:", niveisDados);
+    return niveisDados;
   }, [metrics]);
 
   if (!metrics) {
@@ -112,7 +106,7 @@ export const LevelMetricsGrid: React.FC<LevelMetricsGridProps> = ({
   }
 
   return (
-    <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4", className)}>
+    <div className={cn("grid grid-cols-2 gap-4", className)}>
       {Object.entries(levelConfig).map(([level, config]) => {
         const levelData = levelMetrics[level as keyof typeof levelMetrics] || {
           novos: 0,
@@ -139,7 +133,7 @@ export const LevelMetricsGrid: React.FC<LevelMetricsGridProps> = ({
                 "absolute inset-0 bg-gradient-to-br opacity-5",
                 config.color
               )} />
-              
+
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className={cn(
@@ -153,39 +147,56 @@ export const LevelMetricsGrid: React.FC<LevelMetricsGridProps> = ({
                   </Badge>
                 </div>
               </CardHeader>
-              
-              <CardContent className="space-y-3">
-                {Object.entries(statusConfig).map(([status, statusConf]) => {
-                  const Icon = statusConf.icon;
-                  const value = levelData[status as keyof typeof levelData] || 0;
-                  
-                  return (
-                    <div key={status} className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <div className={cn(
-                          "p-1 rounded-full",
-                          statusConf.bgColor
-                        )}>
-                          <Icon className={cn(
-                            "h-3 w-3",
-                            statusConf.color
-                          )} />
-                        </div>
-                        <span className="text-xs font-medium text-muted-foreground">
-                          {statusConf.label}
-                        </span>
+
+              <CardContent className="p-4">
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Primeira linha: Novos e Pendentes */}
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <div className="flex items-center gap-2">
+                      <div className="p-1 rounded-full bg-blue-100 dark:bg-blue-900/20">
+                        <Users className="h-3 w-3 text-blue-600" />
                       </div>
-                      <span className="text-sm font-semibold">
-                        {value}
-                      </span>
+                      <span className="text-xs font-medium text-muted-foreground">Novos</span>
                     </div>
-                  );
-                })}
-                
+                    <span className="text-sm font-semibold">{levelData.novos || 0}</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <div className="flex items-center gap-2">
+                      <div className="p-1 rounded-full bg-yellow-100 dark:bg-yellow-900/20">
+                        <Clock className="h-3 w-3 text-yellow-600" />
+                      </div>
+                      <span className="text-xs font-medium text-muted-foreground">Pendentes</span>
+                    </div>
+                    <span className="text-sm font-semibold">{levelData.pendentes || 0}</span>
+                  </div>
+                  
+                  {/* Segunda linha: Em Progresso e Resolvidos */}
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <div className="flex items-center gap-2">
+                      <div className="p-1 rounded-full bg-orange-100 dark:bg-orange-900/20">
+                        <AlertCircle className="h-3 w-3 text-orange-600" />
+                      </div>
+                      <span className="text-xs font-medium text-muted-foreground">Em Progresso</span>
+                    </div>
+                    <span className="text-sm font-semibold">{levelData.progresso || 0}</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <div className="flex items-center gap-2">
+                      <div className="p-1 rounded-full bg-green-100 dark:bg-green-900/20">
+                        <CheckCircle className="h-3 w-3 text-green-600" />
+                      </div>
+                      <span className="text-xs font-medium text-muted-foreground">Resolvidos</span>
+                    </div>
+                    <span className="text-sm font-semibold">{levelData.resolvidos || 0}</span>
+                  </div>
+                </div>
+
                 {levelData.total > 0 && (
-                  <div className="pt-2 border-t">
+                  <div className="pt-3 mt-3 border-t">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground">Taxa de Resolucao</span>
+                      <span className="text-muted-foreground">Taxa de Resolu��o</span>
                       <span className="font-semibold">
                         {Math.round((levelData.resolvidos / levelData.total) * 100)}%
                       </span>
@@ -200,4 +211,6 @@ export const LevelMetricsGrid: React.FC<LevelMetricsGridProps> = ({
     </div>
   );
 };
+
+
 

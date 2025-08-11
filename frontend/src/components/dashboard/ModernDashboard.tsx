@@ -170,7 +170,7 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className={cn("dashboard-fullscreen-container", className)}
+      className={cn(className)}
     >
 
       
@@ -184,10 +184,10 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
       
       {/* Layout principal com mÃ©tricas por nível e tickets novos */}
       <div className="dashboard-main-grid">
-        {/* MÃ©tricas por nível de atendimento - ocupando 2 colunas */}
+        {/* Métricas por nível de atendimento - ocupando 2 colunas */}
         <motion.div variants={itemVariants} className="dashboard-levels-section">
           <LevelMetricsGrid 
-            metrics={levelMetrics?.niveis}
+            metrics={levelMetrics}
             className="h-full"
           />
         </motion.div>
