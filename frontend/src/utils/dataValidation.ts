@@ -180,7 +180,7 @@ export function validateTechnicianRanking(data: any): ValidationResult<Technicia
       return {
         id: String(tech.id || `unknown-${index}`),
         name: String(tech.name || tech.nome || 'Nome não informado'),
-        level: String(tech.level || 'N1'),
+        level: String(tech.level || 'N1'), // Fallback apenas para casos extremos
         score: validateNumber(tech.score || tech.total, `score do técnico ${tech.name}`, [], warnings),
         total: validateNumber(tech.total || tech.score, `total do técnico ${tech.name}`, [], warnings),
         ticketsResolved: validateNumber(tech.ticketsResolved || tech.total || tech.score, `tickets resolvidos do técnico ${tech.name}`, [], warnings),

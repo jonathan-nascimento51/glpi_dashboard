@@ -370,15 +370,15 @@ export const apiService = {
         // Mapear os dados para a estrutura esperada pelo frontend
         const mappedData = data.map((tech: any, index: number) => ({
           id: tech.id,
-          name: tech.name,
-          level: tech.level || 'N1',
-          total: tech.total_tickets || tech.total || 0,
+          name: tech.nome || tech.name, // Usar 'nome' do backend, fallback para 'name'
+          level: tech.nivel || tech.level || 'N1', // Usar 'nivel' do backend, fallback para 'level'
+          total: tech.total || tech.total_tickets || 0,
           rank: index + 1,
           score: tech.score || 0,
-          tickets_abertos: tech.tickets_abertos || 0,
-          tickets_fechados: tech.tickets_fechados || 0,
-          tickets_pendentes: tech.tickets_pendentes || 0
-        }));
+          tickets_abertos: tech.abertos || tech.tickets_abertos || 0,
+          tickets_fechados: tech.fechados || tech.tickets_fechados || 0,
+          tickets_pendentes: tech.pendentes || tech.tickets_pendentes || 0
+        }))
         
 
         
@@ -405,10 +405,8 @@ export const apiService = {
     const startTime = Date.now();
     const cacheParams = { endpoint: 'tickets/new', limit: limit.toString() };
 
-    // Verificar cache primeiro
     const cachedData = newTicketsCache.get(cacheParams);
     if (cachedData) {
-      console.log('📦 Retornando dados do cache para novos tickets');
       return cachedData;
     }
 
@@ -422,33 +420,37 @@ export const apiService = {
       
       if (response.data.success && response.data.data) {
         const data = response.data.data;
-        // Armazenar no cache
         newTicketsCache.set(cacheParams, data);
         return data;
       } else {
-        console.error('API returned unsuccessful response:', response.data);
         // Return mock data as fallback (não cachear)
         return [
           {
             id: '12345',
             title: 'Problema com impressora',
+            description: 'Impressora não está funcionando corretamente',
             requester: 'João Silva',
             date: new Date().toISOString(),
-            priority: 'Alta'
+            priority: 'Alta',
+            status: 'Novo'
           },
           {
             id: '12346',
             title: 'Erro no sistema',
+            description: 'Sistema apresentando lentidão',
             requester: 'Maria Santos',
             date: new Date(Date.now() - 3600000).toISOString(),
-            priority: 'Média'
+            priority: 'Média',
+            status: 'Novo'
           },
           {
             id: '12347',
             title: 'Solicitação de acesso',
+            description: 'Necessário acesso ao sistema financeiro',
             requester: 'Pedro Costa',
             date: new Date(Date.now() - 7200000).toISOString(),
-            priority: 'Baixa'
+            priority: 'Baixa',
+            status: 'Novo'
           }
         ];
       }
@@ -459,23 +461,29 @@ export const apiService = {
         {
           id: '12345',
           title: 'Problema com impressora',
+          description: 'Impressora não está funcionando corretamente',
           requester: 'João Silva',
           date: new Date().toISOString(),
-          priority: 'Alta'
+          priority: 'Alta',
+          status: 'Novo'
         },
         {
           id: '12346',
           title: 'Erro no sistema',
+          description: 'Sistema apresentando lentidão',
           requester: 'Maria Santos',
           date: new Date(Date.now() - 3600000).toISOString(),
-          priority: 'Média'
+          priority: 'Média',
+          status: 'Novo'
         },
         {
           id: '12347',
           title: 'Solicitação de acesso',
+          description: 'Necessário acesso ao sistema financeiro',
           requester: 'Pedro Costa',
           date: new Date(Date.now() - 7200000).toISOString(),
-          priority: 'Baixa'
+          priority: 'Baixa',
+          status: 'Novo'
         }
       ];
     }

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Frontend API</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .technician { margin: 5px 0; padding: 5px; background: #f8f9fa; }
+    </style>
+</head>
+<body>
+    <h1>Teste da API do Frontend - Ranking de Técnicos</h1>
+    <button onclick="testAPI()">Testar API</button>
+    <button onclick="clearCache()">Limpar Cache</button>
+    <div id="results"></div>
+
+    <script>
+        async function testAPI() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p>Testando...</p>';
+            
+            try {
+                console.log('Fazendo requisição para /api/technicians/ranking');
+                
+                const response = await fetch('/api/technicians/ranking', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache'
+                    }
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                if (data.success && data.data) {
+                    const technicians = data.data;
+                    
+                    let html = `<div class="result success">`;
+                    html += `<h3>✅ Sucesso! ${technicians.length} técnicos encontrados</h3>`;
+                    html += `<p><strong>Tempo de resposta:</strong> ${data.response_time_ms}ms</p>`;
+                    
+                    html += `<h4>Primeiros 5 técnicos:</h4>`;
+                    
+                    technicians.slice(0, 5).forEach((tech, index) => {
+                        html += `<div class="technician">`;
+                        html += `<strong>${index + 1}. ${tech.nome || tech.name || 'Nome não encontrado'}</strong><br>`;
+                        html += `ID: ${tech.id} | Nível: ${tech.nivel || tech.level || 'N/A'} | Total: ${tech.total || 0} tickets<br>`;
+                        html += `Abertos: ${tech.abertos || 0} | Fechados: ${tech.fechados || 0} | Pendentes: ${tech.pendentes || 0}`;
+                        html += `</div>`;
+                    });
+                    
+                    html += `</div>`;
+                    resultsDiv.innerHTML = html;
+                    
+                } else {
+                    resultsDiv.innerHTML = `<div class="result error"><h3>❌ Erro: Resposta inválida</h3><pre>${JSON.stringify(data, null, 2)}</pre></div>`;
+                }
+                
+            } catch (error) {
+                console.error('Erro na requisição:', error);
+                resultsDiv.innerHTML = `<div class="result error"><h3>❌ Erro na requisição</h3><p>${error.message}</p></div>`;
+            }
+        }
+        
+        function clearCache() {
+            // Limpar localStorage
+            if (localStorage) {
+                const keysToRemove = Object.keys(localStorage).filter(key => 
+                    key.includes('technician') || key.includes('ranking') || key.includes('cache')
+                );
+                keysToRemove.forEach(key => localStorage.removeItem(key));
+                console.log('LocalStorage limpo:', keysToRemove);
+            }
+            
+            // Limpar sessionStorage
+            if (sessionStorage) {
+                const sessionKeysToRemove = Object.keys(sessionStorage).filter(key => 
+                    key.includes('technician') || key.includes('ranking') || key.includes('cache')
+                );
+                sessionKeysToRemove.forEach(key => sessionStorage.removeItem(key));
+                console.log('SessionStorage limpo:', sessionKeysToRemove);
+            }
+            
+            alert('Cache limpo! Teste a API novamente.');
+        }
+        
+        // Testar automaticamente ao carregar a página
+        window.onload = function() {
+            testAPI();
+        };
+    </script>
+</body>
+</html>

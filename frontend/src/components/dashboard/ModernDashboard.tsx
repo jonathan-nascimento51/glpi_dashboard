@@ -108,7 +108,7 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
     const result = technicianRanking.map((tech, index) => ({
       id: `technician-${index}-${tech.id || 'unknown'}-${String(tech.name || 'unnamed').replace(/\s+/g, '-').toLowerCase()}`,
       name: tech.name || tech.nome || 'Técnico',
-      level: tech.level || 'N1',
+      level: tech.level || 'N1', // Manter fallback apenas para casos extremos
       total: tech.total || 0,
       rank: tech.rank || 0
     }))

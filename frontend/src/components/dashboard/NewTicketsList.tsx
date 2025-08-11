@@ -177,13 +177,13 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
       setError(null)
       
       const newTickets = await apiService.getNewTickets(limit)
+      
       startTransition(() => {
         setTickets(newTickets)
         setLastUpdate(new Date())
         setIsLoading(false)
       })
     } catch (err) {
-      console.error('Erro ao buscar tickets novos:', err)
       setError('Erro ao carregar tickets')
       setIsLoading(false)
     }
@@ -197,7 +197,6 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
       // Verificar se auto-refresh está habilitado
       const autoRefreshEnabled = localStorage.getItem('autoRefreshEnabled')
       if (autoRefreshEnabled === 'false') {
-        console.log('⏸️ Auto-refresh de tickets desabilitado pelo usuário')
         return
       }
 
@@ -207,10 +206,7 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
       
       // Só atualiza se não houver interação recente (últimos 2 minutos)
       if (timeSinceInteraction > 120000) {
-        console.log('🎫 Atualizando lista de tickets novos')
         fetchTickets()
-      } else {
-        console.log('⏸️ Atualização da lista de tickets pausada (interação recente)')
       }
     }, 300000) // 5 minutos
     
@@ -224,6 +220,8 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
     lastUpdate ? formatRelativeTime(lastUpdate) : null, 
     [lastUpdate]
   )
+
+
 
   return (
     <Card className={cn("figma-tickets-recentes h-full flex flex-col shadow-none", className)}>

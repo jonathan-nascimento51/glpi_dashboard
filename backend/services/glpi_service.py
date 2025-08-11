@@ -796,21 +796,21 @@ class GLPIService:
             }
     
     def get_technician_ranking(self, limit: int = None, start_date: str = None, end_date: str = None) -> list:
-        """Retorna ranking de técnicos OTIMIZADO - versão rápida
+        """Retorna ranking de técnicos CORRIGIDO
         
-        Implementação super otimizada que:
-        1. Usa cache com TTL de 10 minutos
-        2. Faz apenas 1 consulta para buscar todos os tickets
-        3. Agrupa por técnico em memória (muito mais rápido)
-        4. Evita múltiplas requisições HTTP
+        Implementação corrigida que:
+        1. Busca todos os usuários dos grupos DTIC
+        2. Para cada usuário, busca seus tickets individualmente
+        3. Verifica se o usuário é técnico DTIC ativo
+        4. Constrói o ranking baseado nos dados reais
         """
-        self.logger.info("=== RANKING OTIMIZADO INICIADO ===")
+        self.logger.info("=== RANKING CORRIGIDO INICIADO ===")
         
-        # Reabilitar cache para performance
-        cache_key = f'technician_ranking_{start_date}_{end_date}_{limit}'
+        # Cache com chave específica para versão corrigida
+        cache_key = f'technician_ranking_fixed_{start_date}_{end_date}_{limit}'
         cached_data = self._get_cached_data(cache_key)
         if cached_data is not None:
-            self.logger.info("✅ Retornando ranking do cache")
+            self.logger.info("✅ Retornando ranking corrigido do cache")
             return cached_data
         
         # Verificar autenticação
@@ -818,162 +818,119 @@ class GLPIService:
             self.logger.error("❌ Falha na autenticação")
             return []
         
-        self.logger.info("🚀 Iniciando busca super otimizada...")
-        
         try:
-            # Descobrir field ID do técnico uma única vez
-            tech_field_id = self._discover_tech_field_id()
-            if not tech_field_id:
-                self.logger.error("❌ Não foi possível descobrir field ID do técnico")
-                return []
-            
-            # Construir consulta otimizada para TODOS os tickets de uma vez
-            search_params = {
-                "range": "0-9999",  # Buscar todos os tickets
-                "forcedisplay[0]": "2",   # ID do ticket
-                "forcedisplay[1]": "12",  # Status
-                "forcedisplay[2]": str(tech_field_id),  # Técnico atribuído
-            }
-            
-            criteria_index = 0
-            
-            # Adicionar filtros de data se fornecidos
-            if start_date:
-                search_params[f"criteria[{criteria_index}][field]"] = "15"  # Data criação
-                search_params[f"criteria[{criteria_index}][searchtype]"] = "morethan"
-                search_params[f"criteria[{criteria_index}][value]"] = start_date
-                criteria_index += 1
-                
-            if end_date:
-                if criteria_index > 0:
-                    search_params[f"criteria[{criteria_index}][link]"] = "AND"
-                search_params[f"criteria[{criteria_index}][field]"] = "15"  # Data criação
-                search_params[f"criteria[{criteria_index}][searchtype]"] = "lessthan"
-                search_params[f"criteria[{criteria_index}][value]"] = end_date
-                criteria_index += 1
-            
-            # Fazer UMA única requisição para todos os tickets
-            self.logger.info("📡 Fazendo consulta única otimizada...")
-            response = self._make_authenticated_request(
-                'GET',
-                f"{self.glpi_url}/search/Ticket",
-                params=search_params
-            )
-            
-            if not response or not response.ok:
-                self.logger.error("❌ Falha na consulta de tickets")
-                return []
-            
-            result = response.json()
-            if not isinstance(result, dict) or 'data' not in result:
-                self.logger.info("ℹ️ Nenhum ticket encontrado")
-                return []
-            
-            tickets = result['data']
-            self.logger.info(f"📊 {len(tickets)} tickets encontrados")
-            
-            # Agrupar tickets por técnico em memória (super rápido)
-            technician_stats = {}
-            
-            for ticket in tickets:
-                if not isinstance(ticket, dict):
-                    continue
-                    
-                tech_id = ticket.get(str(tech_field_id))
-                if not tech_id or tech_id == '0':
-                    continue
-                
-                # Tratar casos onde tech_id vem como array ou string de array
-                if isinstance(tech_id, list):
-                    if len(tech_id) == 0:
-                        continue
-                    tech_id = str(tech_id[0])  # Pegar o primeiro ID e converter para string
-                elif isinstance(tech_id, str):
-                    # Tratar string que representa array como "['926', '1032', '1160']"
-                    if tech_id.startswith('[') and tech_id.endswith(']'):
-                        import re
-                        # Extrair números da string usando regex
-                        numbers = re.findall(r"'(\d+)'", tech_id)
-                        if not numbers:
-                            numbers = re.findall(r'"(\d+)"', tech_id)  # Tentar com aspas duplas
-                        if not numbers:
-                            numbers = re.findall(r'(\d+)', tech_id)  # Tentar sem aspas
-                        
-                        if numbers:
-                            tech_id = str(numbers[0])  # Pegar o primeiro número
-                        else:
-                            continue
-                    # Se não é array, manter como string
-                    else:
-                        tech_id = str(tech_id)
-                else:
-                    tech_id = str(tech_id)
-                
-                if tech_id not in technician_stats:
-                    technician_stats[tech_id] = {
-                        'total': 0,
-                        'abertos': 0,
-                        'fechados': 0,
-                        'pendentes': 0
-                    }
-                
-                technician_stats[tech_id]['total'] += 1
-                
-                # Contar por status
-                status_id = str(ticket.get('12', '0'))
-                if status_id in ['1', '2']:  # Novo, Em atendimento
-                    technician_stats[tech_id]['abertos'] += 1
-                elif status_id in ['4', '3']:  # Pendente, Planejado
-                    technician_stats[tech_id]['pendentes'] += 1
-                elif status_id in ['5', '6']:  # Solucionado, Fechado
-                    technician_stats[tech_id]['fechados'] += 1
-            
-            # Buscar nomes dos técnicos (apenas os que têm tickets e pertencem à DTIC)
             ranking = []
-            for tech_id, stats in technician_stats.items():
+            
+            # IDs dos grupos DTIC
+            dtic_groups = ["89", "90", "91", "92"]  # N1, N2, N3, N4
+            
+            # Buscar todos os usuários dos grupos DTIC
+            all_dtic_users = set()
+            
+            for group_id in dtic_groups:
                 try:
-                    # Garantir que tech_id é um número válido
-                    tech_id_int = int(tech_id)
+                    response = self._make_authenticated_request(
+                        'GET',
+                        f"{self.glpi_url}/Group/{group_id}/Group_User"
+                    )
                     
-                    # Verificar se o técnico pertence aos grupos da DTIC (N1-N4)
-                    if not self._is_dtic_technician(tech_id):
-                        self.logger.info(f"Técnico {tech_id} não pertence à DTIC - ignorado no ranking")
-                        continue
+                    if response and response.ok:
+                        group_users = response.json()
+                        if isinstance(group_users, list):
+                            for user_relation in group_users:
+                                user_id = str(user_relation.get('users_id', ''))
+                                if user_id and user_id != '0':
+                                    all_dtic_users.add(user_id)
+                                    self.logger.debug(f"Usuário {user_id} encontrado no grupo {group_id}")
                     
-                    user_name = self._get_user_name(tech_id)
-                    if user_name:
-                        ranking.append({
-                            'id': tech_id_int,
-                            'name': user_name,
-                            'realname': None,
-                            'firstname': None,
-                            'total_tickets': stats['total'],
-                            'tickets_abertos': stats['abertos'],
-                            'tickets_fechados': stats['fechados'],
-                            'tickets_pendentes': stats['pendentes'],
-                            'score': float(stats['total']),
-                            'tempo_medio_resolucao': 0
-                        })
-                except ValueError:
-                    self.logger.warning(f"⚠️ ID de técnico inválido ignorado: {tech_id}")
+                except Exception as e:
+                    self.logger.error(f"Erro ao buscar usuários do grupo {group_id}: {e}")
                     continue
             
-            # Ordenar por total de tickets (descendente)
-            ranking.sort(key=lambda x: x['total_tickets'], reverse=True)
+            self.logger.info(f"Total de usuários DTIC encontrados: {len(all_dtic_users)}")
+            
+            # Para cada usuário DTIC, buscar seus tickets
+            for user_id in all_dtic_users:
+                try:
+                    # Verificar se é técnico DTIC ativo
+                    if not self._is_dtic_technician(user_id):
+                        self.logger.debug(f"Usuário {user_id} não passou no filtro DTIC")
+                        continue
+                    
+                    # Buscar tickets do técnico
+                    tickets_data = self._get_technician_tickets(
+                        int(user_id), 
+                        start_date=start_date, 
+                        end_date=end_date
+                    )
+                    
+                    # Verificar se tem tickets suficientes (critério mínimo)
+                    if tickets_data['total'] < 10:
+                        self.logger.debug(f"Usuário {user_id} tem apenas {tickets_data['total']} tickets (mínimo: 10)")
+                        continue
+                    
+                    # Buscar dados do usuário
+                    user_response = self._make_authenticated_request(
+                        'GET',
+                        f"{self.glpi_url}/User/{user_id}"
+                    )
+                    
+                    if not (user_response and user_response.ok):
+                        self.logger.warning(f"Não foi possível buscar dados do usuário {user_id}")
+                        continue
+                    
+                    user_data = user_response.json()
+                    
+                    # Usar o mesmo método de construção de nome do _get_user_name
+                    user_name = self._get_user_name(str(user_id))
+                    
+                    # Determinar nível do técnico
+                    level = self._get_technician_level(user_id)
+                    
+                    # Calcular score
+                    score = self._calculate_technician_score(tickets_data)
+                    
+                    # Adicionar ao ranking
+                    ranking.append({
+                        'id': int(user_id),
+                        'nome': user_name,
+                        'total': tickets_data['total'],
+                        'abertos': tickets_data['abertos'],
+                        'fechados': tickets_data['fechados'],
+                        'pendentes': tickets_data['pendentes'],
+                        'nivel': level,
+                        'score': score,
+                        'tempo_medio': tickets_data.get('tempo_medio', 0)
+                    })
+                    
+                    self.logger.info(f"✅ {user_name} (ID {user_id}): {tickets_data['total']} tickets, nível {level}")
+                
+                except Exception as e:
+                    self.logger.error(f"Erro ao processar usuário {user_id}: {e}")
+                    continue
+            
+            # Ordenar ranking por total de tickets (decrescente)
+            ranking.sort(key=lambda x: x['total'], reverse=True)
             
             # Aplicar limite se especificado
-            if limit:
+            if limit and limit > 0:
                 ranking = ranking[:limit]
             
-            # Armazenar no cache por 10 minutos
-            self._set_cached_data(cache_key, ranking, ttl=600)  # 10 minutos = 600 segundos
+            self.logger.info(f"✅ Ranking corrigido gerado com {len(ranking)} técnicos")
             
-            self.logger.info(f"✅ Ranking otimizado concluído: {len(ranking)} técnicos")
+            # Salvar no cache por 10 minutos
+            self._set_cached_data(cache_key, ranking, ttl=600)
+            
             return ranking
-            
+        
         except Exception as e:
-            self.logger.error(f"❌ Erro no ranking otimizado: {e}")
+            self.logger.error(f"Erro no ranking corrigido: {e}")
+            import traceback
+            self.logger.error(f"Stack trace: {traceback.format_exc()}")
             return []
+
+
+
     
     def _discover_tech_field_id(self) -> str:
         """Descobre o field ID do técnico atribuído (cache por 1 hora)"""
@@ -1074,7 +1031,19 @@ class GLPIService:
             
             if response and response.ok:
                 user_data = response.json()
-                name = user_data.get('name', f'Usuário {user_id}')
+                
+                # Construir nome completo usando firstname e realname
+                if user_data.get('realname') and user_data.get('firstname'):
+                    name = f"{user_data['firstname']} {user_data['realname']}"
+                elif user_data.get('realname'):
+                    name = user_data['realname']
+                elif user_data.get('firstname'):
+                    name = user_data['firstname']
+                elif user_data.get('name'):
+                    name = user_data['name']
+                else:
+                    name = f'Usuário {user_id}'
+                    
                 self._set_cached_data(cache_key, name, ttl=1800)  # 30 minutos = 1800 segundos
                 return name
             else:
@@ -2106,12 +2075,18 @@ class GLPIService:
             # Converter para formato esperado
             ranking = []
             for item in ranking_data[:limit]:
+                tech_id = int(item.get('id', 0))
+                total_tickets = item.get('total', 0)
+                
+                # Determinar nível do técnico se não foi especificado um filtro
+                tech_level = level if level else self._get_technician_level(tech_id, total_tickets)
+                
                 ranking.append({
                     'id': item.get('id', ''),
                     'name': item.get('name', item.get('nome', '')),
-                    'total': item.get('total', 0),
-                    'ticket_count': item.get('total', 0),
-                    'level': level if level else 'N1',
+                    'total': total_tickets,
+                    'ticket_count': total_tickets,
+                    'level': tech_level,
                     'rank': item.get('rank', 0)
                 })
             
