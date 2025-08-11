@@ -1,0 +1,80 @@
+{
+  "name": "Dashboard GLPI - Departamento de Tecnologia",
+  "short_name": "GLPI Dashboard",
+  "description": "Dashboard de monitoramento e gestão GLPI do Departamento de Tecnologia do Estado",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#1e40af",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["productivity", "business"],
+  "icons": [
+    {
+      "src": "/tech-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Métricas",
+      "short_name": "Métricas",
+      "description": "Visualizar métricas do dashboard",
+      "url": "/?view=metrics",
+      "icons": [
+        {
+          "src": "/tech-logo.svg",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Ranking",
+      "short_name": "Ranking",
+      "description": "Visualizar ranking de técnicos",
+      "url": "/?view=ranking",
+      "icons": [
+        {
+          "src": "/tech-logo.svg",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
+}
