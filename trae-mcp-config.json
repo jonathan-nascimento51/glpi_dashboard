@@ -1,0 +1,64 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem"],
+      "env": {
+        "MCP_FS_ROOT": ".",
+        "MCP_FS_READONLY": "false"
+      }
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "github-mcp-server"],
+      "env": {
+        "GITHUB_TOKEN": "YOUR_GH_TOKEN"
+      }
+    },
+    "firecrawl": {
+      "command": "npx",
+      "args": ["-y", "firecrawl-mcp"],
+      "env": {
+        "FIRECRAWL_API_KEY": "fc_YOUR_API_KEY"
+      }
+    },
+    "openapi": {
+      "command": "npx",
+      "args": ["-y", "openapi-mcp-server"],
+      "env": {
+        "OPENAPI_SPEC_URL": "http://localhost:5000/openapi.json"
+      }
+    },
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "mcp-postgres"],
+      "env": {
+        "PGHOST": "localhost",
+        "PGPORT": "3306",
+        "PGDATABASE": "glpi",
+        "PGUSER": "readonly",
+        "PGPASSWORD": "********",
+        "PG_READONLY": "true"
+      }
+    },
+    "prometheus": {
+      "command": "npx",
+      "args": ["-y", "prometheus-mcp-server"],
+      "env": {
+        "PROMETHEUS_BASE_URL": "http://localhost:9090"
+      }
+    },
+    "grafana": {
+      "command": "npx",
+      "args": ["-y", "grafana-mcp"],
+      "env": {
+        "GRAFANA_URL": "http://localhost:3000",
+        "GRAFANA_TOKEN": "YOUR_GRAFANA_TOKEN"
+      }
+    }
+  }
+}
