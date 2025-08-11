@@ -127,7 +127,7 @@ repos:
           - scripts
           - --skip=B101,B601
           - --format=custom
-          - --msg-template="{abspath}:{line}: {test_id}[bandit]: {severity}: {msg}"
+          - '--msg-template={abspath}:{line}: {test_id}[bandit]: {severity}: {msg}'
 
   # Dependency scanning
   - repo: https://github.com/pyupio/safety

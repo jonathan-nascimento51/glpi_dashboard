@@ -12,46 +12,50 @@ from datetime import datetime, timedelta
 def test_backend_data():
     """Testa os dados do backend"""
     print("🔍 Testando dados do backend...")
-    
+
     try:
         # Testar endpoint de métricas
         response = requests.get('http://localhost:5000/api/metrics')
         if response.status_code == 200:
-            data = response.json()
-            print("✅ Backend respondeu com sucesso")
-            print(f"📊 Estrutura dos dados: {list(data.keys())}")
-            
-            # Verificar estrutura esperada
-            if 'niveis' in data:
-                print("✅ Campo 'niveis' encontrado")
-                niveis = data['niveis']
-                print(f"📊 Níveis disponíveis: {list(niveis.keys())}")
-                
-                # Verificar cada nível
-                for nivel in ['n1', 'n2', 'n3', 'n4', 'geral']:
-                    if nivel in niveis:
-                        nivel_data = niveis[nivel]
-                        print(f"✅ Nível {nivel}: {nivel_data}")
-                    else:
-                        print(f"❌ Nível {nivel} não encontrado")
-            else:
-                print("❌ Campo 'niveis' não encontrado")
-                
-            # Verificar tendências
-            if 'tendencias' in data:
-                print("✅ Campo 'tendencias' encontrado")
-                print(f"📊 Tendências: {data['tendencias']}")
-            else:
-                print("❌ Campo 'tendencias' não encontrado")
-                
-            return data
-        else:
-            print(f"❌ Backend retornou erro: {response.status_code}")
-            return None
-            
+            return _extracted_from_test_backend_data_9(response)
+        print(f"❌ Backend retornou erro: {response.status_code}")
+        return None
+
     except Exception as e:
         print(f"❌ Erro ao conectar com backend: {e}")
         return None
+
+
+# TODO Rename this here and in `test_backend_data`
+def _extracted_from_test_backend_data_9(response):
+    data = response.json()
+    print("✅ Backend respondeu com sucesso")
+    print(f"📊 Estrutura dos dados: {list(data.keys())}")
+
+    # Verificar estrutura esperada
+    if 'niveis' in data:
+        print("✅ Campo 'niveis' encontrado")
+        niveis = data['niveis']
+        print(f"📊 Níveis disponíveis: {list(niveis.keys())}")
+
+        # Verificar cada nível
+        for nivel in ['n1', 'n2', 'n3', 'n4', 'geral']:
+            if nivel in niveis:
+                nivel_data = niveis[nivel]
+                print(f"✅ Nível {nivel}: {nivel_data}")
+            else:
+                print(f"❌ Nível {nivel} não encontrado")
+    else:
+        print("❌ Campo 'niveis' não encontrado")
+
+    # Verificar tendências
+    if 'tendencias' in data:
+        print("✅ Campo 'tendencias' encontrado")
+        print(f"📊 Tendências: {data['tendencias']}")
+    else:
+        print("❌ Campo 'tendencias' não encontrado")
+
+    return data
 
 def simulate_frontend_transformation(backend_data):
     """Simula a transformação que o frontend faz nos dados"""
@@ -157,26 +161,15 @@ def test_with_date_filters():
 def main():
     print("🚀 Iniciando teste do fluxo de dados...")
     print("=" * 50)
-    
-    # Teste 1: Dados básicos do backend
-    backend_data = test_backend_data()
-    
-    # Teste 2: Transformação do frontend
-    if backend_data:
-        frontend_data = simulate_frontend_transformation(backend_data)
-        
-        if frontend_data:
-            print("\n✅ SUCESSO: Fluxo de dados funcionando corretamente")
-            print(f"📊 Total de tickets: {frontend_data.get('total', 0)}")
-            print(f"📊 Novos: {frontend_data.get('novos', 0)}")
-            print(f"📊 Pendentes: {frontend_data.get('pendentes', 0)}")
-            print(f"📊 Em Progresso: {frontend_data.get('progresso', 0)}")
-            print(f"📊 Resolvidos: {frontend_data.get('resolvidos', 0)}")
+
+    if backend_data := test_backend_data():
+        if frontend_data := simulate_frontend_transformation(backend_data):
+            _extracted_from_main_7(frontend_data)
         else:
             print("\n❌ FALHA: Problema na transformação dos dados")
     else:
         print("\n❌ FALHA: Problema na obtenção dos dados do backend")
-    
+
     # Teste 3: Dados com filtros
     filtered_data = test_with_date_filters()
     if filtered_data:
@@ -185,9 +178,19 @@ def main():
             print("\n✅ Filtros funcionando corretamente")
         else:
             print("\n❌ Problema com dados filtrados")
-    
+
     print("\n" + "=" * 50)
     print("🏁 Teste concluído")
+
+
+# TODO Rename this here and in `main`
+def _extracted_from_main_7(frontend_data):
+    print("\n✅ SUCESSO: Fluxo de dados funcionando corretamente")
+    print(f"📊 Total de tickets: {frontend_data.get('total', 0)}")
+    print(f"📊 Novos: {frontend_data.get('novos', 0)}")
+    print(f"📊 Pendentes: {frontend_data.get('pendentes', 0)}")
+    print(f"📊 Em Progresso: {frontend_data.get('progresso', 0)}")
+    print(f"📊 Resolvidos: {frontend_data.get('resolvidos', 0)}")
 
 if __name__ == '__main__':
     main()
