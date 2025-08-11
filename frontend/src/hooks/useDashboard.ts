@@ -62,7 +62,6 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
   const [filters, setFilters] = useState<FilterParams>(initialFilters);
   // AbortController com debounce para evitar cancelamentos desnecessários
   const abortControllerRef = useRef<AbortController | null>(null);
-  const loadDataTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Derivar dados dos resultados da API
   const levelMetrics = data?.niveis ? {

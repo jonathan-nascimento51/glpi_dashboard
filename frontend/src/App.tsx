@@ -190,7 +190,12 @@ function App() {
                 resolvidos: metrics?.niveis?.geral?.resolvidos || 0,
                 total: (metrics?.niveis?.geral?.novos || 0) + (metrics?.niveis?.geral?.pendentes || 0) + (metrics?.niveis?.geral?.progresso || 0) + (metrics?.niveis?.geral?.resolvidos || 0),
                 niveis: metrics?.niveis || {},
-                tendencias: metrics?.tendencias || {}
+                tendencias: metrics?.tendencias || {
+                  novos: '0%',
+                  pendentes: '0%',
+                  progresso: '0%',
+                  resolvidos: '0%'
+                }
               }}
               levelMetrics={{
                 niveis: levelMetrics || {}

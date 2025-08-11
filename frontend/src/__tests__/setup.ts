@@ -15,7 +15,7 @@ configure({ testIdAttribute: 'data-testid' });
 // Mock do IntersectionObserver
 Object.defineProperty(window, 'IntersectionObserver', {
   writable: true,
-  value: vi.fn().mockImplementation((callback) => ({
+  value: vi.fn().mockImplementation(() => ({
     observe: vi.fn(),
     unobserve: vi.fn(),
     disconnect: vi.fn(),
@@ -168,6 +168,7 @@ export const mockMetricsData = {
   pendentes: 8,
   progresso: 12,
   resolvidos: 45,
+  total: 80,
   niveis: {
     n1: { novos: 5, pendentes: 2, progresso: 3, resolvidos: 15 },
     n2: { novos: 4, pendentes: 3, progresso: 4, resolvidos: 12 },

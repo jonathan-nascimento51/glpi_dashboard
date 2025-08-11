@@ -109,7 +109,7 @@ describe('MetricsGrid Component', () => {
     // Teste de callback removido temporariamente devido a problemas com throttling nos testes
 
     it('deve ter cursor pointer nos cards clicáveis', () => {
-      render(<MetricsGrid {...defaultProps} onStatusFilter={vi.fn()} />);
+      render(<MetricsGrid {...defaultProps} onFilterByStatus={vi.fn()} />);
 
       // Verificar se existem elementos com cursor-pointer
       const cursorElements = document.querySelectorAll('[class*="cursor-pointer"]');
@@ -150,8 +150,8 @@ describe('MetricsGrid Component', () => {
     });
 
     it('deve ser navegável por teclado', async () => {
-      const onStatusFilter = vi.fn();
-      render(<MetricsGrid {...defaultProps} onStatusFilter={onStatusFilter} />);
+      const onFilterByStatus = vi.fn();
+      render(<MetricsGrid {...defaultProps} onFilterByStatus={onFilterByStatus} />);
 
       // Verificar se os cards são focáveis
       const cards = screen.getAllByText(/novos|em progresso|pendentes|resolvidos/i);
@@ -261,10 +261,10 @@ describe('MetricsGrid Component', () => {
       }).not.toThrow();
     });
 
-    it('deve mostrar fallback quando onStatusFilter não é fornecido', () => {
+    it('deve mostrar fallback quando onFilterByStatus não é fornecido', () => {
       const propsWithoutCallback = {
         ...defaultProps,
-        onStatusFilter: undefined,
+        onFilterByStatus: undefined,
       };
 
       render(<MetricsGrid {...propsWithoutCallback as any} />);

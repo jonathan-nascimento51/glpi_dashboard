@@ -5,7 +5,7 @@
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { useDashboard } from '../../hooks/useDashboard';
-import { TestWrapper, createMockResponse, createMockError, mockMetricsData, mockTechniciansData, mockSystemStatus } from '../setup';
+import { TestWrapper, createMockResponse, mockMetricsData, mockTechniciansData, mockSystemStatus } from '../setup';
 
 // Mock do fetch
 const mockFetch = vi.fn();
@@ -118,7 +118,7 @@ describe('useDashboard Hook', () => {
 
       await act(async () => {
         result.current.updateFilters({
-          dateRange: { start: startDate, end: endDate }
+          dateRange: { startDate: startDate, endDate: endDate }
         });
       });
 
@@ -159,10 +159,10 @@ describe('useDashboard Hook', () => {
 
       const newFilters = {
         dateRange: {
-          start: '2024-01-01',
-          end: '2024-01-31'
+          startDate: '2024-01-01',
+          endDate: '2024-01-31'
         },
-        status: 'new' as const,
+        status: ['new'],
         level: 'n1' as const
       };
 
@@ -170,9 +170,9 @@ describe('useDashboard Hook', () => {
         result.current.updateFilters(newFilters);
       });
 
-      expect(result.current.filters.dateRange.start).toBe('2024-01-01');
-      expect(result.current.filters.dateRange.end).toBe('2024-01-31');
-      expect(result.current.filters.status).toBe('new');
+      expect(result.current.filters.dateRange?.startDate).toBe('2024-01-01');
+      expect(result.current.filters.dateRange?.endDate).toBe('2024-01-31');
+      expect(result.current.filters.status).toEqual(['new']);
       expect(result.current.filters.level).toBe('n1');
     });
 
@@ -190,7 +190,7 @@ describe('useDashboard Hook', () => {
 
       await act(async () => {
         result.current.updateFilters({
-          status: 'pending'
+          status: ['pending']
         });
       });
 
@@ -301,7 +301,7 @@ describe('useDashboard Hook', () => {
       const initialTheme = result.current.theme;
 
       act(() => {
-        result.current.changeTheme();
+        result.current.changeTheme('dark');
       });
 
       expect(result.current.theme).not.toBe(initialTheme);
@@ -358,9 +358,9 @@ describe('useDashboard Hook', () => {
 
       // Fazer múltiplas atualizações rapidamente
       act(() => {
-        result.current.updateFilters({ status: 'new' });
-        result.current.updateFilters({ status: 'pending' });
-        result.current.updateFilters({ status: 'resolved' });
+        result.current.updateFilters({ status: ['new'] });
+        result.current.updateFilters({ status: ['pending'] });
+        result.current.updateFilters({ status: ['resolved'] });
       });
 
       // Avançar tempo para trigger debounce
@@ -444,7 +444,7 @@ describe('useDashboard Hook', () => {
 
       // Forçar recarregamento
       await act(async () => {
-        await result.current.loadData(true); // force refresh
+        await result.current.loadData(); // force refresh
       });
 
       expect(mockFetch.mock.calls.length).toBeGreaterThan(initialCallCount);

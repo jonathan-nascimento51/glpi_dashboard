@@ -3,14 +3,6 @@ requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
-version = "0.1.0"
-description = "A dashboard for monitoring GLPI tickets and assets"
-readme = "README.md"
-requires-python = ">=3.11"
-license = {text = "MIT"}
-authors = [
-    {name = "Your Organization", email = "your.email@example.com"}
-]
 name = "glpi-dashboard"
 keywords = ["glpi", "dashboard", "monitoring", "api", "flask"]
 classifiers = [
@@ -96,9 +88,9 @@ docs = [
 [project.urls]
 Homepage = "https://github.com/your-org/glpi-dashboard"
 Repository = "https://github.com/your-org/glpi-dashboard.git"
-Documentation = "https://glpi-dashboard.readthedocs.io/"
-"Bug Tracker" = "https://github.com/your-org/glpi-dashboard/issues/"
-Changelog = "https://github.com/your-org/glpi-dashboard/blob/main/CHANGELOG.md/"
+Documentation = "https://glpi-dashboard.readthedocs.io"
+"Bug Tracker" = "https://github.com/your-org/glpi-dashboard/issues"
+Changelog = "https://github.com/your-org/glpi-dashboard/blob/main/CHANGELOG.md"
 
 [project.scripts]
 glpi-dashboard = "backend.app:main"
@@ -226,7 +218,7 @@ exclude_lines = [
     "if 0:",
     "if __name__ == .__main__.:",
     "class .*\\bProtocol\\):",
-    "@(abc\\.)?abstractmethod",
+    "@(abc\.)?abstractmethod",
     "@overload",
     "TYPE_CHECKING",
 ]

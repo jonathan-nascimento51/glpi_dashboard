@@ -9,7 +9,7 @@ import { useThrottledCallback } from "../../hooks/useDebounce"
 import { generateMetricsKey, generateSkeletonKey } from "../../utils/keyUtils"
 
 interface MetricsGridProps {
-  metrics: MetricsData
+  metrics: MetricsData | null
   onFilterByStatus?: (status: TicketStatus) => void
   className?: string
 }
