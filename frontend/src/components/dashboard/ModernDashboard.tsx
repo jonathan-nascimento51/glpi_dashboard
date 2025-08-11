@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useMemo, Suspense } from 'react';
+import React, { useEffect, useMemo, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { MetricsGrid } from './MetricsGrid';
 import { LevelMetricsGrid } from './LevelMetricsGrid';
@@ -187,7 +187,7 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
         {/* MÃ©tricas por nível de atendimento - ocupando 2 colunas */}
         <motion.div variants={itemVariants} className="dashboard-levels-section">
           <LevelMetricsGrid 
-            metrics={{ niveis: levelMetrics }}
+            metrics={levelMetrics?.niveis}
             className="h-full"
           />
         </motion.div>

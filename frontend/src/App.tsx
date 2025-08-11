@@ -1,10 +1,12 @@
-import { useState, useEffect, Profiler, Suspense, ProfilerOnRenderCallback } from 'react';
+﻿import { useState, useEffect, Profiler, Suspense, ProfilerOnRenderCallback } from 'react';
 import { Header } from './components/Header';
 import DebugPanel from './components/DebugPanel';
 import { NotificationSystem } from './components/NotificationSystem';
 import CacheNotification from './components/CacheNotification';
 import { ModernDashboard } from './components/dashboard/ModernDashboard';
 import { LoadingSpinner, SkeletonMetricsGrid, SkeletonLevelsSection, ErrorState } from './components/LoadingSpinner';
+import InitialLoader from './components/InitialLoader';
+import PageTransition from './components/PageTransition';
 
 // Componentes lazy centralizados
 import { 
@@ -116,32 +118,39 @@ function App() {
   // Show loading state on initial load
   if (isLoading && !levelMetrics) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-        <div className="animate-pulse">
-          {/* Header skeleton */}
-          <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200 px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="w-10 h-10 bg-gray-200 rounded-lg" />
-                <div className="space-y-2">
-                  <div className="w-48 h-5 bg-gray-200 rounded" />
-                  <div className="w-32 h-3 bg-gray-200 rounded" />
+      <>
+        <InitialLoader 
+          isVisible={true} 
+          message="Carregando dashboard..." 
+        />
+        {/* Fallback skeleton for slower connections */}
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 opacity-20">
+          <div className="animate-pulse">
+            {/* Header skeleton */}
+            <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200 px-6 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="w-10 h-10 bg-gray-200 rounded-lg" />
+                  <div className="space-y-2">
+                    <div className="w-48 h-5 bg-gray-200 rounded" />
+                    <div className="w-32 h-3 bg-gray-200 rounded" />
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="w-64 h-10 bg-gray-200 rounded-lg" />
+                  <div className="w-32 h-8 bg-gray-200 rounded" />
                 </div>
               </div>
-              <div className="flex items-center space-x-4">
-                <div className="w-64 h-10 bg-gray-200 rounded-lg" />
-                <div className="w-32 h-8 bg-gray-200 rounded" />
-              </div>
+            </div>
+            
+            {/* Content skeleton */}
+            <div className="p-6 space-y-8">
+              <SkeletonMetricsGrid />
+              <SkeletonLevelsSection />
             </div>
           </div>
-          
-          {/* Content skeleton */}
-          <div className="p-6 space-y-8">
-            <SkeletonMetricsGrid />
-            <SkeletonLevelsSection />
-          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -196,6 +205,7 @@ function App() {
                 progresso: levelMetrics?.niveis?.geral?.progresso || 0,
                 resolvidos: levelMetrics?.niveis?.geral?.resolvidos || 0,
                 total: levelMetrics?.niveis?.geral?.total || 0,
+                niveis: levelMetrics?.niveis || {},
                 tendencias: levelMetrics?.tendencias || {
                   novos: '0',
                   progresso: '0',
@@ -239,22 +249,24 @@ function App() {
       {/* Loading overlay for refresh */}
       {(isLoading && levelMetrics) && (
         <div className="fixed top-20 right-6 z-50">
-          <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-4">
-            <LoadingSpinner size="sm" text="Atualizando..." />
+          <div className="bg-white/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-200/50 p-4">
+            <LoadingSpinner 
+              size="sm" 
+              text="Atualizando..." 
+              variant="pulse" 
+              color="blue" 
+            />
           </div>
         </div>
       )}
       
       {/* Pending overlay for transitions */}
       {isPending && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50">
-          <div className="bg-blue-500/90 backdrop-blur-sm rounded-xl shadow-lg p-3 text-white">
-            <div className="flex items-center space-x-2">
-              <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-              <span className="text-sm font-medium">Processando...</span>
-            </div>
-          </div>
-        </div>
+        <PageTransition 
+           isVisible={true} 
+           message="Processando..." 
+           type="overlay" 
+         />
       )}
 
 
@@ -302,3 +314,4 @@ function App() {
 }
 
 export default App;
+

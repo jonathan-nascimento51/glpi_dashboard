@@ -24,7 +24,7 @@ interface StatusCardProps {
   onClick?: () => void
 }
 
-// Função auxiliar definida fora do componente para evitar recriaÃ§Ã£o
+// Função auxiliar definida fora do componente para evitar recriação desnecessária
 const getStatusGradient = (status?: string) => {
   switch (status) {
     case 'online': return 'from-green-500 to-emerald-600'
@@ -75,7 +75,7 @@ const getTrendExplanation = (trendValue: number, title: string): React.ReactNode
         <div>â€¢ <strong>Interpretação:</strong> {explanation}</div>
         {isExtreme && (
           <div className="mt-2 p-2 bg-slate-800 border border-slate-600 rounded text-xs text-slate-200">
-            <strong className="text-amber-400">ðŸ’¡ Nota:</strong> Percentuais altos sÃ£o normais quando comparamos dados históricos completos com Períodos específicos.
+            <strong className="text-amber-400">ðŸ’¡ Nota:</strong> Percentuais altos são normais quando comparamos dados históricos completos com Períodos específicos.
           </div>
         )}
       </div>

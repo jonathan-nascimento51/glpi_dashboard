@@ -279,6 +279,8 @@ export const isValidNiveisMetrics = (data: any): data is NiveisMetrics => {
 
 // Utilitários de transformação
 export const transformLegacyData = (legacyData: any): DashboardMetrics => {
+  console.log("transformLegacyData input:", legacyData);
+  const actualData = legacyData?.data ? legacyData.data : legacyData;
   // Função para transformar dados legados em formato atual
   const defaultLevel: LevelMetrics = {
     novos: 0,
@@ -289,21 +291,21 @@ export const transformLegacyData = (legacyData: any): DashboardMetrics => {
   };
 
   // Se os dados já vêm na estrutura correta da API
-  if (legacyData?.niveis) {
+  if (actualData?.niveis) {
     return {
       niveis: {
-        n1: legacyData.niveis.n1 || defaultLevel,
-        n2: legacyData.niveis.n2 || defaultLevel,
-        n3: legacyData.niveis.n3 || defaultLevel,
-        n4: legacyData.niveis.n4 || defaultLevel,
-        geral: legacyData.niveis.geral || defaultLevel
+        n1: actualData.niveis.n1 || defaultLevel,
+        n2: actualData.niveis.n2 || defaultLevel,
+        n3: actualData.niveis.n3 || defaultLevel,
+        n4: actualData.niveis.n4 || defaultLevel,
+        geral: actualData.niveis.geral || defaultLevel
       },
-      tendencias: legacyData?.tendencias,
-      filtros_aplicados: legacyData?.filtros_aplicados,
-      tempo_execucao: legacyData?.tempo_execucao,
-      timestamp: legacyData?.timestamp,
-      systemStatus: legacyData?.systemStatus,
-      technicianRanking: legacyData?.technicianRanking
+      tendencias: actualData?.tendencias,
+      filtros_aplicados: actualData?.filtros_aplicados,
+      tempo_execucao: actualData?.tempo_execucao,
+      timestamp: actualData?.timestamp,
+      systemStatus: actualData?.systemStatus,
+      technicianRanking: actualData?.technicianRanking
     };
   }
 
@@ -316,11 +318,14 @@ export const transformLegacyData = (legacyData: any): DashboardMetrics => {
       n4: legacyData?.n4 || defaultLevel,
       geral: legacyData?.geral || defaultLevel
     },
-    tendencias: legacyData?.tendencias,
-    filtros_aplicados: legacyData?.filtros_aplicados,
-    tempo_execucao: legacyData?.tempo_execucao,
-    timestamp: legacyData?.timestamp,
-    systemStatus: legacyData?.systemStatus,
-    technicianRanking: legacyData?.technicianRanking
+    tendencias: actualData?.tendencias,
+    filtros_aplicados: actualData?.filtros_aplicados,
+    tempo_execucao: actualData?.tempo_execucao,
+    timestamp: actualData?.timestamp,
+    systemStatus: actualData?.systemStatus,
+    technicianRanking: actualData?.technicianRanking
   };
 };
+
+
+

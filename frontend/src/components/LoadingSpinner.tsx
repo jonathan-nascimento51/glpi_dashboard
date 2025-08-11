@@ -1,11 +1,13 @@
 import React from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, RefreshCw, RotateCw } from 'lucide-react';
 
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   text?: string;
   fullScreen?: boolean;
   className?: string;
+  variant?: 'default' | 'dots' | 'pulse' | 'bounce';
+  color?: 'blue' | 'green' | 'purple' | 'gray';
 }
 
 const sizeClasses = {
@@ -15,19 +17,60 @@ const sizeClasses = {
   xl: 'w-12 h-12',
 };
 
+const colorClasses = {
+  blue: 'text-blue-500 dark:text-blue-400',
+  green: 'text-green-500 dark:text-green-400',
+  purple: 'text-purple-500 dark:text-purple-400',
+  gray: 'text-gray-500 dark:text-gray-400',
+};
+
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   size = 'md',
   text,
   fullScreen = false,
   className = '',
+  variant = 'default',
+  color = 'blue',
 }) => {
+  const renderSpinner = () => {
+    const baseClasses = `${sizeClasses[size]} ${colorClasses[color]}`;
+    
+    switch (variant) {
+      case 'dots':
+        return (
+          <div className="flex space-x-1">
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className={`${sizeClasses[size]} ${colorClasses[color]} rounded-full animate-bounce`}
+                style={{ animationDelay: `${i * 0.1}s` }}
+              />
+            ))}
+          </div>
+        );
+      
+      case 'pulse':
+        return (
+          <div className={`${baseClasses} rounded-full animate-pulse bg-current`} />
+        );
+      
+      case 'bounce':
+        return (
+          <RefreshCw className={`${baseClasses} animate-bounce`} />
+        );
+      
+      default:
+        return (
+          <Loader2 className={`${baseClasses} animate-spin`} />
+        );
+    }
+  };
+
   const spinnerContent = (
     <div className={`flex flex-col items-center justify-center space-y-3 ${className}`}>
-      <Loader2 
-        className={`${sizeClasses[size]} text-primary-600 dark:text-primary-400 animate-spin`} 
-      />
+      {renderSpinner()}
       {text && (
-        <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+        <p className="text-sm text-gray-600 dark:text-gray-400 font-medium animate-pulse">
           {text}
         </p>
       )}

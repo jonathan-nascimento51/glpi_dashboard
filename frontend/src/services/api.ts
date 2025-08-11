@@ -539,8 +539,8 @@ export const fetchDashboardMetrics = async (
     });
     
     const url = queryParams.toString() 
-      ? `\/kpis?${queryParams.toString()}`
-      : `\/kpis`;
+      ? `/kpis?${queryParams.toString()}`
+      : `/kpis`;
     
     console.log('🔍 fetchDashboardMetrics - Filtros originais:', filters);
     console.log('🔍 fetchDashboardMetrics - Query params construídos:', queryParams.toString());

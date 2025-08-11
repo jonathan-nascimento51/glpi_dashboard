@@ -116,7 +116,7 @@ const TicketItem = React.memo<{ ticket: NewTicket; index: number }>(({ ticket })
           </div>
         </div>
         
-        {/* ConteÃºdo do ticket */}
+        {/* Conteúdo do ticket */}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-2">
             <div className="flex items-center gap-2">
@@ -317,4 +317,5 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
 })
 
 NewTicketsList.displayName = 'NewTicketsList'
+
 

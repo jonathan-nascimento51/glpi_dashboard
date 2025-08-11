@@ -34,7 +34,7 @@ function getLevelStyle(level?: string) {
         iconBg: 'bg-blue-100',
         iconColor: 'text-blue-600'
       }
-    case 'N3': // SÃªnior - Verde confiÃ¡vel
+    case 'N3': // Sênior - Verde confiÃ¡vel
       return {
         bgColor: 'bg-emerald-50',
         borderColor: 'border-emerald-200',
@@ -54,7 +54,7 @@ function getLevelStyle(level?: string) {
         iconBg: 'bg-orange-100',
         iconColor: 'text-orange-600'
       }
-    case 'N1': // JÃºnior - Roxo motivacional
+    case 'N1': // Júnior - Roxo motivacional
       return {
         bgColor: 'bg-purple-50',
         borderColor: 'border-purple-200',
@@ -251,12 +251,12 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
     })
   }, [data, trackRender, measureRender])
   
-  // Pegar todos os tÃ©cnicos e ordenar por nÃºmero de chamados - memoizado
+  // Pegar todos os tÃ©cnicos e ordenar por número de chamados - memoizado
   const topTechnicians = useMemo(() => {
     return [...data].sort((a, b) => b.total - a.total)
   }, [data])
 
-  // EstatÃ­sticas por nível para o cabeÃ§alho - memoizado
+  // EstatÃ­sticas por nível para o cabeçalho - memoizado
   const levelStats = useMemo(() => {
     return topTechnicians.reduce((acc, tech) => {
       const level = tech.level || 'Outros'
@@ -341,5 +341,6 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
     </Card>
   )
 })
+
 
 
