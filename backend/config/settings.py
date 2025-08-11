@@ -24,7 +24,7 @@ class Config:
     # Backend API
     BACKEND_API_URL = os.environ.get('BACKEND_API_URL', 'http://localhost:8000')
     API_KEY = os.environ.get('API_KEY', '')
-    API_TIMEOUT = int(os.environ.get('API_TIMEOUT', '30'))
+    API_TIMEOUT = int(os.environ.get('API_TIMEOUT', '60'))
     
     # Logging
     LOG_LEVEL = os.environ.get('LOG_LEVEL', 'DEBUG')

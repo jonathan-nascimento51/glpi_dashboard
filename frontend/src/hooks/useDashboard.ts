@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { fetchDashboardMetrics } from '../services/api';
+import { fetchDashboardMetrics, getSystemStatus, getTechnicianRanking } from '../services/api';
 import type {
   DashboardMetrics,
   FilterParams
@@ -74,107 +74,87 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
   const [isPending] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [theme, setTheme] = useState<string>('light');
+  const [theme, setTheme] = useState<string>(() => {
+    return localStorage.getItem('dashboard-theme') || 'light';
+  });
   const [dataIntegrityReport] = useState<any>(null);
 
   const loadData = useCallback(async (newFilters?: FilterParams) => {
-    // Cancelar timeout anterior se existir
-    if (loadDataTimeoutRef.current) {
-      clearTimeout(loadDataTimeoutRef.current);
-    }
+    const filtersToUse = newFilters || filters;
     
-    // Debounce de 300ms para evitar múltiplas chamadas rápidas
-    return new Promise<void>((resolve) => {
-      loadDataTimeoutRef.current = setTimeout(async () => {
-        const filtersToUse = newFilters || filters;
-        
-        console.log('🔄 useDashboard - Carregando dados com filtros:', filtersToUse);
-        console.log('📅 useDashboard - DateRange nos filtros:', filtersToUse.dateRange);
-        
-        // Cancelar requisição anterior apenas se ainda estiver em andamento
-        if (abortControllerRef.current && !abortControllerRef.current.signal.aborted) {
-          console.log('🚫 Cancelando requisição anterior');
-          abortControllerRef.current.abort();
-        }
-        
-        // Criar novo AbortController
-        abortControllerRef.current = new AbortController();
-        const signal = abortControllerRef.current.signal;
-        
-        setLoading(true);
-        setError(null);
-        
-        try {
-          // Fazer chamadas paralelas para todos os endpoints com signal de cancelamento
-          const [metricsResult, systemStatusResult, technicianRankingResult] = await Promise.all([
-            fetchDashboardMetrics(filtersToUse),
-            import('../services/api').then(api => api.getSystemStatus()),
-            import('../services/api').then(api => api.getTechnicianRanking(filtersToUse, signal))
-          ]);
-          
-          // Verificar se a requisição foi cancelada
-          if (signal.aborted) {
-            console.log('🚫 Requisição foi cancelada');
-            return;
-          }
-          
-          // Performance metrics tracking removed for now
-          
-          if (metricsResult) {
-            // Combinar todos os dados em um objeto DashboardMetrics
-            const combinedData: DashboardMetrics = {
-              ...metricsResult,
-              systemStatus: systemStatusResult || initialSystemStatus,
-              technicianRanking: technicianRankingResult || []
-            };
-            
-            console.log('📊 useDashboard - Dados combinados:', {
-              metrics: !!metricsResult,
-              systemStatus: !!systemStatusResult,
-              technicianRanking: technicianRankingResult?.length || 0
-            });
-            
-            // console.log('✅ useDashboard - Definindo dados combinados no estado:', combinedData);
-            setData(combinedData);
-            setError(null);
-          } else {
-            console.error('❌ useDashboard - Resultado de métricas é null/undefined');
-            setError('Falha ao carregar dados do dashboard');
-          }
-        } catch (err) {
-          // Ignorar erros de cancelamento (axios usa CanceledError, fetch usa AbortError)
-          if (err instanceof Error && (err.name === 'AbortError' || err.name === 'CanceledError')) {
-            console.log('🚫 Requisição cancelada pelo usuário');
-            return;
-          }
-          
-          console.error('❌ useDashboard - Erro ao carregar dados:', err);
-          setError(err instanceof Error ? err.message : 'Erro desconhecido');
-        } finally {
-          // Só atualizar loading se a requisição não foi cancelada
-          if (!signal.aborted) {
-            setLoading(false);
-          }
-        }
+    console.log('🔄 useDashboard - Carregando dados com filtros:', filtersToUse);
+    console.log('📅 useDashboard - DateRange nos filtros:', filtersToUse.dateRange);
+    
+    // Remover AbortController temporariamente para debug
+    // const signal = abortControllerRef.current?.signal;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Fazer chamadas paralelas para todos os endpoints
+      const [metricsResult, systemStatusResult, technicianRankingResult] = await Promise.all([
+        fetchDashboardMetrics(filtersToUse),
+        getSystemStatus(),
+        getTechnicianRanking(filtersToUse)
+      ]);
       
-      resolve();
-    }, 300); // Debounce de 300ms
-  });
-}, [filters]); // Dependência de filters necessária
+      // Performance metrics tracking removed for now
+      
+      if (metricsResult) {
+        // Combinar todos os dados em um objeto DashboardMetrics
+        const combinedData: DashboardMetrics = {
+          ...metricsResult,
+          systemStatus: systemStatusResult || initialSystemStatus,
+          technicianRanking: technicianRankingResult || []
+        };
+        
+        console.log('📊 useDashboard - Dados combinados:', {
+          metrics: !!metricsResult,
+          systemStatus: !!systemStatusResult,
+          technicianRanking: technicianRankingResult?.length || 0
+        });
+        
+        // console.log('✅ useDashboard - Definindo dados combinados no estado:', combinedData);
+        setData(combinedData);
+        setError(null);
+      } else {
+        console.error('❌ useDashboard - Resultado de métricas é null/undefined');
+        setError('Falha ao carregar dados do dashboard');
+      }
+    } catch (err) {
+      // Ignorar erros de cancelamento (axios usa CanceledError, fetch usa AbortError)
+      if (err instanceof Error && (err.name === 'AbortError' || err.name === 'CanceledError')) {
+        console.log('🚫 Requisição cancelada pelo usuário');
+        return;
+      }
+      
+      console.error('❌ useDashboard - Erro ao carregar dados:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
+      setError(errorMessage);
+      
+      // Adicionar notificação de erro
+      const errorNotification: NotificationData = {
+        id: Date.now().toString(),
+        title: 'Erro ao carregar dados',
+        message: errorMessage,
+        type: 'error',
+        timestamp: new Date(),
+        duration: 5000
+      };
+      setNotifications(prev => [...prev, errorNotification]);
+    } finally {
+      setLoading(false);
+    }
+  }, [filters]); // Dependência de filters necessária
 
   // Removed unused forceRefresh function
 
   // Load data on mount
+  // Load data when filters change or on mount
   useEffect(() => {
+    console.log('🔄 useDashboard - Carregando dados (mount ou filtros mudaram):', filters);
     loadData();
-  }, []); // Executar apenas uma vez na montagem
-
-  // Load data when filters change
-  useEffect(() => {
-    if (Object.keys(filters).length > 0) {
-      console.log('🔄 useDashboard - Filtros mudaram, recarregando dados:', filters);
-      loadData();
-    }
   }, [filters, loadData]);
 
   // Auto-refresh setup
@@ -186,9 +166,9 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     return () => {
       clearInterval(refreshInterval);
       // Cancelar requisição em andamento quando o intervalo for limpo
-       if (abortControllerRef.current && !abortControllerRef.current.signal.aborted) {
-         abortControllerRef.current.abort();
-       }
+      if (abortControllerRef.current && !abortControllerRef.current.signal.aborted) {
+        abortControllerRef.current.abort();
+      }
     };
   }, []); // Executar apenas uma vez na montagem
   
@@ -235,9 +215,48 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
       setNotifications(prev => [...prev, completeNotification]);
     },
     removeNotification: (id: string) => setNotifications(prev => prev.filter(n => n.id !== id)),
-    changeTheme: (newTheme: string) => setTheme(newTheme),
+    changeTheme: (newTheme?: string) => {
+      const themeToSet = newTheme || (theme === 'light' ? 'dark' : 'light');
+      setTheme(themeToSet);
+      localStorage.setItem('dashboard-theme', themeToSet);
+    },
     updateDateRange: (dateRange: any) => {
       console.log('🔄 useDashboard - updateDateRange chamado com:', dateRange);
+      
+      // Validar formato e ordem das datas
+      if (dateRange.start || dateRange.end) {
+        const startDate = dateRange.start ? new Date(dateRange.start) : null;
+        const endDate = dateRange.end ? new Date(dateRange.end) : null;
+        
+        // Verificar se as datas são válidas
+        if ((startDate && isNaN(startDate.getTime())) || (endDate && isNaN(endDate.getTime()))) {
+          const errorNotification: NotificationData = {
+            id: Date.now().toString(),
+            title: 'Erro de Data',
+            message: 'Formato de data inválido',
+            type: 'error',
+            timestamp: new Date(),
+            duration: 5000
+          };
+          setNotifications(prev => [...prev, errorNotification]);
+          return;
+        }
+        
+        // Verificar ordem das datas
+        if (startDate && endDate && startDate > endDate) {
+          const errorNotification: NotificationData = {
+            id: Date.now().toString(),
+            title: 'Erro de Data',
+            message: 'A data de início não pode ser posterior à data de fim',
+            type: 'error',
+            timestamp: new Date(),
+            duration: 5000
+          };
+          setNotifications(prev => [...prev, errorNotification]);
+          return;
+        }
+      }
+      
       const updatedFilters = { ...filters, dateRange };
       console.log('📊 useDashboard - Filtros atualizados:', updatedFilters);
       setFilters(updatedFilters);

@@ -3,8 +3,11 @@
  */
 
 import '@testing-library/jest-dom';
-import { configure } from '@testing-library/react';
-import { vi } from 'vitest';
+import { configure, render, RenderOptions } from '@testing-library/react';
+import { vi, beforeAll, afterAll, afterEach } from 'vitest';
+import React, { ReactNode } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter } from 'react-router-dom';
 
 // Configurar testing library
 configure({ testIdAttribute: 'data-testid' });
@@ -76,6 +79,47 @@ Object.defineProperty(window, 'sessionStorage', {
 // Mock do fetch
 global.fetch = vi.fn();
 
+// Mock do lucide-react
+vi.mock('lucide-react', () => {
+  const MockIcon = ({ className, ...props }: any) => 
+    React.createElement('div', { 
+      'data-testid': 'mock-icon', 
+      className, 
+      ...props 
+    });
+  
+  return {
+    // Ícones comuns usados nos componentes
+    Activity: MockIcon,
+    AlertCircle: MockIcon,
+    AlertTriangle: MockIcon,
+    ArrowDown: MockIcon,
+    ArrowUp: MockIcon,
+    BarChart3: MockIcon,
+    Calendar: MockIcon,
+    CheckCircle: MockIcon,
+    ChevronDown: MockIcon,
+    ChevronUp: MockIcon,
+    Clock: MockIcon,
+    Filter: MockIcon,
+    Info: MockIcon,
+    LineChart: MockIcon,
+    Loader2: MockIcon,
+    Moon: MockIcon,
+    MoreHorizontal: MockIcon,
+    PieChart: MockIcon,
+    RefreshCw: MockIcon,
+    Search: MockIcon,
+    Settings: MockIcon,
+    Sun: MockIcon,
+    TrendingDown: MockIcon,
+    TrendingUp: MockIcon,
+    Users: MockIcon,
+    X: MockIcon,
+    Zap: MockIcon
+  };
+});
+
 // Mock do console para testes
 const originalConsoleError = console.error;
 beforeAll(() => {
@@ -89,7 +133,10 @@ afterAll(() => {
 // Limpar mocks após cada teste
 afterEach(() => {
   vi.clearAllMocks();
-  localStorageMock.clear();
+  localStorageMock.getItem.mockReturnValue(null);
+  localStorageMock.setItem.mockClear();
+  localStorageMock.removeItem.mockClear();
+  localStorageMock.clear.mockClear();
   sessionStorageMock.clear();
 });
 
@@ -175,9 +222,6 @@ export const mockSystemStatus = {
 };
 
 // Helper para criar wrapper de testes com providers
-import { ReactNode } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter } from 'react-router-dom';
 
 export const createTestQueryClient = () => {
   return new QueryClient({
@@ -195,18 +239,14 @@ export const createTestQueryClient = () => {
 
 export const TestWrapper = ({ children }: { children: ReactNode }) => {
   const queryClient = createTestQueryClient();
-  
-  return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        {children}
-      </BrowserRouter>
-    </QueryClientProvider>
+  return React.createElement(
+    QueryClientProvider,
+    { client: queryClient },
+    React.createElement(BrowserRouter, null, children)
   );
 };
 
 // Custom render function
-import { render, RenderOptions } from '@testing-library/react';
 
 interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
   wrapper?: React.ComponentType<any>;

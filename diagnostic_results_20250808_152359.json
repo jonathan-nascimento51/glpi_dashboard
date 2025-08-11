@@ -1,0 +1,156 @@
+{
+  "timestamp": "2025-08-08T15:23:44.868122",
+  "tests": [
+    {
+      "test": "Backend Connectivity",
+      "status": "PASSED",
+      "details": "Backend respondendo corretamente (tempo: 2.04s)",
+      "timestamp": "2025-08-08T15:23:46.918349"
+    },
+    {
+      "test": "Frontend Connectivity",
+      "status": "PASSED",
+      "details": "Frontend respondendo corretamente",
+      "timestamp": "2025-08-08T15:23:46.918349"
+    },
+    {
+      "test": "API Endpoint /metrics",
+      "status": "PASSED",
+      "details": "Métricas do Dashboard funcionando (tempo: 2048ms)",
+      "timestamp": "2025-08-08T15:23:48.966684"
+    },
+    {
+      "test": "API Endpoint /status",
+      "status": "PASSED",
+      "details": "Status do Sistema funcionando (tempo: 2035ms)",
+      "timestamp": "2025-08-08T15:23:51.001311"
+    },
+    {
+      "test": "API Endpoint /technicians/ranking",
+      "status": "PASSED",
+      "details": "Ranking de Técnicos funcionando (tempo: 2050ms)",
+      "timestamp": "2025-08-08T15:23:53.051577"
+    },
+    {
+      "test": "API Endpoint /test",
+      "status": "PASSED",
+      "details": "Endpoint de Teste funcionando (tempo: 2050ms)",
+      "timestamp": "2025-08-08T15:23:55.101163"
+    },
+    {
+      "test": "CORS Configuration",
+      "status": "PASSED",
+      "details": "CORS configurado corretamente",
+      "timestamp": "2025-08-08T15:23:57.166131"
+    },
+    {
+      "test": "Data Transformation",
+      "status": "WARNING",
+      "details": "Dados básicos presentes, mas nível geral não encontrado",
+      "timestamp": "2025-08-08T15:23:59.233769"
+    },
+    {
+      "test": "Frontend File frontend/src/services/api.ts",
+      "status": "PASSED",
+      "details": "Serviço de API encontrado",
+      "timestamp": "2025-08-08T15:23:59.233769"
+    },
+    {
+      "test": "Frontend File frontend/src/hooks/useDashboard.ts",
+      "status": "PASSED",
+      "details": "Hook do Dashboard encontrado",
+      "timestamp": "2025-08-08T15:23:59.233769"
+    },
+    {
+      "test": "Frontend File frontend/src/types/api.ts",
+      "status": "PASSED",
+      "details": "Tipos da API encontrado",
+      "timestamp": "2025-08-08T15:23:59.233769"
+    },
+    {
+      "test": "Frontend File frontend/vite.config.ts",
+      "status": "PASSED",
+      "details": "Configuração do Vite encontrado",
+      "timestamp": "2025-08-08T15:23:59.233769"
+    },
+    {
+      "test": "Vite Proxy Configuration",
+      "status": "PASSED",
+      "details": "Configuração de proxy do Vite está correta",
+      "timestamp": "2025-08-08T15:23:59.233769"
+    }
+  ],
+  "issues": [
+    {
+      "test": "Data Transformation",
+      "issue": "Frontend pode não estar calculando o nível geral corretamente",
+      "severity": "medium"
+    }
+  ],
+  "recommendations": [
+    {
+      "test": "Data Transformation",
+      "recommendation": "Verificar função transformLegacyData no frontend"
+    },
+    {
+      "category": "Prevenção de Problemas",
+      "recommendation": "Implementar testes automatizados para endpoints da API"
+    },
+    {
+      "category": "Prevenção de Problemas",
+      "recommendation": "Configurar monitoramento de saúde dos serviços"
+    },
+    {
+      "category": "Prevenção de Problemas",
+      "recommendation": "Implementar logging estruturado no frontend e backend"
+    },
+    {
+      "category": "Prevenção de Problemas",
+      "recommendation": "Configurar alertas para falhas de conectividade"
+    },
+    {
+      "category": "Prevenção de Problemas",
+      "recommendation": "Implementar retry automático para requisições falhadas"
+    },
+    {
+      "category": "Debugging e Diagnóstico",
+      "recommendation": "Adicionar mais logs detalhados no console do navegador"
+    },
+    {
+      "category": "Debugging e Diagnóstico",
+      "recommendation": "Implementar indicadores visuais de carregamento"
+    },
+    {
+      "category": "Debugging e Diagnóstico",
+      "recommendation": "Adicionar tratamento de erro mais específico"
+    },
+    {
+      "category": "Debugging e Diagnóstico",
+      "recommendation": "Implementar modo debug no frontend"
+    },
+    {
+      "category": "Debugging e Diagnóstico",
+      "recommendation": "Criar dashboard de monitoramento interno"
+    },
+    {
+      "category": "Performance e Confiabilidade",
+      "recommendation": "Implementar cache inteligente com invalidação"
+    },
+    {
+      "category": "Performance e Confiabilidade",
+      "recommendation": "Configurar timeout adequado para requisições"
+    },
+    {
+      "category": "Performance e Confiabilidade",
+      "recommendation": "Implementar fallback para dados offline"
+    },
+    {
+      "category": "Performance e Confiabilidade",
+      "recommendation": "Otimizar consultas do backend"
+    },
+    {
+      "category": "Performance e Confiabilidade",
+      "recommendation": "Implementar compressão de dados"
+    }
+  ]
+}

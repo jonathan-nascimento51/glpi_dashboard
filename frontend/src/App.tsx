@@ -192,7 +192,9 @@ function App() {
                 niveis: metrics?.niveis || {},
                 tendencias: metrics?.tendencias || {}
               }}
-              levelMetrics={levelMetrics}
+              levelMetrics={{
+                niveis: levelMetrics || {}
+              }}
               systemStatus={systemStatus}
               technicianRanking={technicianRanking}
               onFilterByStatus={handleFilterByStatus}
@@ -283,8 +285,6 @@ function App() {
           />
         </div>
       ))}
-      
-
 
     </div>
   );

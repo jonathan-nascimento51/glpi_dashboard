@@ -71,7 +71,7 @@ class APIService:
     def get_system_status(self) -> Dict:
         """Get current system status"""
         try:
-            return self._make_request('/api/system/status')
+            return self._make_request('/api/status')
         except Exception as e:
             logging.warning(f"Could not fetch system status: {str(e)}")
             return {

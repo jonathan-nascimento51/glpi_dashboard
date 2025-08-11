@@ -1,0 +1,32 @@
+{
+  "timestamp": "2025-08-08T15:21:09.933913",
+  "total_tests": 5,
+  "successful_tests": 5,
+  "results": [
+    {
+      "endpoint": "/metrics",
+      "success": true,
+      "data_sample": "{'data': {'niveis': {'n1': {'novos': 2, 'pendentes': 12, 'progresso': 23, 'resolvidos': 1382}, 'n2': {'novos': 2, 'pendentes': 23, 'progresso': 39, 'resolvidos': 2290}, 'n3': {'novos': 1, 'pendentes': 10, 'progresso': 21, 'resolvidos': 5093}, 'n4': {'novos': 0, 'pendentes': 1, 'progresso': 3, 'resolvidos': 53}}, 'novos': 3, 'pendentes': 35, 'progresso': 69, 'resolvidos': 9585, 'tendencias': {'novos': '+100%', 'pendentes': '+1066.7%', 'progresso': '+430.8%', 'resolvidos': '+10318.5%'}, 'timestamp"
+    },
+    {
+      "endpoint": "/status",
+      "success": true,
+      "data_sample": "{'data': {'api': 'online', 'glpi': 'online', 'glpi_message': 'GLPI conectado e autenticado', 'glpi_response_time': 0.0, 'last_update': '2024-01-15 10:30:00', 'version': '1.0.0'}, 'success': True}"
+    },
+    {
+      "endpoint": "/technicians/ranking",
+      "success": true,
+      "data_sample": "{'data': [{'firstname': None, 'id': 696, 'name': 'Anderson da Silva Morim de Oliveira', 'realname': None, 'score': 1747.0, 'tempo_medio_resolucao': 0, 'tickets_abertos': 2, 'tickets_fechados': 1742, 'tickets_pendentes': 3, 'total_tickets': 1747}, {'firstname': None, 'id': 32, 'name': 'Silvio Godinho Valim', 'realname': None, 'score': 1695.0, 'tempo_medio_resolucao': 0, 'tickets_abertos': 3, 'tickets_fechados': 1691, 'tickets_pendentes': 1, 'total_tickets': 1695}, {'firstname': None, 'id': 141, '"
+    },
+    {
+      "endpoint": "/test",
+      "success": true,
+      "data_sample": "{'message': 'Teste funcionando', 'success': True}"
+    },
+    {
+      "endpoint": "/metrics (com filtros)",
+      "success": true,
+      "data_sample": "{'data': {'filters_applied': {'end_date': '2024-12-31', 'start_date': '2024-01-01'}, 'niveis': {'n1': {'novos': 0, 'pendentes': 0, 'progresso': 0, 'resolvidos': 520}, 'n2': {'novos': 0, 'pendentes': 0, 'progresso': 1, 'resolvidos': 1097}, 'n3': {'novos': 0, 'pendentes': 0, 'progresso': 0, 'resolvidos': 1720}, 'n4': {'novos': 0, 'pendentes': 1, 'progresso': 0, 'resolvidos': 46}}, 'novos': 0, 'pendentes': 1, 'progresso': 1, 'resolvidos': 3164, 'tendencias': {'novos': '0%', 'pendentes': '+100%', 'p"
+    }
+  ]
+}

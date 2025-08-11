@@ -27,7 +27,7 @@ class TestIntegration:
             assert ranking_data['success'] is True
             
             # 3. Verificar status do sistema
-            status_response = client.get('/api/system/status')
+            status_response = client.get('/api/status')
             assert status_response.status_code == 200
             status_data = json.loads(status_response.data)
             assert status_data['success'] is True
@@ -110,7 +110,7 @@ class TestIntegration:
         endpoints = [
             '/api/dashboard/metrics',
             '/api/technicians/ranking',
-            '/api/system/status',
+            '/api/status',
             '/api/health'
         ]
         
@@ -272,7 +272,7 @@ class TestIntegration:
             assert metrics_response.status_code == 500
             
             # Status deve ainda funcionar
-            status_response = client.get('/api/system/status')
+            status_response = client.get('/api/status')
             assert status_response.status_code == 200
             
             status_data = json.loads(status_response.data)

@@ -144,7 +144,7 @@ class TestAPIRoutes:
     def test_system_status_endpoint(self, client, mock_glpi_service):
         """Testa endpoint de status do sistema."""
         with patch('backend.api.routes.glpi_service', mock_glpi_service):
-            response = client.get('/api/system/status')
+            response = client.get('/api/status')
             
             assert response.status_code == 200
             data = json.loads(response.data)

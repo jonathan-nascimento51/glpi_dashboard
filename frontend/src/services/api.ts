@@ -22,7 +22,7 @@ const API_BASE_URL = 'http://localhost:5000/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 30000,
+  timeout: 60000, // Aumentado para 60 segundos
   headers: {
     'Content-Type': 'application/json',
   },
@@ -239,7 +239,7 @@ export const apiService = {
   },
 
   // Get system status
-  async getSystemStatus(): Promise<SystemStatus> {
+  async getSystemStatus(signal?: AbortSignal): Promise<SystemStatus> {
     const startTime = Date.now();
     const cacheParams = { endpoint: 'status' };
 
@@ -250,7 +250,7 @@ export const apiService = {
     }
 
     try {
-      const response = await api.get<ApiResponse<SystemStatus>>('/status');
+      const response = await api.get<ApiResponse<SystemStatus>>('/status', { signal });
       
       // Monitora performance
       const responseTime = Date.now() - startTime;
@@ -557,7 +557,8 @@ export const clearAllCaches = apiService.clearAllCaches;
 
 // Função para buscar métricas do dashboard com tipagem forte
 export const fetchDashboardMetrics = async (
-  filters: FilterParams = {}
+  filters: FilterParams = {},
+  signal?: AbortSignal
 ): Promise<DashboardMetrics | null> => {
   const queryParams = new URLSearchParams();
   let url = '';
@@ -603,7 +604,8 @@ export const fetchDashboardMetrics = async (
     
     const response = await api.get('/metrics', {
       params: Object.fromEntries(queryParams),
-      timeout: 60000
+      timeout: 60000,
+      signal
     });
     
     const endTime = performance.now();

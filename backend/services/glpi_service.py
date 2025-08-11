@@ -158,7 +158,7 @@ class GLPIService:
             response = requests.get(
                 f"{self.glpi_url}/initSession", 
                 headers=session_headers,
-                timeout=30
+                timeout=60
             )
             response.raise_for_status()
             
@@ -194,6 +194,7 @@ class GLPIService:
         for attempt in range(self.max_retries):
             headers = self.get_api_headers()
             if not headers:
+                self.logger.error("Não foi possível obter headers de autenticação")
                 return None
             
             # Adicionar headers customizados se fornecidos
@@ -202,7 +203,7 @@ class GLPIService:
             kwargs['headers'] = headers
             
             try:
-                response = requests.request(method, url, timeout=30, **kwargs)
+                response = requests.request(method, url, timeout=60, **kwargs)
                 
                 # Se recebemos 401 ou 403, token pode estar expirado
                 if response.status_code in [401, 403]:
@@ -212,6 +213,10 @@ class GLPIService:
                     
                     if attempt < self.max_retries - 1:
                         self.logger.info("Tentando re-autenticar...")
+                        # Re-autenticar antes de tentar novamente
+                        if not self._authenticate_with_retry():
+                            self.logger.error("Falha na re-autenticação")
+                            return None
                         continue
                 
                 return response
@@ -365,9 +370,10 @@ class GLPIService:
         """Retorna métricas gerais de todos os tickets (não apenas grupos N1-N4)"""
         if not self._ensure_authenticated():
             return {}
-            
-        if not self.discover_field_ids():
-            return {}
+        
+        # Tentar descobrir field_ids, mas não falhar se não conseguir
+        # O método interno usa valores padrão se necessário
+        self.discover_field_ids()
         
         result = self._get_general_metrics_internal()
         return result
@@ -376,12 +382,15 @@ class GLPIService:
         """Método interno para obter métricas gerais (sem autenticação/fechamento)"""
         status_totals = {}
         
+        # Garantir que temos os field_ids ou usar valores padrão
+        status_field_id = self.field_ids.get("STATUS", "12")  # 12 é o campo padrão para status
+        
         # Buscar totais por status sem filtro de grupo
         for status_name, status_id in self.status_map.items():
             search_params = {
                 "is_deleted": 0,
                 "range": "0-0",
-                "criteria[0][field]": self.field_ids["STATUS"],
+                "criteria[0][field]": status_field_id,
                 "criteria[0][searchtype]": "equals",
                 "criteria[0][value]": status_id,
             }
@@ -459,13 +468,14 @@ class GLPIService:
             # Obter métricas por nível (grupos N1-N4)
             raw_metrics = self._get_metrics_by_level_internal()
             
-            # Usar o mesmo formato da função com filtros para consistência
-            # Calcular totais gerais
+            # Usar totais gerais para métricas principais (incluindo todos os tickets)
             general_novos = general_totals.get("Novo", 0)
             general_pendentes = general_totals.get("Pendente", 0)
             general_progresso = general_totals.get("Processando (atribuído)", 0) + general_totals.get("Processando (planejado)", 0)
             general_resolvidos = general_totals.get("Solucionado", 0) + general_totals.get("Fechado", 0)
             general_total = general_novos + general_pendentes + general_progresso + general_resolvidos
+            
+            self.logger.info(f"Totais gerais calculados: novos={general_novos}, pendentes={general_pendentes}, progresso={general_progresso}, resolvidos={general_resolvidos}, total={general_total}")
             
             # Métricas por nível
             level_metrics = {
@@ -657,7 +667,7 @@ class GLPIService:
             level_metrics[level_key]["resolvidos"] = solucionado + fechado
             totals["resolvidos"] += level_metrics[level_key]["resolvidos"]
         
-        # Usar totais gerais para métricas principais
+        # Usar totais gerais para métricas principais (incluindo todos os tickets)
         general_novos = general_totals.get("Novo", 0)
         general_pendentes = general_totals.get("Pendente", 0)
         general_progresso = general_totals.get("Processando (atribuído)", 0) + general_totals.get("Processando (planejado)", 0)

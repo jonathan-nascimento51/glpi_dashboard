@@ -298,13 +298,30 @@ export const transformLegacyData = (legacyData: any): DashboardMetrics => {
 
   // Se os dados já vêm na estrutura correta da API
   if (legacyData?.niveis) {
+    const n1 = legacyData.niveis.n1 || defaultLevel;
+    const n2 = legacyData.niveis.n2 || defaultLevel;
+    const n3 = legacyData.niveis.n3 || defaultLevel;
+    const n4 = legacyData.niveis.n4 || defaultLevel;
+    
+    // Usar os totais gerais da API se disponíveis, caso contrário calcular dos níveis
+    const geral: LevelMetrics = {
+      novos: legacyData.novos || (n1.novos + n2.novos + n3.novos + n4.novos),
+      pendentes: legacyData.pendentes || (n1.pendentes + n2.pendentes + n3.pendentes + n4.pendentes),
+      progresso: legacyData.progresso || (n1.progresso + n2.progresso + n3.progresso + n4.progresso),
+      resolvidos: legacyData.resolvidos || (n1.resolvidos + n2.resolvidos + n3.resolvidos + n4.resolvidos),
+      total: legacyData.total || 0 // Será calculado abaixo se não fornecido
+    };
+    if (!legacyData.total) {
+      geral.total = geral.novos + geral.pendentes + geral.progresso + geral.resolvidos;
+    }
+    
     return {
       niveis: {
-        n1: legacyData.niveis.n1 || defaultLevel,
-        n2: legacyData.niveis.n2 || defaultLevel,
-        n3: legacyData.niveis.n3 || defaultLevel,
-        n4: legacyData.niveis.n4 || defaultLevel,
-        geral: legacyData.niveis.geral || defaultLevel
+        n1,
+        n2,
+        n3,
+        n4,
+        geral
       },
       tendencias: legacyData?.tendencias,
       filtros_aplicados: legacyData?.filtros_aplicados,
@@ -316,13 +333,30 @@ export const transformLegacyData = (legacyData: any): DashboardMetrics => {
   }
 
   // Fallback para dados legados
+  const n1 = legacyData?.n1 || defaultLevel;
+  const n2 = legacyData?.n2 || defaultLevel;
+  const n3 = legacyData?.n3 || defaultLevel;
+  const n4 = legacyData?.n4 || defaultLevel;
+  
+  // Usar os totais gerais da API se disponíveis, caso contrário calcular dos níveis
+  const geral: LevelMetrics = {
+    novos: legacyData?.novos || (n1.novos + n2.novos + n3.novos + n4.novos),
+    pendentes: legacyData?.pendentes || (n1.pendentes + n2.pendentes + n3.pendentes + n4.pendentes),
+    progresso: legacyData?.progresso || (n1.progresso + n2.progresso + n3.progresso + n4.progresso),
+    resolvidos: legacyData?.resolvidos || (n1.resolvidos + n2.resolvidos + n3.resolvidos + n4.resolvidos),
+    total: legacyData?.total || 0 // Será calculado abaixo se não fornecido
+  };
+  if (!legacyData?.total) {
+    geral.total = geral.novos + geral.pendentes + geral.progresso + geral.resolvidos;
+  }
+  
   return {
     niveis: {
-      n1: legacyData?.n1 || defaultLevel,
-      n2: legacyData?.n2 || defaultLevel,
-      n3: legacyData?.n3 || defaultLevel,
-      n4: legacyData?.n4 || defaultLevel,
-      geral: legacyData?.geral || defaultLevel
+      n1,
+      n2,
+      n3,
+      n4,
+      geral
     },
     tendencias: legacyData?.tendencias,
     filtros_aplicados: legacyData?.filtros_aplicados,

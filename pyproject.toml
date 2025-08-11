@@ -4,18 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "glpi-dashboard"
-version = "1.0.0"
-description = "Dashboard para análise de tickets e técnicos do GLPI"
-readme = "README.md"
-requires-python = ">=3.11"
-authors = [
-    {name = "GLPI Dashboard Team", email = "admin@example.com"},
-]
+keywords = ["glpi", "dashboard", "monitoring", "api", "flask"]
 classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -23,7 +13,6 @@ classifiers = [
     "Topic :: System :: Monitoring",
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
 ]
-keywords = ["glpi", "dashboard", "monitoring", "api", "flask"]
 
 dependencies = [
     "email-validator>=2.2.0",
@@ -115,23 +104,21 @@ line-length = 88
 target-version = ['py311', 'py312']
 include = '\.pyi?$'
 extend-exclude = '''
-(
-  /(
-      \.eggs
-    | \.git
-    | \.hg
-    | \.mypy_cache
-    | \.tox
-    | \.venv
-    | _build
-    | buck-out
-    | build
-    | dist
-    | migrations
-    | node_modules
-    | frontend
-  )/
-)
+/(
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | migrations
+  | node_modules
+  | frontend
+)/
 '''
 
 # isort configuration
