@@ -7,7 +7,7 @@ export function useKpisRaw() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    const url = (import.meta.env.VITE_API_URL ?? 'http://localhost:8000') + (useV2 ? '/v2/kpis' : '/v1/kpis');
+    const url = (import.meta.env.VITE_API_BASE_URL ?? '/api') + (useV2 ? '/v2/kpis' : '/v1/kpis');
     setLoading(true);
     fetch(url).then(async (r) => {
       if (!r.ok) throw new Error(`HTTP ${r.status}`);

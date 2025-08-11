@@ -26,7 +26,7 @@ export default defineConfig({
         '**/storybook-static/**',
         '**/.storybook/**'
       ],
-      // ConfiguraÃ§Ã£o de cobertura mÃ­nima
+      // Configuração de cobertura mÃ­nima
       thresholds: {
         global: {
           branches: 80,
@@ -69,3 +69,4 @@ export default defineConfig({
     }
   }
 })
+

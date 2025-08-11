@@ -19,25 +19,25 @@ interface LevelMetricsGridProps {
 
 const levelConfig = {
   n1: {
-    title: "NÃ­vel N1",
+    title: "nível N1",
     color: "from-slate-600 to-slate-700",
     bgColor: "bg-slate-100 dark:bg-slate-800",
     textColor: "text-slate-900 dark:text-slate-100 font-bold"
   },
   n2: {
-    title: "NÃ­vel N2",
+    title: "nível N2",
     color: "from-slate-700 to-slate-800",
     bgColor: "bg-slate-100 dark:bg-slate-800",
     textColor: "text-slate-900 dark:text-slate-100 font-bold"
   },
   n3: {
-    title: "NÃ­vel N3",
+    title: "nível N3",
     color: "from-slate-500 to-slate-600",
     bgColor: "bg-slate-100 dark:bg-slate-800",
     textColor: "text-slate-900 dark:text-slate-100 font-bold"
   },
   n4: {
-    title: "NÃ­vel N4",
+    title: "nível N4",
     color: "from-slate-800 to-slate-900",
     bgColor: "bg-slate-100 dark:bg-slate-800",
     textColor: "text-slate-900 dark:text-slate-100 font-bold"
@@ -75,7 +75,7 @@ const statusConfig = {
   }
 }
 
-// Variantes de animaÃ§Ã£o movidas para fora do componente
+// Variantes de animação movidas para fora do componente
 const itemVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.9 },
   visible: {
@@ -240,14 +240,14 @@ export const LevelMetricsGrid = React.memo<LevelMetricsGridProps>(function Level
   metrics,
   className
 }) {
-  // VerificaÃ§Ã£o de seguranÃ§a para evitar erros
+  // Verificação de segurança para evitar erros
   if (!metrics || !metrics.niveis) {
     return (
       <Card className={cn("glass-card h-full premium-shadow", className)}>
         <CardContent className="flex items-center justify-center h-48">
           <div className="text-center">
             <div className="figma-body mb-2">ðŸ“Š</div>
-        <div className="figma-body">Carregando mÃ©tricas por nÃ­vel...</div>
+        <div className="figma-body">Carregando mÃ©tricas por nível...</div>
           </div>
         </CardContent>
       </Card>
@@ -279,3 +279,4 @@ export const LevelMetricsGrid = React.memo<LevelMetricsGridProps>(function Level
     </div>
   )
 })
+

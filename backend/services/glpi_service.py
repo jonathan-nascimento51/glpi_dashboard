@@ -364,7 +364,7 @@ class GLPIService:
                 return 0
 
             # Verificar se o status code é diferente de 200
-            if response.status_code != 200:
+            if response.status_code not in [200, 206]:
                 timestamp = datetime.datetime.now().isoformat()
                 self.logger.error(
                     f"[{timestamp}] API GLPI retornou status {response.status_code} - "
@@ -2494,3 +2494,4 @@ class GLPIService:
             "Crítica": "6",
         }
         return priority_reverse_map.get(priority_name)
+

@@ -21,7 +21,7 @@ interface RankingTableProps {
   className?: string
 }
 
-// FunÃ§Ã£o auxiliar para obter estilos de nÃ­vel movida para fora do componente
+// Função auxiliar para obter estilos de nível movida para fora do componente
 function getLevelStyle(level?: string) {
   switch (level) {
     case 'N4': // Expert - Azul profissional
@@ -77,7 +77,7 @@ function getLevelStyle(level?: string) {
   }
 }
 
-// Variantes de animaÃ§Ã£o movidas para fora do componente
+// Variantes de animação movidas para fora do componente
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -157,9 +157,9 @@ const TechnicianCard = React.memo<{
         isTopThree && position === 3 && "ring-amber-400"
       )}
     >
-      {/* Header - PosiÃ§Ã£o e NÃ­vel */}
+      {/* Header - Posição e nível */}
       <div className="flex items-center justify-between mb-3">
-        {/* Indicador de posiÃ§Ã£o */}
+        {/* Indicador de Posição */}
         <div className={cn(
           "w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm",
           isTopThree ? "text-white" : "text-gray-600 bg-gray-100",
@@ -174,7 +174,7 @@ const TechnicianCard = React.memo<{
           {position > 3 && position}
         </div>
         
-        {/* NÃ­vel */}
+        {/* nível */}
         {technician.level && (
           <div className="flex items-center space-x-1">
             <div className={cn(
@@ -256,7 +256,7 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
     return [...data].sort((a, b) => b.total - a.total)
   }, [data])
 
-  // EstatÃ­sticas por nÃ­vel para o cabeÃ§alho - memoizado
+  // EstatÃ­sticas por nível para o cabeÃ§alho - memoizado
   const levelStats = useMemo(() => {
     return topTechnicians.reduce((acc, tech) => {
       const level = tech.level || 'Outros'
@@ -341,4 +341,5 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
     </Card>
   )
 })
+
 

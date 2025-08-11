@@ -1,0 +1,5 @@
+﻿http://localhost:3000/ -> ERROR: Impossível conectar-se ao servidor remoto
+http://localhost:3000/api/metrics -> ERROR: Impossível conectar-se ao servidor remoto
+http://localhost:8000/api/metrics -> ERROR: Impossível conectar-se ao servidor remoto
+http://localhost:8000/v1/kpis -> ERROR: Impossível conectar-se ao servidor remoto
+http://localhost:8000/openapi.json -> ERROR: Impossível conectar-se ao servidor remoto

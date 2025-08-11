@@ -59,10 +59,19 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
   const { measureRender } = usePerformanceMonitoring('MetricsGrid')
   const { trackRender } = useRenderTracker('MetricsGrid')
   
+
+  
   // Track component renders
   useEffect(() => {
     // Performance tracking
     trackRender();
+    
+    // Debug logs
+    console.log('🔍 MetricsGrid - Dados recebidos:', metrics);
+    console.log('🔍 MetricsGrid - Novos:', metrics?.novos);
+    console.log('🔍 MetricsGrid - Progresso:', metrics?.progresso);
+    console.log('🔍 MetricsGrid - Pendentes:', metrics?.pendentes);
+    console.log('🔍 MetricsGrid - Resolvidos:', metrics?.resolvidos);
     
     measureRender(() => {
       performanceMonitor.markComponentRender('MetricsGrid', {

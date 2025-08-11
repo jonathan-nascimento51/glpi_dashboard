@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { fetchDashboardMetrics } from '../services/api';
+import { fetchDashboardMetrics, getSystemStatus, getTechnicianRanking } from '../services/api';
 import type {
   DashboardMetrics,
   FilterParams
@@ -37,7 +37,7 @@ interface UseDashboardReturn {
 const initialSystemStatus: SystemStatus = {
   api: 'offline',
   glpi: 'offline',
-  glpi_message: 'Sistema nÃ£o conectado',
+  glpi_message: 'Sistema não conectado',
   glpi_response_time: 0,
   last_update: new Date().toISOString(),
   version: '1.0.0',
@@ -50,51 +50,49 @@ const initialSystemStatus: SystemStatus = {
 
 // Removed unused initialState
 
-
-
-// Removed unused performConsistencyChecks function
-
-export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardReturn => {
+export const useDashboard = (): UseDashboardReturn => {
   const [data, setData] = useState<DashboardMetrics | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(false);
+  const [isPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Removed unused state variables
-  const [filters, setFilters] = useState<FilterParams>(initialFilters);
-  // Derivar dados dos resultados da API
-  const levelMetrics = data?.niveis ? {
-    ...data.niveis,
-    tendencias: data.tendencias
-  } : null;
+  const [notifications, setNotifications] = useState<NotificationData[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState<FilterParams>({});
+  const [theme, setTheme] = useState('light');
+  const [dataIntegrityReport] = useState(null);
+
+  // Derived state
+  const levelMetrics = data?.niveis || null;
   const systemStatus = data?.systemStatus || initialSystemStatus;
   const technicianRanking = data?.technicianRanking || [];
-  const [isPending] = useState<boolean>(false);
-  const [notifications, setNotifications] = useState<any[]>([]);
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [theme, setTheme] = useState<string>('light');
-  const [dataIntegrityReport] = useState<any>(null);
 
-  const loadData = useCallback(async (newFilters?: FilterParams) => {
-    const filtersToUse = newFilters || filters;
-    
-    // console.log('ðŸ”„ useDashboard - Iniciando loadData com filtros:', filtersToUse);
-    
+  const loadData = useCallback(async (filtersToUse: FilterParams = filters) => {
+    console.log(' useDashboard - Iniciando loadData com filtros:', filtersToUse);
+
     setLoading(true);
     setError(null);
-    
+
     try {
-      // Fazer chamadas paralelas para todos os endpoints
-      const [metricsResult, systemStatusResult, technicianRankingResult] = await Promise.all([
-        fetchDashboardMetrics(filtersToUse),
-        import('../services/api').then(api => api.getSystemStatus()),
-        import('../services/api').then(api => api.getTechnicianRanking())
-      ]);
+      // Fazer chamadas sequenciais para evitar sobrecarga do servidor
+      console.log(' useDashboard - Iniciando carregamento sequencial de dados...');
       
-      // console.log('ðŸ“¥ useDashboard - Resultado recebido de fetchDashboardMetrics:', metricsResult);
-      // console.log('ðŸ“¥ useDashboard - Resultado recebido de getSystemStatus:', systemStatusResult);
-      // console.log('ðŸ“¥ useDashboard - Resultado recebido de getTechnicianRanking:', technicianRankingResult);
+      const metricsResult = await fetchDashboardMetrics(filtersToUse);
+      console.log(' useDashboard - Métricas carregadas:', !!metricsResult);
       
+      // Aguardar um pouco antes da próxima requisição
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      const systemStatusResult = await getSystemStatus();
+      console.log(' useDashboard - Status do sistema carregado:', !!systemStatusResult);
+      
+      // Aguardar um pouco antes da próxima requisição
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      const technicianRankingResult = await getTechnicianRanking();
+      console.log(' useDashboard - Ranking de técnicos carregado:', technicianRankingResult?.length || 0);
+
       // Performance metrics tracking removed for now
-      
+
       if (metricsResult) {
         // Combinar todos os dados em um objeto DashboardMetrics
         const combinedData: DashboardMetrics = {
@@ -102,22 +100,22 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
           systemStatus: systemStatusResult || initialSystemStatus,
           technicianRanking: technicianRankingResult || []
         };
-        
-        console.log('ðŸ“Š useDashboard - Dados combinados:', {
+
+        console.log(' useDashboard - Dados combinados:', {
           metrics: !!metricsResult,
           systemStatus: !!systemStatusResult,
           technicianRanking: technicianRankingResult?.length || 0
         });
-        
-        // console.log('âœ… useDashboard - Definindo dados combinados no estado:', combinedData);
+
+        // console.log(' useDashboard - Definindo dados combinados no estado:', combinedData);
         setData(combinedData);
         setError(null);
       } else {
-        console.error('âŒ useDashboard - Resultado de mÃ©tricas Ã© null/undefined');
+        console.error(' useDashboard - Resultado de métricas é null/undefined');
         setError('Falha ao carregar dados do dashboard');
       }
     } catch (err) {
-      console.error('âŒ useDashboard - Erro ao carregar dados:', err);
+      console.error(' useDashboard - Erro ao carregar dados:', err);
       setError(err instanceof Error ? err.message : 'Erro desconhecido');
     } finally {
       setLoading(false);
@@ -131,14 +129,12 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     loadData();
   }, [loadData]);
 
-
-
   // Auto-refresh setup
   useEffect(() => {
     const refreshInterval = setInterval(() => {
       loadData();
     }, 300000); // 5 minutos
-    
+
     return () => clearInterval(refreshInterval);
   }, [loadData]);
 
@@ -166,7 +162,7 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     addNotification: (notification: Partial<NotificationData>) => {
       const completeNotification: NotificationData = {
         id: notification.id || Date.now().toString(),
-        title: notification.title || 'NotificaÃ§Ã£o',
+        title: notification.title || 'Notificação',
         message: notification.message || '',
         type: notification.type || 'info',
         timestamp: notification.timestamp || new Date(),
@@ -182,9 +178,9 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
       loadData(updatedFilters);
     }
   };
-  
-  // Debug logs comentados para evitar erros de sintaxe\n  // console.log('useDashboard - Retornando dados:', returnData);
-  
+
+  // Debug logs comentados para evitar erros de sintaxe
+  // console.log('useDashboard - Retornando dados:', returnData);
+
   return returnData;
 };
-

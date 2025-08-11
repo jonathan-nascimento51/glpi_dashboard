@@ -24,7 +24,7 @@ interface StatusCardProps {
   onClick?: () => void
 }
 
-// FunÃ§Ã£o auxiliar definida fora do componente para evitar recriaÃ§Ã£o
+// Função auxiliar definida fora do componente para evitar recriaÃ§Ã£o
 const getStatusGradient = (status?: string) => {
   switch (status) {
     case 'online': return 'from-green-500 to-emerald-600'
@@ -37,24 +37,24 @@ const getStatusGradient = (status?: string) => {
   }
 }
 
-// FunÃ§Ã£o para determinar a direÃ§Ã£o da tendÃªncia
+// Função para determinar a direção da tendência
 const getTrendDirection = (trendValue: number): 'up' | 'down' | 'neutral' => {
   if (trendValue > 0) return 'up'
   if (trendValue < 0) return 'down'
   return 'neutral'
 }
 
-// FunÃ§Ã£o para gerar explicaÃ§Ã£o da tendÃªncia
+// Função para gerar explicação da tendência
 const getTrendExplanation = (trendValue: number, title: string): React.ReactNode => {
   const direction = getTrendDirection(trendValue)
   
   if (direction === 'neutral') {
     return (
       <div className="text-left">
-        <div className="font-semibold mb-2">ðŸ“Š TendÃªncia: {title}</div>
+        <div className="font-semibold mb-2">ðŸ“Š tendência: {title}</div>
         <div className="text-sm space-y-1">
-          <div>â€¢ <strong>VariaÃ§Ã£o:</strong> Sem mudanÃ§a</div>
-          <div>â€¢ <strong>PerÃ­odo:</strong> ComparaÃ§Ã£o com Ãºltimos 7 dias</div>
+          <div>â€¢ <strong>Variação:</strong> Sem mudança</div>
+          <div>â€¢ <strong>Período:</strong> Comparação com últimos 7 dias</div>
           <div>â€¢ <strong>Status:</strong> EstÃ¡vel</div>
         </div>
       </div>
@@ -63,19 +63,19 @@ const getTrendExplanation = (trendValue: number, title: string): React.ReactNode
 
   const isExtreme = Math.abs(trendValue) > 500
   const explanation = isExtreme 
-    ? "Valor muito alto devido Ã  comparaÃ§Ã£o entre dados histÃ³ricos completos vs. perÃ­odo especÃ­fico de 7 dias"
-    : "VariaÃ§Ã£o normal baseada na comparaÃ§Ã£o com o perÃ­odo anterior"
+    ? "Valor muito alto devido Ã  Comparação entre dados históricos completos vs. Período específico de 7 dias"
+    : "Variação normal baseada na Comparação com o Período anterior"
 
   return (
     <div className="text-left">
-      <div className="font-semibold mb-2">ðŸ“Š TendÃªncia: {title}</div>
+      <div className="font-semibold mb-2">ðŸ“Š tendência: {title}</div>
       <div className="text-sm space-y-1">
-        <div>â€¢ <strong>VariaÃ§Ã£o:</strong> {direction === 'up' ? 'â†—ï¸' : 'â†˜ï¸'} {Math.abs(trendValue).toFixed(1)}%</div>
-        <div>â€¢ <strong>PerÃ­odo:</strong> vs. Ãºltimos 7 dias</div>
-        <div>â€¢ <strong>InterpretaÃ§Ã£o:</strong> {explanation}</div>
+        <div>â€¢ <strong>Variação:</strong> {direction === 'up' ? 'â†—ï¸' : 'â†˜ï¸'} {Math.abs(trendValue).toFixed(1)}%</div>
+        <div>â€¢ <strong>Período:</strong> vs. últimos 7 dias</div>
+        <div>â€¢ <strong>Interpretação:</strong> {explanation}</div>
         {isExtreme && (
           <div className="mt-2 p-2 bg-slate-800 border border-slate-600 rounded text-xs text-slate-200">
-            <strong className="text-amber-400">ðŸ’¡ Nota:</strong> Percentuais altos sÃ£o normais quando comparamos dados histÃ³ricos completos com perÃ­odos especÃ­ficos.
+            <strong className="text-amber-400">ðŸ’¡ Nota:</strong> Percentuais altos sÃ£o normais quando comparamos dados históricos completos com Períodos específicos.
           </div>
         )}
       </div>
@@ -83,7 +83,7 @@ const getTrendExplanation = (trendValue: number, title: string): React.ReactNode
   )
 }
 
-// Variantes de animaÃ§Ã£o definidas fora do componente
+// Variantes de animação definidas fora do componente
 const cardVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.9 },
   visible: { 
@@ -232,7 +232,7 @@ export const StatusCard = memo<StatusCardProps>(function StatusCard({
                   >
                     {TrendIcon && <TrendIcon className="h-4 w-4" />}
                     <span>
-                      {trend.value === 0 ? 'sem alteraÃ§Ã£o' : (
+                      {trend.value === 0 ? 'sem alteração' : (
                         `${trend.direction === 'up' ? '+' : trend.direction === 'down' ? '-' : ''}${formatNumber(trend.value)}`
                       )}
                     </span>
@@ -285,5 +285,6 @@ export const StatusCard = memo<StatusCardProps>(function StatusCard({
     </motion.div>
   )
 })
+
 
 

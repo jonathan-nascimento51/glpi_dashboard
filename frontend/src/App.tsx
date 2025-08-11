@@ -73,6 +73,8 @@ function App() {
     loadData();
   }, [loadData]);
 
+
+
   // Apply theme to body element
   useEffect(() => {
     document.body.className = theme === 'dark' ? 'dark' : '';
@@ -189,8 +191,17 @@ function App() {
           <Profiler id="ModernDashboard" onRender={profilerCallback}>
             <ModernDashboard
               metrics={{
-                ...levelMetrics?.geral || {},
-                tendencias: levelMetrics?.tendencias || {}
+                novos: levelMetrics?.niveis?.geral?.novos || 0,
+                pendentes: levelMetrics?.niveis?.geral?.pendentes || 0,
+                progresso: levelMetrics?.niveis?.geral?.progresso || 0,
+                resolvidos: levelMetrics?.niveis?.geral?.resolvidos || 0,
+                total: levelMetrics?.niveis?.geral?.total || 0,
+                tendencias: levelMetrics?.tendencias || {
+                  novos: '0',
+                  progresso: '0',
+                  pendentes: '0',
+                  resolvidos: '0'
+                }
               }}
               levelMetrics={levelMetrics}
               systemStatus={systemStatus}

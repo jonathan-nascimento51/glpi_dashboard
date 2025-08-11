@@ -542,9 +542,9 @@ export const fetchDashboardMetrics = async (
       ? `\/kpis?${queryParams.toString()}`
       : `\/kpis`;
     
-    console.log('🔍 Filtros originais:', filters);
-    console.log('🔍 Query params construídos:', queryParams.toString());
-    console.log('🔍 Fazendo requisição para:', url);
+    console.log('🔍 fetchDashboardMetrics - Filtros originais:', filters);
+    console.log('🔍 fetchDashboardMetrics - Query params construídos:', queryParams.toString());
+    console.log('🔍 fetchDashboardMetrics - Fazendo requisição para:', url);
     
     const startTime = performance.now();
     
@@ -553,7 +553,7 @@ export const fetchDashboardMetrics = async (
     const endTime = performance.now();
     const responseTime = endTime - startTime;
     
-    console.log('Resposta da API recebida:', response.data);
+    console.log('🔍 fetchDashboardMetrics - Resposta da API recebida:', response.data);
     const rawData = response.data;
     
     // Log de performance
@@ -563,28 +563,38 @@ export const fetchDashboardMetrics = async (
       timestamp: new Date(),
       endpoint: '/kpis'
     };
-    console.log('Métricas de performance:', perfMetrics);
+    console.log('🔍 fetchDashboardMetrics - Métricas de performance:', perfMetrics);
+    
+    // Verificar se a resposta tem a estrutura esperada
+    if (rawData && rawData.success && rawData.data) {
+      console.log('🔍 fetchDashboardMetrics - Dados extraídos de rawData.data:', rawData.data);
+      const processedData = transformLegacyData(rawData.data);
+      console.log('🔍 fetchDashboardMetrics - Dados processados com transformLegacyData:', processedData);
+      return processedData;
+    }
     
     if (Array.isArray(rawData)) {
+      console.log('🔍 fetchDashboardMetrics - Dados são array, processando com transformArrayToMetrics');
       const processedData = transformArrayToMetrics(rawData);
-      console.log('Dados processados:', processedData);
+      console.log('🔍 fetchDashboardMetrics - Dados processados:', processedData);
       return processedData;
     }
 
     if (rawData && typeof rawData === 'object' && 'data' in rawData) {
+      console.log('🔍 fetchDashboardMetrics - Dados têm propriedade data, processando com transformLegacyData');
       const processedData = transformLegacyData(rawData.data);
-      console.log('Dados processados:', processedData);
+      console.log('🔍 fetchDashboardMetrics - Dados processados:', processedData);
       return processedData;
     }
 
-    console.error('Resposta da API em formato inesperado:', rawData);
+    console.error('🔍 fetchDashboardMetrics - Resposta da API em formato inesperado:', rawData);
     return null;
     
   } catch (error) {
-    console.error('Erro ao buscar métricas:', error);
-    console.error('Tipo do erro:', typeof error);
-    console.error('Stack trace:', error instanceof Error ? error.stack : 'N/A');
-    console.error('URL tentada:', `\/kpis`);
+    console.error('🔍 fetchDashboardMetrics - Erro ao buscar métricas:', error);
+    console.error('🔍 fetchDashboardMetrics - Tipo do erro:', typeof error);
+    console.error('🔍 fetchDashboardMetrics - Stack trace:', error instanceof Error ? error.stack : 'N/A');
+    console.error('🔍 fetchDashboardMetrics - URL tentada:', `\/kpis`);
     return null;
   }
 };

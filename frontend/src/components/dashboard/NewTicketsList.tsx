@@ -21,7 +21,7 @@ interface NewTicketsListProps {
   limit?: number
 }
 
-// ConfiguraÃ§Ã£o de prioridades movida para fora do componente
+// Configuração de prioridades movida para fora do componente
 const priorityConfig = {
   'CrÃ­tica': {
     color: 'figma-status-badge-red',
@@ -53,7 +53,7 @@ const priorityConfig = {
   }
 }
 
-// Variantes de animaÃ§Ã£o movidas para fora do componente
+// Variantes de animação movidas para fora do componente
 const itemVariants = {
   hidden: { opacity: 0, x: -20 },
   visible: {
@@ -76,12 +76,12 @@ const containerVariants = {
   }
 } as const
 
-// FunÃ§Ã£o auxiliar para obter configuraÃ§Ã£o de prioridade
+// Função auxiliar para obter Configuração de prioridade
 const getPriorityConfig = (priority: string) => {
   return priorityConfig[priority as keyof typeof priorityConfig] || priorityConfig['Normal']
 }
 
-// FunÃ§Ã£o auxiliar para formataÃ§Ã£o de data
+// Função auxiliar para formatação de data
 const formatDate = (dateString: string) => {
   try {
     const date = new Date(dateString)
@@ -192,7 +192,7 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
   useEffect(() => {
     fetchTickets()
     
-    // CORREÃ‡ÃƒO: Auto-refresh otimizado para 5 minutos com controle de interaÃ§Ã£o
+    // CORREÃ‡ÃƒO: Auto-refresh otimizado para 5 minutos com controle de interação
     const interval = setInterval(() => {
       // Verificar se auto-refresh estÃ¡ habilitado
       const autoRefreshEnabled = localStorage.getItem('autoRefreshEnabled')
@@ -205,12 +205,12 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
       const now = Date.now()
       const timeSinceInteraction = lastInteraction ? now - parseInt(lastInteraction) : Infinity
       
-      // SÃ³ atualiza se nÃ£o houver interaÃ§Ã£o recente (Ãºltimos 2 minutos)
+      // Só atualiza se não houver interação recente (últimos 2 minutos)
       if (timeSinceInteraction > 120000) {
         console.log('ðŸŽ« Atualizando lista de tickets novos')
         fetchTickets()
       } else {
-        console.log('â¸ï¸ AtualizaÃ§Ã£o da lista de tickets pausada (interaÃ§Ã£o recente)')
+        console.log('â¸ï¸ Atualização da lista de tickets pausada (interação recente)')
       }
     }, 300000) // 5 minutos
     
@@ -317,3 +317,4 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
 })
 
 NewTicketsList.displayName = 'NewTicketsList'
+

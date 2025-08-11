@@ -21,12 +21,49 @@ async def get_kpis(start_date: Optional[str] = Query(None), end_date: Optional[s
             return ResponseFormatter.format_success_response(data=metrics, message="KPIs obtidos do GLPI")
         else:
             mock_data = {
-                "total_tickets": 150,
-                "open_tickets": 45,
-                "resolved_tickets": 105,
-                "avg_resolution_time": 2.5,
-                "satisfaction_rate": 85.2,
-                "technician_efficiency": 78.9
+                "niveis": {
+                    "geral": {
+                        "novos": 45,
+                        "progresso": 23,
+                        "pendentes": 12,
+                        "resolvidos": 156,
+                        "total": 236
+                    },
+                    "n1": {
+                        "novos": 12,
+                        "progresso": 8,
+                        "pendentes": 3,
+                        "resolvidos": 42,
+                        "total": 65
+                    },
+                    "n2": {
+                        "novos": 15,
+                        "progresso": 7,
+                        "pendentes": 4,
+                        "resolvidos": 38,
+                        "total": 64
+                    },
+                    "n3": {
+                        "novos": 10,
+                        "progresso": 5,
+                        "pendentes": 3,
+                        "resolvidos": 41,
+                        "total": 59
+                    },
+                    "n4": {
+                        "novos": 8,
+                        "progresso": 3,
+                        "pendentes": 2,
+                        "resolvidos": 35,
+                        "total": 48
+                    }
+                },
+                "tendencias": {
+                    "novos": "+12.5%",
+                    "pendentes": "-8.3%",
+                    "progresso": "+15.7%",
+                    "resolvidos": "+22.1%"
+                }
             }
             return ResponseFormatter.format_success_response(data=mock_data, message="KPIs mockados")
     except Exception as e:
@@ -38,8 +75,8 @@ async def get_system_status():
     try:
         if USE_REAL_GLPI_DATA:
             try:
-                if glpi_service._init_session():
-                    glpi_service._kill_session()
+                if glpi_service._ensure_authenticated():
+                    
                     glpi_status = "online"
                 else:
                     glpi_status = "offline"
@@ -68,11 +105,15 @@ async def get_system_status():
 @router.get("/technicians/ranking")
 async def get_technician_ranking(limit: Optional[int] = Query(10)):
     try:
-        ranking_data = [
-            {"name": "Joao Silva", "tickets_resolved": 25, "avg_time": 2.1, "satisfaction": 4.8},
-            {"name": "Maria Santos", "tickets_resolved": 22, "avg_time": 2.3, "satisfaction": 4.7}
-        ]
-        return ResponseFormatter.format_success_response(data=ranking_data[:limit], message="Ranking de tecnicos")
+        if USE_REAL_GLPI_DATA:
+            ranking_data = glpi_service.get_technician_ranking(limit=limit)
+            return ResponseFormatter.format_success_response(data=ranking_data, message="Ranking de tecnicos do GLPI")
+        else:
+            ranking_data = [
+                {"name": "Joao Silva", "tickets_resolved": 25, "avg_time": 2.1, "satisfaction": 4.8},
+                {"name": "Maria Santos", "tickets_resolved": 22, "avg_time": 2.3, "satisfaction": 4.7}
+            ]
+            return ResponseFormatter.format_success_response(data=ranking_data[:limit], message="Ranking de tecnicos")
     except Exception as e:
         logger.error(f"Erro ao buscar ranking: {str(e)}")
         raise HTTPException(status_code=500, detail="Erro interno do servidor")
@@ -92,3 +133,4 @@ async def get_new_tickets(limit: Optional[int] = Query(10)):
     except Exception as e:
         logger.error(f"Erro ao buscar tickets: {str(e)}")
         raise HTTPException(status_code=500, detail="Erro interno do servidor")
+
