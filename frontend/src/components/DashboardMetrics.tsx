@@ -23,26 +23,17 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
   refreshInterval = 30000
 }) => {
   const {
-    metrics: data,
-    isLoading: loading,
+    data,
+    loading,
     error,
-    forceRefresh: refreshData,
     updateFilters
   } = useDashboard(initialFilters);
 
   const [filters, setFilters] = useState<FilterParams>(initialFilters);
   // Loading state is now handled by the useDashboard hook
 
-  // Auto refresh effect
-  useEffect(() => {
-    if (!autoRefresh) return;
-
-    const interval = setInterval(() => {
-      refreshData();
-    }, refreshInterval);
-
-    return () => clearInterval(interval);
-  }, [autoRefresh, refreshInterval, refreshData]);
+  // Auto refresh effect - dados são atualizados automaticamente pelo hook useDashboard
+  // useEffect removido pois o hook já gerencia atualizações automáticas
 
   // Loading state is managed by useDashboard hook
 
@@ -193,17 +184,11 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
           </select>
         </div>
         <div className="flex items-end">
-          <button
-            onClick={() => refreshData()}
-            disabled={loading}
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? 'Carregando...' : 'Atualizar'}
-          </button>
+          {/* Botão de atualização removido - dados são atualizados automaticamente */}
         </div>
       </div>
     </div>
-  ), [filters, handleFilterChange, refreshData, loading]);
+  ), [filters, handleFilterChange, loading]);
 
   if (error) {
     return (
@@ -220,12 +205,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
               <p>{error}</p>
             </div>
             <div className="mt-4">
-              <button
-                onClick={() => refreshData()}
-                className="bg-red-100 px-3 py-2 rounded-md text-sm font-medium text-red-800 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500"
-              >
-                Tentar novamente
-              </button>
+              {/* Botão de retry removido - dados são atualizados automaticamente */}
             </div>
           </div>
         </div>
@@ -248,12 +228,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
     return (
       <div className="text-center py-12">
         <p className="text-gray-500">Nenhum dado disponível</p>
-        <button
-          onClick={() => refreshData()}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          Carregar dados
-        </button>
+        {/* Dados são carregados automaticamente pelo hook useDashboard */}
       </div>
     );
   }
@@ -264,14 +239,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">Dashboard GLPI</h1>
         <div className="flex items-center space-x-4">
-
-          <button
-            onClick={() => refreshData()}
-            disabled={loading}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-          >
-            Atualizar
-          </button>
+          {/* Botão de atualização removido - dados são atualizados automaticamente */}
         </div>
       </div>
 

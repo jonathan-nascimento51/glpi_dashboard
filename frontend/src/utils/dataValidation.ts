@@ -64,8 +64,7 @@ export function validateMetrics(data: any): ValidationResult<DashboardMetrics> {
     filtros_aplicados: data.filtros_aplicados,
     tempo_execucao: data.tempo_execucao,
     timestamp: data.timestamp,
-    systemStatus: data.systemStatus,
-    technicianRanking: data.technicianRanking
+    systemStatus: data.systemStatus
   };
 
   // Validar consistência dos níveis internamente

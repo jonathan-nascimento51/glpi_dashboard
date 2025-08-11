@@ -10,73 +10,99 @@ import { RankingDebugger } from '../debug/rankingDebug';
 // Cache local para evitar re-renders desnecessários
 const LOCAL_CACHE = new Map<string, { data: any; timestamp: number; ttl: number }>();
 const CACHE_TTL = 30000; // 30 segundos
+const PERSISTENT_CACHE_KEY = 'dashboard_ranking_persistent';
+const PERSISTENT_CACHE_TTL = 300000; // 5 minutos para cache persistente
+const MAX_RETRY_ATTEMPTS = 3;
+const RETRY_DELAY = 1000; // 1 segundo
 
-// Função para gerar chave de cache
-const getCacheKey = (filters: FilterParams): string => {
-  return JSON.stringify({
-    dateRange: filters.dateRange,
-    status: filters.status,
-    level: filters.level
-  });
+// Funções auxiliares para cache local
+const generateCacheKey = (filters: FilterParams): string => {
+  return `dashboard_${JSON.stringify(filters)}_${Date.now().toString().slice(0, -4)}`; // Remove últimos 4 dígitos para cache de ~10s
 };
 
-// Função para verificar se cache é válido
-const isCacheValid = (cacheKey: string): boolean => {
-  const cached = LOCAL_CACHE.get(cacheKey);
-  if (!cached) return false;
-  return Date.now() - cached.timestamp < cached.ttl;
-};
-
-// Função para obter dados do cache
 const getCachedData = (cacheKey: string): DashboardMetrics | null => {
   const cached = LOCAL_CACHE.get(cacheKey);
-  if (!cached || !isCacheValid(cacheKey)) {
-    LOCAL_CACHE.delete(cacheKey);
-    return null;
+  if (cached && (Date.now() - cached.timestamp) < cached.ttl) {
+    console.log('📦 Cache hit:', cacheKey);
+    return cached.data;
   }
-  return cached.data;
+  return null;
 };
 
-// Função para salvar no cache
 const setCachedData = (cacheKey: string, data: DashboardMetrics): void => {
   LOCAL_CACHE.set(cacheKey, {
     data,
     timestamp: Date.now(),
     ttl: CACHE_TTL
   });
+  console.log('💾 Cache saved:', cacheKey);
+};
+
+// Funções auxiliares para recovery de dados
+const isValidCacheData = (data: any): boolean => {
+  if (!data || typeof data !== 'object') {
+    console.log('🔍 Recovery: Dados inválidos - não é objeto');
+    return false;
+  }
+  
+  if (!data.timestamp || typeof data.timestamp !== 'number') {
+    console.log('🔍 Recovery: Dados inválidos - timestamp ausente ou inválido');
+    return false;
+  }
+  
+  if (!data.data || !Array.isArray(data.data)) {
+    console.log('🔍 Recovery: Dados inválidos - data ausente ou não é array');
+    return false;
+  }
+  
+  const isExpired = (Date.now() - data.timestamp) > PERSISTENT_CACHE_TTL;
+  if (isExpired) {
+    console.log('🔍 Recovery: Cache expirado', {
+      age: Date.now() - data.timestamp,
+      ttl: PERSISTENT_CACHE_TTL
+    });
+    return false;
+  }
+  
+  console.log('✅ Recovery: Dados válidos', {
+    dataLength: data.data.length,
+    age: Date.now() - data.timestamp
+  });
+  return true;
+};
+
+const sleep = (ms: number): Promise<void> => {
+  return new Promise(resolve => setTimeout(resolve, ms));
 };
 
 interface UseDashboardReturn {
-  metrics: DashboardMetrics | null;
-  levelMetrics: any;
-  systemStatus: SystemStatus;
-  technicianRanking: any[];
-  isLoading: boolean;
-  isPending: boolean;
+  data: DashboardMetrics | null;
+  loading: boolean;
   error: string | null;
-  // Novos estados específicos do ranking
-  rankingLoading: boolean;
-  rankingError: string | null;
-  notifications: any[];
   searchQuery: string;
   filters: FilterParams;
   theme: string;
+  notifications: NotificationData[];
   dataIntegrityReport: any;
-  loadData: () => Promise<void>;
-  forceRefresh: () => Promise<void>;
-  // Nova função para atualizar apenas o ranking
+  levelMetrics: any;
+  systemStatus: SystemStatus;
+  rankingState: {
+    data: any[];
+    loading: boolean;
+    error: string | null;
+    lastUpdated: Date | null;
+  };
+  loadData: (newFilters?: FilterParams, forceRefresh?: boolean) => Promise<void>;
+  forceRefresh: (newFilters?: FilterParams) => Promise<void>;
   refreshRanking: () => Promise<void>;
-  updateFilters: (newFilters: FilterParams) => void;
+  recoverRankingData: () => Promise<any[]>;
+  updateFilters: (newFilters: Partial<FilterParams>) => void;
   search: (query: string) => void;
   addNotification: (notification: Partial<NotificationData>) => void;
   removeNotification: (id: string) => void;
-  changeTheme: (theme: string) => void;
+  changeTheme: (newTheme?: string) => void;
   updateDateRange: (dateRange: any) => void;
 }
-
-// Removed unused initialFilterState
-
-// Removed unused initialMetrics
 
 const initialSystemStatus: SystemStatus = {
   api: 'offline',
@@ -90,135 +116,223 @@ const initialSystemStatus: SystemStatus = {
   ultima_atualizacao: new Date().toISOString()
 };
 
-// Removed unused getDefaultDateRange
-
-// Removed unused initialState
-
-
-
-// Removed unused performConsistencyChecks function
-
 export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardReturn => {
-  // Estado centralizado - única fonte da verdade
+  // Estados principais
   const [data, setData] = useState<DashboardMetrics | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [filters, setFilters] = useState<FilterParams>(initialFilters);
-  
-  // Estado específico para o ranking de técnicos - CENTRALIZADO
-  const [technicianRankingState, setTechnicianRankingState] = useState<{
-    data: any[]
-    loading: boolean
-    error: string | null
-  }>({ data: [], loading: false, error: null })
-
-  // Função única para atualizar o estado do ranking
-  const atualizarRankingCentralizado = useCallback((novosTecnicos: any[]) => {
-    setTechnicianRankingState(prev => ({
-      ...prev,
-      data: novosTecnicos,
-      loading: false,
-      error: null
-    }))
-  }, [])
-  
-  // AbortController para cancelamento de requisições
-  const abortControllerRef = useRef<AbortController | null>(null);
-  
-  // Derivar dados dos resultados da API
-  const levelMetrics = data?.niveis ? {
-    ...data.niveis,
-    tendencias: data.tendencias
-  } : null;
-  const systemStatus = data?.systemStatus || initialSystemStatus;
-  
-  // Usar estado específico do ranking em vez de derivar dos dados
-
-  const [isPending] = useState<boolean>(false);
-  const [notifications, setNotifications] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [filters, setFilters] = useState<FilterParams>(initialFilters);
   const [theme, setTheme] = useState<string>(() => {
     return localStorage.getItem('dashboard-theme') || 'light';
   });
-  const [dataIntegrityReport] = useState<any>(null);
-
-  // Função robusta de busca de dados do ranking com async/await
-  const buscarDadosDoRankingRobusta = useCallback(async () => {
+  const [notifications, setNotifications] = useState<NotificationData[]>([]);
+  
+  // Estado unificado para ranking de técnicos
+  const [rankingState, setRankingState] = useState({
+    data: [] as any[],
+    loading: false,
+    error: null as string | null,
+    lastUpdated: null as Date | null
+  });
+  
+  // Refs para evitar dependências circulares
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const filtersRef = useRef<FilterParams>(filters);
+  const isInitialLoadRef = useRef<boolean>(true);
+  const lastCacheKeyRef = useRef<string>('');
+  
+  // Atualizar filtersRef quando filters mudar
+  useEffect(() => {
+    filtersRef.current = filters;
+  }, [filters]);
+  
+  // Derivação de dados usando useMemo
+  const levelMetrics = useMemo(() => {
+    if (!data?.niveis) return null;
+    return {
+      level1: data.niveis.n1?.total || 0,
+      level2: data.niveis.n2?.total || 0,
+      level3: data.niveis.n3?.total || 0
+    };
+  }, [data?.niveis]);
+  
+  const systemStatus = useMemo(() => {
+    return data?.systemStatus || initialSystemStatus;
+  }, [data?.systemStatus]);
+  
+  // Funções auxiliares estáveis
+  const updateRankingState = useCallback((newData: any[]) => {
+    setRankingState(prev => ({
+      ...prev,
+      data: newData,
+      loading: false,
+      error: null,
+      lastUpdated: new Date()
+    }));
+  }, []);
+  
+  const setRankingLoading = useCallback((loading: boolean) => {
+    setRankingState(prev => ({ ...prev, loading }));
+  }, []);
+  
+  const setRankingError = useCallback((error: string | null) => {
+    setRankingState(prev => ({ ...prev, error, loading: false }));
+  }, []);
+  
+  const addErrorNotification = useCallback((title: string, message: string) => {
+    const errorNotification: NotificationData = {
+      id: Date.now().toString(),
+      title,
+      message,
+      type: 'error',
+      timestamp: new Date(),
+      duration: 5000
+    };
+    setNotifications(prev => [...prev, errorNotification]);
+  }, []);
+  
+  // Função para recuperar dados do ranking com fallbacks
+  const recoverRankingData = useCallback(async (): Promise<any[]> => {
+    console.log('🔄 Recovery: Iniciando recuperação de dados do ranking...');
+    
     try {
-      // Atualiza estado para mostrar loading
-      setTechnicianRankingState(prev => ({ ...prev, loading: true, error: null }))
+      // 1. Primeiro tenta recuperar dados do localStorage persistente
+      console.log('📦 Recovery: Tentando recuperar do localStorage...');
+      const persistentData = localStorage.getItem(PERSISTENT_CACHE_KEY);
       
-      console.log('🔍 Buscando dados do ranking...')
-      
-      // Usar a função da API existente
-      const novosTecnicos = await getTechnicianRanking(filters)
-      
-      console.log('✅ Ranking carregado com sucesso:', novosTecnicos?.length || 0, 'técnicos')
-      
-      // Passo mais importante: Atualiza o estado com os novos dados
-      atualizarRankingCentralizado(novosTecnicos || [])
-      
-    } catch (error: any) {
-      if (error.name !== 'AbortError') {
-        console.error('Erro ao atualizar o ranking:', error)
-        setTechnicianRankingState(prev => ({
-          ...prev,
-          loading: false,
-          error: error.message || 'Erro ao carregar ranking'
-        }))
-        setNotifications(prev => [...prev, {
-          id: Date.now().toString(),
-          type: 'error',
-          title: 'Erro no Ranking',
-          message: 'Falha ao atualizar ranking de técnicos',
-          timestamp: new Date(),
-          duration: 5000
-        }])
+      if (persistentData) {
+        try {
+          const parsedData = JSON.parse(persistentData);
+          console.log('📦 Recovery: Dados encontrados no localStorage', {
+            timestamp: parsedData.timestamp,
+            dataLength: parsedData.data?.length || 0
+          });
+          
+          // 2. Valida se os dados em cache ainda são válidos
+          if (isValidCacheData(parsedData)) {
+            console.log('✅ Recovery: Cache persistente válido, retornando dados');
+            RankingDebugger.log('recovery_success_cache', {
+              source: 'localStorage',
+              dataLength: parsedData.data.length
+            }, 'useDashboard');
+            return parsedData.data;
+          }
+        } catch (parseError) {
+          console.warn('⚠️ Recovery: Erro ao parsear dados do localStorage:', parseError);
+        }
       }
+      
+      console.log('🔄 Recovery: Cache inválido ou inexistente, tentando API...');
+      
+      // 3. Se cache inválido, busca da API como fallback com retry
+      let lastError: Error | null = null;
+      
+      for (let attempt = 1; attempt <= MAX_RETRY_ATTEMPTS; attempt++) {
+        try {
+          console.log(`🔄 Recovery: Tentativa ${attempt}/${MAX_RETRY_ATTEMPTS} de busca na API...`);
+          
+          const rankingData = await getTechnicianRanking(filtersRef.current);
+          
+          if (rankingData && Array.isArray(rankingData) && rankingData.length > 0) {
+            console.log('✅ Recovery: Dados obtidos da API com sucesso', {
+              attempt,
+              dataLength: rankingData.length
+            });
+            
+            // Salva no cache persistente para próximas recuperações
+            const cacheData = {
+              data: rankingData,
+              timestamp: Date.now()
+            };
+            
+            try {
+              localStorage.setItem(PERSISTENT_CACHE_KEY, JSON.stringify(cacheData));
+              console.log('💾 Recovery: Dados salvos no cache persistente');
+            } catch (storageError) {
+              console.warn('⚠️ Recovery: Erro ao salvar no localStorage:', storageError);
+            }
+            
+            RankingDebugger.log('recovery_success_api', {
+              attempt,
+              dataLength: rankingData.length
+            }, 'useDashboard');
+            
+            return rankingData;
+          } else {
+            throw new Error('Dados da API inválidos ou vazios');
+          }
+        } catch (apiError) {
+          lastError = apiError instanceof Error ? apiError : new Error('Erro desconhecido na API');
+          console.warn(`⚠️ Recovery: Tentativa ${attempt} falhou:`, lastError.message);
+          
+          RankingDebugger.log('recovery_attempt_failed', {
+            attempt,
+            error: lastError.message
+          }, 'useDashboard');
+          
+          // 4. Implementa retry automático com delay
+          if (attempt < MAX_RETRY_ATTEMPTS) {
+            const delay = RETRY_DELAY * attempt; // Delay progressivo
+            console.log(`⏳ Recovery: Aguardando ${delay}ms antes da próxima tentativa...`);
+            await sleep(delay);
+          }
+        }
+      }
+      
+      // 5. Se todas as tentativas falharam, loga o erro final
+      console.error('❌ Recovery: Todas as tentativas de recuperação falharam');
+      RankingDebugger.log('recovery_failed', {
+        totalAttempts: MAX_RETRY_ATTEMPTS,
+        lastError: lastError?.message || 'Erro desconhecido'
+      }, 'useDashboard');
+      
+      // 6. Retorna array vazio em último caso
+      console.log('🔄 Recovery: Retornando array vazio como fallback final');
+      return [];
+      
+    } catch (recoveryError) {
+      console.error('❌ Recovery: Erro crítico durante recuperação:', recoveryError);
+      RankingDebugger.log('recovery_critical_error', {
+        error: recoveryError instanceof Error ? recoveryError.message : 'Erro crítico desconhecido'
+      }, 'useDashboard');
+      
+      // Retorna array vazio mesmo em caso de erro crítico
+      return [];
     }
-  }, [atualizarRankingCentralizado, filters])
+  }, []);
 
-  // Função para buscar dados do ranking (mantida para compatibilidade)
-  const buscarDadosDoRanking = useCallback(async (currentFilters: FilterParams) => {
-    // Redireciona para a função robusta
-    await buscarDadosDoRankingRobusta()
-  }, [buscarDadosDoRankingRobusta])
-
-  const loadData = useCallback(async (newFilters?: FilterParams, forceRefresh = false) => {
-    const filtersToUse = newFilters || filters;
-    const cacheKey = getCacheKey(filtersToUse);
-    
-    RankingDebugger.log('loadData_start', {
-      forceRefresh,
-      filters: filtersToUse,
-      cacheKey
-    }, 'useDashboard');
-    
-    // Verificar cache local primeiro (se não for refresh forçado)
-    if (!forceRefresh) {
-      const cachedData = getCachedData(cacheKey);
-      if (cachedData) {
-        console.log('📦 useDashboard - Dados obtidos do cache local');
-        RankingDebugger.log('cache_hit', {
-          hasRanking: !!cachedData.technicianRanking,
-          rankingLength: cachedData.technicianRanking?.length || 0
+  // Função para carregar dados do ranking
+  const loadRankingData = useCallback(async () => {
+    try {
+      setRankingLoading(true);
+      console.log('🔄 Carregando dados do ranking...');
+      
+      const rankingData = await getTechnicianRanking(filtersRef.current);
+      
+      if (rankingData && Array.isArray(rankingData)) {
+        console.log('✅ Dados do ranking carregados:', rankingData.length, 'técnicos');
+        updateRankingState(rankingData);
+        RankingDebugger.log('ranking_loaded', {
+          count: rankingData.length,
+          data: rankingData
         }, 'useDashboard');
-        setData(cachedData);
-        // Atualizar o ranking separadamente do cache
-        atualizarRankingCentralizado(cachedData.technicianRanking || []);
-        setLoading(false);
-        setError(null);
-        return;
       } else {
-        RankingDebugger.log('cache_miss', { cacheKey }, 'useDashboard');
+        console.warn('⚠️ Dados do ranking inválidos:', rankingData);
+        setRankingError('Dados do ranking inválidos');
       }
+    } catch (err) {
+      console.error('❌ Erro ao carregar ranking:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
+      setRankingError(errorMessage);
+      addErrorNotification('Erro ao carregar ranking', errorMessage);
     }
-    
-    console.log('🔄 useDashboard - Carregando dados com filtros:', filtersToUse);
-    console.log('📅 useDashboard - DateRange nos filtros:', filtersToUse.dateRange);
-    
+  }, [setRankingLoading, updateRankingState, setRankingError, addErrorNotification]);
+  
+  // Função principal para carregar dados
+  const loadMainData = useCallback(async (filtersToUse: FilterParams, forceRefresh = false) => {
     // Cancelar requisição anterior se existir
-    if (abortControllerRef.current && !abortControllerRef.current.signal.aborted) {
+    if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
     
@@ -226,26 +340,34 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     abortControllerRef.current = new AbortController();
     const signal = abortControllerRef.current.signal;
     
-    setLoading(true);
-    setError(null);
-    
     try {
-      // Fazer chamadas paralelas para todos os endpoints com timeout
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Timeout: Requisição demorou mais que 60 segundos')), 60000);
-      });
+      setLoading(true);
+      setError(null);
       
-      // Fazer chamadas paralelas com a nova lógica de ranking
-      const dataPromise = Promise.all([
-        fetchDashboardMetrics(filtersToUse),
-        getSystemStatus(),
-        buscarDadosDoRankingRobusta() // Usar a função robusta
+      console.log('🔄 useDashboard - Carregando dados:', { filters: filtersToUse, forceRefresh });
+      
+      // Verificar cache primeiro (se não for refresh forçado)
+      const cacheKey = generateCacheKey(filtersToUse);
+      if (!forceRefresh && cacheKey === lastCacheKeyRef.current) {
+        const cachedData = getCachedData(cacheKey);
+        if (cachedData) {
+          console.log('📦 useDashboard - Usando dados do cache');
+          setData(cachedData);
+          setLoading(false);
+          return;
+        }
+      }
+      
+      lastCacheKeyRef.current = cacheKey;
+      
+      // Carregar dados principais e ranking em paralelo
+      const [metricsResult, systemStatusResult] = await Promise.all([
+        fetchDashboardMetrics(filtersToUse, signal),
+        getSystemStatus(signal)
       ]);
       
-      const [metricsResult, systemStatusResult, technicianRankingResult] = await Promise.race([
-        dataPromise,
-        timeoutPromise
-      ]) as [any, any, any];
+      // Carregar ranking separadamente
+      loadRankingData();
       
       // Verificar se a requisição foi cancelada
       if (signal.aborted) {
@@ -255,24 +377,23 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
       }
       
       if (metricsResult) {
-        // Combinar dados principais (sem incluir ranking aqui)
+        // Combinar dados principais (ranking é gerenciado separadamente)
         const combinedData: DashboardMetrics = {
           ...metricsResult,
-          systemStatus: systemStatusResult || initialSystemStatus,
-          technicianRanking: technicianRankingResult || []
+          systemStatus: systemStatusResult || initialSystemStatus
         };
         
         console.log('📊 useDashboard - Dados combinados:', {
           metrics: !!metricsResult,
           systemStatus: !!systemStatusResult,
-          technicianRanking: technicianRankingResult?.length || 0
+          rankingLength: rankingState.data?.length || 0
         });
         
         RankingDebugger.log('data_combined', {
           hasMetrics: !!metricsResult,
           hasSystemStatus: !!systemStatusResult,
-          rankingLength: technicianRankingResult?.length || 0,
-          rankingData: technicianRankingResult
+          rankingLength: rankingState.data?.length || 0,
+          rankingData: rankingState.data
         }, 'useDashboard');
         
         // Salvar no cache local
@@ -283,8 +404,7 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
         setData(combinedData);
         setError(null);
         
-        // O ranking já foi atualizado pela função buscarDadosDoRanking
-        console.log('✅ Dados carregados com sucesso - Ranking atualizado separadamente');
+        console.log('✅ Dados carregados com sucesso');
       } else {
         console.error('❌ useDashboard - Resultado de métricas é null/undefined');
         setError('Falha ao carregar dados do dashboard');
@@ -300,117 +420,99 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
       const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
       setError(errorMessage);
       
-      // Adicionar notificação de erro
-      const errorNotification: NotificationData = {
-        id: Date.now().toString(),
-        title: 'Erro ao carregar dados',
-        message: errorMessage,
-        type: 'error',
-        timestamp: new Date(),
-        duration: 5000
-      };
-      setNotifications(prev => [...prev, errorNotification]);
+      addErrorNotification('Erro ao carregar dados', errorMessage);
     } finally {
       setLoading(false);
     }
-  }, [filters, buscarDadosDoRanking, atualizarRankingCentralizado]); // Dependências atualizadas
-
-  // Removed unused forceRefresh function
-
-  // Load data on mount
-  // Load data when filters change or on mount
+  }, [updateRankingState, setRankingLoading, setRankingError, addErrorNotification, loadRankingData, rankingState.data]);
+  
+  // Função estável loadData que usa filtersRef para evitar dependências circulares
+  const loadData = useCallback(async (newFilters?: FilterParams, forceRefresh = false) => {
+    const filtersToUse = newFilters || filtersRef.current;
+    await loadMainData(filtersToUse, forceRefresh);
+  }, [loadMainData]);
+  
+  // Efeito para carregamento inicial
   useEffect(() => {
-    console.log('🔄 useDashboard - Carregando dados (mount ou filtros mudaram):', filters);
-    loadData();
+    if (isInitialLoadRef.current) {
+      console.log('🔄 useDashboard - Carregamento inicial');
+      loadData();
+      isInitialLoadRef.current = false;
+    }
+  }, [loadData]);
+
+  // Efeito para quando filtros mudam (exceto carregamento inicial)
+  useEffect(() => {
+    if (!isInitialLoadRef.current) {
+      console.log('🔄 useDashboard - Filtros alterados:', { filters });
+      filtersRef.current = filters;
+      loadData(filters);
+    }
   }, [filters, loadData]);
 
-  // Auto-refresh setup com cache inteligente e atualização robusta do ranking
+  // Efeito para atualização automática a cada 5 minutos
   useEffect(() => {
-    const refreshInterval = setInterval(async () => {
-      // Verificar se o usuário está ativo (evitar refresh em background)
-      if (document.hidden) {
-        console.log('📦 Auto-refresh: Página em background, pulando refresh');
-        return;
-      }
+    const interval = setInterval(() => {
+      // Verificar se há dados em cache válidos antes de fazer nova requisição
+      const cacheKey = generateCacheKey(filtersRef.current);
+      const cachedData = getCachedData(cacheKey);
       
-      // Só fazer refresh se não há dados em cache válidos
-      const cacheKey = getCacheKey(filters);
-      if (!isCacheValid(cacheKey)) {
-        console.log('🔄 Auto-refresh: Cache expirado, recarregando dados');
-        try {
-          // Atualizar ranking separadamente para garantir consistência com função robusta
-          await buscarDadosDoRankingRobusta();
-          // Depois atualizar o resto dos dados
-          loadData(filters, true); // Force refresh
-        } catch (error) {
-          console.error('❌ Erro no auto-refresh:', error);
+      if (!cachedData) {
+        console.log('🔄 Atualização automática - Cache expirado, recarregando dados');
+        
+        // Verificar se o usuário está ativo (não em idle)
+        if (document.visibilityState === 'visible') {
+          loadData();
+        } else {
+          console.log('⏸️ Página não está visível, pulando atualização automática');
         }
       } else {
-        console.log('📦 Auto-refresh: Cache ainda válido, pulando refresh');
+        console.log('✅ Atualização automática - Cache ainda válido');
       }
-    }, 300000); // Aumentado para 5 minutos para reduzir piscadas
-    
-    return () => {
-      clearInterval(refreshInterval);
-      // Cancelar requisição em andamento quando o intervalo for limpo
-      if (abortControllerRef.current && !abortControllerRef.current.signal.aborted) {
-        abortControllerRef.current.abort();
-      }
-    };
-  }, [filters, buscarDadosDoRanking, loadData]); // Dependências atualizadas
-  
-  // Cleanup ao desmontar o componente
+    }, 5 * 60 * 1000); // 5 minutos
+
+    return () => clearInterval(interval);
+  }, [loadData]);
+
+  // Cleanup do AbortController quando o componente é desmontado
   useEffect(() => {
     return () => {
-      if (abortControllerRef.current && !abortControllerRef.current.signal.aborted) {
-        console.log('🧹 Limpando AbortController no cleanup');
+      if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
     };
   }, []);
-
-  // Debug: rastrear mudanças no estado do ranking (apenas em desenvolvimento)
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      RankingDebugger.trackRankingState({
-        data: technicianRankingState.data,
-        loading: technicianRankingState.loading,
-        error: technicianRankingState.error
-      });
-    }
-  }, [technicianRankingState]);
-
-  // Função para atualizar apenas o ranking
+  
+  // Função para refresh manual do ranking
   const refreshRanking = useCallback(async () => {
-    console.log('🔄 Atualizando apenas o ranking...');
-    await buscarDadosDoRankingRobusta();
-  }, [buscarDadosDoRankingRobusta]);
-
-  const returnData: UseDashboardReturn = {
-    metrics: data,
-    levelMetrics,
-    systemStatus,
-    technicianRanking: technicianRankingState.data,
-    isLoading: loading,
-    isPending,
+    console.log('🔄 Refresh manual do ranking solicitado');
+    await loadRankingData();
+  }, [loadRankingData]);
+  
+  // Função para atualizar filtros
+  const updateFilters = useCallback((newFilters: Partial<FilterParams>) => {
+    const updatedFilters = { ...filters, ...newFilters };
+    setFilters(updatedFilters);
+    filtersRef.current = updatedFilters;
+  }, [filters]);
+  
+  return {
+    data,
+    loading,
     error,
-    // Novos estados específicos do ranking
-    rankingLoading: technicianRankingState.loading,
-    rankingError: technicianRankingState.error,
-    notifications,
     searchQuery,
     filters,
     theme,
-    dataIntegrityReport,
+    notifications,
+    dataIntegrityReport: null,
+    levelMetrics,
+    systemStatus,
+    rankingState,
     loadData,
-    forceRefresh: loadData,
-    // Nova função para atualizar apenas o ranking
+    forceRefresh: useCallback((newFilters?: FilterParams) => loadData(newFilters, true), [loadData]),
     refreshRanking,
-    updateFilters: (newFilters: FilterParams) => {
-      const updatedFilters = { ...filters, ...newFilters };
-      setFilters(updatedFilters);
-      // loadData será chamado automaticamente pelo useEffect quando filters mudar
-    },
+    recoverRankingData,
+    updateFilters,
     search: (query: string) => setSearchQuery(query),
     addNotification: (notification: Partial<NotificationData>) => {
       const completeNotification: NotificationData = {
@@ -439,29 +541,13 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
         
         // Verificar se as datas são válidas
         if ((startDate && isNaN(startDate.getTime())) || (endDate && isNaN(endDate.getTime()))) {
-          const errorNotification: NotificationData = {
-            id: Date.now().toString(),
-            title: 'Erro de Data',
-            message: 'Formato de data inválido',
-            type: 'error',
-            timestamp: new Date(),
-            duration: 5000
-          };
-          setNotifications(prev => [...prev, errorNotification]);
+          addErrorNotification('Erro de Data', 'Formato de data inválido');
           return;
         }
         
         // Verificar ordem das datas
         if (startDate && endDate && startDate > endDate) {
-          const errorNotification: NotificationData = {
-            id: Date.now().toString(),
-            title: 'Erro de Data',
-            message: 'A data de início não pode ser posterior à data de fim',
-            type: 'error',
-            timestamp: new Date(),
-            duration: 5000
-          };
-          setNotifications(prev => [...prev, errorNotification]);
+          addErrorNotification('Erro de Data', 'A data de início não pode ser posterior à data de fim');
           return;
         }
       }
@@ -469,12 +555,6 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
       const updatedFilters = { ...filters, dateRange };
       console.log('📊 useDashboard - Filtros atualizados:', updatedFilters);
       setFilters(updatedFilters);
-      // loadData será chamado automaticamente pelo useEffect quando filters mudar
     }
   };
-  
-  // Debug logs comentados para evitar erros de sintaxe
-  // console.log('useDashboard - Retornando dados:', returnData);
-  
-  return returnData;
 };

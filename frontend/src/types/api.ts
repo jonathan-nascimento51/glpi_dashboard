@@ -44,7 +44,6 @@ export interface DashboardMetrics {
   tempo_execucao?: number;
   timestamp?: string;
   systemStatus?: any;
-  technicianRanking?: any[];
 }
 
 // Status do sistema
@@ -327,8 +326,7 @@ export const transformLegacyData = (legacyData: any): DashboardMetrics => {
       filtros_aplicados: legacyData?.filtros_aplicados,
       tempo_execucao: legacyData?.tempo_execucao,
       timestamp: legacyData?.timestamp,
-      systemStatus: legacyData?.systemStatus,
-      technicianRanking: legacyData?.technicianRanking
+      systemStatus: legacyData?.systemStatus
     };
   }
 
@@ -362,7 +360,6 @@ export const transformLegacyData = (legacyData: any): DashboardMetrics => {
     filtros_aplicados: legacyData?.filtros_aplicados,
     tempo_execucao: legacyData?.tempo_execucao,
     timestamp: legacyData?.timestamp,
-    systemStatus: legacyData?.systemStatus,
-    technicianRanking: legacyData?.technicianRanking
+    systemStatus: legacyData?.systemStatus
   };
 };

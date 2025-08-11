@@ -30,6 +30,8 @@ interface ModernDashboardProps {
   // Novos props para estados específicos do ranking
   rankingLoading?: boolean
   rankingError?: string | null
+  rankingLastUpdated?: Date
+  rankingIsUpdating?: boolean
   className?: string
 }
 
@@ -79,13 +81,15 @@ const SkeletonCard = React.memo(function SkeletonCard() {
 export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernDashboard({
   metrics,
   levelMetrics,
-  // systemStatus,
+  systemStatus,
   technicianRanking = [],
   onFilterByStatus,
   isLoading = false,
   // Novos props para estados específicos do ranking
   rankingLoading = false,
   rankingError = null,
+  rankingLastUpdated,
+  rankingIsUpdating = false,
   className
 }) {
   // Sistema funcionando corretamente
@@ -104,7 +108,7 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
         measureRender(() => {
           performanceMonitor.markComponentRender('ModernDashboard', {
             metricsCount: Object.keys(metrics || {}).length,
-            technicianCount: technicianRanking.length,
+            technicianCount: technicianRanking?.length || 0,
             isLoading
           })
         })
@@ -235,8 +239,11 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
           ) : (
             <LazyRankingTable 
               data={processedRankingData}
-              title={rankingLoading ? "Ranking de Técnicos (Carregando...)" : "Ranking de Técnicos"}
-              className={`w-full h-full ${rankingLoading ? 'opacity-50' : ''}`}
+              title="Ranking de Técnicos"
+              className="w-full h-full"
+              isLoading={rankingLoading}
+              isUpdating={rankingIsUpdating}
+              lastUpdated={rankingLastUpdated}
             />
           )}
         </Suspense>

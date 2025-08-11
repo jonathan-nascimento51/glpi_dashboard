@@ -42,23 +42,18 @@ import './debug/rankingFixValidation';
 
 function App() {
   const {
-    metrics,
+    data: metrics,
+    loading: isLoading,
+    error,
     levelMetrics,
     systemStatus,
-    technicianRanking,
-    isLoading,
-    isPending,
-    error,
-    // Novos estados específicos do ranking
-    rankingLoading,
-    rankingError,
+    rankingState,
     notifications,
     searchQuery,
     filters,
     theme,
     dataIntegrityReport,
     loadData,
-    // forceRefresh, // Não utilizado
     updateFilters,
     search,
     addNotification,
@@ -66,6 +61,12 @@ function App() {
     changeTheme,
     updateDateRange,
   } = useDashboard();
+
+  // Extrair dados do ranking do estado unificado
+  const technicianRanking = rankingState.data;
+  const rankingLoading = rankingState.loading;
+  const rankingError = rankingState.error;
+  const isPending = false; // Removido pois não está mais sendo usado
 
 
 
@@ -249,6 +250,8 @@ function App() {
                 // Novos props para estados específicos do ranking
                 rankingLoading={rankingLoading}
                 rankingError={rankingError}
+                rankingLastUpdated={rankingState.lastUpdated}
+                rankingIsUpdating={rankingState.loading && technicianRanking.length > 0}
               />
             </Profiler>
           </Suspense>

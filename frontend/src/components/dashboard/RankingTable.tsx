@@ -1,12 +1,13 @@
-import React, { useRef, useEffect, useMemo, useCallback } from "react"
-import { motion } from "framer-motion"
+import React, { useRef, useEffect, useMemo, useCallback, useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn, formatNumber } from "@/lib/utils"
-import { Trophy, Medal, Award, Star, Users, Zap, Shield, Wrench, Settings } from "lucide-react"
+import { Trophy, Medal, Award, Star, Users, Zap, Shield, Wrench, Settings, RefreshCw, Clock, Database, BarChart3 } from "lucide-react"
 import { usePerformanceMonitoring, useRenderTracker } from "../../hooks/usePerformanceMonitoring"
 import { performanceMonitor } from "../../utils/performanceMonitor"
 import { RankingDebugger } from "../../debug/rankingDebug"
+import RankingDebugPanel from "../RankingDebugPanel"
 
 interface TechnicianRanking {
   id: string
@@ -20,6 +21,9 @@ interface RankingTableProps {
   data: TechnicianRanking[]
   title?: string
   className?: string
+  isUpdating?: boolean
+  lastUpdated?: Date
+  isLoading?: boolean
 }
 
 // Função auxiliar para obter estilos de nível movida para fora do componente
@@ -121,6 +125,91 @@ const cardVariants = {
 //     }
 //   }
 // } as const
+
+// Skeleton Loading Component
+const SkeletonCard = React.memo(function SkeletonCard() {
+  return (
+    <div className="flex-shrink-0 w-48 flex flex-col p-4 rounded-lg border bg-gray-50 border-gray-200 animate-pulse">
+      {/* Header skeleton */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="w-8 h-8 rounded-full bg-gray-300"></div>
+        <div className="flex items-center space-x-1">
+          <div className="w-6 h-6 rounded-full bg-gray-300"></div>
+          <div className="w-8 h-4 rounded bg-gray-300"></div>
+        </div>
+      </div>
+      
+      {/* Name skeleton */}
+      <div className="text-center mb-3">
+        <div className="h-4 bg-gray-300 rounded mx-auto w-24"></div>
+      </div>
+      
+      {/* Total skeleton */}
+      <div className="text-center">
+        <div className="h-8 bg-gray-300 rounded mx-auto w-16 mb-1"></div>
+        <div className="h-3 bg-gray-300 rounded mx-auto w-12 mb-2"></div>
+        
+        {/* Performance indicators skeleton */}
+        <div className="flex justify-center space-x-1">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="w-1.5 h-1.5 rounded-full bg-gray-300" />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+})
+
+// Loading Overlay Component
+const LoadingOverlay = React.memo<{ isVisible: boolean }>(function LoadingOverlay({ isVisible }) {
+  if (!isVisible) return null
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="absolute inset-0 bg-white/70 backdrop-blur-sm rounded-2xl flex items-center justify-center z-10"
+    >
+      <div className="flex items-center gap-2 text-gray-600">
+        <RefreshCw className="w-4 h-4 animate-spin" />
+        <span className="text-sm font-medium">Atualizando dados...</span>
+      </div>
+    </motion.div>
+  )
+})
+
+// Cache Indicator Component
+const CacheIndicator = React.memo<{ lastUpdated?: Date; isStale?: boolean }>(function CacheIndicator({ lastUpdated, isStale }) {
+  if (!lastUpdated) return null
+  
+  const timeAgo = useMemo(() => {
+    const now = new Date()
+    const diff = now.getTime() - lastUpdated.getTime()
+    const minutes = Math.floor(diff / 60000)
+    const seconds = Math.floor((diff % 60000) / 1000)
+    
+    if (minutes > 0) {
+      return `${minutes}min atrás`
+    }
+    return `${seconds}s atrás`
+  }, [lastUpdated])
+  
+  return (
+    <div className={cn(
+      "flex items-center gap-1 text-xs px-2 py-1 rounded-full transition-colors",
+      isStale ? "bg-amber-100 text-amber-700" : "bg-green-100 text-green-700"
+    )}>
+      {isStale ? (
+        <Database className="w-3 h-3" />
+      ) : (
+        <Clock className="w-3 h-3" />
+      )}
+      <span>{timeAgo}</span>
+      {isStale && <span className="text-amber-600">(cache)</span>}
+    </div>
+  )
+})
 
 // Componente TechnicianCard memoizado
 const TechnicianCard = React.memo<{
@@ -233,13 +322,36 @@ const TechnicianCard = React.memo<{
 export const RankingTable = React.memo<RankingTableProps>(function RankingTable({ 
   data, 
   title: _ = "Ranking de Técnicos", 
-  className 
+  className,
+  isUpdating = false,
+  lastUpdated,
+  isLoading = false
 }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const [cachedData, setCachedData] = useState<TechnicianRanking[]>([])
+  const [isDataStale, setIsDataStale] = useState(false)
+  const [isDebugPanelOpen, setIsDebugPanelOpen] = useState(false)
   
   // Performance monitoring hooks
   const { measureRender } = usePerformanceMonitoring('RankingTable')
   const { trackRender } = useRenderTracker('RankingTable')
+  
+  // Cache management - atualiza cache quando novos dados chegam
+  useEffect(() => {
+    if (data.length > 0 && !isLoading) {
+      // Se temos dados em cache e novos dados chegaram, marca como stale temporariamente
+      if (cachedData.length > 0 && isUpdating) {
+        setIsDataStale(true)
+        // Remove o estado stale após um breve período
+        const timer = setTimeout(() => setIsDataStale(false), 1000)
+        return () => clearTimeout(timer)
+      }
+      
+      // Atualiza o cache com novos dados
+      setCachedData(data)
+      setIsDataStale(false)
+    }
+  }, [data, isLoading, isUpdating, cachedData.length])
   
   // Track component renders apenas em desenvolvimento com debounce
   useEffect(() => {
@@ -250,7 +362,10 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
       measureRender(() => {
         performanceMonitor.markComponentRender('RankingTable', {
           technicianCount: data.length,
-          hasData: data.length > 0
+          hasData: data.length > 0,
+          isUpdating,
+          isLoading,
+          hasCachedData: cachedData.length > 0
         })
       })
       
@@ -258,17 +373,34 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
       RankingDebugger.log('component_data_received', {
         dataLength: data.length,
         hasData: data.length > 0,
-        sampleData: data[0]
+        sampleData: data[0],
+        isUpdating,
+        isLoading,
+        cachedDataLength: cachedData.length
       }, 'RankingTable')
     }, 100); // Debounce de 100ms
     
     return () => clearTimeout(timeoutId);
-  }, [data.length]) // Apenas o comprimento dos dados
+  }, [data.length, isUpdating, isLoading, cachedData.length]) // Dependências atualizadas
+  
+  // Determina quais dados usar: novos dados ou cache
+  const displayData = useMemo(() => {
+    // Se está carregando e não temos dados, mas temos cache, usa o cache
+    if (isLoading && data.length === 0 && cachedData.length > 0) {
+      return cachedData
+    }
+    // Se está atualizando e temos cache, continua mostrando cache até novos dados chegarem
+    if (isUpdating && data.length === 0 && cachedData.length > 0) {
+      return cachedData
+    }
+    // Caso contrário, usa os dados atuais
+    return data.length > 0 ? data : cachedData
+  }, [data, cachedData, isLoading, isUpdating])
   
   // Pegar todos os técnicos e ordenar por número de chamados - memoizado
   const topTechnicians = useMemo(() => {
-    return [...data].sort((a, b) => b.total - a.total)
-  }, [data])
+    return [...displayData].sort((a, b) => b.total - a.total)
+  }, [displayData])
 
   // Estatísticas por nível para o cabeçalho - memoizado
   const levelStats = useMemo(() => {
@@ -303,7 +435,12 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
 
 
   return (
-    <Card className={cn("figma-ranking-tecnicos w-full h-full flex flex-col rounded-2xl shadow-none", className)}>
+    <Card className={cn("figma-ranking-tecnicos w-full h-full flex flex-col rounded-2xl shadow-none relative", className)}>
+      {/* Loading Overlay */}
+      <AnimatePresence>
+        <LoadingOverlay isVisible={isUpdating} />
+      </AnimatePresence>
+      
       <CardHeader className="px-5 pt-4 pb-2 flex-shrink-0">
         <div className="flex items-center justify-between">
           <CardTitle className="figma-heading-large flex items-center gap-2">
@@ -313,6 +450,22 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
             Ranking de Técnicos
           </CardTitle>
           <div className="flex items-center gap-2">
+            {/* Cache/Update Indicator */}
+            <CacheIndicator 
+              lastUpdated={lastUpdated} 
+              isStale={isDataStale || (isUpdating && cachedData.length > 0)} 
+            />
+            
+            {/* Debug Button */}
+            <button
+              onClick={() => setIsDebugPanelOpen(true)}
+              className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+              title="Abrir Dashboard de Métricas do Cache"
+            >
+              <BarChart3 className="h-4 w-4 text-gray-600" />
+            </button>
+            
+            {/* Level Stats */}
             {Object.entries(levelStats).map(([level, count]) => {
               const style = getLevelStyle(level)
               return (
@@ -342,16 +495,40 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
             ref={scrollContainerRef}
             className="flex w-full flex-1 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent px-2 space-x-3"
           >
-          {topTechnicians.map((technician, index) => (
-            <TechnicianCard
-              key={technician.id}
-              technician={technician}
-              index={index}
-            />
-          ))}
-            </div>
+            {/* Skeleton Loading - apenas quando não há dados disponíveis */}
+            {isLoading && topTechnicians.length === 0 ? (
+              Array.from({ length: 6 }).map((_, index) => (
+                <SkeletonCard key={`skeleton-${index}`} />
+              ))
+            ) : (
+              /* Dados reais ou em cache */
+              topTechnicians.map((technician, index) => (
+                <TechnicianCard
+                  key={technician.id}
+                  technician={technician}
+                  index={index}
+                />
+              ))
+            )}
+            
+            {/* Mensagem quando não há dados */}
+            {!isLoading && topTechnicians.length === 0 && (
+              <div className="flex-1 flex items-center justify-center text-gray-500">
+                <div className="text-center">
+                  <Users className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">Nenhum dado de ranking disponível</p>
+                </div>
+              </div>
+            )}
+          </div>
         </motion.div>
       </CardContent>
+      
+      {/* Debug Panel */}
+      <RankingDebugPanel 
+        isOpen={isDebugPanelOpen}
+        onClose={() => setIsDebugPanelOpen(false)}
+      />
     </Card>
   )
 })
