@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   DashboardMetrics,
   LevelMetrics,
   NiveisMetrics,
@@ -9,31 +9,31 @@ import type {
 } from '../types/api';
 
 /**
- * Utilitários de validação para dados da API
+ * UtilitÃ¡rios de validaÃ§Ã£o para dados da API
  */
 
-// Validação de métricas de nível
+// ValidaÃ§Ã£o de mÃ©tricas de nÃ­vel
 export const validateLevelMetrics = (data: unknown): ValidationResult<LevelMetrics> => {
   const errors: string[] = [];
   
   if (typeof data !== 'object' || data === null) {
-    return { isValid: false, errors: ['Dados de nível devem ser um objeto'] };
+    return { isValid: false, errors: ['Dados de nÃ­vel devem ser um objeto'] };
   }
   
   const requiredFields = ['abertos', 'fechados', 'pendentes', 'atrasados'];
   
   for (const field of requiredFields) {
-    if (typeof data[field] !== 'number' || data[field] < 0) {
-      errors.push(`Campo '${field}' deve ser um número não negativo`);
+    if (typeof (data as any)[field] !== 'number' || (data as any)[field] < 0) {
+      errors.push(`Campo '${field}' deve ser um nÃºmero nÃ£o negativo`);
     }
   }
   
-  // Validação opcional de tendências
+  // ValidaÃ§Ã£o opcional de tendÃªncias
   const trendFields = ['tendencia_abertos', 'tendencia_fechados', 'tendencia_pendentes', 'tendencia_atrasados'];
   
   for (const field of trendFields) {
-    if (data[field] !== undefined && typeof data[field] !== 'number') {
-      errors.push(`Campo '${field}' deve ser um número`);
+    if ((data as any)[field] !== undefined && typeof (data as any)[field] !== 'number') {
+      errors.push(`Campo '${field}' deve ser um nÃºmero`);
     }
   }
   
@@ -44,12 +44,12 @@ export const validateLevelMetrics = (data: unknown): ValidationResult<LevelMetri
   };
 };
 
-// Validação de métricas de níveis
+// ValidaÃ§Ã£o de mÃ©tricas de nÃ­veis
 export const validateNiveisMetrics = (data: unknown): ValidationResult<NiveisMetrics> => {
   const errors: string[] = [];
   
   if (typeof data !== 'object' || data === null) {
-    return { isValid: false, errors: ['Dados de níveis devem ser um objeto'] };
+    return { isValid: false, errors: ['Dados de nÃ­veis devem ser um objeto'] };
   }
   
   const validLevels = ['N1', 'N2', 'N3', 'N4'];
@@ -58,7 +58,7 @@ export const validateNiveisMetrics = (data: unknown): ValidationResult<NiveisMet
     if (data[level]) {
       const levelValidation = validateLevelMetrics(data[level]);
       if (!levelValidation.isValid) {
-        errors.push(`Nível ${level}: ${levelValidation.errors.join(', ')}`);
+        errors.push(`NÃ­vel ${level}: ${levelValidation.errors.join(', ')}`);
       }
     }
   }
@@ -70,12 +70,12 @@ export const validateNiveisMetrics = (data: unknown): ValidationResult<NiveisMet
   };
 };
 
-// Validação de tendências
+// ValidaÃ§Ã£o de tendÃªncias
 export const validateTendenciasMetrics = (data: unknown): ValidationResult<TendenciasMetrics> => {
   const errors: string[] = [];
   
   if (typeof data !== 'object' || data === null) {
-    return { isValid: false, errors: ['Dados de tendências devem ser um objeto'] };
+    return { isValid: false, errors: ['Dados de tendÃªncias devem ser um objeto'] };
   }
   
   const numericFields = [
@@ -86,8 +86,8 @@ export const validateTendenciasMetrics = (data: unknown): ValidationResult<Tende
   ];
   
   for (const field of numericFields) {
-    if (data[field] !== undefined && (typeof data[field] !== 'number' || data[field] < 0)) {
-      errors.push(`Campo '${field}' deve ser um número não negativo`);
+    if ((data as any)[field] !== undefined && (typeof (data as any)[field] !== 'number' || (data as any)[field] < 0)) {
+      errors.push(`Campo '${field}' deve ser um nÃºmero nÃ£o negativo`);
     }
   }
   
@@ -98,7 +98,7 @@ export const validateTendenciasMetrics = (data: unknown): ValidationResult<Tende
   };
 };
 
-// Validação completa de métricas do dashboard
+// ValidaÃ§Ã£o completa de mÃ©tricas do dashboard
 export const validateDashboardMetrics = (data: unknown): ValidationResult<DashboardMetrics> => {
   const errors: string[] = [];
   
@@ -106,19 +106,19 @@ export const validateDashboardMetrics = (data: unknown): ValidationResult<Dashbo
     return { isValid: false, errors: ['Dados do dashboard devem ser um objeto'] };
   }
   
-  // Validar níveis se presente
-  if (data.niveis) {
-    const niveisValidation = validateNiveisMetrics(data.niveis);
+  // Validar nÃ­veis se presente
+  if ((data as any).niveis) {
+    const niveisValidation = validateNiveisMetrics((data as any).niveis);
     if (!niveisValidation.isValid) {
-      errors.push(`Níveis: ${niveisValidation.errors.join(', ')}`);
+      errors.push(`NÃ­veis: ${niveisValidation.errors.join(', ')}`);
     }
   }
   
-  // Validar tendências se presente
+  // Validar tendÃªncias se presente
   if (data.tendencias) {
     const tendenciasValidation = validateTendenciasMetrics(data.tendencias);
     if (!tendenciasValidation.isValid) {
-      errors.push(`Tendências: ${tendenciasValidation.errors.join(', ')}`);
+      errors.push(`TendÃªncias: ${tendenciasValidation.errors.join(', ')}`);
     }
   }
   
@@ -134,12 +134,12 @@ export const validateDashboardMetrics = (data: unknown): ValidationResult<Dashbo
   };
 };
 
-// Validação de parâmetros de filtro
+// ValidaÃ§Ã£o de parÃ¢metros de filtro
 export const validateFilterParams = (params: unknown): ValidationResult<FilterParams> => {
   const errors: string[] = [];
   
   if (typeof params !== 'object' || params === null) {
-    return { isValid: false, errors: ['Parâmetros de filtro devem ser um objeto'] };
+    return { isValid: false, errors: ['ParÃ¢metros de filtro devem ser um objeto'] };
   }
   
   // Validar datas se presentes
@@ -151,15 +151,15 @@ export const validateFilterParams = (params: unknown): ValidationResult<FilterPa
     errors.push('endDate deve ser uma string');
   }
   
-  // Validar se data de início é anterior à data de fim
+  // Validar se data de inÃ­cio Ã© anterior Ã  data de fim
   if (params.startDate && params.endDate) {
     const start = new Date(params.startDate);
     const end = new Date(params.endDate);
     
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      errors.push('Datas devem estar em formato válido');
+      errors.push('Datas devem estar em formato vÃ¡lido');
     } else if (start > end) {
-      errors.push('Data de início deve ser anterior à data de fim');
+      errors.push('Data de inÃ­cio deve ser anterior Ã  data de fim');
     }
   }
   
@@ -176,7 +176,7 @@ export const validateFilterParams = (params: unknown): ValidationResult<FilterPa
   
   const validLevels = ['N1', 'N2', 'N3', 'N4'];
   if (params.level && !validLevels.includes(params.level)) {
-    errors.push(`Nível deve ser um dos valores: ${validLevels.join(', ')}`);
+    errors.push(`NÃ­vel deve ser um dos valores: ${validLevels.join(', ')}`);
   }
   
   return {
@@ -186,7 +186,7 @@ export const validateFilterParams = (params: unknown): ValidationResult<FilterPa
   };
 };
 
-// Sanitização de dados de entrada
+// SanitizaÃ§Ã£o de dados de entrada
 export const sanitizeFilterParams = (params: unknown): FilterParams => {
   const sanitized: FilterParams = {};
   
@@ -221,7 +221,7 @@ export const sanitizeFilterParams = (params: unknown): FilterParams => {
   return sanitized;
 };
 
-// Validação de erro da API
+// ValidaÃ§Ã£o de erro da API
 export const validateApiError = (error: unknown): ValidationResult<ApiError> => {
   const errors: string[] = [];
   
@@ -241,12 +241,12 @@ export const validateApiError = (error: unknown): ValidationResult<ApiError> => 
     }
     
     if (error.error.code && typeof error.error.code !== 'string') {
-      errors.push('Código de erro deve ser uma string');
+      errors.push('CÃ³digo de erro deve ser uma string');
     }
   }
   
   if (!error.timestamp) {
-    errors.push('Timestamp é obrigatório');
+    errors.push('Timestamp Ã© obrigatÃ³rio');
   }
   
   return {
@@ -256,7 +256,7 @@ export const validateApiError = (error: unknown): ValidationResult<ApiError> => 
   };
 };
 
-// Utilitário para validação em lote
+// UtilitÃ¡rio para validaÃ§Ã£o em lote
 export const validateBatch = <T>(
   items: unknown[],
   validator: (item: unknown) => ValidationResult<T>
@@ -276,7 +276,7 @@ export const validateBatch = <T>(
   return { valid, invalid };
 };
 
-// Validação de schema genérica
+// ValidaÃ§Ã£o de schema genÃ©rica
 export const createValidator = <T>(
   schema: Record<string, (value: unknown) => boolean>,
   requiredFields: string[] = []
@@ -288,17 +288,17 @@ export const createValidator = <T>(
       return { isValid: false, errors: ['Dados devem ser um objeto'] };
     }
     
-    // Verificar campos obrigatórios
+    // Verificar campos obrigatÃ³rios
     for (const field of requiredFields) {
       if (!(field in data)) {
-        errors.push(`Campo obrigatório '${field}' está ausente`);
+        errors.push(`Campo obrigatÃ³rio '${field}' estÃ¡ ausente`);
       }
     }
     
     // Validar campos presentes
     for (const [field, validator] of Object.entries(schema)) {
-      if (field in data && !validator(data[field])) {
-        errors.push(`Campo '${field}' é inválido`);
+      if (field in data && !validator((data as any)[field])) {
+        errors.push(`Campo '${field}' Ã© invÃ¡lido`);
       }
     }
     

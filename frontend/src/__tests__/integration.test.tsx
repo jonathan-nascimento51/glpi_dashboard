@@ -1,7 +1,7 @@
-Ôªøimport { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ModernDashboard } from '../components/dashboard/ModernDashboard';
-import { LevelMetricsGrid } from '../components/dashboard/LevelMetricsGrid';
+import { MetricsGrid } from '../domains/dashboard';
+// LevelMetricsGrid migrated to domains/dashboard
 import { TechnicianRanking } from '../components/dashboard/TechnicianRanking';
 import { validateMetricsData, validateTechnicianRanking } from '../types/validation';
 
@@ -23,7 +23,7 @@ const mockMetricsData = {
 const mockTechnicianData = [
   {
     id: 1,
-    nome: 'Jo√£o Silva',
+    nome: 'Jo„o Silva',
     tickets_resolvidos: 45,
     tempo_medio: 3.2,
     satisfacao: 4.8,
@@ -60,7 +60,7 @@ describe('Dashboard Integration Tests', () => {
       if (validationResult.success) {
         render(<LevelMetricsGrid metrics={validationResult.data} />);
         
-        // Verificar se os dados s√£o exibidos corretamente
+        // Verificar se os dados s„o exibidos corretamente
         await waitFor(() => {
           expect(screen.getByText('N1')).toBeInTheDocument();
           expect(screen.getByText('N2')).toBeInTheDocument();
@@ -68,7 +68,7 @@ describe('Dashboard Integration Tests', () => {
           expect(screen.getByText('N4')).toBeInTheDocument();
         });
         
-        // Verificar valores espec√≠ficos
+        // Verificar valores especÌficos
         expect(screen.getByText('150')).toBeInTheDocument(); // Total N1
         expect(screen.getByText('120')).toBeInTheDocument(); // Resolvidos N1
       }
@@ -86,8 +86,8 @@ describe('Dashboard Integration Tests', () => {
       // Renderizar com dados de fallback
       render(<LevelMetricsGrid metrics={{}} />);
       
-      // Verificar se n√£o h√° erros de renderiza√ß√£o
-      expect(screen.getByText('M√©tricas por N√≠vel')).toBeInTheDocument();
+      // Verificar se n„o h· erros de renderizaÁ„o
+      expect(screen.getByText('MÈtricas por NÌvel')).toBeInTheDocument();
     });
 
     it('should validate technician ranking data', () => {
@@ -97,7 +97,7 @@ describe('Dashboard Integration Tests', () => {
       if (validationResult.success) {
         render(<TechnicianRanking data={validationResult.data} />);
         
-        expect(screen.getByText('Jo√£o Silva')).toBeInTheDocument();
+        expect(screen.getByText('Jo„o Silva')).toBeInTheDocument();
         expect(screen.getByText('Maria Santos')).toBeInTheDocument();
       }
     });
@@ -167,7 +167,7 @@ describe('Dashboard Integration Tests', () => {
         expect(screen.queryByText(/carregando/i)).not.toBeInTheDocument();
       });
       
-      // Simular intera√ß√£o com filtros
+      // Simular interaÁ„o com filtros
       const filterButton = screen.getByRole('button', { name: /filtro/i });
       if (filterButton) {
         fireEvent.click(filterButton);
@@ -225,7 +225,7 @@ describe('Dashboard Integration Tests', () => {
       // Simular unmount
       unmount();
       
-      // Verificar se n√£o h√° listeners pendentes
+      // Verificar se n„o h· listeners pendentes
       expect(document.querySelectorAll('[data-testid]')).toHaveLength(0);
     });
   });
@@ -250,7 +250,7 @@ describe('Dashboard Integration Tests', () => {
         expect(screen.queryByText(/carregando/i)).not.toBeInTheDocument();
       });
       
-      // Verificar se elementos s√£o foc√°veis
+      // Verificar se elementos s„o foc·veis
       const focusableElements = screen.getAllByRole('button');
       expect(focusableElements.length).toBeGreaterThan(0);
       

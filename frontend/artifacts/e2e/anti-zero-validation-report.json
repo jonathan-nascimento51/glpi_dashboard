@@ -1,0 +1,133 @@
+{
+  "timestamp": "2025-08-12T08:54:02.373Z",
+  "validation": {
+    "artifactsDirectory": true,
+    "testFile": {
+      "valid": true,
+      "size": 11895,
+      "lines": 369
+    },
+    "screenshots": {
+      "count": 21,
+      "files": [
+        {
+          "name": "test-failed-1.png",
+          "size": 4253,
+          "created": "2025-08-12T08:50:28.453Z"
+        },
+        {
+          "name": "test-failed-1.png",
+          "size": 17707,
+          "created": "2025-08-12T08:50:43.575Z"
+        },
+        {
+          "name": "test-failed-1.png",
+          "size": 4331,
+          "created": "2025-08-12T08:51:13.075Z"
+        },
+        {
+          "name": "test-failed-1.png",
+          "size": 4253,
+          "created": "2025-08-12T08:51:07.724Z"
+        },
+        {
+          "name": "test-failed-1.png",
+          "size": 10629,
+          "created": "2025-08-12T08:50:55.888Z"
+        },
+        {
+          "name": "test-failed-1.png",
+          "size": 13464,
+          "created": "2025-08-12T08:51:01.198Z"
+        },
+        {
+          "name": "test-failed-1.png",
+          "size": 17880,
+          "created": "2025-08-12T08:50:48.223Z"
+        },
+        {
+          "name": "test-failed-1.png",
+          "size": 4253,
+          "created": "2025-08-12T08:50:25.420Z"
+        },
+        {
+          "name": "test-failed-1.png",
+          "size": 17707,
+          "created": "2025-08-12T08:50:36.440Z"
+        },
+        {
+          "name": "test-failed-1.png",
+          "size": 4331,
+          "created": "2025-08-12T08:51:09.968Z"
+        },
+        {
+          "name": "test-failed-1.png",
+          "size": 4253,
+          "created": "2025-08-12T08:51:04.015Z"
+        },
+        {
+          "name": "test-failed-1.png",
+          "size": 10629,
+          "created": "2025-08-12T08:50:52.157Z"
+        },
+        {
+          "name": "test-failed-1.png",
+          "size": 13464,
+          "created": "2025-08-12T08:50:58.577Z"
+        },
+        {
+          "name": "test-failed-1.png",
+          "size": 17880,
+          "created": "2025-08-12T08:50:42.965Z"
+        },
+        {
+          "name": "test-failed-1.png",
+          "size": 4253,
+          "created": "2025-08-12T08:50:25.508Z"
+        },
+        {
+          "name": "test-failed-1.png",
+          "size": 17707,
+          "created": "2025-08-12T08:50:36.156Z"
+        },
+        {
+          "name": "test-failed-1.png",
+          "size": 4331,
+          "created": "2025-08-12T08:51:11.321Z"
+        },
+        {
+          "name": "test-failed-1.png",
+          "size": 4253,
+          "created": "2025-08-12T08:51:04.692Z"
+        },
+        {
+          "name": "test-failed-1.png",
+          "size": 10629,
+          "created": "2025-08-12T08:50:54.438Z"
+        },
+        {
+          "name": "test-failed-1.png",
+          "size": 13464,
+          "created": "2025-08-12T08:50:59.458Z"
+        },
+        {
+          "name": "test-failed-1.png",
+          "size": 17880,
+          "created": "2025-08-12T08:50:46.167Z"
+        }
+      ]
+    }
+  },
+  "summary": {
+    "status": "READY",
+    "readyForE2E": true,
+    "artifactsConfigured": true,
+    "screenshotsGenerated": true
+  },
+  "nextSteps": [
+    "Execute o teste completo: npm run test:e2e -- anti-zero-guard.spec.ts",
+    "Verifique os screenshots em artifacts/e2e/",
+    "Valide que o teste PASS funciona com dados reais",
+    "Valide que o teste FAIL funciona com dados zero"
+  ]
+}

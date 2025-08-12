@@ -2,7 +2,6 @@
 import pyautogui
 import time
 import webbrowser
-from PIL import Image
 import os
 
 def analyze_dashboard_regions():

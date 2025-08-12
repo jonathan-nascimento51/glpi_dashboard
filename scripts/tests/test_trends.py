@@ -6,7 +6,6 @@ Teste para validar o cálculo de tendências no dashboard GLPI
 
 import requests
 import json
-from datetime import datetime, timedelta
 
 def test_api_trends():
     """Testa se a API está retornando tendências calculadas corretamente"""

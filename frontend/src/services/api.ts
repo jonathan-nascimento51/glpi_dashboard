@@ -555,7 +555,7 @@ export const fetchDashboardMetrics = async (
       queryParams.append("start_date", filters.dateRange.startDate);
       queryParams.append("end_date", filters.dateRange.endDate);
     } else {
-      console.log(" dateRange n�o encontrado ou incompleto:", filters.dateRange);
+      console.log(" dateRange n�o encontrado ou incompleto:", filters.dateRange);
     }
     Object.entries(filters).forEach(([key, value]) => {
       if (key === 'dateRange') return; // Já processado acima
@@ -595,6 +595,7 @@ export const fetchDashboardMetrics = async (
     // Verificar se a resposta tem a estrutura esperada
     if (rawData && rawData.success && rawData.data) {
       console.log('🔍 fetchDashboardMetrics - Dados extraídos de rawData.data:', rawData.data);
+      // Os dados estão em rawData.data, que já contém niveis e tendencias
       const processedData = transformLegacyData(rawData.data);
       console.log('🔍 fetchDashboardMetrics - Dados processados com transformLegacyData:', processedData);
       return processedData;

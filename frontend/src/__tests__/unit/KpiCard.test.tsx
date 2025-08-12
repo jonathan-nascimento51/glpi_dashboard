@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { KpiCard } from '../../components/KpiCard';
+import { DashboardCard } from '../../domains/dashboard';
 
-describe('KpiCard', () => {
+describe('DashboardCard', () => {
   const defaultProps = {
     title: 'N1',
     total: 100,
@@ -12,7 +12,7 @@ describe('KpiCard', () => {
   };
 
   it('deve renderizar corretamente no estado normal', () => {
-    render(<KpiCard {...defaultProps} />);
+    render(<DashboardCard {...defaultProps} />);
     
     expect(screen.getByText('N1')).toBeInTheDocument();
     expect(screen.getByText('Total: 100')).toBeInTheDocument();
@@ -22,7 +22,7 @@ describe('KpiCard', () => {
   });
 
   it('deve renderizar estado de loading', () => {
-    render(<KpiCard {...defaultProps} loading={true} />);
+    render(<DashboardCard {...defaultProps} loading={true} />);
     
     expect(screen.getByText('Carregando...')).toBeInTheDocument();
     expect(screen.queryByText('N1')).not.toBeInTheDocument();
@@ -30,14 +30,14 @@ describe('KpiCard', () => {
 
   it('deve renderizar estado de erro', () => {
     const errorMessage = 'Erro ao carregar dados';
-    render(<KpiCard {...defaultProps} error={errorMessage} />);
+    render(<DashboardCard {...defaultProps} error={errorMessage} />);
     
     expect(screen.getByText(`Erro: ${errorMessage}`)).toBeInTheDocument();
     expect(screen.queryByText('N1')).not.toBeInTheDocument();
   });
 
   it('deve priorizar loading sobre erro', () => {
-    render(<KpiCard {...defaultProps} loading={true} error="Algum erro" />);
+    render(<DashboardCard {...defaultProps} loading={true} error="Algum erro" />);
     
     expect(screen.getByText('Carregando...')).toBeInTheDocument();
     expect(screen.queryByText('Erro:')).not.toBeInTheDocument();
@@ -52,7 +52,7 @@ describe('KpiCard', () => {
       closed: 0
     };
     
-    render(<KpiCard {...propsWithZeros} />);
+    render(<DashboardCard {...propsWithZeros} />);
     
     expect(screen.getByText('N2')).toBeInTheDocument();
     expect(screen.getByText('Total: 0')).toBeInTheDocument();
@@ -70,7 +70,7 @@ describe('KpiCard', () => {
       closed: 4499
     };
     
-    render(<KpiCard {...propsWithLargeNumbers} />);
+    render(<DashboardCard {...propsWithLargeNumbers} />);
     
     expect(screen.getByText('Total: 9999')).toBeInTheDocument();
     expect(screen.getByText('Abertos: 2500')).toBeInTheDocument();
@@ -79,21 +79,21 @@ describe('KpiCard', () => {
   });
 
   it('deve aplicar classes CSS corretas', () => {
-    const { container } = render(<KpiCard {...defaultProps} />);
+    const { container } = render(<DashboardCard {...defaultProps} />);
     const cardElement = container.firstChild as HTMLElement;
     
     expect(cardElement).toHaveClass('p-4', 'border', 'rounded');
   });
 
   it('deve aplicar classes CSS corretas no estado de loading', () => {
-    const { container } = render(<KpiCard {...defaultProps} loading={true} />);
+    const { container } = render(<DashboardCard {...defaultProps} loading={true} />);
     const loadingElement = container.firstChild as HTMLElement;
     
     expect(loadingElement).toHaveClass('p-4', 'border', 'rounded');
   });
 
   it('deve aplicar classes CSS corretas no estado de erro', () => {
-    const { container } = render(<KpiCard {...defaultProps} error="Erro teste" />);
+    const { container } = render(<DashboardCard {...defaultProps} error="Erro teste" />);
     const errorElement = container.firstChild as HTMLElement;
     
     expect(errorElement).toHaveClass('p-4', 'border', 'rounded', 'text-red-600');
@@ -105,20 +105,20 @@ describe('KpiCard', () => {
       title: 'Nível Personalizado'
     };
     
-    render(<KpiCard {...customProps} />);
+    render(<DashboardCard {...customProps} />);
     
     expect(screen.getByText('Nível Personalizado')).toBeInTheDocument();
   });
 
   it('deve renderizar sem erro quando error é null', () => {
-    render(<KpiCard {...defaultProps} error={null} />);
+    render(<DashboardCard {...defaultProps} error={null} />);
     
     expect(screen.getByText('N1')).toBeInTheDocument();
     expect(screen.queryByText('Erro:')).not.toBeInTheDocument();
   });
 
   it('deve renderizar sem loading quando loading é false', () => {
-    render(<KpiCard {...defaultProps} loading={false} />);
+    render(<DashboardCard {...defaultProps} loading={false} />);
     
     expect(screen.getByText('N1')).toBeInTheDocument();
     expect(screen.queryByText('Carregando...')).not.toBeInTheDocument();

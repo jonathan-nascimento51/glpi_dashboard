@@ -6,7 +6,6 @@ Verifica dados da API em tempo real e identifica possíveis problemas
 """
 
 import requests
-import json
 from collections import Counter
 from datetime import datetime
 

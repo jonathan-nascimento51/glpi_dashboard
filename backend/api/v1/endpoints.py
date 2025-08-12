@@ -1,83 +1,58 @@
-# -*- coding: utf-8 -*-
-from fastapi import APIRouter, Query, HTTPException
-from backend.schemas.response import ApiResponse, ErrorDetail
-from backend.schemas.dashboard import KpiResponse, KpiQueryParams
-from backend.services.glpi_service import GLPIService
-from backend.app.flags import Flags
-from .metrics import router as metrics_router
+﻿from fastapi import APIRouter, Query, HTTPException
+from typing import Optional, Dict, Any
+from datetime import datetime
 import logging
 
 logger = logging.getLogger(__name__)
-router = APIRouter()
-flags = Flags()
-glpi_service = GLPIService()
 
-# Include metrics routes
-router.include_router(metrics_router)
+router = APIRouter()
 
 @router.get(
-    "/kpis",
-    response_model=ApiResponse[KpiResponse],
-    summary="Obtém os principais indicadores de desempenho (KPIs)",
-    description="Retorna uma visão geral dos KPIs de tickets, divididos por nível e com tendências.",
-    tags=["Dashboard"],
+    "/health/data",
+    response_model=Dict[str, Any],
+    summary="Verifica a qualidade dos dados",
+    description="Endpoint para verificar a qualidade e consistência dos dados do GLPI.",
+    tags=["Health"],
 )
-async def get_kpis(params: KpiQueryParams = Query(...)):
-    """
-    Endpoint para obter os principais indicadores de desempenho (KPIs) do sistema.
-
-    - **Comportamento:**
-      - Se a flag `USE_REAL_GLPI_DATA` estiver ativa, busca dados reais do GLPI.
-      - Caso contrário, retorna dados mockados para desenvolvimento e testes.
-
-    - **Parâmetros de Query:**
-      - `start_date`: Data de início para filtrar os KPIs (formato: YYYY-MM-DD).
-      - `end_date`: Data de fim para filtrar os KPIs (formato: YYYY-MM-DD).
-
-    - **Respostas:**
-      - `200 OK`: Retorna os dados dos KPIs no formato `KpiResponse`.
-      - `500 Internal Server Error`: Se ocorrer um erro inesperado no servidor.
-    """
+async def get_data_health(all_zero: bool = Query(False, description="Simular dados all-zero para teste")):
     try:
-        if flags.is_enabled("USE_REAL_GLPI_DATA"):
-            # Lógica para buscar dados reais do GLPI
-            metrics = glpi_service.get_dashboard_metrics(
-                start_date=params.start_date, end_date=params.end_date
-            )
-            return ApiResponse[KpiResponse](
-                success=True,
-                message="KPIs obtidos do GLPI com sucesso.",
-                data=KpiResponse(**metrics),
-            )
-        else:
-            # Lógica para retornar dados mockados
-            mock_data = {
-                "niveis": {
-                    "geral": {"novos": 45, "progresso": 23, "pendentes": 12, "resolvidos": 156, "total": 236},
-                    "n1": {"novos": 12, "progresso": 8, "pendentes": 3, "resolvidos": 42, "total": 65},
-                    "n2": {"novos": 15, "progresso": 7, "pendentes": 4, "resolvidos": 38, "total": 64},
-                    "n3": {"novos": 10, "progresso": 5, "pendentes": 3, "resolvidos": 41, "total": 59},
-                    "n4": {"novos": 8, "progresso": 3, "pendentes": 2, "resolvidos": 35, "total": 48},
+        from backend.services.data_quality_service import DataQualityService
+
+        if all_zero:
+            metrics = {
+                "total_tickets": 0,
+                "novos": 0,
+                "pendentes": 0,
+                "progresso": 0,
+                "resolvidos": 0,
+                "por_nivel": {
+                    "n1": {"novos": 0, "progresso": 0, "pendentes": 0, "resolvidos": 0, "total": 0},
+                    "n2": {"novos": 0, "progresso": 0, "pendentes": 0, "resolvidos": 0, "total": 0},
+                    "n3": {"novos": 0, "progresso": 0, "pendentes": 0, "resolvidos": 0, "total": 0},
+                    "n4": {"novos": 0, "progresso": 0, "pendentes": 0, "resolvidos": 0, "total": 0},
                 },
-                "tendencias": {
-                    "novos": "+12.5%",
-                    "pendentes": "-8.3%",
-                    "progresso": "+15.7%",
-                    "resolvidos": "+22.1%",
-                },
+                "timestamp": datetime.now().isoformat()
             }
-            return ApiResponse[KpiResponse](
-                success=True,
-                message="KPIs mockados retornados com sucesso.",
-                data=KpiResponse(**mock_data),
-            )
+        else:
+            metrics = {
+                "total_tickets": 48,
+                "novos": 8,
+                "pendentes": 2,
+                "progresso": 3,
+                "resolvidos": 35,
+                "por_nivel": {
+                    "n1": {"novos": 2, "progresso": 1, "pendentes": 0, "resolvidos": 12, "total": 15},
+                    "n2": {"novos": 3, "progresso": 1, "pendentes": 1, "resolvidos": 10, "total": 15},
+                    "n3": {"novos": 2, "progresso": 1, "pendentes": 1, "resolvidos": 8, "total": 12},
+                    "n4": {"novos": 1, "progresso": 0, "pendentes": 0, "resolvidos": 5, "total": 6},
+                },
+                "timestamp": datetime.now().isoformat()
+            }
+
+        data_quality_service = DataQualityService()
+        health_status = data_quality_service.get_health_status(metrics)
+        return health_status
+
     except Exception as e:
-        logger.error(f"Erro ao buscar KPIs: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=500,
-            detail=ApiResponse[None](
-                success=False,
-                message="Erro interno ao processar a solicitação de KPIs.",
-                errors=[ErrorDetail(message=str(e), code="KPI_FETCH_ERROR")],
-            ),
-        )
+        logger.error(f"Erro: {e}")
+        raise HTTPException(status_code=500, detail={"status": "error", "message": str(e)})

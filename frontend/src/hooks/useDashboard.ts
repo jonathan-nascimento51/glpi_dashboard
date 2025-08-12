@@ -4,8 +4,7 @@ import type {
   DashboardMetrics,
   FilterParams
 } from '../types/api';
-import { SystemStatus, NotificationData } from '../types';
-// Removed unused imports
+import { SystemStatus, TechnicianRanking, NotificationData } from '../types';
 
 interface UseDashboardReturn {
   metrics: DashboardMetrics | null;
@@ -37,7 +36,7 @@ interface UseDashboardReturn {
 const initialSystemStatus: SystemStatus = {
   api: 'offline',
   glpi: 'offline',
-  glpi_message: 'Sistema não conectado',
+  glpi_message: 'Sistema nÃ£o verificado',
   glpi_response_time: 0,
   last_update: new Date().toISOString(),
   version: '1.0.0',
@@ -61,37 +60,64 @@ export const useDashboard = (): UseDashboardReturn => {
   const [theme, setTheme] = useState('light');
   const [dataIntegrityReport] = useState(null);
 
-  // Derived state
+  // Derived state with detailed logging
   const levelMetrics = data?.niveis || null;
   const systemStatus = data?.systemStatus || initialSystemStatus;
   const technicianRanking = data?.technicianRanking || [];
 
+  // Debug logs for derived state
+  useEffect(() => {
+    console.log('ðŸ” useDashboard - Estado derivado atualizado:', {
+      hasData: !!data,
+      hasLevelMetrics: !!levelMetrics,
+      levelMetricsKeys: levelMetrics ? Object.keys(levelMetrics) : [],
+      levelMetricsStructure: levelMetrics,
+      hasSystemStatus: !!systemStatus,
+      systemStatusStructure: systemStatus,
+      hasTechnicianRanking: !!technicianRanking,
+      technicianRankingLength: technicianRanking?.length || 0,
+      technicianRankingFirst: technicianRanking?.[0]
+    });
+  }, [data, levelMetrics, systemStatus, technicianRanking]);
+
   const loadData = useCallback(async (filtersToUse: FilterParams = filters) => {
-    console.log(' useDashboard - Iniciando loadData com filtros:', filtersToUse);
+    console.log('ðŸ”„ useDashboard - Iniciando loadData com filtros:', filtersToUse);
 
     setLoading(true);
     setError(null);
 
     try {
       // Fazer chamadas sequenciais para evitar sobrecarga do servidor
-      console.log(' useDashboard - Iniciando carregamento sequencial de dados...');
+      console.log('ðŸ”„ useDashboard - Iniciando carregamento sequencial de dados...');
       
       const metricsResult = await fetchDashboardMetrics(filtersToUse);
-      console.log(' useDashboard - Métricas carregadas:', !!metricsResult);
+      console.log('ðŸ“Š useDashboard - MÃ©tricas carregadas:', {
+        hasResult: !!metricsResult,
+        hasNiveis: !!metricsResult?.niveis,
+        niveisKeys: metricsResult?.niveis ? Object.keys(metricsResult.niveis) : [],
+        fullResult: metricsResult
+      });
       
-      // Aguardar um pouco antes da próxima requisição
+      // Aguardar um pouco antes da prÃ³xima requisiÃ§Ã£o
       await new Promise(resolve => setTimeout(resolve, 200));
       
       const systemStatusResult = await getSystemStatus();
-      console.log(' useDashboard - Status do sistema carregado:', !!systemStatusResult);
+      console.log('ðŸ”§ useDashboard - Status do sistema carregado:', {
+        hasResult: !!systemStatusResult,
+        status: systemStatusResult?.status,
+        fullResult: systemStatusResult
+      });
       
-      // Aguardar um pouco antes da próxima requisição
+      // Aguardar um pouco antes da prÃ³xima requisiÃ§Ã£o
       await new Promise(resolve => setTimeout(resolve, 200));
       
       const technicianRankingResult = await getTechnicianRanking();
-      console.log(' useDashboard - Ranking de técnicos carregado:', technicianRankingResult?.length || 0);
-
-      // Performance metrics tracking removed for now
+      console.log('ðŸ‘¥ useDashboard - Ranking de tÃ©cnicos carregado:', {
+        hasResult: !!technicianRankingResult,
+        length: technicianRankingResult?.length || 0,
+        firstItem: technicianRankingResult?.[0],
+        fullResult: technicianRankingResult
+      });
 
       if (metricsResult) {
         // Combinar todos os dados em um objeto DashboardMetrics
@@ -101,21 +127,26 @@ export const useDashboard = (): UseDashboardReturn => {
           technicianRanking: technicianRankingResult || []
         };
 
-        console.log(' useDashboard - Dados combinados:', {
-          metrics: !!metricsResult,
-          systemStatus: !!systemStatusResult,
-          technicianRanking: technicianRankingResult?.length || 0
+        console.log('ðŸ”— useDashboard - Dados combinados finais:', {
+          hasMetrics: !!metricsResult,
+          hasNiveis: !!combinedData.niveis,
+          niveisStructure: combinedData.niveis,
+          hasSystemStatus: !!systemStatusResult,
+          systemStatusStructure: combinedData.systemStatus,
+          hasTechnicianRanking: !!technicianRankingResult,
+          technicianRankingLength: combinedData.technicianRanking?.length || 0,
+          technicianRankingFirst: combinedData.technicianRanking?.[0]
         });
 
-        // console.log(' useDashboard - Definindo dados combinados no estado:', combinedData);
         setData(combinedData);
         setError(null);
+        console.log('âœ… useDashboard - Estado atualizado com sucesso');
       } else {
-        console.error(' useDashboard - Resultado de métricas é null/undefined');
+        console.error('âŒ useDashboard - Resultado de mÃ©tricas Ã© null/undefined');
         setError('Falha ao carregar dados do dashboard');
       }
     } catch (err) {
-      console.error(' useDashboard - Erro ao carregar dados:', err);
+      console.error('âŒ useDashboard - Erro ao carregar dados:', err);
       setError(err instanceof Error ? err.message : 'Erro desconhecido');
     } finally {
       setLoading(false);
@@ -162,7 +193,7 @@ export const useDashboard = (): UseDashboardReturn => {
     addNotification: (notification: Partial<NotificationData>) => {
       const completeNotification: NotificationData = {
         id: notification.id || Date.now().toString(),
-        title: notification.title || 'Notificação',
+        title: notification.title || 'Notificaï¿½ï¿½o',
         message: notification.message || '',
         type: notification.type || 'info',
         timestamp: notification.timestamp || new Date(),

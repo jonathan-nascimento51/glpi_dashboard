@@ -279,8 +279,8 @@ export const isValidNiveisMetrics = (data: any): data is NiveisMetrics => {
 
 // Utilitários de transformação
 export const transformLegacyData = (legacyData: any): DashboardMetrics => {
-  console.log("transformLegacyData input:", legacyData);
-  const actualData = legacyData?.data ? legacyData.data : legacyData;
+  console.log("🔍 transformLegacyData input:", legacyData);
+  
   // Função para transformar dados legados em formato atual
   const defaultLevel: LevelMetrics = {
     novos: 0,
@@ -290,40 +290,87 @@ export const transformLegacyData = (legacyData: any): DashboardMetrics => {
     total: 0
   };
 
-  // Se os dados já vêm na estrutura correta da API
-  if (actualData?.niveis) {
+  // Função para calcular total de um nível
+  const calculateTotal = (level: any): LevelMetrics => {
+    const novos = level?.novos || 0;
+    const pendentes = level?.pendentes || 0;
+    const progresso = level?.progresso || 0;
+    const resolvidos = level?.resolvidos || 0;
     return {
-      niveis: {
-        n1: actualData.niveis.n1 || defaultLevel,
-        n2: actualData.niveis.n2 || defaultLevel,
-        n3: actualData.niveis.n3 || defaultLevel,
-        n4: actualData.niveis.n4 || defaultLevel,
-        geral: actualData.niveis.geral || defaultLevel
+      novos,
+      pendentes,
+      progresso,
+      resolvidos,
+      total: novos + pendentes + progresso + resolvidos
+    };
+  };
+
+  // Se os dados já vêm na estrutura correta da API
+  if (legacyData?.niveis) {
+    console.log("🔍 transformLegacyData - Dados com estrutura 'niveis' encontrada:", legacyData.niveis);
+    
+    const processedNiveis = {
+      n1: calculateTotal(legacyData.niveis.n1),
+      n2: calculateTotal(legacyData.niveis.n2),
+      n3: calculateTotal(legacyData.niveis.n3),
+      n4: calculateTotal(legacyData.niveis.n4),
+      geral: calculateTotal(legacyData.niveis.geral)
+    };
+    
+    // Se não há dados no geral, calcular a partir dos níveis
+    if (processedNiveis.geral.total === 0) {
+      const geralCalculado = {
+        novos: processedNiveis.n1.novos + processedNiveis.n2.novos + processedNiveis.n3.novos + processedNiveis.n4.novos,
+        pendentes: processedNiveis.n1.pendentes + processedNiveis.n2.pendentes + processedNiveis.n3.pendentes + processedNiveis.n4.pendentes,
+        progresso: processedNiveis.n1.progresso + processedNiveis.n2.progresso + processedNiveis.n3.progresso + processedNiveis.n4.progresso,
+        resolvidos: processedNiveis.n1.resolvidos + processedNiveis.n2.resolvidos + processedNiveis.n3.resolvidos + processedNiveis.n4.resolvidos
+      };
+      processedNiveis.geral = {
+        ...geralCalculado,
+        total: geralCalculado.novos + geralCalculado.pendentes + geralCalculado.progresso + geralCalculado.resolvidos
+      };
+    }
+    
+    console.log("🔍 transformLegacyData - Níveis processados:", processedNiveis);
+    
+    return {
+      niveis: processedNiveis,
+      tendencias: legacyData?.tendencias || {
+        novos: '0',
+        pendentes: '0',
+        progresso: '0',
+        resolvidos: '0'
       },
-      tendencias: actualData?.tendencias,
-      filtros_aplicados: actualData?.filtros_aplicados,
-      tempo_execucao: actualData?.tempo_execucao,
-      timestamp: actualData?.timestamp,
-      systemStatus: actualData?.systemStatus,
-      technicianRanking: actualData?.technicianRanking
+      filtros_aplicados: legacyData?.filtros_aplicados,
+      tempo_execucao: legacyData?.tempo_execucao,
+      timestamp: legacyData?.timestamp,
+      systemStatus: legacyData?.systemStatus,
+      technicianRanking: legacyData?.technicianRanking
     };
   }
 
+  console.log("🔍 transformLegacyData - Estrutura 'niveis' não encontrada, usando fallback");
+  
   // Fallback para dados legados
   return {
     niveis: {
-      n1: legacyData?.n1 || defaultLevel,
-      n2: legacyData?.n2 || defaultLevel,
-      n3: legacyData?.n3 || defaultLevel,
-      n4: legacyData?.n4 || defaultLevel,
-      geral: legacyData?.geral || defaultLevel
+      n1: calculateTotal(legacyData?.n1),
+      n2: calculateTotal(legacyData?.n2),
+      n3: calculateTotal(legacyData?.n3),
+      n4: calculateTotal(legacyData?.n4),
+      geral: calculateTotal(legacyData?.geral)
     },
-    tendencias: actualData?.tendencias,
-    filtros_aplicados: actualData?.filtros_aplicados,
-    tempo_execucao: actualData?.tempo_execucao,
-    timestamp: actualData?.timestamp,
-    systemStatus: actualData?.systemStatus,
-    technicianRanking: actualData?.technicianRanking
+    tendencias: legacyData?.tendencias || {
+      novos: '0',
+      pendentes: '0',
+      progresso: '0',
+      resolvidos: '0'
+    },
+    filtros_aplicados: legacyData?.filtros_aplicados,
+    tempo_execucao: legacyData?.tempo_execucao,
+    timestamp: legacyData?.timestamp,
+    systemStatus: legacyData?.systemStatus,
+    technicianRanking: legacyData?.technicianRanking
   };
 };
 

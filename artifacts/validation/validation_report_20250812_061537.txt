@@ -1,0 +1,17 @@
+
+ RELATÓRIO DE VALIDAÇÃO DE QUALIDADE DE DADOS
+============================================================
+
+Timestamp: 20250812_061537
+Status Final: PASSED
+
+ ANÁLISE DE QUALIDADE:
+- All-Zero Detectado: Não
+- Issues Críticos: Não
+- Nível de Qualidade: good
+
+ ARTEFATOS GERADOS:
+- Relatório JSON: ..\artifacts\validation\validation_report_20250812_061537.json
+- Health Data: ..\artifacts\validation/health_data_20250812_061537.json
+
+============================================================

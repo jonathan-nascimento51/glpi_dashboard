@@ -23,7 +23,7 @@ def debug_trends_calculation():
     end_date_previous = (now - timedelta(days=7)).strftime('%Y-%m-%d')
     start_date_previous = (now - timedelta(days=14)).strftime('%Y-%m-%d')
     
-    print(f"\n=== PERÍODO ANTERIOR ===")
+    print("\n=== PERÍODO ANTERIOR ===")
     print(f"Data início: {start_date_previous}")
     print(f"Data fim: {end_date_previous}")
     
@@ -54,7 +54,7 @@ def debug_trends_calculation():
         previous_progresso = previous_general.get("Processando (atribuído)", 0) + previous_general.get("Processando (planejado)", 0)
         previous_resolvidos = previous_general.get("Solucionado", 0) + previous_general.get("Fechado", 0)
         
-        print(f"\n=== TOTAIS CALCULADOS - PERÍODO ANTERIOR ===")
+        print("\n=== TOTAIS CALCULADOS - PERÍODO ANTERIOR ===")
         print(f"Novos: {previous_novos}")
         print(f"Pendentes: {previous_pendentes}")
         print(f"Progresso: {previous_progresso}")
@@ -72,7 +72,7 @@ def debug_trends_calculation():
         current_progresso = current_general.get("Processando (atribuído)", 0) + current_general.get("Processando (planejado)", 0)
         current_resolvidos = current_general.get("Solucionado", 0) + current_general.get("Fechado", 0)
         
-        print(f"\n=== TOTAIS CALCULADOS - ATUAIS ===")
+        print("\n=== TOTAIS CALCULADOS - ATUAIS ===")
         print(f"Novos: {current_novos}")
         print(f"Pendentes: {current_pendentes}")
         print(f"Progresso: {current_progresso}")
@@ -110,7 +110,7 @@ def debug_trends_calculation():
         print("\nResolvidos:")
         trend_resolvidos = calculate_percentage_change(current_resolvidos, previous_resolvidos)
         
-        print(f"\n=== TENDÊNCIAS FINAIS ===")
+        print("\n=== TENDÊNCIAS FINAIS ===")
         print(f"Novos: {trend_novos}")
         print(f"Pendentes: {trend_pendentes}")
         print(f"Progresso: {trend_progresso}")

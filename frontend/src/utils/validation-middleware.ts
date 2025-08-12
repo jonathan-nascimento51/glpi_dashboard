@@ -1,7 +1,7 @@
-ï»¿import { validateMetricsData, validateTechnicianRanking, validateSystemStatus } from '../types/validation';
+import { validateMetricsData, validateTechnicianRanking, validateSystemStatus } from '../types/validation';
 import type { MetricsData, TechnicianRanking, SystemStatus } from '../types';
 
-// Middleware para validaÃ§Ã£o de dados da API
+// Middleware para validação de dados da API
 export class ApiValidationMiddleware {
   static validateApiResponse<T>(
     data: unknown,
@@ -91,8 +91,8 @@ export class ApiValidationMiddleware {
     console.error('API Validation Error:', errorLog);
     
     // Enviar para sistema de monitoramento (Sentry, etc.)
-    if (window.Sentry) {
-      window.Sentry.captureException(new Error(`API Validation Failed: ${endpoint}`), {
+    if ((window as any).Sentry) {
+      (window as any).Sentry.captureException(new Error(`API Validation Failed: ${endpoint}`), {
         tags: {
           category: 'api_validation',
           endpoint,
@@ -103,7 +103,7 @@ export class ApiValidationMiddleware {
   }
 }
 
-// Hook personalizado para validaÃ§Ã£o de dados
+// Hook personalizado para validação de dados
 export const useValidatedApiData = () => {
   const validateAndLog = <T>(
     data: unknown,
@@ -134,7 +134,7 @@ export const createValidatedFetch = () => {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
-      // Clone response para poder ler o body mÃºltiplas vezes
+      // Clone response para poder ler o body múltiplas vezes
       const clonedResponse = response.clone();
       
       try {

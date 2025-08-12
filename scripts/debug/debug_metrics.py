@@ -99,7 +99,7 @@ def debug_metrics_inconsistency():
     
     # Verificar se há tickets fora dos grupos N1-N4
     if general_total > level_total_all:
-        print(f"\n⚠️  PROBLEMA IDENTIFICADO:")
+        print("\n⚠️  PROBLEMA IDENTIFICADO:")
         print(f"Existem {general_total - level_total_all} tickets que não estão nos grupos N1-N4")
         print("Isso explica a inconsistência nos dados!")
         
@@ -133,7 +133,7 @@ def debug_metrics_inconsistency():
         for level_data in level_filtered.values()
     )
     
-    print(f"\nCOMPARAÇÃO COM FILTROS:")
+    print("\nCOMPARAÇÃO COM FILTROS:")
     print(f"Resolvidos - Geral: {general_resolvidos_f}")
     print(f"Resolvidos - Níveis: {level_resolvidos_f}")
     print(f"Diferença: {general_resolvidos_f - level_resolvidos_f}")
@@ -169,11 +169,11 @@ def investigate_groups(glpi):
                         elif isinstance(group_info, str):
                             groups_found.add(group_info)
                 
-                print(f"Grupos encontrados nos tickets:")
+                print("Grupos encontrados nos tickets:")
                 for group in sorted(groups_found):
                     print(f"  - {group}")
                     
-                print(f"\nGrupos configurados no sistema (N1-N4):")
+                print("\nGrupos configurados no sistema (N1-N4):")
                 for level, group_id in glpi.service_levels.items():
                     print(f"  - {level}: {group_id}")
         

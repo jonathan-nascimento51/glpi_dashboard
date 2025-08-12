@@ -5,12 +5,11 @@ Validação matemática das tendências do dashboard GLPI
 """
 
 import requests
-import json
 from datetime import datetime, timedelta
 
 def validate_trend_calculation(current: int, previous: int, expected_trend: str):
     """Valida se o cálculo de tendência está correto"""
-    print(f"\n=== VALIDAÇÃO MATEMÁTICA ===")
+    print("\n=== VALIDAÇÃO MATEMÁTICA ===")
     print(f"Valor atual: {current}")
     print(f"Valor anterior: {previous}")
     print(f"Tendência esperada: {expected_trend}")
@@ -34,7 +33,7 @@ def validate_trend_calculation(current: int, previous: int, expected_trend: str)
     print(f"Status: {'✅ CORRETO' if is_correct else '❌ INCORRETO'}")
     
     if not is_correct:
-        print(f"⚠️  DIFERENÇA DETECTADA!")
+        print("⚠️  DIFERENÇA DETECTADA!")
         print(f"   Esperado: {expected_trend}")
         print(f"   Calculado: {calculated_trend}")
     
@@ -52,13 +51,13 @@ def test_api_without_filters():
         niveis = data['data']['niveis']['geral']
         tendencias = data['data']['tendencias']
         
-        print(f"\nDados atuais (sem filtro):")
+        print("\nDados atuais (sem filtro):")
         print(f"  Novos: {niveis['novos']}")
         print(f"  Pendentes: {niveis['pendentes']}")
         print(f"  Progresso: {niveis['progresso']}")
         print(f"  Resolvidos: {niveis['resolvidos']}")
         
-        print(f"\nTendências retornadas:")
+        print("\nTendências retornadas:")
         print(f"  Novos: {tendencias['novos']}")
         print(f"  Pendentes: {tendencias['pendentes']}")
         print(f"  Progresso: {tendencias['progresso']}")
@@ -88,7 +87,7 @@ def test_api_with_date_filters():
         tendencias = data['data']['tendencias']
         filtros = data['data'].get('filtros_aplicados', {})
         
-        print(f"\nFiltros aplicados:")
+        print("\nFiltros aplicados:")
         print(f"  Data início: {filtros.get('data_inicio', 'N/A')}")
         print(f"  Data fim: {filtros.get('data_fim', 'N/A')}")
         
@@ -99,7 +98,7 @@ def test_api_with_date_filters():
         print(f"  Resolvidos: {niveis['resolvidos']}")
         print(f"  Total: {niveis['total']}")
         
-        print(f"\nTendências vs. período anterior:")
+        print("\nTendências vs. período anterior:")
         print(f"  Novos: {tendencias['novos']}")
         print(f"  Pendentes: {tendencias['pendentes']}")
         print(f"  Progresso: {tendencias['progresso']}")

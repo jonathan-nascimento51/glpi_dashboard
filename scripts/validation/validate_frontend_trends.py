@@ -7,8 +7,6 @@ Verifica se os cálculos estão corretos e se a exibição na interface está ad
 
 import requests
 import json
-import re
-from datetime import datetime, timedelta
 
 def calculate_percentage_change(current: int, previous: int) -> str:
     """Replica a função de cálculo de percentual do backend"""
@@ -129,7 +127,7 @@ def test_mathematical_consistency():
         print(f"  Frontend - Direção: {frontend_data['direction']}, Valor: {frontend_data['value']}%")
         
         if resultado == esperado:
-            print(f"  ✅ PASSOU")
+            print("  ✅ PASSOU")
         else:
             print(f"  ❌ FALHOU - Esperado: {esperado}, Obtido: {resultado}")
             all_passed = False
@@ -159,7 +157,7 @@ def validate_frontend_processing():
         # Validar lógica de direção
         expected_direction = 'up' if trend.startswith('+') and not trend == '+0%' else ('down' if trend.startswith('-') and not trend == '-0%' else 'stable')
         if frontend_data['direction'] == expected_direction:
-            print(f"  ✅ Direção correta")
+            print("  ✅ Direção correta")
         else:
             print(f"  ❌ Direção incorreta - Esperado: {expected_direction}, Obtido: {frontend_data['direction']}")
 
@@ -181,7 +179,7 @@ def main():
     print("\n\n=== RESUMO FINAL ===")
     print(f"✅ API funcionando: {'Sim' if api_ok else 'Não'}")
     print(f"✅ Matemática correta: {'Sim' if math_ok else 'Não'}")
-    print(f"✅ Processamento frontend: Validado")
+    print("✅ Processamento frontend: Validado")
     
     if api_ok and math_ok:
         print("\n🎉 TODOS OS TESTES PASSARAM!")

@@ -59,12 +59,12 @@ def create_app(config=None):
     def log_request_info():
         from flask import request
         import sys
-        print(f"\n=== REQUISIÇÃO RECEBIDA ===", flush=True)
+        print("\n=== REQUISIÇÃO RECEBIDA ===", flush=True)
         print(f"Método: {request.method}", flush=True)
         print(f"Path: {request.path}", flush=True)
         print(f"URL completa: {request.url}", flush=True)
         print(f"Headers: {dict(request.headers)}", flush=True)
-        print(f"================================\n", flush=True)
+        print("================================\n", flush=True)
         sys.stdout.flush()
         logger.info(f"REQUISIÇÃO RECEBIDA: {request.method} {request.path}")
         
@@ -72,10 +72,10 @@ def create_app(config=None):
     def log_response_info(response):
         from flask import request
         import sys
-        print(f"\n=== RESPOSTA ENVIADA ===", flush=True)
+        print("\n=== RESPOSTA ENVIADA ===", flush=True)
         print(f"Status: {response.status_code}", flush=True)
         print(f"Para: {request.method} {request.path}", flush=True)
-        print(f"============================\n", flush=True)
+        print("============================\n", flush=True)
         sys.stdout.flush()
         return response
     

@@ -5,7 +5,6 @@ Script para verificar se há dados duplicados na API que podem causar chaves dup
 """
 
 import requests
-import json
 from collections import Counter
 from datetime import datetime
 

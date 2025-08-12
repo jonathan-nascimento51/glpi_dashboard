@@ -2,14 +2,24 @@
 """Cliente GLPI resiliente com circuit breaker, retry e timeouts configuráveis"""
 
 import asyncio
+import logging
 import time
+from datetime import datetime, timedelta
 from enum import Enum
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List, Union
 from dataclasses import dataclass, field
+from contextlib import asynccontextmanager
 
 import httpx
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_exponential,
+    retry_if_exception_type,
+    before_sleep_log,
+)
 
-from utils.metrics import get_metrics, OperationType, MetricEvent
+from utils.metrics import get_metrics, OperationType, MetricEvent, measure_operation
 
 from utils.structured_logger import create_glpi_logger
 from config.settings import active_config
@@ -415,7 +425,7 @@ class GLPIResilientClient:
         for attempt in range(3):
             try:
                 return await _make_request_with_retry()
-            except (httpx.RequestError, httpx.HTTPStatusError):
+            except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 if attempt == 2:  # Última tentativa
                     raise
                 
