@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 from fastapi import APIRouter, HTTPException, Query
-from typing import Optional, Dict, Any
+from typing import Optional
 from services.glpi_service import GLPIService
 from services.api_service import APIService
 from utils.response_formatter import ResponseFormatter

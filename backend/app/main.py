@@ -1,14 +1,13 @@
 ﻿import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Literal, List, Dict, Any
+from typing import Literal, List
 from .telemetry import init_sentry, init_otel
 from .flags import Flags
 
 # Importar modelos consolidados
 from models.validation import (
-    TechnicianRanking, Ticket, SystemStatus, 
-    LevelMetrics, MetricsData
+    TechnicianRanking, Ticket, SystemStatus
 )
 
 init_sentry(

@@ -1,10 +1,8 @@
 ﻿# -*- coding: utf-8 -*-
 """Testes de integracao para API endpoints"""
 import pytest
-import json
 import time
 from fastapi.testclient import TestClient
-from unittest.mock import patch
 
 import sys
 import os

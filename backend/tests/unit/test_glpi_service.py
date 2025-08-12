@@ -1,7 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
 import pytest
-import time
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import sys
 import os

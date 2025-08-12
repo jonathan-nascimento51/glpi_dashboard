@@ -1,4 +1,4 @@
-﻿from typing import Any, Dict, List, Optional, Callable, Type
+﻿from typing import Any, Dict, Optional, Callable, Type
 from fastapi import Request, Response, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ValidationError as PydanticValidationError
@@ -9,7 +9,7 @@ from datetime import datetime
 
 from models.validation import (
     MetricsData, TechnicianRanking, SystemStatus, 
-    ApiResponse, ErrorDetail, ValidationError
+    ApiResponse
 )
 
 

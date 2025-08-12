@@ -106,7 +106,7 @@ export const LevelMetricsGrid: React.FC<LevelMetricsGridProps> = ({
   }
 
   return (
-    <div className={cn("grid grid-cols-2 gap-4", className)}>
+    <div className={cn("grid grid-cols-2 gap-2 h-full", className)}>
       {Object.entries(levelConfig).map(([level, config]) => {
         const levelData = levelMetrics[level as keyof typeof levelMetrics] || {
           novos: 0,

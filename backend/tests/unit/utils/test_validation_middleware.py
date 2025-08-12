@@ -1,6 +1,6 @@
 import pytest
 import json
-from unittest.mock import Mock, AsyncMock
+from unittest.mock import Mock
 from fastapi import Request
 from fastapi.responses import JSONResponse, Response
 from utils.validation_middleware import ValidationMiddleware

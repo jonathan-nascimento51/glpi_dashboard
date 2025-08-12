@@ -137,9 +137,9 @@ exclude_lines =
     
     # Excluir código de desenvolvimento
     # pragma: dev
-    # TODO:
-    # FIXME:
-    # XXX:
+
+
+
     
     # Excluir código de compatibilidade
     # pragma: py2

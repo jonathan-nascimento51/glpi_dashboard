@@ -5,7 +5,7 @@ from models.validation import (
     TicketStatus, Priority, TechnicianLevel,
     LevelMetrics, MetricsData, TechnicianRanking,
     Ticket, NewTicket, SystemStatus, FilterParams,
-    ApiResponse, ErrorDetail, ValidationError as CustomValidationError
+    ApiResponse
 )
 
 

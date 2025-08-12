@@ -23,33 +23,33 @@ interface NewTicketsListProps {
 
 // Configuração de prioridades movida para fora do componente
 const priorityConfig = {
-  'CrÃ­tica': {
+  'Crítica': {
     color: 'figma-status-badge-red',
-    icon: 'ðŸ”´'
+    icon: ''
   },
   'Muito Alta': {
     color: 'figma-status-badge-red',
-    icon: 'ðŸ”´'
+    icon: ''
   },
   'Alta': {
     color: 'figma-priority-badge text-orange-700 dark:text-orange-300',
-    icon: 'ðŸŸ '
+    icon: ''
   },
-  'MÃ©dia': {
+  'Média': {
     color: 'figma-status-badge-yellow',
-    icon: 'ðŸŸ¡'
+    icon: ''
   },
   'Baixa': {
     color: 'figma-status-badge-green',
-    icon: 'ðŸŸ¢'
+    icon: ''
   },
   'Muito Baixa': {
     color: 'figma-status-badge-blue',
-    icon: 'ðŸ”µ'
+    icon: ''
   },
   'Normal': {
     color: 'figma-status-badge-blue',
-    icon: 'ðŸ”µ'
+    icon: ''
   }
 }
 
@@ -317,5 +317,10 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
 })
 
 NewTicketsList.displayName = 'NewTicketsList'
+
+
+
+
+
 
 

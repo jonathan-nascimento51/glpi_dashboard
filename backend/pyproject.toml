@@ -1,4 +1,4 @@
-﻿[tool.black]
+[tool.black]
 line-length = 88
 target-version = ['py39']
 include = '\.pyi?$'
@@ -90,7 +90,7 @@ show_missing = true
 skip_covered = false
 skip_empty = false
 sort = "Cover"
-# Limiares de cobertura mínima
+# Limiares de cobertura m?nima
 fail_under = 80
 
 [tool.coverage.html]
@@ -123,3 +123,76 @@ check_untyped_defs = false
 [build-system]
 requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
+
+
+[tool.importlinter]
+root_packages = [
+    "api",
+    "usecases",
+    "domain",
+    "adapters",
+    "services",
+    "routes",
+    "models",
+]
+
+[[tool.importlinter.contracts]]
+name = "Hexagonal Architecture - Domain Independence"
+type = "forbidden"
+source_modules = [
+    "domain",
+]
+forbidden_modules = [
+    "adapters",
+    "api",
+    "services",
+    "routes",
+    "usecases",
+]
+
+[[tool.importlinter.contracts]]
+name = "Hexagonal Architecture - Use Cases Dependencies"
+type = "forbidden"
+source_modules = [
+    "usecases",
+]
+forbidden_modules = [
+    "adapters",
+    "api",
+    "services",
+    "routes",
+]
+
+[[tool.importlinter.contracts]]
+name = "Hexagonal Architecture - Adapters Dependencies"
+type = "forbidden"
+source_modules = [
+    "adapters",
+]
+forbidden_modules = [
+    "api",
+    "routes",
+    "usecases",
+]
+
+[[tool.importlinter.contracts]]
+name = "Hexagonal Architecture - API Dependencies"
+type = "forbidden"
+source_modules = [
+    "api",
+]
+forbidden_modules = [
+    "services",
+    "models",
+]
+
+[[tool.importlinter.contracts]]
+name = "Hexagonal Architecture - Unidirectional Flow"
+type = "layers"
+layers = [
+    "api",
+    "usecases",
+    "domain",
+]
+
+

@@ -1,4 +1,4 @@
-﻿import React, { useRef, useEffect, useMemo, useCallback } from "react"
+import React, { useRef, useEffect, useMemo, useCallback } from "react"
 import { motion } from "framer-motion"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -21,7 +21,7 @@ interface RankingTableProps {
   className?: string
 }
 
-// Função auxiliar para obter estilos de nível movida para fora do componente
+// Fun��o auxiliar para obter estilos de n�vel movida para fora do componente
 function getLevelStyle(level?: string) {
   switch (level) {
     case 'N4': // Expert - Azul profissional
@@ -34,7 +34,7 @@ function getLevelStyle(level?: string) {
         iconBg: 'bg-blue-100',
         iconColor: 'text-blue-600'
       }
-    case 'N3': // Sênior - Verde confiÃ¡vel
+    case 'N3': // S�nior - Verde confiável
       return {
         bgColor: 'bg-emerald-50',
         borderColor: 'border-emerald-200',
@@ -54,7 +54,7 @@ function getLevelStyle(level?: string) {
         iconBg: 'bg-orange-100',
         iconColor: 'text-orange-600'
       }
-    case 'N1': // Júnior - Roxo motivacional
+    case 'N1': // J�nior - Roxo motivacional
       return {
         bgColor: 'bg-purple-50',
         borderColor: 'border-purple-200',
@@ -77,7 +77,7 @@ function getLevelStyle(level?: string) {
   }
 }
 
-// Variantes de animação movidas para fora do componente
+// Variantes de anima��o movidas para fora do componente
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -145,7 +145,7 @@ const TechnicianCard = React.memo<{
     <motion.div
       key={technician.id}
       variants={cardVariants}
-      whileHover="hover"
+      
       className={cn(
         "flex-shrink-0 w-48 flex flex-col p-4 rounded-lg border transition-all duration-200",
         "cursor-pointer relative group hover:shadow-md",
@@ -157,9 +157,9 @@ const TechnicianCard = React.memo<{
         isTopThree && position === 3 && "ring-amber-400"
       )}
     >
-      {/* Header - Posição e nível */}
+      {/* Header - Posi��o e n�vel */}
       <div className="flex items-center justify-between mb-3">
-        {/* Indicador de Posição */}
+        {/* Indicador de Posi��o */}
         <div className={cn(
           "w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm",
           isTopThree ? "text-white" : "text-gray-600 bg-gray-100",
@@ -174,7 +174,7 @@ const TechnicianCard = React.memo<{
           {position > 3 && position}
         </div>
         
-        {/* nível */}
+        {/* n�vel */}
         {technician.level && (
           <div className="flex items-center space-x-1">
             <div className={cn(
@@ -193,7 +193,7 @@ const TechnicianCard = React.memo<{
         )}
       </div>
 
-      {/* Nome do tÃ©cnico */}
+      {/* Nome do técnico */}
       <div className="text-center mb-3">
         <div className="font-medium text-gray-900 text-sm leading-tight">
           {formattedName}
@@ -231,7 +231,7 @@ const TechnicianCard = React.memo<{
 
 export const RankingTable = React.memo<RankingTableProps>(function RankingTable({ 
   data, 
-  title: _ = "Ranking de TÃ©cnicos", 
+  title: _ = "Ranking de Técnicos", 
   className 
 }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -251,12 +251,12 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
     })
   }, [data, trackRender, measureRender])
   
-  // Pegar todos os tÃ©cnicos e ordenar por número de chamados - memoizado
+  // Pegar todos os técnicos e ordenar por n�mero de chamados - memoizado
   const topTechnicians = useMemo(() => {
     return [...data].sort((a, b) => b.total - a.total)
   }, [data])
 
-  // EstatÃ­sticas por nível para o cabeçalho - memoizado
+  // Estatísticas por n�vel para o cabe�alho - memoizado
   const levelStats = useMemo(() => {
     return topTechnicians.reduce((acc, tech) => {
       const level = tech.level || 'Outros'
@@ -296,7 +296,7 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
             <div className="p-2 rounded-xl bg-gradient-to-br from-slate-500 to-slate-600 shadow-lg">
               <Users className="h-5 w-5 text-white" />
             </div>
-            Ranking de TÃ©cnicos
+            Ranking de Técnicos
           </CardTitle>
           <div className="flex items-center gap-2">
             {Object.entries(levelStats).map(([level, count]) => {

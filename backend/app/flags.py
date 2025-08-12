@@ -1,5 +1,4 @@
 import os
-from UnleashClient import UnleashClient
 
 
 class Flags:
@@ -8,11 +7,12 @@ class Flags:
         app_name = os.getenv("UNLEASH_APP_NAME", "gadpi-backend")
         instance_id = os.getenv("UNLEASH_INSTANCE_ID", "local")
         self.client = None
-        if url:
-            self.client = UnleashClient(
-                url=url, app_name=app_name, instance_id=instance_id
-            )
-            self.client.initialize_client()
+        # if url:
+        #     self.client = UnleashClient(
+        #         url=url, app_name=app_name, instance_id=instance_id
+        #     )
+        #     self.client.initialize_client()
+        self.client = None
 
     def is_enabled(self, name: str, context: dict | None = None) -> bool:
         if not self.client:

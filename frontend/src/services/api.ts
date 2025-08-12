@@ -69,7 +69,7 @@ export const apiService = {
         
         if (response.data && response.data.success && response.data.data) {
           // A API retorna dados em response.data.data
-          const rawData = response.data.data;
+          const rawData = response.data.data.data || response.data.data;
           
           console.log('🔍 API Service - rawData:', rawData);
           console.log('🔍 API Service - rawData.niveis:', rawData.niveis);
@@ -233,7 +233,7 @@ export const apiService = {
       systemStatusCache.recordRequestTime(cacheKey, responseTime);
       
       if (response.data.success && response.data.data) {
-        const data = response.data.data;
+        const data = response.data.data.data || response.data.data;
         // Armazenar no cache
         systemStatusCache.set(cacheParams, data);
         successLog('getSystemStatus - Status do sistema obtido com sucesso');
@@ -302,7 +302,7 @@ export const apiService = {
       technicianRankingCache.recordRequestTime(cacheKey, responseTime);
       
       if (response.data.success && response.data.data) {
-        const data = response.data.data;
+        const data = response.data.data.data || response.data.data;
         // Armazenar no cache
         technicianRankingCache.set(cacheParams, data);
         successLog('getTechnicianRanking - Ranking de técnicos obtido com sucesso');
@@ -340,7 +340,7 @@ export const apiService = {
       newTicketsCache.recordRequestTime(cacheKey, responseTime);
       
       if (response.data.success && response.data.data) {
-        const data = response.data.data;
+        const data = response.data.data.data || response.data.data;
         // Armazenar no cache
         newTicketsCache.set(cacheParams, data);
         successLog('getNewTickets - Novos tickets obtidos com sucesso', { count: data.length });
@@ -535,8 +535,8 @@ export { httpClient } from './httpClient';
 export const fetchDashboardMetrics = async (
   filters: FilterParams = {}
 ): Promise<DashboardMetrics | null> => {
+  console.log(" fetchDashboardMetrics chamada com filtros:", filters);
   try {
-    const queryParams = new URLSearchParams();
     
     // Mapear filtros para os nomes esperados pela API
     const filterMapping: Record<string, string> = {
@@ -546,17 +546,17 @@ export const fetchDashboardMetrics = async (
       priority: 'priority',
       level: 'level'
     };
-    
+    const queryParams = new URLSearchParams();
+
+    // Mapear filtros para os nomes esperados pela API
     // Processar dateRange se presente
     if (filters.dateRange && filters.dateRange.startDate && filters.dateRange.endDate) {
-      console.log('📅 Processando dateRange:', filters.dateRange);
-      queryParams.append('start_date', filters.dateRange.startDate);
-      queryParams.append('end_date', filters.dateRange.endDate);
+      console.log(" Processando dateRange:", filters.dateRange);
+      queryParams.append("start_date", filters.dateRange.startDate);
+      queryParams.append("end_date", filters.dateRange.endDate);
     } else {
-      console.log('⚠️ dateRange não encontrado ou incompleto:', filters.dateRange);
+      console.log(" dateRange n�o encontrado ou incompleto:", filters.dateRange);
     }
-    
-    // Adicionar filtros como parâmetros de query com validação de tipos
     Object.entries(filters).forEach(([key, value]) => {
       if (key === 'dateRange') return; // Já processado acima
       if (value !== null && value !== undefined && value !== '') {
