@@ -28,6 +28,16 @@ interface DateRangeFilterProps {
   
   // Configuração de tema
   variant?: 'modern' | 'classic';
+  
+  // Novo: suporte a filtro por tipo de data
+  filterType?: string;
+  onFilterTypeChange?: (type: string) => void;
+  availableFilterTypes?: Array<{
+    key: string;
+    name: string;
+    description: string;
+    default?: boolean;
+  }>;
 }
 
 const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
@@ -37,7 +47,14 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   value,
   onChange,
   className,
-  variant = 'classic'
+  variant = 'classic',
+  filterType = 'creation',
+  onFilterTypeChange,
+  availableFilterTypes = [
+    { key: 'creation', name: 'Data de Criação', description: 'Filtra tickets criados no período', default: true },
+    { key: 'modification', name: 'Data de Modificação', description: 'Filtra tickets modificados no período', default: false },
+    { key: 'current_status', name: 'Status Atual', description: 'Mostra snapshot atual dos tickets', default: false }
+  ]
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [customStartDate, setCustomStartDate] = useState('');
@@ -232,6 +249,32 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                 ✕
               </button>
             </div>
+
+            {/* Filter Type Selector */}
+            {onFilterTypeChange && (
+              <div className="mb-4 pb-4 border-b border-slate-600/50">
+                <h4 className="text-xs font-medium text-slate-300 uppercase tracking-wide mb-3">Tipo de Filtro</h4>
+                <Select value={filterType} onValueChange={onFilterTypeChange}>
+                  <SelectTrigger className="w-full bg-slate-700/60 border-slate-600/50 text-slate-200">
+                    <SelectValue placeholder="Selecione o tipo de filtro" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-800 border-slate-600">
+                    {availableFilterTypes.map((type) => (
+                      <SelectItem 
+                        key={type.key} 
+                        value={type.key}
+                        className="text-slate-200 focus:bg-slate-700 focus:text-white"
+                      >
+                        <div>
+                          <div className="font-medium">{type.name}</div>
+                          <div className="text-xs text-slate-400">{type.description}</div>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             {/* Predefined Ranges */}
             <div className="space-y-2 mb-4">

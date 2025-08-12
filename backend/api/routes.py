@@ -59,6 +59,7 @@ def get_metrics():
         filters = extract_filter_params()
         start_date = filters.get('start_date')  # Formato: YYYY-MM-DD
         end_date = filters.get('end_date')      # Formato: YYYY-MM-DD
+        filter_type = filters.get('filter_type', 'creation')  # creation, modification, current_status
         status = filters.get('status')          # novo, pendente, progresso, resolvido
         priority = filters.get('priority')      # 1-5
         level = filters.get('level')            # n1, n2, n3, n4
@@ -92,11 +93,17 @@ def get_metrics():
         
         # Usar método com filtros se parâmetros fornecidos, senão usar método padrão
         if start_date or end_date:
-            # Para filtros de data, usar o método específico
-            metrics_data = glpi_service.get_dashboard_metrics_with_date_filter(
-                start_date=start_date,
-                end_date=end_date
-            )
+            # Para filtros de data, usar o método específico baseado no filter_type
+            if filter_type == 'modification':
+                metrics_data = glpi_service.get_dashboard_metrics_with_modification_date_filter(
+                    start_date=start_date,
+                    end_date=end_date
+                )
+            else:  # filter_type == 'creation' (padrão)
+                metrics_data = glpi_service.get_dashboard_metrics_with_date_filter(
+                    start_date=start_date,
+                    end_date=end_date
+                )
         elif any([status, priority, level, technician, category]):
             # Para outros filtros, usar o método geral
             metrics_data = glpi_service.get_dashboard_metrics_with_filters(
@@ -124,8 +131,13 @@ def get_metrics():
         response_time = (time.time() - start_time) * 1000
         logger.info(f"Métricas obtidas com sucesso em {response_time:.2f}ms")
         
-        if response_time > active_config.PERFORMANCE_TARGET_P95:
-            logger.warning(f"Resposta lenta detectada: {response_time:.2f}ms > {active_config.PERFORMANCE_TARGET_P95}ms")
+        try:
+            config_obj = active_config()
+            target_p95 = config_obj.PERFORMANCE_TARGET_P95
+        except:
+            target_p95 = 300
+        if response_time > target_p95:
+            logger.warning(f"Resposta lenta detectada: {response_time:.2f}ms > {target_p95}ms")
         
         # Validar dados com Pydantic (opcional, para garantir estrutura)
         try:
@@ -208,8 +220,13 @@ def get_filtered_metrics():
         response_time = (time.time() - start_time) * 1000
         logger.info(f"Métricas filtradas obtidas com sucesso em {response_time:.2f}ms")
         
-        if response_time > active_config.PERFORMANCE_TARGET_P95:
-            logger.warning(f"Resposta lenta detectada: {response_time:.2f}ms > {active_config.PERFORMANCE_TARGET_P95}ms")
+        try:
+            config_obj = active_config()
+            target_p95 = config_obj.PERFORMANCE_TARGET_P95
+        except:
+            target_p95 = 300
+        if response_time > target_p95:
+            logger.warning(f"Resposta lenta detectada: {response_time:.2f}ms > {target_p95}ms")
         
         # Validar dados com Pydantic (opcional, para garantir estrutura)
         try:
@@ -266,21 +283,59 @@ def get_metrics_simple():
 @monitor_performance
 @cache_with_filters(timeout=300)
 def get_technician_ranking():
-    """Endpoint para obter ranking de técnicos com filtros avançados"""
+    """Endpoint para obter ranking de técnicos com filtros avançados de forma robusta"""
     start_time = time.time()
-    logger.info("=== REQUISIÇÃO RECEBIDA: /technicians/ranking ===")
     
     try:
-        # Obter parâmetros de filtro
+        # Obter e validar parâmetros de filtro
         filters = extract_filter_params()
         start_date = filters.get('start_date')
         end_date = filters.get('end_date')
         level = filters.get('level')
-        limit = filters.get('limit', 10)  # Padrão: top 10
+        limit = filters.get('limit', 10)
         
-        logger.info(f"Buscando ranking de técnicos com filtros: data={start_date} até {end_date}, nível={level}, limite={limit}")
+        # Validar limite
+        try:
+            limit = int(limit)
+            limit = max(1, min(limit, 50))  # Entre 1 e 50
+        except (ValueError, TypeError):
+            limit = 10
         
-        # Busca ranking com filtros se fornecidos
+        # Validar formato das datas se fornecidas
+        if start_date:
+            try:
+                datetime.strptime(start_date, '%Y-%m-%d')
+            except ValueError:
+                error_response = ResponseFormatter.format_error_response(
+                    "Formato de start_date inválido. Use YYYY-MM-DD", 
+                    ["Formato de data inválido"]
+                )
+                return jsonify(error_response), 400
+        
+        if end_date:
+            try:
+                datetime.strptime(end_date, '%Y-%m-%d')
+            except ValueError:
+                error_response = ResponseFormatter.format_error_response(
+                    "Formato de end_date inválido. Use YYYY-MM-DD", 
+                    ["Formato de data inválido"]
+                )
+                return jsonify(error_response), 400
+        
+        # Validar que start_date não seja posterior a end_date
+        if start_date and end_date:
+            start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+            end_dt = datetime.strptime(end_date, '%Y-%m-%d')
+            if start_dt > end_dt:
+                error_response = ResponseFormatter.format_error_response(
+                    "Data de início não pode ser posterior à data de fim", 
+                    ["Intervalo de data inválido"]
+                )
+                return jsonify(error_response), 400
+        
+        logger.debug(f"Buscando ranking de técnicos: dates={start_date}-{end_date}, level={level}, limit={limit}")
+        
+        # Buscar ranking com ou sem filtros
         if any([start_date, end_date, level]):
             ranking_data = glpi_service.get_technician_ranking_with_filters(
                 start_date=start_date,
@@ -291,53 +346,120 @@ def get_technician_ranking():
         else:
             ranking_data = glpi_service.get_technician_ranking(limit=limit)
         
+        # Verificar resultado
+        if ranking_data is None:
+            logger.error("Falha na comunicação com o GLPI")
+            error_response = ResponseFormatter.format_error_response(
+                "Não foi possível conectar ao GLPI", 
+                ["Erro de conexão"]
+            )
+            return jsonify(error_response), 503
+        
         if not ranking_data:
-            print("AVISO: Nenhum dado de técnico retornado pelo GLPI")
-            logger.warning("Nenhum dado de técnico retornado pelo GLPI")
+            logger.info("Nenhum técnico encontrado com os filtros aplicados")
             return jsonify({
                 "success": True,
                 "data": [],
-                "message": "Não foi possível obter dados de técnicos do GLPI."
+                "message": "Nenhum técnico encontrado com os filtros aplicados",
+                "filters_applied": {
+                    "start_date": start_date,
+                    "end_date": end_date,
+                    "level": level,
+                    "limit": limit
+                }
             })
 
         # Log de performance
         response_time = (time.time() - start_time) * 1000
-        logger.info(f"Ranking de técnicos obtido com sucesso: {len(ranking_data)} técnicos em {response_time:.2f}ms")
+        logger.info(f"Ranking obtido: {len(ranking_data)} técnicos em {response_time:.2f}ms")
         
-        if response_time > active_config.PERFORMANCE_TARGET_P95:
-            logger.warning(f"Resposta lenta detectada: {response_time:.2f}ms > {active_config.PERFORMANCE_TARGET_P95}ms")
+        try:
+            config_obj = active_config()
+            target_p95 = config_obj.PERFORMANCE_TARGET_P95
+        except:
+            target_p95 = 300
+        if response_time > target_p95:
+            logger.warning(f"Resposta lenta: {response_time:.2f}ms")
         
-        return jsonify({"success": True, "data": ranking_data, "response_time_ms": round(response_time, 2)})
+        return jsonify({
+            "success": True, 
+            "data": ranking_data, 
+            "response_time_ms": round(response_time, 2),
+            "filters_applied": {
+                "start_date": start_date,
+                "end_date": end_date,
+                "level": level,
+                "limit": limit
+            }
+        })
         
     except Exception as e:
-        logger.error(f"Erro ao buscar ranking de técnicos: {str(e)}")
-        return jsonify({
-            "success": False,
-            "error": f"Erro interno do servidor: {str(e)}"
-        }), 500
+        logger.error(f"Erro inesperado ao buscar ranking de técnicos: {e}", exc_info=True)
+        error_response = ResponseFormatter.format_error_response(
+            f"Erro interno do servidor: {str(e)}", 
+            [str(e)]
+        )
+        return jsonify(error_response), 500
 
 @api_bp.route('/tickets/new')
 @monitor_performance
 @cache_with_filters(timeout=180)  # Cache menor para tickets novos
 def get_new_tickets():
-    """Endpoint para obter tickets novos com filtros avançados"""
+    """Endpoint para obter tickets novos com filtros avançados de forma robusta"""
     start_time = time.time()
-    logger.info("=== REQUISIÇÃO RECEBIDA: /tickets/new ===")
     
     try:
-        # Obter parâmetros de filtro
+        # Obter e validar parâmetros de filtro
         filters = extract_filter_params()
         limit = filters.get('limit', 5) or 5
-        limit = min(limit, 20)  # Máximo de 20 tickets
         priority = filters.get('priority')
         category = filters.get('category')
         technician = filters.get('technician')
         start_date = filters.get('start_date')
         end_date = filters.get('end_date')
         
-        logger.info(f"Buscando {limit} tickets novos com filtros: prioridade={priority}, categoria={category}, técnico={technician}")
+        # Validar limite
+        try:
+            limit = int(limit)
+            limit = max(1, min(limit, 50))  # Entre 1 e 50
+        except (ValueError, TypeError):
+            limit = 5
         
-        # Busca tickets novos com filtros
+        # Validar formato das datas se fornecidas
+        if start_date:
+            try:
+                datetime.strptime(start_date, '%Y-%m-%d')
+            except ValueError:
+                error_response = ResponseFormatter.format_error_response(
+                    "Formato de start_date inválido. Use YYYY-MM-DD", 
+                    ["Formato de data inválido"]
+                )
+                return jsonify(error_response), 400
+        
+        if end_date:
+            try:
+                datetime.strptime(end_date, '%Y-%m-%d')
+            except ValueError:
+                error_response = ResponseFormatter.format_error_response(
+                    "Formato de end_date inválido. Use YYYY-MM-DD", 
+                    ["Formato de data inválido"]
+                )
+                return jsonify(error_response), 400
+        
+        # Validar que start_date não seja posterior a end_date
+        if start_date and end_date:
+            start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+            end_dt = datetime.strptime(end_date, '%Y-%m-%d')
+            if start_dt > end_dt:
+                error_response = ResponseFormatter.format_error_response(
+                    "Data de início não pode ser posterior à data de fim", 
+                    ["Intervalo de data inválido"]
+                )
+                return jsonify(error_response), 400
+        
+        logger.debug(f"Buscando {limit} tickets novos com filtros: priority={priority}, technician={technician}, dates={start_date}-{end_date}")
+        
+        # Buscar tickets novos com ou sem filtros
         if any([priority, category, technician, start_date, end_date]):
             new_tickets = glpi_service.get_new_tickets_with_filters(
                 limit=limit,
@@ -350,73 +472,161 @@ def get_new_tickets():
         else:
             new_tickets = glpi_service.get_new_tickets(limit)
         
+        # Verificar resultado
+        if new_tickets is None:
+            logger.error("Falha na comunicação com o GLPI")
+            error_response = ResponseFormatter.format_error_response(
+                "Não foi possível conectar ao GLPI", 
+                ["Erro de conexão"]
+            )
+            return jsonify(error_response), 503
+        
         if not new_tickets:
-            logger.warning("Nenhum ticket novo encontrado")
+            logger.info("Nenhum ticket novo encontrado com os filtros aplicados")
             return jsonify({
                 "success": True,
                 "data": [],
-                "message": "Nenhum ticket novo encontrado."
+                "message": "Nenhum ticket novo encontrado com os filtros aplicados",
+                "filters_applied": {
+                    "limit": limit,
+                    "priority": priority,
+                    "category": category,
+                    "technician": technician,
+                    "start_date": start_date,
+                    "end_date": end_date
+                }
             })
 
         # Log de performance
         response_time = (time.time() - start_time) * 1000
-        logger.info(f"Tickets novos obtidos com sucesso: {len(new_tickets)} tickets em {response_time:.2f}ms")
+        logger.info(f"Tickets novos obtidos: {len(new_tickets)} tickets em {response_time:.2f}ms")
         
-        if response_time > active_config.PERFORMANCE_TARGET_P95:
-            logger.warning(f"Resposta lenta detectada: {response_time:.2f}ms > {active_config.PERFORMANCE_TARGET_P95}ms")
+        # Obter configuração de performance de forma segura
+        try:
+            config_obj = active_config()
+            target_p95 = config_obj.PERFORMANCE_TARGET_P95
+        except Exception:
+            target_p95 = 300  # valor padrão
         
-        return jsonify({"success": True, "data": new_tickets, "response_time_ms": round(response_time, 2)})
+        if response_time > target_p95:
+            logger.warning(f"Resposta lenta: {response_time:.2f}ms")
+        
+        return jsonify({
+            "success": True, 
+            "data": new_tickets, 
+            "response_time_ms": round(response_time, 2),
+            "filters_applied": {
+                "limit": limit,
+                "priority": priority,
+                "category": category,
+                "technician": technician,
+                "start_date": start_date,
+                "end_date": end_date
+            }
+        })
         
     except Exception as e:
-        logger.error(f"Erro ao buscar tickets novos: {str(e)}")
-        return jsonify({
-            "success": False,
-            "error": f"Erro interno do servidor: {str(e)}"
-        }), 500
+        logger.error(f"Erro inesperado ao buscar tickets novos: {e}", exc_info=True)
+        error_response = ResponseFormatter.format_error_response(
+            f"Erro interno do servidor: {str(e)}", 
+            [str(e)]
+        )
+        return jsonify(error_response), 500
 
 @api_bp.route('/alerts')
+@monitor_performance
 def get_alerts():
-    """Endpoint para obter alertas do sistema"""
+    """Endpoint para obter alertas do sistema de forma robusta"""
+    start_time = time.time()
+    
     try:
-        logger.info("Buscando alertas do sistema...")
+        logger.debug("Verificando alertas do sistema")
         
-        # Alertas básicos do sistema - pode ser expandido futuramente
-        alerts_data = [
-            {
-                "id": "system_001",
-                "type": "info",
-                "severity": "low",
-                "title": "Sistema Operacional",
-                "message": "Dashboard funcionando normalmente",
-                "timestamp": "2024-01-15T10:30:00Z",
-                "acknowledged": False
-            }
-        ]
+        # Alertas básicos do sistema
+        alerts_data = []
+        current_time = datetime.now().isoformat() + "Z"
         
         # Verifica status do GLPI para alertas dinâmicos
-        glpi_status = glpi_service.get_system_status()
-        
-        if glpi_status["status"] != "online":
+        try:
+            glpi_status = glpi_service.get_system_status()
+            
+            if glpi_status and glpi_status.get("status") == "online":
+                # Sistema funcionando normalmente
+                alerts_data.append({
+                    "id": "system_001",
+                    "type": "info",
+                    "severity": "low",
+                    "title": "Sistema Operacional",
+                    "message": "Dashboard funcionando normalmente",
+                    "timestamp": current_time,
+                    "acknowledged": False
+                })
+            else:
+                # Problema de conexão com GLPI
+                message = glpi_status.get('message', 'Conexão indisponível') if glpi_status else 'Falha na verificação'
+                alerts_data.append({
+                    "id": "glpi_connection",
+                    "type": "error",
+                    "severity": "high",
+                    "title": "Conexão GLPI",
+                    "message": f"Status do GLPI: {message}",
+                    "timestamp": current_time,
+                    "acknowledged": False
+                })
+                
+        except Exception as glpi_error:
+            logger.warning(f"Erro ao verificar status do GLPI: {glpi_error}")
             alerts_data.append({
-                "id": "glpi_connection",
+                "id": "glpi_error",
                 "type": "warning",
                 "severity": "medium",
-                "title": "Conexão GLPI",
-                "message": f"Status do GLPI: {glpi_status['message']}",
-                "timestamp": "2024-01-15T10:30:00Z",
+                "title": "Verificação GLPI",
+                "message": "Não foi possível verificar o status do GLPI",
+                "timestamp": current_time,
                 "acknowledged": False
             })
         
-        logger.info(f"Alertas obtidos: {len(alerts_data)} alertas encontrados.")
-        return jsonify({"success": True, "data": alerts_data})
+        # Verificar performance do sistema
+        try:
+            stats = performance_monitor.get_stats()
+            avg_response_time = stats.get('avg_response_time', 0)
+            
+            try:
+                config_obj = active_config()
+                target_p95 = config_obj.PERFORMANCE_TARGET_P95
+            except:
+                target_p95 = 300
+            if avg_response_time > target_p95:
+                alerts_data.append({
+                    "id": "performance_warning",
+                    "type": "warning",
+                    "severity": "medium",
+                    "title": "Performance",
+                    "message": f"Tempo de resposta médio elevado: {avg_response_time:.2f}ms",
+                    "timestamp": current_time,
+                    "acknowledged": False
+                })
+        except Exception as perf_error:
+            logger.debug(f"Erro ao verificar performance: {perf_error}")
+        
+        # Log de performance
+        response_time = (time.time() - start_time) * 1000
+        logger.debug(f"Alertas obtidos: {len(alerts_data)} alertas em {response_time:.2f}ms")
+        
+        return jsonify({
+            "success": True, 
+            "data": alerts_data,
+            "response_time_ms": round(response_time, 2),
+            "total_alerts": len(alerts_data)
+        })
         
     except Exception as e:
-        logger.error(f"Erro ao buscar alertas: {str(e)}")
-        return jsonify({
-            "success": False,
-            "error": f"Erro interno do servidor: {str(e)}",
-            "data": []
-        }), 500
+        logger.error(f"Erro inesperado ao buscar alertas: {e}", exc_info=True)
+        error_response = ResponseFormatter.format_error_response(
+            f"Erro interno do servidor: {str(e)}", 
+            [str(e)]
+        )
+        return jsonify(error_response), 500
 
 @api_bp.route('/performance/stats')
 def get_performance_stats():
@@ -435,7 +645,7 @@ def get_performance_stats():
             "data": {
                 **stats,
                 **cache_info,
-                "target_p95_ms": active_config.PERFORMANCE_TARGET_P95
+                "target_p95_ms": getattr(active_config(), 'PERFORMANCE_TARGET_P95', 300)
             }
         })
         
@@ -447,29 +657,150 @@ def get_performance_stats():
         }), 500
 
 @api_bp.route('/status')
+@monitor_performance
 def get_status():
-    """Endpoint para verificar status do sistema e conexão com GLPI"""
+    """Endpoint para verificar status do sistema e conexão com GLPI de forma robusta"""
+    start_time = time.time()
+    
     try:
-        logger.info("Verificando status do sistema...")
+        logger.debug("Verificando status do sistema")
         
-        # Verifica status do GLPI
-        glpi_status = glpi_service.get_system_status()
+        # Verifica status do GLPI com tratamento de erro
+        try:
+            glpi_status = glpi_service.get_system_status()
+            
+            if glpi_status:
+                glpi_info = {
+                    "status": glpi_status.get("status", "unknown"),
+                    "message": glpi_status.get("message", "Status indisponível"),
+                    "response_time": glpi_status.get("response_time", 0)
+                }
+            else:
+                glpi_info = {
+                    "status": "offline",
+                    "message": "Falha na verificação do status",
+                    "response_time": 0
+                }
+                
+        except Exception as glpi_error:
+            logger.warning(f"Erro ao verificar status do GLPI: {glpi_error}")
+            glpi_info = {
+                "status": "error",
+                "message": f"Erro na verificação: {str(glpi_error)}",
+                "response_time": 0
+            }
         
+        # Dados do status do sistema
+        current_time = datetime.now().isoformat()
         status_data = {
             "api": "online",
-            "glpi": glpi_status["status"],
-            "glpi_message": glpi_status["message"],
-            "glpi_response_time": glpi_status["response_time"],
-            "last_update": "2024-01-15 10:30:00",
-            "version": "1.0.0"
+            "glpi": glpi_info["status"],
+            "glpi_message": glpi_info["message"],
+            "glpi_response_time": glpi_info["response_time"],
+            "last_update": current_time,
+            "version": "1.0.0",
+            "uptime": "Sistema operacional"
         }
         
-        logger.info(f"Status verificado: API={status_data['api']}, GLPI={status_data['glpi']}")
-        return jsonify({"success": True, "data": status_data})
+        # Determinar status geral do sistema
+        overall_status = "healthy" if glpi_info["status"] == "online" else "degraded"
+        
+        # Log de performance
+        response_time = (time.time() - start_time) * 1000
+        logger.debug(f"Status verificado: API={status_data['api']}, GLPI={status_data['glpi']} em {response_time:.2f}ms")
+        
+        return jsonify({
+            "success": True, 
+            "data": status_data,
+            "overall_status": overall_status,
+            "response_time_ms": round(response_time, 2)
+        })
         
     except Exception as e:
-        logger.error(f"Erro ao verificar status: {str(e)}")
+        logger.error(f"Erro inesperado ao verificar status: {e}", exc_info=True)
+        error_response = ResponseFormatter.format_error_response(
+            f"Erro interno do servidor: {str(e)}", 
+            [str(e)]
+        )
+        return jsonify(error_response), 500
+
+@api_bp.route('/filter-types')
+def get_filter_types():
+    """Endpoint para obter os tipos de filtro de data disponíveis"""
+    try:
+        filter_types = {
+            "creation": {
+                "name": "Data de Criação",
+                "description": "Filtra tickets criados no período especificado",
+                "default": True
+            },
+            "modification": {
+                "name": "Data de Modificação",
+                "description": "Filtra tickets modificados no período (inclui mudanças de status)",
+                "default": False
+            },
+            "current_status": {
+                "name": "Status Atual",
+                "description": "Mostra snapshot atual dos tickets (sem filtro de data)",
+                "default": False
+            }
+        }
+        
         return jsonify({
-            "success": False,
-            "error": f"Erro interno do servidor: {str(e)}"
+            "success": True,
+            "data": filter_types,
+            "message": "Tipos de filtro obtidos com sucesso"
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro ao obter tipos de filtro: {e}", exc_info=True)
+        error_response = ResponseFormatter.format_error_response(
+            f"Erro interno no servidor: {str(e)}", 
+            [str(e)]
+        )
+        return jsonify(error_response), 500
+
+@api_bp.route('/health')
+def health_check():
+    """Endpoint de health check básico"""
+    try:
+        return jsonify({
+            "status": "healthy",
+            "timestamp": datetime.now().isoformat(),
+            "service": "GLPI Dashboard API"
+        })
+    except Exception as e:
+        logger.error(f"Erro no health check: {e}", exc_info=True)
+        return jsonify({
+            "status": "unhealthy",
+            "timestamp": datetime.now().isoformat(),
+            "error": str(e)
         }), 500
+
+@api_bp.route('/health/glpi')
+def glpi_health_check():
+    """Endpoint de health check da conexão GLPI"""
+    try:
+        # Testa autenticação GLPI
+        auth_result = glpi_service._authenticate_with_retry()
+        
+        if auth_result:
+            return jsonify({
+                "glpi_connection": "healthy",
+                "timestamp": datetime.now().isoformat(),
+                "message": "Conexão GLPI funcionando corretamente"
+            })
+        else:
+            return jsonify({
+                "glpi_connection": "unhealthy",
+                "timestamp": datetime.now().isoformat(),
+                "message": "Falha na autenticação GLPI"
+            }), 503
+            
+    except Exception as e:
+        logger.error(f"Erro no health check GLPI: {e}", exc_info=True)
+        return jsonify({
+            "glpi_connection": "unhealthy",
+            "timestamp": datetime.now().isoformat(),
+            "error": str(e)
+        }), 503

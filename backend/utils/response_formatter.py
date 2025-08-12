@@ -1,6 +1,9 @@
 from typing import Any, Dict, List, Optional
 from datetime import datetime
 import time
+import logging
+
+logger = logging.getLogger('response_formatter')
 
 class ResponseFormatter:
     """Utilitário para formatação unificada das respostas da API"""
@@ -10,35 +13,54 @@ class ResponseFormatter:
                                 start_time: Optional[float] = None) -> Dict[str, Any]:
         """Formata resposta das métricas do dashboard de forma unificada"""
         try:
+            # Validar entrada
+            if not isinstance(raw_metrics, dict):
+                logger.warning(f"raw_metrics deve ser um dict, recebido: {type(raw_metrics)}")
+                raw_metrics = {}
+                
             # Calcular tempo de execução se fornecido
             execution_time = None
-            if start_time:
-                execution_time = (time.time() - start_time) * 1000
+            if start_time and isinstance(start_time, (int, float)):
+                execution_time = round((time.time() - start_time) * 1000, 2)
             
             # Processar dados dos níveis
             niveis_data = {}
             
             # Se há estrutura by_level (com filtros)
-            if raw_metrics and 'by_level' in raw_metrics:
+            if raw_metrics and 'by_level' in raw_metrics and isinstance(raw_metrics['by_level'], dict):
                 for level_name, level_data in raw_metrics['by_level'].items():
-                    level_key = level_name.lower()
+                    if not isinstance(level_data, dict):
+                        logger.warning(f"Dados do nível {level_name} inválidos: {type(level_data)}")
+                        continue
+                        
+                    level_key = str(level_name).lower()
                     niveis_data[level_key] = {
-                        'novos': level_data.get('Novo', 0),
-                        'pendentes': level_data.get('Pendente', 0),
-                        'progresso': (
-                            level_data.get('Processando (atribuído)', 0) + 
-                            level_data.get('Processando (planejado)', 0)
-                        ),
-                        'resolvidos': (
-                            level_data.get('Solucionado', 0) + 
-                            level_data.get('Fechado', 0)
-                        )
+                        'novos': max(0, int(level_data.get('Novo', 0) or 0)),
+                        'pendentes': max(0, int(level_data.get('Pendente', 0) or 0)),
+                        'progresso': max(0, (
+                            int(level_data.get('Processando (atribuído)', 0) or 0) + 
+                            int(level_data.get('Processando (planejado)', 0) or 0)
+                        )),
+                        'resolvidos': max(0, (
+                            int(level_data.get('Solucionado', 0) or 0) + 
+                            int(level_data.get('Fechado', 0) or 0)
+                        ))
                     }
             
             # Se há estrutura niveis (sem filtros)
-            elif raw_metrics and 'niveis' in raw_metrics:
+            elif raw_metrics and 'niveis' in raw_metrics and isinstance(raw_metrics['niveis'], dict):
                 for level_name, level_data in raw_metrics['niveis'].items():
-                    niveis_data[level_name] = level_data
+                    if not isinstance(level_data, dict):
+                        logger.warning(f"Dados do nível {level_name} inválidos: {type(level_data)}")
+                        continue
+                    
+                    # Validar e sanitizar dados do nível
+                    sanitized_data = {}
+                    for key in ['novos', 'pendentes', 'progresso', 'resolvidos', 'total']:
+                        value = level_data.get(key, 0)
+                        sanitized_data[key] = max(0, int(value or 0))
+                    
+                    niveis_data[str(level_name)] = sanitized_data
             
             # Garantir que todos os níveis existam
             for level in ['n1', 'n2', 'n3', 'n4']:
@@ -57,25 +79,29 @@ class ResponseFormatter:
                     )
             
             # Extrair totais gerais
-            if raw_metrics and 'general' in raw_metrics:
+            if raw_metrics and 'general' in raw_metrics and isinstance(raw_metrics['general'], dict):
                 # Com filtros - usar dados gerais
                 general = raw_metrics['general']
-                novos = general.get('Novo', 0)
-                pendentes = general.get('Pendente', 0)
-                progresso = (
-                    general.get('Processando (atribuído)', 0) + 
-                    general.get('Processando (planejado)', 0)
-                )
-                resolvidos = (
-                    general.get('Solucionado', 0) + 
-                    general.get('Fechado', 0)
-                )
+                novos = max(0, int(general.get('Novo', 0) or 0))
+                pendentes = max(0, int(general.get('Pendente', 0) or 0))
+                progresso = max(0, (
+                    int(general.get('Processando (atribuído)', 0) or 0) + 
+                    int(general.get('Processando (planejado)', 0) or 0)
+                ))
+                resolvidos = max(0, (
+                    int(general.get('Solucionado', 0) or 0) + 
+                    int(general.get('Fechado', 0) or 0)
+                ))
             else:
                 # Sem filtros - calcular dos níveis
-                novos = sum(level.get('novos', 0) for level in niveis_data.values())
-                pendentes = sum(level.get('pendentes', 0) for level in niveis_data.values())
-                progresso = sum(level.get('progresso', 0) for level in niveis_data.values())
-                resolvidos = sum(level.get('resolvidos', 0) for level in niveis_data.values())
+                try:
+                    novos = sum(level.get('novos', 0) for level in niveis_data.values() if isinstance(level, dict))
+                    pendentes = sum(level.get('pendentes', 0) for level in niveis_data.values() if isinstance(level, dict))
+                    progresso = sum(level.get('progresso', 0) for level in niveis_data.values() if isinstance(level, dict))
+                    resolvidos = sum(level.get('resolvidos', 0) for level in niveis_data.values() if isinstance(level, dict))
+                except Exception as e:
+                    logger.error(f"Erro ao calcular totais dos níveis: {e}")
+                    novos = pendentes = progresso = resolvidos = 0
             
             total = novos + pendentes + progresso + resolvidos
             
@@ -103,15 +129,16 @@ class ResponseFormatter:
                 'timestamp': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
             }
             
-            if execution_time:
+            if execution_time is not None:
                 response['tempo_execucao'] = execution_time
             
-            if filters:
+            if filters and isinstance(filters, dict):
                 response['data']['filtros_aplicados'] = filters
             
             return response
             
         except Exception as e:
+            logger.error(f"Erro ao formatar resposta do dashboard: {e}")
             return ResponseFormatter.format_error_response(
                 message="Erro ao formatar métricas do dashboard",
                 errors=[str(e)]
@@ -120,19 +147,49 @@ class ResponseFormatter:
     @staticmethod
     def format_error_response(message: str, errors: Optional[List[str]] = None) -> Dict[str, Any]:
         """Formata resposta de erro de forma unificada"""
-        return {
-            'success': False,
-            'message': message,
-            'errors': errors or [],
-            'timestamp': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-        }
+        try:
+            # Validar entrada
+            if not isinstance(message, str):
+                message = str(message) if message else "Erro desconhecido"
+                
+            if errors and not isinstance(errors, list):
+                errors = [str(errors)]
+                
+            return {
+                'success': False,
+                'message': message,
+                'errors': errors or [],
+                'timestamp': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+            }
+        except Exception as e:
+            # Fallback em caso de erro na formatação
+            return {
+                'success': False,
+                'message': "Erro interno na formatação de resposta",
+                'errors': [str(e)],
+                'timestamp': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+            }
     
     @staticmethod
     def format_success_response(data: Any, message: str = "Operação realizada com sucesso") -> Dict[str, Any]:
         """Formata resposta de sucesso de forma unificada"""
-        return {
-            'success': True,
-            'data': data,
-            'message': message,
-            'timestamp': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-        }
+        try:
+            # Validar entrada
+            if not isinstance(message, str):
+                message = str(message) if message else "Operação realizada com sucesso"
+                
+            return {
+                'success': True,
+                'data': data,
+                'message': message,
+                'timestamp': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+            }
+        except Exception as e:
+            logger.error(f"Erro ao formatar resposta de sucesso: {e}")
+            # Fallback em caso de erro na formatação
+            return {
+                'success': True,
+                'data': None,
+                'message': "Erro na formatação da resposta",
+                'timestamp': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+            }

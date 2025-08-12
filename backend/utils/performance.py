@@ -5,6 +5,7 @@ from functools import wraps
 from flask import request, g
 from typing import Dict, Any, Optional, List
 import logging
+from backend.config.settings import active_config
 
 logger = logging.getLogger('performance')
 
@@ -19,12 +20,20 @@ class PerformanceMonitor:
     
     def record_request_time(self, duration: float):
         """Registra tempo de uma requisição"""
-        self.request_times.append(duration)
-        self.total_requests += 1
-        
-        # Mantém apenas os últimos 1000 registros
-        if len(self.request_times) > 1000:
-            self.request_times = self.request_times[-1000:]
+        try:
+            if not isinstance(duration, (int, float)) or duration < 0:
+                logger.warning(f"Duração inválida ignorada: {duration}")
+                return
+                
+            self.request_times.append(duration)
+            self.total_requests += 1
+            
+            # Mantém apenas os últimos 1000 registros
+            if len(self.request_times) > 1000:
+                self.request_times = self.request_times[-1000:]
+                
+        except Exception as e:
+            logger.error(f"Erro ao registrar tempo de requisição: {e}")
     
     def record_cache_hit(self):
         """Registra um cache hit"""
@@ -36,25 +45,40 @@ class PerformanceMonitor:
     
     def get_p95_response_time(self) -> float:
         """Calcula o P95 dos tempos de resposta"""
-        if not self.request_times:
+        try:
+            if not self.request_times:
+                return 0.0
+            
+            sorted_times = sorted(self.request_times)
+            p95_index = int(len(sorted_times) * 0.95)
+            return sorted_times[p95_index] if p95_index < len(sorted_times) else sorted_times[-1]
+            
+        except Exception as e:
+            logger.error(f"Erro ao calcular P95: {e}")
             return 0.0
-        
-        sorted_times = sorted(self.request_times)
-        p95_index = int(len(sorted_times) * 0.95)
-        return sorted_times[p95_index] if p95_index < len(sorted_times) else sorted_times[-1]
     
     def get_average_response_time(self) -> float:
         """Calcula tempo médio de resposta"""
-        if not self.request_times:
+        try:
+            if not self.request_times:
+                return 0.0
+            return sum(self.request_times) / len(self.request_times)
+            
+        except Exception as e:
+            logger.error(f"Erro ao calcular tempo médio: {e}")
             return 0.0
-        return sum(self.request_times) / len(self.request_times)
     
     def get_cache_hit_rate(self) -> float:
         """Calcula taxa de cache hit"""
-        total_cache_requests = self.cache_hits + self.cache_misses
-        if total_cache_requests == 0:
+        try:
+            total_cache_requests = self.cache_hits + self.cache_misses
+            if total_cache_requests == 0:
+                return 0.0
+            return (self.cache_hits / total_cache_requests) * 100
+            
+        except Exception as e:
+            logger.error(f"Erro ao calcular taxa de cache hit: {e}")
             return 0.0
-        return (self.cache_hits / total_cache_requests) * 100
     
     def get_stats(self) -> Dict[str, Any]:
         """Retorna estatísticas completas"""
@@ -72,17 +96,30 @@ performance_monitor = PerformanceMonitor()
 
 def generate_cache_key(endpoint: str, **params) -> str:
     """Gera chave de cache baseada no endpoint e parâmetros"""
-    # Remove parâmetros None e ordena para consistência
-    clean_params = {k: v for k, v in params.items() if v is not None}
-    sorted_params = sorted(clean_params.items())
-    
-    # Cria string única dos parâmetros
-    params_str = '&'.join([f"{k}={v}" for k, v in sorted_params])
-    
-    # Gera hash para chave compacta
-    cache_key = f"{endpoint}:{hashlib.md5(params_str.encode()).hexdigest()}"
-    
-    return cache_key
+    try:
+        if not endpoint or not isinstance(endpoint, str):
+            raise ValueError("Endpoint deve ser uma string não vazia")
+            
+        # Remove parâmetros None e ordena para consistência
+        clean_params = {k: v for k, v in params.items() if v is not None}
+        sorted_params = sorted(clean_params.items())
+        
+        # Cria string única dos parâmetros
+        params_str = '&'.join([f"{k}={v}" for k, v in sorted_params])
+        
+        # Gera hash para chave compacta
+        cache_key = f"{endpoint}:{hashlib.md5(params_str.encode()).hexdigest()}"
+        
+        # Validar tamanho da chave
+        if len(cache_key) > 250:  # Limite do Redis
+            logger.warning(f"Chave de cache muito longa: {len(cache_key)} caracteres")
+            
+        return cache_key
+        
+    except Exception as e:
+        logger.error(f"Erro ao gerar chave de cache: {e}")
+        # Fallback para chave simples
+        return f"{endpoint}:fallback"
 
 def monitor_performance(func):
     """Decorator para monitorar performance de funções"""
@@ -97,9 +134,14 @@ def monitor_performance(func):
             duration = time.time() - start_time
             performance_monitor.record_request_time(duration)
             
-            # Log se exceder target P95
-            if duration * 1000 > 300:  # 300ms target
-                logger.warning(f"Slow request: {func.__name__} took {duration*1000:.2f}ms")
+            # Log se exceder target P95 configurado
+            try:
+                config_obj = active_config()
+                target_p95 = config_obj.PERFORMANCE_TARGET_P95
+            except:
+                target_p95 = 300
+            if duration * 1000 > target_p95:
+                logger.warning(f"Slow request: {func.__name__} took {duration*1000:.2f}ms (target: {target_p95}ms)")
     
     return wrapper
 
@@ -108,6 +150,7 @@ def extract_filter_params() -> Dict[str, Any]:
     return {
         'start_date': request.args.get('start_date'),
         'end_date': request.args.get('end_date'),
+        'filter_type': request.args.get('filter_type', 'creation'),
         'status': request.args.get('status'),
         'priority': request.args.get('priority'),
         'level': request.args.get('level'),

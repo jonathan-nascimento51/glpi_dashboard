@@ -8,9 +8,10 @@ class APIService:
     """Service to handle external API communications"""
     
     def __init__(self):
-        self.base_url = active_config.BACKEND_API_URL
-        self.api_key = active_config.API_KEY
-        self.timeout = active_config.API_TIMEOUT
+        config_obj = active_config()
+        self.base_url = config_obj.BACKEND_API_URL
+        self.api_key = config_obj.API_KEY
+        self.timeout = config_obj.API_TIMEOUT
         self.logger = logging.getLogger('services')
         
         # Default headers for API requests

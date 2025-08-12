@@ -166,10 +166,15 @@ export function useSystemStatus(options?: UseApiOptions) {
 /**
  * Hook especializado para ranking de técnicos
  */
-export function useTechnicianRanking(options?: UseApiOptions) {
-  const apiFunction = async (...args: any[]) => {
+export function useTechnicianRanking(filters?: {
+  start_date?: string;
+  end_date?: string;
+  level?: string;
+  limit?: number;
+}, options?: UseApiOptions) {
+  const apiFunction = async () => {
     const { apiService } = await import('../services/api');
-    return apiService.getTechnicianRanking(...args);
+    return apiService.getTechnicianRanking(filters);
   };
   return useApi(apiFunction, options);
 }

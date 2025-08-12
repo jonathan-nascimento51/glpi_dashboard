@@ -246,19 +246,50 @@ export const apiService = {
     }
   },
 
-  // Get technician ranking
-  async getTechnicianRanking(): Promise<any[]> {
+  // Get technician ranking with optional filters
+  async getTechnicianRanking(filters?: {
+    start_date?: string;
+    end_date?: string;
+    level?: string;
+    limit?: number;
+  }): Promise<any[]> {
     const startTime = Date.now();
-    const cacheParams = { endpoint: 'technicians/ranking' };
+    
+    // Criar parâmetros para o cache incluindo filtros
+    const cacheParams = {
+      endpoint: 'technicians/ranking',
+      start_date: filters?.start_date || 'none',
+      end_date: filters?.end_date || 'none',
+      level: filters?.level || 'none',
+      limit: filters?.limit?.toString() || '10'
+    };
 
     // Verificar cache primeiro
     const cachedData = technicianRankingCache.get(cacheParams);
     if (cachedData) {
+      console.log('📦 Retornando dados do cache para ranking de técnicos');
       return cachedData;
     }
 
     try {
-      const response = await api.get<ApiResponse<any[]>>('/technicians/ranking');
+      let url = '/technicians/ranking';
+      
+      // Construir query parameters se filtros foram fornecidos
+      if (filters && Object.keys(filters).length > 0) {
+        const params = new URLSearchParams();
+        
+        if (filters.start_date) params.append('start_date', filters.start_date);
+        if (filters.end_date) params.append('end_date', filters.end_date);
+        if (filters.level) params.append('level', filters.level);
+        if (filters.limit) params.append('limit', filters.limit.toString());
+        
+        if (params.toString()) {
+          url += `?${params.toString()}`;
+        }
+      }
+      
+      console.log('🔍 Buscando ranking de técnicos:', url);
+      const response = await api.get<ApiResponse<any[]>>(url);
       
       // Monitora performance
       const responseTime = Date.now() - startTime;
@@ -269,6 +300,7 @@ export const apiService = {
         const data = response.data.data;
         // Armazenar no cache
         technicianRankingCache.set(cacheParams, data);
+        console.log('✅ Ranking de técnicos obtido com sucesso:', data.length, 'técnicos');
         return data;
       } else {
         console.error('API returned unsuccessful response:', response.data);
@@ -451,16 +483,20 @@ export const fetchDashboardMetrics = async (
       endDate: 'end_date',
       status: 'status',
       priority: 'priority',
-      level: 'level'
+      level: 'level',
+      filterType: 'filter_type'
     };
     
     // Processar dateRange se presente
     if (filters.dateRange && filters.dateRange.startDate && filters.dateRange.endDate) {
       console.log('📅 Processando dateRange:', filters.dateRange);
+      console.log('📅 Start date:', filters.dateRange.startDate);
+      console.log('📅 End date:', filters.dateRange.endDate);
       queryParams.append('start_date', filters.dateRange.startDate);
       queryParams.append('end_date', filters.dateRange.endDate);
     } else {
       console.log('⚠️ dateRange não encontrado ou incompleto:', filters.dateRange);
+      console.log('⚠️ Filtros completos recebidos:', JSON.stringify(filters, null, 2));
     }
     
     // Adicionar filtros como parâmetros de query com validação de tipos
@@ -479,6 +515,7 @@ export const fetchDashboardMetrics = async (
     console.log('🔍 Filtros originais:', filters);
     console.log('🔍 Query params construídos:', queryParams.toString());
     console.log('🔍 Fazendo requisição para:', url);
+    console.log('🌐 URL final da requisição:', url);
     
     const startTime = performance.now();
     

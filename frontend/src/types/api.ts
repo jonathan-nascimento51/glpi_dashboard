@@ -84,6 +84,7 @@ export interface FilterParams {
   category?: string;
   startDate?: string;
   endDate?: string;
+  filterType?: string; // Novo: tipo de filtro de data (creation, modification, current_status)
 }
 
 // Resposta da API

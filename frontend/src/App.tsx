@@ -38,9 +38,12 @@ function App() {
     filters,
     theme,
     dataIntegrityReport,
+    filterType,
+    availableFilterTypes,
     loadData,
     // forceRefresh, // Não utilizado
     updateFilters,
+    updateFilterType,
     search,
     addNotification,
     removeNotification,
@@ -164,6 +167,8 @@ function App() {
         searchQuery={searchQuery}
         searchResults={[]}
         dateRange={filters?.dateRange || { startDate: '', endDate: '', label: 'Selecionar período' }}
+        filterType={filterType}
+        availableFilterTypes={availableFilterTypes}
         onSearch={search}
         theme={theme as Theme}
         onThemeChange={(newTheme: Theme) => changeTheme(newTheme)}
@@ -176,6 +181,7 @@ function App() {
           duration: 3000 
         })}
         onDateRangeChange={updateDateRange}
+        onFilterTypeChange={updateFilterType}
         onPerformanceDashboard={() => setShowPerformanceDashboard(true)}
       />
 
@@ -195,6 +201,7 @@ function App() {
               technicianRanking={technicianRanking}
               onFilterByStatus={handleFilterByStatus}
               isLoading={isLoading}
+              filters={filters}
             />
           </Profiler>
         ) : (

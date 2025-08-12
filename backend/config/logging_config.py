@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Configuração de logging estruturado para o GLPI Dashboard.
 """
@@ -6,11 +6,11 @@ Configuração de logging estruturado para o GLPI Dashboard.
 import logging
 import logging.config
 import os
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from utils.structured_logger import JSONFormatter
 
 
-def get_logging_config(log_level: str = "INFO", log_file: str = None) -> Dict[str, Any]:
+def get_logging_config(log_level: str = "INFO", log_file: Optional[str] = None) -> Dict[str, Any]:
     """
     Retorna configuração de logging estruturado.
     
@@ -20,7 +20,16 @@ def get_logging_config(log_level: str = "INFO", log_file: str = None) -> Dict[st
         
     Returns:
         Dicionário de configuração para logging.config.dictConfig
+        
+    Raises:
+        ValueError: Se log_level for inválido
     """
+    # Validar log_level
+    valid_levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
+    if log_level.upper() not in valid_levels:
+        raise ValueError(f"log_level deve ser um dos: {valid_levels}. Recebido: {log_level}")
+    
+    log_level = log_level.upper()
     
     config = {
         "version": 1,
@@ -44,7 +53,7 @@ def get_logging_config(log_level: str = "INFO", log_file: str = None) -> Dict[st
         },
         "loggers": {
             "glpi_service": {
-                "level": log_level,
+                "level": "DEBUG",
                 "handlers": ["console"],
                 "propagate": False
             },
@@ -67,10 +76,21 @@ def get_logging_config(log_level: str = "INFO", log_file: str = None) -> Dict[st
     
     # Adicionar handler de arquivo se especificado
     if log_file:
-        # Criar diretório se não existir
-        log_dir = os.path.dirname(log_file)
-        if log_dir and not os.path.exists(log_dir):
-            os.makedirs(log_dir, exist_ok=True)
+        try:
+            # Validar caminho do arquivo
+            if not isinstance(log_file, str) or not log_file.strip():
+                raise ValueError("log_file deve ser uma string não vazia")
+                
+            # Criar diretório se não existir
+            log_dir = os.path.dirname(log_file)
+            if log_dir and not os.path.exists(log_dir):
+                os.makedirs(log_dir, exist_ok=True)
+                
+        except (OSError, PermissionError) as e:
+            # Log de fallback para console se não conseguir criar arquivo
+            print(f"Aviso: Não foi possível configurar log em arquivo {log_file}: {e}")
+            print("Continuando apenas com log no console.")
+            return config
             
         config["handlers"]["file"] = {
             "class": "logging.handlers.RotatingFileHandler",
@@ -90,16 +110,36 @@ def get_logging_config(log_level: str = "INFO", log_file: str = None) -> Dict[st
     return config
 
 
-def configure_structured_logging(log_level: str = "INFO", log_file: str = None):
+def configure_structured_logging(log_level: str = "INFO", log_file: Optional[str] = None):
     """
     Configura o sistema de logging estruturado.
     
     Args:
         log_level: Nível de log
         log_file: Caminho para arquivo de log (opcional)
+        
+    Raises:
+        ValueError: Se log_level for inválido
+        RuntimeError: Se falhar ao configurar o logging
     """
-    config = get_logging_config(log_level, log_file)
-    logging.config.dictConfig(config)
+    try:
+        config = get_logging_config(log_level, log_file)
+        logging.config.dictConfig(config)
+        
+        # Testar se o logging está funcionando
+        logger = logging.getLogger('logging_config')
+        logger.info(f"Sistema de logging configurado com sucesso. Nível: {log_level}")
+        
+    except Exception as e:
+        # Fallback para configuração básica
+        logging.basicConfig(
+            level=getattr(logging, log_level.upper(), logging.INFO),
+            format='%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+        )
+        logger = logging.getLogger('logging_config')
+        logger.error(f"Erro ao configurar logging estruturado: {e}")
+        logger.info("Usando configuração básica de logging como fallback")
+        raise RuntimeError(f"Falha na configuração do logging: {e}") from e
 
 
 # Configurações específicas para diferentes ambientes
@@ -109,29 +149,53 @@ class LoggingConfig:
     @staticmethod
     def development():
         """Configuração para ambiente de desenvolvimento."""
-        return {
-            "log_level": "DEBUG",
-            "log_file": "logs/glpi_dashboard_dev.log",
-            "console_output": True
-        }
+        try:
+            return {
+                "log_level": "DEBUG",
+                "log_file": "logs/glpi_dashboard_dev.log",
+                "console_output": True
+            }
+        except Exception as e:
+            # Fallback para configuração mínima
+            return {
+                "log_level": "INFO",
+                "log_file": None,
+                "console_output": True
+            }
     
     @staticmethod
     def production():
         """Configuração para ambiente de produção."""
-        return {
-            "log_level": "INFO",
-            "log_file": "logs/glpi_dashboard_prod.log",
-            "console_output": False
-        }
+        try:
+            return {
+                "log_level": "INFO",
+                "log_file": "logs/glpi_dashboard_prod.log",
+                "console_output": False
+            }
+        except Exception as e:
+            # Fallback para configuração mínima
+            return {
+                "log_level": "WARNING",
+                "log_file": None,
+                "console_output": True
+            }
     
     @staticmethod
     def testing():
         """Configuração para ambiente de testes."""
-        return {
-            "log_level": "WARNING",
-            "log_file": None,
-            "console_output": True
-        }
+        try:
+            return {
+                "log_level": "WARNING",
+                "log_file": None,
+                "console_output": True
+            }
+        except Exception as e:
+            # Fallback para configuração mínima
+            return {
+                "log_level": "ERROR",
+                "log_file": None,
+                "console_output": True
+            }
 
 
 # Configurações para integração com serviços de monitoramento
@@ -146,20 +210,46 @@ class MonitoringIntegration:
         Returns:
             Dicionário com configurações recomendadas
         """
-        return {
-            "log_format": "json",
-            "fields": {
-                "service": "glpi_dashboard",
-                "environment": os.getenv("ENVIRONMENT", "development"),
-                "version": os.getenv("APP_VERSION", "1.0.0")
-            },
-            "logstash": {
-                "host": os.getenv("LOGSTASH_HOST", "localhost"),
-                "port": int(os.getenv("LOGSTASH_PORT", "5044")),
-                "protocol": "tcp"
-            },
-            "index_pattern": "glpi-dashboard-*"
-        }
+        try:
+            # Validar porta do Logstash
+            logstash_port = os.getenv("LOGSTASH_PORT", "5044")
+            try:
+                port = int(logstash_port)
+                if not (1 <= port <= 65535):
+                    raise ValueError(f"Porta inválida: {port}")
+            except ValueError:
+                port = 5044  # Fallback para porta padrão
+                
+            return {
+                "log_format": "json",
+                "fields": {
+                    "service": "glpi_dashboard",
+                    "environment": os.getenv("ENVIRONMENT", "development"),
+                    "version": os.getenv("APP_VERSION", "1.0.0")
+                },
+                "logstash": {
+                    "host": os.getenv("LOGSTASH_HOST", "localhost"),
+                    "port": port,
+                    "protocol": "tcp"
+                },
+                "index_pattern": "glpi-dashboard-*"
+            }
+        except Exception as e:
+            # Fallback para configuração básica
+            return {
+                "log_format": "json",
+                "fields": {
+                    "service": "glpi_dashboard",
+                    "environment": "development",
+                    "version": "1.0.0"
+                },
+                "logstash": {
+                    "host": "localhost",
+                    "port": 5044,
+                    "protocol": "tcp"
+                },
+                "index_pattern": "glpi-dashboard-*"
+            }
     
     @staticmethod
     def grafana_loki_config():
@@ -169,19 +259,40 @@ class MonitoringIntegration:
         Returns:
             Dicionário com configurações recomendadas
         """
-        return {
-            "log_format": "json",
-            "labels": {
-                "service": "glpi_dashboard",
-                "environment": os.getenv("ENVIRONMENT", "development"),
-                "level": "${level}",
-                "logger": "${logger_name}"
-            },
-            "loki": {
-                "url": os.getenv("LOKI_URL", "http://localhost:3100"),
-                "push_endpoint": "/loki/api/v1/push"
+        try:
+            # Validar URL do Loki
+            loki_url = os.getenv("LOKI_URL", "http://localhost:3100")
+            if not loki_url.startswith(('http://', 'https://')):
+                loki_url = "http://localhost:3100"  # Fallback
+                
+            return {
+                "log_format": "json",
+                "labels": {
+                    "service": "glpi_dashboard",
+                    "environment": os.getenv("ENVIRONMENT", "development"),
+                    "level": "${level}",
+                    "logger": "${logger_name}"
+                },
+                "loki": {
+                    "url": loki_url,
+                    "push_endpoint": "/loki/api/v1/push"
+                }
             }
-        }
+        except Exception as e:
+            # Fallback para configuração básica
+            return {
+                "log_format": "json",
+                "labels": {
+                    "service": "glpi_dashboard",
+                    "environment": "development",
+                    "level": "${level}",
+                    "logger": "${logger_name}"
+                },
+                "loki": {
+                    "url": "http://localhost:3100",
+                    "push_endpoint": "/loki/api/v1/push"
+                }
+            }
     
     @staticmethod
     def prometheus_config():
@@ -191,27 +302,59 @@ class MonitoringIntegration:
         Returns:
             Dicionário com configurações de métricas
         """
-        return {
-            "metrics": {
-                "api_calls_total": {
-                    "type": "counter",
-                    "description": "Total number of API calls",
-                    "labels": ["method", "endpoint", "status"]
+        try:
+            # Validar URL do Prometheus Gateway
+            gateway_url = os.getenv("PROMETHEUS_GATEWAY_URL", "http://localhost:9091")
+            if not gateway_url.startswith(('http://', 'https://')):
+                gateway_url = "http://localhost:9091"  # Fallback
+                
+            return {
+                "metrics": {
+                    "api_calls_total": {
+                        "type": "counter",
+                        "description": "Total number of API calls",
+                        "labels": ["method", "endpoint", "status"]
+                    },
+                    "api_call_duration_seconds": {
+                        "type": "histogram",
+                        "description": "API call duration in seconds",
+                        "labels": ["method", "endpoint"],
+                        "buckets": [0.1, 0.5, 1.0, 2.0, 5.0, 10.0]
+                    },
+                    "errors_total": {
+                        "type": "counter",
+                        "description": "Total number of errors",
+                        "labels": ["error_type", "service"]
+                    }
                 },
-                "api_call_duration_seconds": {
-                    "type": "histogram",
-                    "description": "API call duration in seconds",
-                    "labels": ["method", "endpoint"],
-                    "buckets": [0.1, 0.5, 1.0, 2.0, 5.0, 10.0]
-                },
-                "errors_total": {
-                    "type": "counter",
-                    "description": "Total number of errors",
-                    "labels": ["error_type", "service"]
+                "prometheus": {
+                    "gateway_url": gateway_url,
+                    "job_name": "glpi_dashboard"
                 }
-            },
-            "prometheus": {
-                "gateway_url": os.getenv("PROMETHEUS_GATEWAY_URL", "http://localhost:9091"),
-                "job_name": "glpi_dashboard"
             }
-        }
+        except Exception as e:
+            # Fallback para configuração básica
+            return {
+                "metrics": {
+                    "api_calls_total": {
+                        "type": "counter",
+                        "description": "Total number of API calls",
+                        "labels": ["method", "endpoint", "status"]
+                    },
+                    "api_call_duration_seconds": {
+                        "type": "histogram",
+                        "description": "API call duration in seconds",
+                        "labels": ["method", "endpoint"],
+                        "buckets": [0.1, 0.5, 1.0, 2.0, 5.0, 10.0]
+                    },
+                    "errors_total": {
+                        "type": "counter",
+                        "description": "Total number of errors",
+                        "labels": ["error_type", "service"]
+                    }
+                },
+                "prometheus": {
+                    "gateway_url": "http://localhost:9091",
+                    "job_name": "glpi_dashboard"
+                }
+            }

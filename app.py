@@ -89,11 +89,12 @@ def create_app(config=None):
 app = create_app()
 
 if __name__ == '__main__':
-    port = app.config.get('PORT', 5000)
-    host = app.config.get('HOST', '0.0.0.0')
-    debug = app.config.get('DEBUG', False)
+    config_obj = active_config()
+    port = config_obj.PORT
+    host = config_obj.HOST
+    debug = config_obj.DEBUG
     
     logger = logging.getLogger('app')
     logger.info(f"Iniciando servidor Flask em {host}:{port} (Debug: {debug})")
-    
+
     app.run(host=host, port=port, debug=debug)

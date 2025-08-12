@@ -11,10 +11,18 @@ interface HeaderProps {
   searchQuery: string;
   searchResults: SearchResult[];
   dateRange: { startDate: string; endDate: string };
+  filterType?: string;
+  availableFilterTypes?: Array<{
+    key: string;
+    name: string;
+    description: string;
+    default?: boolean;
+  }>;
   onThemeChange: (theme: Theme) => void;
   onSearch: (query: string) => void;
   onNotification: (title: string, message: string, type: 'success' | 'error' | 'warning' | 'info') => void;
   onDateRangeChange?: (dateRange: { startDate: string; endDate: string; label: string }) => void;
+  onFilterTypeChange?: (type: string) => void;
   onPerformanceDashboard?: () => void;
 }
 
@@ -39,10 +47,13 @@ export const Header: React.FC<HeaderProps> = ({
   searchQuery,
   searchResults,
   dateRange,
+  filterType,
+  availableFilterTypes,
   onThemeChange,
   onSearch,
   onNotification,
   onDateRangeChange,
+  onFilterTypeChange,
   onPerformanceDashboard,
 }) => {
   const [showSearchResults, setShowSearchResults] = useState(false);
@@ -95,11 +106,13 @@ export const Header: React.FC<HeaderProps> = ({
     const endStr = endDate.toISOString().split('T')[0];
     
     const range = dateRanges.find(r => r.days === days);
-    onDateRangeChange?.({
+    const newDateRange = {
       startDate: startStr,
       endDate: endStr,
       label: range?.label || 'Período personalizado'
-    });
+    };
+    console.log('📅 Header - Enviando dateRange:', newDateRange);
+    onDateRangeChange?.(newDateRange);
     setShowDatePicker(false);
     
     onNotification('Período Atualizado', `Filtro alterado para: ${range?.label}`, 'info');
@@ -108,11 +121,13 @@ export const Header: React.FC<HeaderProps> = ({
   // Handle custom date range
   const handleCustomDateRange = useCallback(() => {
     if (customStartDate && customEndDate && onDateRangeChange) {
-      onDateRangeChange({
+      const customDateRange = {
         startDate: customStartDate,
         endDate: customEndDate,
         label: 'Período personalizado'
-      });
+      };
+      console.log('📅 Header - Enviando período personalizado:', customDateRange);
+      onDateRangeChange(customDateRange);
       setShowDatePicker(false);
       onNotification('Período Personalizado', 'Período customizado aplicado', 'success');
     }
@@ -271,8 +286,29 @@ export const Header: React.FC<HeaderProps> = ({
               {showDatePicker && (
                 <div className="absolute top-full right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-200 py-3 min-w-80 z-50">
                   <div className="px-4 pb-3 border-b border-gray-100">
-                    <h3 className="text-sm font-semibold text-gray-900">Selecionar Período</h3>
+                    <h3 className="text-sm font-semibold text-gray-900">Filtros de Data</h3>
                   </div>
+                  
+                  {/* Filter Type Selector */}
+                  {onFilterTypeChange && availableFilterTypes && (
+                    <div className="px-4 py-3 border-b border-gray-100">
+                      <div className="text-xs font-medium text-gray-500 mb-2">Tipo de Filtro</div>
+                      <select
+                        value={filterType || 'creation'}
+                        onChange={(e) => onFilterTypeChange(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        {availableFilterTypes.map((type) => (
+                          <option key={type.key} value={type.key}>
+                            {type.name}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="text-xs text-gray-400 mt-1">
+                        {availableFilterTypes.find(t => t.key === (filterType || 'creation'))?.description}
+                      </div>
+                    </div>
+                  )}
                   
                   {/* Predefined Ranges */}
                   <div className="py-2">

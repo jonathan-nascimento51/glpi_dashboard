@@ -1,0 +1,74 @@
+{
+  "timestamp": "2025-08-12T11:44:15.583027",
+  "status": "WARNING",
+  "api_healthy": true,
+  "consistency": {
+    "consistent": false,
+    "issues": [
+      "Inconsistência em 'novos': Geral=4, Soma Níveis=0, Diferença=4",
+      "Inconsistência em 'pendentes': Geral=37, Soma Níveis=0, Diferença=37",
+      "Inconsistência em 'progresso': Geral=68, Soma Níveis=0, Diferença=68",
+      "Inconsistência em 'resolvidos': Geral=9625, Soma Níveis=0, Diferença=9625"
+    ],
+    "details": {
+      "novos": {
+        "geral": 4,
+        "soma_niveis": 0,
+        "diferenca": 4,
+        "consistente": false
+      },
+      "pendentes": {
+        "geral": 37,
+        "soma_niveis": 0,
+        "diferenca": 37,
+        "consistente": false
+      },
+      "progresso": {
+        "geral": 68,
+        "soma_niveis": 0,
+        "diferenca": 68,
+        "consistente": false
+      },
+      "resolvidos": {
+        "geral": 9625,
+        "soma_niveis": 0,
+        "diferenca": 9625,
+        "consistente": false
+      }
+    }
+  },
+  "performance": {
+    "all_healthy": false,
+    "endpoints": {
+      "/api/status": {
+        "status_code": 200,
+        "response_time_ms": 2045.2970000000003,
+        "healthy": true
+      },
+      "/api/metrics": {
+        "status_code": 200,
+        "response_time_ms": 2034.8760000000002,
+        "healthy": true
+      },
+      "/api/technicians/ranking": {
+        "status_code": 200,
+        "response_time_ms": 7915.041,
+        "healthy": false
+      }
+    }
+  },
+  "alerts": [],
+  "warnings": [
+    "Endpoint /api/technicians/ranking lento: 7915.04ms",
+    "Inconsistência em 'novos': Geral=4, Soma Níveis=0, Diferença=4",
+    "Inconsistência em 'pendentes': Geral=37, Soma Níveis=0, Diferença=37",
+    "Inconsistência em 'progresso': Geral=68, Soma Níveis=0, Diferença=68",
+    "Inconsistência em 'resolvidos': Geral=9625, Soma Níveis=0, Diferença=9625"
+  ],
+  "summary": {
+    "total_alerts": 0,
+    "total_warnings": 5,
+    "data_consistent": false,
+    "performance_healthy": false
+  }
+}

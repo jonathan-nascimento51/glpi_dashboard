@@ -19,6 +19,12 @@ interface RankingTableProps {
   data: TechnicianRanking[]
   title?: string
   className?: string
+  filters?: {
+    start_date?: string
+    end_date?: string
+    level?: string
+    limit?: number
+  }
 }
 
 // Função auxiliar para obter estilos de nível movida para fora do componente
@@ -232,7 +238,8 @@ const TechnicianCard = React.memo<{
 export const RankingTable = React.memo<RankingTableProps>(function RankingTable({ 
   data, 
   title: _ = "Ranking de Técnicos", 
-  className 
+  className,
+  filters 
 }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   
@@ -292,12 +299,34 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
     <Card className={cn("figma-ranking-tecnicos w-full h-full flex flex-col rounded-2xl shadow-none", className)}>
       <CardHeader className="px-5 pt-4 pb-2 flex-shrink-0">
         <div className="flex items-center justify-between">
-          <CardTitle className="figma-heading-large flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-slate-500 to-slate-600 shadow-lg">
-              <Users className="h-5 w-5 text-white" />
-            </div>
-            Ranking de Técnicos
-          </CardTitle>
+          <div className="flex flex-col gap-2">
+            <CardTitle className="figma-heading-large flex items-center gap-2">
+              <div className="p-2 rounded-xl bg-gradient-to-br from-slate-500 to-slate-600 shadow-lg">
+                <Users className="h-5 w-5 text-white" />
+              </div>
+              Ranking de Técnicos
+            </CardTitle>
+            {filters && (filters.start_date || filters.end_date || filters.level) && (
+              <div className="flex items-center gap-2 text-xs text-gray-600">
+                <span className="font-medium">Filtros aplicados:</span>
+                {filters.start_date && (
+                  <Badge variant="outline" className="text-xs px-2 py-1">
+                    De: {new Date(filters.start_date).toLocaleDateString('pt-BR')}
+                  </Badge>
+                )}
+                {filters.end_date && (
+                  <Badge variant="outline" className="text-xs px-2 py-1">
+                    Até: {new Date(filters.end_date).toLocaleDateString('pt-BR')}
+                  </Badge>
+                )}
+                {filters.level && (
+                  <Badge variant="outline" className="text-xs px-2 py-1">
+                    Nível: {filters.level}
+                  </Badge>
+                )}
+              </div>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             {Object.entries(levelStats).map(([level, count]) => {
               const style = getLevelStyle(level)

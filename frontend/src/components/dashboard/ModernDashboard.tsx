@@ -26,6 +26,12 @@ interface ModernDashboardProps {
   onFilterByStatus?: (status: TicketStatus) => void
   isLoading?: boolean
   className?: string
+  filters?: {
+    start_date?: string
+    end_date?: string
+    level?: string
+    limit?: number
+  }
 }
 
 // Variantes de animação movidas para fora do componente
@@ -74,11 +80,12 @@ const SkeletonCard = React.memo(function SkeletonCard() {
 export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernDashboard({
   metrics,
   levelMetrics,
-  // systemStatus,
+  systemStatus,
   technicianRanking = [],
   onFilterByStatus,
   isLoading = false,
-  className
+  className,
+  filters
 }) {
   // Sistema funcionando corretamente
     // console.log('✅ ModernDashboard carregado - correção dos níveis aplicada');
@@ -205,6 +212,7 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
             data={processedRankingData}
             title="Ranking de Técnicos"
             className="w-full h-full"
+            filters={filters}
           />
         </Suspense>
       </motion.div>
