@@ -1,0 +1,107 @@
+﻿# Configuração do GitLeaks para detecção de segredos
+# https://github.com/zricethezav/gitleaks
+
+title = "Gitleaks Config for GLPI Dashboard"
+
+# Regras customizadas para detecção de segredos
+[[rules]]
+id = "generic-api-key"
+description = "Generic API Key"
+regex = '''(?i)(api[_-]?key|apikey)[\s]*[=:][\s]*["'']?([a-zA-Z0-9_\-]{20,})["'']?'''
+keywords = ["api_key", "apikey", "api-key"]
+
+[[rules]]
+id = "glpi-token"
+description = "GLPI API Token"
+regex = '''(?i)(glpi[_-]?token|glpi[_-]?key)[\s]*[=:][\s]*["'']?([a-zA-Z0-9_\-]{20,})["'']?'''
+keywords = ["glpi_token", "glpi_key", "glpi-token"]
+
+[[rules]]
+id = "database-url"
+description = "Database Connection String"
+regex = '''(?i)(database[_-]?url|db[_-]?url)[\s]*[=:][\s]*["'']?(postgresql://|mysql://|sqlite://)[^\s"'']+["'']?'''
+keywords = ["database_url", "db_url", "database-url"]
+
+[[rules]]
+id = "redis-url"
+description = "Redis Connection String"
+regex = '''(?i)(redis[_-]?url)[\s]*[=:][\s]*["'']?redis://[^\s"'']+["'']?'''
+keywords = ["redis_url", "redis-url"]
+
+[[rules]]
+id = "secret-key"
+description = "Secret Key"
+regex = '''(?i)(secret[_-]?key|secretkey)[\s]*[=:][\s]*["'']?([a-zA-Z0-9_\-!@#$%^&*()+=]{20,})["'']?'''
+keywords = ["secret_key", "secretkey", "secret-key"]
+
+[[rules]]
+id = "jwt-secret"
+description = "JWT Secret"
+regex = '''(?i)(jwt[_-]?secret|jwt[_-]?key)[\s]*[=:][\s]*["'']?([a-zA-Z0-9_\-!@#$%^&*()+=]{20,})["'']?'''
+keywords = ["jwt_secret", "jwt_key", "jwt-secret"]
+
+[[rules]]
+id = "encryption-key"
+description = "Encryption Key"
+regex = '''(?i)(encryption[_-]?key|encrypt[_-]?key)[\s]*[=:][\s]*["'']?([a-zA-Z0-9_\-!@#$%^&*()+=]{20,})["'']?'''
+keywords = ["encryption_key", "encrypt_key", "encryption-key"]
+
+[[rules]]
+id = "sentry-dsn"
+description = "Sentry DSN"
+regex = '''(?i)(sentry[_-]?dsn)[\s]*[=:][\s]*["'']?https://[a-zA-Z0-9]+@[a-zA-Z0-9.-]+/[0-9]+["'']?'''
+keywords = ["sentry_dsn", "sentry-dsn"]
+
+[[rules]]
+id = "unleash-token"
+description = "Unleash API Token"
+regex = '''(?i)(unleash[_-]?token|unleash[_-]?key)[\s]*[=:][\s]*["'']?([a-zA-Z0-9_\-:*]{20,})["'']?'''
+keywords = ["unleash_token", "unleash_key", "unleash-token"]
+
+# Arquivos e diretórios a serem ignorados
+[allowlist]
+paths = [
+    ".env.example",
+    "*.md",
+    "*.txt",
+    "*.yml",
+    "*.yaml",
+    "*.json",
+    "requirements.txt",
+    "package.json",
+    "package-lock.json",
+    "Dockerfile",
+    "docker-compose.yml",
+    "docker-compose.yaml"
+]
+
+# Regexes para ignorar falsos positivos
+regexes = [
+    '''example[_-]?key''',
+    '''your[_-]?key[_-]?here''',
+    '''placeholder''',
+    '''changeme''',
+    '''replace[_-]?with[_-]?actual''',
+    '''<your[_-]?.*>''',
+    '''{your[_-]?.*}''',
+    '''\$\{.*\}''',  # Variáveis de ambiente
+    '''%\(.*\)s''',  # Python string formatting
+    '''\{\{.*\}\}''', # Template variables
+    '''test[_-]?key''',
+    '''dummy[_-]?key''',
+    '''fake[_-]?key''',
+    '''mock[_-]?key'''
+]
+
+# Commits específicos para ignorar (se necessário)
+commits = []
+
+# Configurações globais
+[extend]
+# useDefault = true  # Usar regras padrão do GitLeaks
+useDefault = false  # Usar apenas regras customizadas
+
+# Configurações de saída
+[output]
+# format = "json"  # json, csv, sarif
+# path = "gitleaks-report.json"

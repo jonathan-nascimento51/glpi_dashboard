@@ -13,7 +13,7 @@ vi.mock('../../services/httpClient', () => ({
     delete: vi.fn(),
   },
   API_CONFIG: {
-    BASE_URL: 'http://localhost:8000/v1',
+    BASE_URL: 'http://localhost:8000/api/v1',
     TIMEOUT: 10000,
     RETRY_ATTEMPTS: 3,
     RETRY_DELAY: 1000,
@@ -274,7 +274,7 @@ describe('Integração API - Componentes com httpClient', () => {
   it('deve manter configuração do httpClient', async () => {
     const { API_CONFIG } = await import('../../services/httpClient');
     
-    expect(API_CONFIG.BASE_URL).toBe('http://localhost:8000/v1');
+    expect(API_CONFIG.BASE_URL).toBe('http://localhost:8000/api/v1');
     expect(API_CONFIG.TIMEOUT).toBe(10000);
     expect(API_CONFIG.RETRY_ATTEMPTS).toBe(3);
     expect(API_CONFIG.RETRY_DELAY).toBe(1000);

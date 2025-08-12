@@ -6,6 +6,7 @@ from adapters.cache.memory_cache_adapter import InMemoryCacheAdapter
 from adapters.clock.system_clock_adapter import SystemClockAdapter
 from utils.response_formatter import ResponseFormatter
 
+
 class DashboardController:
     """Controlador para endpoints do dashboard"""
 
@@ -70,4 +71,6 @@ class DashboardController:
             )
 
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Erro ao buscar KPIs: {str(e)}")
+            raise HTTPException(
+                status_code=500, detail=f"Erro ao buscar KPIs: {str(e)}"
+            )

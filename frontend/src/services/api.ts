@@ -566,8 +566,8 @@ export const fetchDashboardMetrics = async (
     });
     
     const url = queryParams.toString() 
-      ? `/kpis?${queryParams.toString()}`
-      : `/kpis`;
+      ? `/api/v1/metrics/levels?${queryParams.toString()}`
+      : `/api/v1/metrics/levels`;
     
     console.log('🔍 fetchDashboardMetrics - Filtros originais:', filters);
     console.log('🔍 fetchDashboardMetrics - Query params construídos:', queryParams.toString());
@@ -622,7 +622,7 @@ export const fetchDashboardMetrics = async (
     console.error('🔍 fetchDashboardMetrics - Erro ao buscar métricas:', error);
     console.error('🔍 fetchDashboardMetrics - Tipo do erro:', typeof error);
     console.error('🔍 fetchDashboardMetrics - Stack trace:', error instanceof Error ? error.stack : 'N/A');
-    console.error('🔍 fetchDashboardMetrics - URL tentada:', `\/kpis`);
+    console.error('🔍 fetchDashboardMetrics - URL tentada:', '/api/v1/metrics/levels');
     return null;
   }
 };

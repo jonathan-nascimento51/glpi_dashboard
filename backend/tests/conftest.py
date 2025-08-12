@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Configurações compartilhadas para todos os testes"""
+
 import pytest
 import logging
 import sys
@@ -200,26 +201,33 @@ def mock_authenticated_service(glpi_service, mock_http_response):
     glpi_service.token_created_at = 1640995200  # Data fixa para testes
     glpi_service.token_expires_at = 1640998800
     return glpi_service
+
+
 @pytest.fixture
 def test_client():
     """Fixture para cliente de teste FastAPI"""
     from fastapi import FastAPI
     from fastapi.testclient import TestClient
     from observability import setup_observability
-    
+
     app = FastAPI()
-    
+
     # Adicionar endpoints basicos para teste
     @app.get("/health")
     def health():
-        return {"status": "healthy", "timestamp": "2023-01-01T00:00:00Z", "version": "1.0.0"}
-    
+        return {
+            "status": "healthy",
+            "timestamp": "2023-01-01T00:00:00Z",
+            "version": "1.0.0",
+        }
+
     @app.get("/metrics")
     def metrics():
         from prometheus_client import generate_latest, REGISTRY
+
         return generate_latest(REGISTRY)
-    
+
     # Configurar observabilidade
     setup_observability(app)
-    
+
     return TestClient(app)

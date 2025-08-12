@@ -1,0 +1,124 @@
+{
+  "timestamp": "2025-08-12T13:46:14.897835",
+  "health": {
+    "status": "healthy"
+  },
+  "data_health": {
+    "status": "ok",
+    "quality_level": "good",
+    "all_zero": false,
+    "anomalies": true,
+    "issues_count": 2,
+    "critical_issues": false,
+    "timestamp": "2025-08-12T13:46:12.873386",
+    "metrics": {
+      "total_fields": 7,
+      "numeric_fields": 25,
+      "total_issues": 2,
+      "critical_issues": 0,
+      "warning_issues": 2,
+      "data_completeness": 1.0,
+      "numeric_summary": {
+        "min": 0.0,
+        "max": 48.0,
+        "mean": 7.68,
+        "count": 25
+      }
+    },
+    "issues": [
+      {
+        "type": "anomaly",
+        "severity": "warning",
+        "message": "Valor anômalo detectado: 48.0 (z-score: 3.54)",
+        "field": "index_0"
+      },
+      {
+        "type": "missing_field",
+        "severity": "warning",
+        "message": "Campo obrigatório ausente: total",
+        "field": "total"
+      }
+    ]
+  },
+  "metrics": {
+    "success": true,
+    "message": "Métricas por nível obtidas com sucesso",
+    "data": {
+      "metrics_by_level": [
+        {
+          "level": "n1",
+          "total_tickets": 150,
+          "open_tickets": 45,
+          "closed_tickets": 95,
+          "pending_tickets": 10,
+          "avg_resolution_time_hours": 2.5,
+          "sla_compliance_rate": 0.92,
+          "is_anomaly": false,
+          "anomaly_score": 0.9052170370628173
+        },
+        {
+          "level": "n2",
+          "total_tickets": 89,
+          "open_tickets": 23,
+          "closed_tickets": 60,
+          "pending_tickets": 6,
+          "avg_resolution_time_hours": 4.2,
+          "sla_compliance_rate": 0.88,
+          "is_anomaly": false,
+          "anomaly_score": 0.6078510538730995
+        },
+        {
+          "level": "n3",
+          "total_tickets": 34,
+          "open_tickets": 12,
+          "closed_tickets": 20,
+          "pending_tickets": 2,
+          "avg_resolution_time_hours": 8.7,
+          "sla_compliance_rate": 0.85,
+          "is_anomaly": false,
+          "anomaly_score": 0.1792941957467415
+        },
+        {
+          "level": "n4",
+          "total_tickets": 12,
+          "open_tickets": 5,
+          "closed_tickets": 6,
+          "pending_tickets": 1,
+          "avg_resolution_time_hours": 15.3,
+          "sla_compliance_rate": 0.75,
+          "is_anomaly": false,
+          "anomaly_score": 1.3337738951891753
+        }
+      ],
+      "aggregated_metrics": {
+        "total_tickets_all_levels": 285,
+        "avg_resolution_time_all_levels": 7.67,
+        "overall_sla_compliance": 0.85,
+        "anomalies_detected": 0,
+        "performance_trend": "stable"
+      },
+      "metadata": {
+        "generated_at": "2025-08-12T13:46:14.895944",
+        "query_params": {
+          "start_date": null,
+          "end_date": null,
+          "status": "all",
+          "levels": [
+            "all"
+          ],
+          "include_anomalies": true,
+          "zscore_threshold": 2.0
+        },
+        "total_levels_processed": 4
+      },
+      "period_analyzed": {
+        "start_date": null,
+        "end_date": null,
+        "days_analyzed": 30
+      }
+    },
+    "errors": null,
+    "timestamp": "2025-08-12T16:46:14.896813+00:00"
+  },
+  "status": "ok"
+}

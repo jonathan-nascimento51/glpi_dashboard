@@ -1,4 +1,4 @@
-ï»¿import { defineConfig } from 'vite'
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 
@@ -21,7 +21,7 @@ export default defineConfig({
           'react-vendor': ['react', 'react-dom'],
           'ui-vendor': ['lucide-react', '@radix-ui/react-dialog', '@radix-ui/react-select'],
           'chart-vendor': ['recharts'],
-          // Dashboard chunks por domÃ­nio
+          // Dashboard chunks por domínio
           'dashboard-core': [
             './src/domains/dashboard/components/DashboardCard',
             './src/domains/dashboard/components/MetricsGrid'
@@ -37,7 +37,7 @@ export default defineConfig({
         assetFileNames: 'assets/[name]-[hash].[ext]'
       }
     },
-    // OtimizaÃ§Ãµes de minificaÃ§Ã£o
+    // Otimizações de minificação
     minify: 'terser',
     terserOptions: {
       compress: {
@@ -57,11 +57,10 @@ export default defineConfig({
         target: 'http://127.0.0.1:8000',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
   },
-  // OtimizaÃ§Ãµes de dev
+  // Otimizações de dev
   optimizeDeps: {
     include: ['react', 'react-dom', 'lucide-react'],
     exclude: ['@vite/client', '@vite/env']

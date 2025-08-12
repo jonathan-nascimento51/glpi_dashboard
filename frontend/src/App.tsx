@@ -1,40 +1,83 @@
-﻿import React, { Suspense, useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import ProfessionalDashboard from './components/ProfessionalDashboard';
 import { DashboardSkeleton } from './components/LazyComponents';
 import PWAManager from './components/PWAManager';
 import { useResourcePreload } from './hooks/useResourcePreload';
+import { useDashboard } from './hooks/useDashboard';
 import { ThemeProvider } from './lib/theme-provider';
-import { initializeAxe, AccessibilityValidator } from './lib/accessibility';
+import type { DashboardMetrics } from './types/api';
 import './App.css';
 
 // Lazy loading dos componentes opcionais
 const LazyDataIntegrityMonitor = React.lazy(() => import('./components/DataIntegrityMonitor'));
 const LazyPerformanceDashboard = React.lazy(() => import('./components/PerformanceDashboard'));
 
-// Inicializar axe-core para validação de acessibilidade em desenvolvimento
-if (process.env.NODE_ENV === 'development') {
-  initializeAxe();
-}
-
 function App() {
   const [showIntegrityMonitor, setShowIntegrityMonitor] = useState(false);
   const [showPerformanceDashboard, setShowPerformanceDashboard] = useState(false);
+  
+  // Hook para gerenciar dados do dashboard
+  const {
+    metrics,
+    technicianRanking,
+    isLoading,
+    forceRefresh,
+    updateDateRange
+  } = useDashboard();
 
   // Ativar preload de recursos críticos
   useResourcePreload({ enabled: true, priority: 'high' });
 
-  return (
-    <ThemeProvider defaultTheme="system" storageKey="glpi-dashboard-theme">
-      <AccessibilityValidator name="app-root">
-        <div className="App">
-          <PWAManager />
+  // Estado para controle de data range
+  const [dateRange, setDateRange] = useState({
+    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    endDate: new Date().toISOString().split('T')[0],
+    label: 'Últimos 30 dias'
+  });
 
-          {/* Dashboard principal */}
-          <Suspense fallback={<DashboardSkeleton />}>
-            <AccessibilityValidator name="main-dashboard">
-              <ProfessionalDashboard />
-            </AccessibilityValidator>
-          </Suspense>
+  const handleDateRangeChange = (newRange: any) => {
+    setDateRange(newRange);
+    updateDateRange(newRange);
+  };
+
+  // Converter DashboardMetrics para MetricsData
+  const convertedMetrics = metrics ? {
+    novos: metrics.niveis?.geral?.novos || 0,
+    pendentes: metrics.niveis?.geral?.pendentes || 0,
+    progresso: metrics.niveis?.geral?.progresso || 0,
+    resolvidos: metrics.niveis?.geral?.resolvidos || 0,
+    total: metrics.niveis?.geral?.total || 0,
+    niveis: metrics.niveis || {
+      n1: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+      n2: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+      n3: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+      n4: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
+      geral: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 }
+    },
+    tendencias: metrics.tendencias || {
+      novos: 'stable',
+      pendentes: 'stable',
+      progresso: 'stable',
+      resolvidos: 'stable'
+    }
+  } : null;
+
+  return (
+    <ThemeProvider storageKey="glpi-dashboard-theme">
+      <div className="App">
+        <PWAManager />
+
+        {/* Dashboard principal */}
+        <Suspense fallback={<DashboardSkeleton />}>
+          <ProfessionalDashboard 
+            metrics={convertedMetrics}
+            technicianRanking={technicianRanking}
+            isLoading={isLoading}
+            dateRange={dateRange}
+            onDateRangeChange={handleDateRangeChange}
+            onRefresh={forceRefresh}
+          />
+        </Suspense>
 
           {/* Controles para componentes opcionais */}
           <div 
@@ -85,24 +128,26 @@ function App() {
             </button>
           </div>
 
-          {/* Componentes opcionais */}
-          {showIntegrityMonitor && (
-            <Suspense fallback={<div>Carregando Monitor de Integridade...</div>}>
-              <AccessibilityValidator name="integrity-monitor">
-                <LazyDataIntegrityMonitor />
-              </AccessibilityValidator>
-            </Suspense>
-          )}
+        {/* Componentes opcionais */}
+        {showIntegrityMonitor && (
+          <Suspense fallback={<div>Carregando Monitor de Integridade...</div>}>
+            <LazyDataIntegrityMonitor 
+              report={null}
+              isVisible={showIntegrityMonitor}
+              onToggleVisibility={() => setShowIntegrityMonitor(!showIntegrityMonitor)}
+            />
+          </Suspense>
+        )}
 
-          {showPerformanceDashboard && (
-            <Suspense fallback={<div>Carregando Dashboard de Performance...</div>}>
-              <AccessibilityValidator name="performance-dashboard">
-                <LazyPerformanceDashboard />
-              </AccessibilityValidator>
-            </Suspense>
-          )}
-        </div>
-      </AccessibilityValidator>
+        {showPerformanceDashboard && (
+          <Suspense fallback={<div>Carregando Dashboard de Performance...</div>}>
+            <LazyPerformanceDashboard 
+              isVisible={showPerformanceDashboard}
+              onClose={() => setShowPerformanceDashboard(false)}
+            />
+          </Suspense>
+        )}
+      </div>
     </ThemeProvider>
   );
 }

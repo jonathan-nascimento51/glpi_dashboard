@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Módulo de logging estruturado para o GLPI Dashboard.
 Implementa logging em formato JSON com timestamp, nível, nome do logger e mensagem.

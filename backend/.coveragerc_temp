@@ -1,6 +1,0 @@
-[run]
-source = observability
-omit = 
-    tests/*
-    venv/*
-    utils/*

@@ -1,91 +1,91 @@
-# GLPI Dashboard
+﻿# GLPI Dashboard
 
-Aplicação completa para dashboard de métricas do GLPI, com backend Flask e frontend React.
+AplicaÃ§Ã£o completa para dashboard de mÃ©tricas do GLPI, com backend Flask e frontend React.
 
 ## Estrutura do Projeto
 
 ```
 .
-├── backend/                # Backend Flask
-│   ├── api/               # Endpoints da API
-│   │   ├── __init__.py    # Inicializador do módulo API
-│   │   └── routes.py      # Rotas da API
-│   ├── config/            # Configurações
-│   │   ├── __init__.py    # Inicializador do módulo de configuração
-│   │   └── settings.py    # Configurações centralizadas
-│   ├── schemas/           # Schemas de validação
-│   │   ├── __init__.py    # Inicializador do módulo de schemas
-│   │   └── dashboard.py   # Schemas do dashboard
-│   ├── services/          # Serviços de integração
-│   │   ├── __init__.py    # Inicializador do módulo de serviços
-│   │   ├── api_service.py # Serviço para APIs externas
-│   │   └── glpi_service.py # Serviço para integração com GLPI
-│   ├── utils/             # Utilitários
-│   │   ├── __init__.py    # Inicializador do módulo de utilitários
-│   │   ├── performance.py # Monitoramento de performance
-│   │   └── response_formatter.py # Formatação de respostas
-│   └── __init__.py        # Inicializador do pacote backend
-├── frontend/              # Frontend React + TypeScript
-│   ├── src/               # Código fonte do frontend
-│   │   ├── components/    # Componentes React
-│   │   ├── hooks/         # Hooks customizados
-│   │   ├── services/      # Serviços do frontend
-│   │   ├── types/         # Definições de tipos TypeScript
-│   │   └── utils/         # Utilitários do frontend
-│   ├── package.json       # Dependências Node.js
-│   └── vite.config.ts     # Configuração do Vite
-├── docs/                  # Documentação do projeto
-│   ├── AUDITORIA_COMPLETA_RESULTADOS.md # Resultados da auditoria
-│   └── GUIA_IMPLEMENTACAO_FILTROS_DATA_GLPI.md # Guia de filtros
-├── scripts/               # Scripts auxiliares
-│   ├── debug/             # Scripts de debug
-│   ├── tests/             # Scripts e arquivos de teste
-│   ├── validation/        # Scripts de validação
-│   └── README.md          # Documentação dos scripts
-├── app.py                 # Ponto de entrada do backend
-├── pyproject.toml         # Configuração e dependências Python
-├── .env.example           # Exemplo de variáveis de ambiente
-└── README.md              # Este arquivo
+â”œâ”€â”€ backend/                # Backend Flask
+â”‚   â”œâ”€â”€ api/               # Endpoints da API
+â”‚   â”‚   â”œâ”€â”€ __init__.py    # Inicializador do mÃ³dulo API
+â”‚   â”‚   â””â”€â”€ routes.py      # Rotas da API
+â”‚   â”œâ”€â”€ config/            # ConfiguraÃ§Ãµes
+â”‚   â”‚   â”œâ”€â”€ __init__.py    # Inicializador do mÃ³dulo de configuraÃ§Ã£o
+â”‚   â”‚   â””â”€â”€ settings.py    # ConfiguraÃ§Ãµes centralizadas
+â”‚   â”œâ”€â”€ schemas/           # Schemas de validaÃ§Ã£o
+â”‚   â”‚   â”œâ”€â”€ __init__.py    # Inicializador do mÃ³dulo de schemas
+â”‚   â”‚   â””â”€â”€ dashboard.py   # Schemas do dashboard
+â”‚   â”œâ”€â”€ services/          # ServiÃ§os de integraÃ§Ã£o
+â”‚   â”‚   â”œâ”€â”€ __init__.py    # Inicializador do mÃ³dulo de serviÃ§os
+â”‚   â”‚   â”œâ”€â”€ api_service.py # ServiÃ§o para APIs externas
+â”‚   â”‚   â””â”€â”€ glpi_service.py # ServiÃ§o para integraÃ§Ã£o com GLPI
+â”‚   â”œâ”€â”€ utils/             # UtilitÃ¡rios
+â”‚   â”‚   â”œâ”€â”€ __init__.py    # Inicializador do mÃ³dulo de utilitÃ¡rios
+â”‚   â”‚   â”œâ”€â”€ performance.py # Monitoramento de performance
+â”‚   â”‚   â””â”€â”€ response_formatter.py # FormataÃ§Ã£o de respostas
+â”‚   â””â”€â”€ __init__.py        # Inicializador do pacote backend
+â”œâ”€â”€ frontend/              # Frontend React + TypeScript
+â”‚   â”œâ”€â”€ src/               # CÃ³digo fonte do frontend
+â”‚   â”‚   â”œâ”€â”€ components/    # Componentes React
+â”‚   â”‚   â”œâ”€â”€ hooks/         # Hooks customizados
+â”‚   â”‚   â”œâ”€â”€ services/      # ServiÃ§os do frontend
+â”‚   â”‚   â”œâ”€â”€ types/         # DefiniÃ§Ãµes de tipos TypeScript
+â”‚   â”‚   â””â”€â”€ utils/         # UtilitÃ¡rios do frontend
+â”‚   â”œâ”€â”€ package.json       # DependÃªncias Node.js
+â”‚   â””â”€â”€ vite.config.ts     # ConfiguraÃ§Ã£o do Vite
+â”œâ”€â”€ docs/                  # DocumentaÃ§Ã£o do projeto
+â”‚   â”œâ”€â”€ AUDITORIA_COMPLETA_RESULTADOS.md # Resultados da auditoria
+â”‚   â””â”€â”€ GUIA_IMPLEMENTACAO_FILTROS_DATA_GLPI.md # Guia de filtros
+â”œâ”€â”€ scripts/               # Scripts auxiliares
+â”‚   â”œâ”€â”€ debug/             # Scripts de debug
+â”‚   â”œâ”€â”€ tests/             # Scripts e arquivos de teste
+â”‚   â”œâ”€â”€ validation/        # Scripts de validaÃ§Ã£o
+â”‚   â””â”€â”€ README.md          # DocumentaÃ§Ã£o dos scripts
+â”œâ”€â”€ app.py                 # Ponto de entrada do backend
+â”œâ”€â”€ pyproject.toml         # ConfiguraÃ§Ã£o e dependÃªncias Python
+â”œâ”€â”€ .env.example           # Exemplo de variÃ¡veis de ambiente
+â””â”€â”€ README.md              # Este arquivo
 ```
 
-## Configuração
+## ConfiguraÃ§Ã£o
 
-As configurações do projeto estão centralizadas no arquivo `backend/config/settings.py`. As configurações podem ser sobrescritas através de variáveis de ambiente.
+As configuraÃ§Ãµes do projeto estÃ£o centralizadas no arquivo `backend/config/settings.py`. As configuraÃ§Ãµes podem ser sobrescritas atravÃ©s de variÃ¡veis de ambiente.
 
 ### Arquivo .env
 
-Para facilitar a configuração, você pode criar um arquivo `.env` na raiz do projeto com suas variáveis de ambiente. Use o arquivo `.env.example` como modelo:
+Para facilitar a configuraÃ§Ã£o, vocÃª pode criar um arquivo `.env` na raiz do projeto com suas variÃ¡veis de ambiente. Use o arquivo `.env.example` como modelo:
 
 ```bash
 cp .env.example .env
 ```
 
-Edite o arquivo `.env` com suas configurações específicas.
+Edite o arquivo `.env` com suas configuraÃ§Ãµes especÃ­ficas.
 
-### Variáveis de Ambiente
+### VariÃ¡veis de Ambiente
 
-- `FLASK_ENV`: Ambiente de execução (`dev`, `prod`, `test`). Padrão: `dev`
-- `SECRET_KEY`: Chave secreta para Flask. Padrão: `dev-secret-key-change-in-production`
-- `FLASK_DEBUG`: Modo debug (`true`, `false`). Padrão: `false`
-- `PORT`: Porta do servidor. Padrão: `5000`
+- `FLASK_ENV`: Ambiente de execuÃ§Ã£o (`dev`, `prod`, `test`). PadrÃ£o: `dev`
+- `SECRET_KEY`: Chave secreta para Flask. PadrÃ£o: `dev-secret-key-change-in-production`
+- `FLASK_DEBUG`: Modo debug (`true`, `false`). PadrÃ£o: `false`
+- `PORT`: Porta do servidor. PadrÃ£o: `5000`
 
 ## Scripts Auxiliares
 
-O projeto inclui diversos scripts organizados na pasta `scripts/` para debug, testes e validação.
+O projeto inclui diversos scripts organizados na pasta `scripts/` para debug, testes e validaÃ§Ã£o.
 
-### Execução Rápida
+### ExecuÃ§Ã£o RÃ¡pida
 
 Use o script `run_scripts.py` para executar facilmente qualquer script auxiliar:
 
 ```bash
-# Listar todos os scripts disponíveis
+# Listar todos os scripts disponÃ­veis
 python run_scripts.py
 
 # Executar scripts de debug
 python run_scripts.py debug metrics
 python run_scripts.py debug trends
 
-# Executar scripts de validação
+# Executar scripts de validaÃ§Ã£o
 python run_scripts.py validation frontend_trends
 python run_scripts.py validation trends_math
 
@@ -93,16 +93,16 @@ python run_scripts.py validation trends_math
 python run_scripts.py tests trends
 ```
 
-### Execução Manual
+### ExecuÃ§Ã£o Manual
 
-Você também pode executar os scripts diretamente:
+VocÃª tambÃ©m pode executar os scripts diretamente:
 
 ```bash
 # Scripts de debug
 python scripts/debug/debug_metrics.py
 python scripts/debug/debug_trends.py
 
-# Scripts de validação
+# Scripts de validaÃ§Ã£o
 python scripts/validation/validate_frontend_trends.py
 python scripts/validation/validate_trends_math.py
 
@@ -111,21 +111,21 @@ python scripts/tests/test_trends.py
 ```
 
 Para mais detalhes sobre os scripts, consulte `scripts/README.md`.
-- `HOST`: Host do servidor. Padrão: `0.0.0.0`
-- `GLPI_URL`: URL da API do GLPI. Padrão: `http://10.73.0.79/glpi/apirest.php`
-- `GLPI_USER_TOKEN`: Token de usuário do GLPI.
-- `GLPI_APP_TOKEN`: Token de aplicação do GLPI.
-- `LOG_LEVEL`: Nível de log (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`). Padrão: `INFO`
+- `HOST`: Host do servidor. PadrÃ£o: `0.0.0.0`
+- `GLPI_URL`: URL da API do GLPI. PadrÃ£o: `http://10.73.0.79/glpi/apirest.php`
+- `GLPI_USER_TOKEN`: Token de usuÃ¡rio do GLPI.
+- `GLPI_APP_TOKEN`: Token de aplicaÃ§Ã£o do GLPI.
+- `LOG_LEVEL`: NÃ­vel de log (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`). PadrÃ£o: `INFO`
 
-## Instalação e Execução
+## InstalaÃ§Ã£o e ExecuÃ§Ã£o
 
-### Pré-requisitos
+### PrÃ©-requisitos
 
 - Python 3.11+
 - Node.js 16+
 - npm ou yarn
 
-### 1. Configuração do Backend (Flask)
+### 1. ConfiguraÃ§Ã£o do Backend (Flask)
 
 ```bash
 # Criar e ativar ambiente virtual
@@ -137,11 +137,11 @@ python -m venv venv
 # Linux/Mac
 source venv/bin/activate
 
-# Instalar dependências
+# Instalar dependÃªncias
 pip install flask flask-cors flask-caching flask-sqlalchemy gunicorn psycopg2-binary python-dotenv requests email-validator
 ```
 
-### 2. Configuração das Variáveis de Ambiente
+### 2. ConfiguraÃ§Ã£o das VariÃ¡veis de Ambiente
 
 ```bash
 # Copiar arquivo de exemplo
@@ -149,7 +149,7 @@ copy .env.example .env  # Windows
 cp .env.example .env    # Linux/Mac
 ```
 
-Edite o arquivo `.env` com suas configurações específicas do GLPI.
+Edite o arquivo `.env` com suas configuraÃ§Ãµes especÃ­ficas do GLPI.
 
 ### 3. Executar o Backend
 
@@ -158,7 +158,7 @@ Edite o arquivo `.env` com suas configurações específicas do GLPI.
 python app.py
 ```
 
-O backend será executado em `http://localhost:5000`
+O backend serÃ¡ executado em `http://localhost:5000`
 
 ### 4. Configurar e Executar o Frontend
 
@@ -168,37 +168,37 @@ Em um novo terminal:
 # Navegar para a pasta frontend
 cd frontend
 
-# Instalar dependências
+# Instalar dependÃªncias
 npm install
 
 # Executar servidor de desenvolvimento
 npm run dev
 ```
 
-O frontend será executado em `http://localhost:3000` (ou próxima porta disponível)
+O frontend serÃ¡ executado em `http://localhost:3000` (ou prÃ³xima porta disponÃ­vel)
 
-### 5. Acessar a Aplicação
+### 5. Acessar a AplicaÃ§Ã£o
 
 - **Frontend (Interface)**: `http://localhost:3000`
 - **Backend (API)**: `http://localhost:5000`
 
 ## Feature Flags
 
-O projeto utiliza feature flags para permitir deploys seguros e migração gradual de funcionalidades.
+O projeto utiliza feature flags para permitir deploys seguros e migraÃ§Ã£o gradual de funcionalidades.
 
 ### Sistema de Flags
 
-- **Backend**: Utiliza Unleash com fallback para variáveis de ambiente
-- **Frontend**: Integração com Unleash via `@unleash/proxy-client-js`
+- **Backend**: Utiliza Unleash com fallback para variÃ¡veis de ambiente
+- **Frontend**: IntegraÃ§Ã£o com Unleash via `@unleash/proxy-client-js`
 
-### Configuração
+### ConfiguraÃ§Ã£o
 
 #### Backend
 
-As flags são configuradas em `backend/app/flags.py` e podem ser controladas via:
+As flags sÃ£o configuradas em `backend/app/flags.py` e podem ser controladas via:
 
-1. **Unleash** (produção): Configure as variáveis de ambiente do Unleash
-2. **Fallback** (desenvolvimento): Use variáveis de ambiente diretas
+1. **Unleash** (produÃ§Ã£o): Configure as variÃ¡veis de ambiente do Unleash
+2. **Fallback** (desenvolvimento): Use variÃ¡veis de ambiente diretas
 
 ```bash
 # Exemplo: ativar flag v2 de KPIs localmente
@@ -207,21 +207,21 @@ export FLAG_USE_V2_KPIS=true
 
 #### Frontend
 
-Configure as variáveis de ambiente no arquivo `.env.local`:
+Configure as variÃ¡veis de ambiente no arquivo `.env.local`:
 
 ```bash
-# Configuração do Unleash (quando disponível)
+# ConfiguraÃ§Ã£o do Unleash (quando disponÃ­vel)
 VITE_UNLEASH_PROXY_URL=
 VITE_UNLEASH_PROXY_CLIENT_KEY=
 ```
 
-### Flags Disponíveis
+### Flags DisponÃ­veis
 
 #### `use_v2_kpis`
 
-- **Descrição**: Migração dos KPIs da API v1 para v2
+- **DescriÃ§Ã£o**: MigraÃ§Ã£o dos KPIs da API v1 para v2
 - **Comportamento**: 
-  - `false` (padrão): Usa endpoint `/v1/kpis`
+  - `false` (padrÃ£o): Usa endpoint `/v1/kpis`
   - `true`: Usa endpoint `/v2/kpis`
 - **Teste local**: 
   ```bash
@@ -236,24 +236,24 @@ VITE_UNLEASH_PROXY_CLIENT_KEY=
 
 1. O componente `KpiContainer` verifica a flag `use_v2_kpis`
 2. O hook `useKpisRaw` alterna automaticamente entre `/v1/kpis` e `/v2/kpis`
-3. A mudança é transparente para o usuário final
-4. Permite rollback instantâneo em caso de problemas
+3. A mudanÃ§a Ã© transparente para o usuÃ¡rio final
+4. Permite rollback instantÃ¢neo em caso de problemas
 
 ## Observabilidade
 
-O projeto inclui integração com Sentry para monitoramento de erros e OpenTelemetry para observabilidade, ativados condicionalmente via variáveis de ambiente.
+O projeto inclui integraÃ§Ã£o com Sentry para monitoramento de erros e OpenTelemetry para observabilidade, ativados condicionalmente via variÃ¡veis de ambiente.
 
-### Configuração
+### ConfiguraÃ§Ã£o
 
 #### Backend
 
-As ferramentas de observabilidade são inicializadas apenas se as variáveis de ambiente estiverem definidas:
+As ferramentas de observabilidade sÃ£o inicializadas apenas se as variÃ¡veis de ambiente estiverem definidas:
 
 - **Sentry**: Requer `SENTRY_DSN`
 - **OpenTelemetry**: Requer `OTEL_EXPORTER_OTLP_ENDPOINT`
 
 ```bash
-# Exemplo de configuração no .env
+# Exemplo de configuraÃ§Ã£o no .env
 SENTRY_DSN=https://your-sentry-dsn@sentry.io/project-id
 ENVIRONMENT=production
 RELEASE=1.0.0
@@ -267,10 +267,10 @@ OTEL_EXPORTER_OTLP_ENDPOINT=https://your-otel-endpoint
 
 #### Frontend
 
-O Sentry é inicializado apenas se `VITE_SENTRY_DSN` estiver definido:
+O Sentry Ã© inicializado apenas se `VITE_SENTRY_DSN` estiver definido:
 
 ```bash
-# Exemplo de configuração no .env.local
+# Exemplo de configuraÃ§Ã£o no .env.local
 VITE_SENTRY_DSN=https://your-sentry-dsn@sentry.io/project-id
 VITE_ENVIRONMENT=production
 VITE_RELEASE=1.0.0
@@ -281,37 +281,37 @@ VITE_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE=1.0
 
 ### Sourcemaps
 
-Para melhor debugging em produção, configure sourcemaps no build:
+Para melhor debugging em produÃ§Ã£o, configure sourcemaps no build:
 
 ```bash
 # Frontend - gerar sourcemaps
 npm run build -- --sourcemap
 
-# Upload automático via GitHub Actions (opcional)
-# Descomente a seção "Create Sentry release" no arquivo .github/workflows/ci.yml
+# Upload automÃ¡tico via GitHub Actions (opcional)
+# Descomente a seÃ§Ã£o "Create Sentry release" no arquivo .github/workflows/ci.yml
 ```
 
-### Critérios
+### CritÃ©rios
 
-- **Sem DSN**: Nenhum tráfego de eventos é enviado
-- **Com DSN**: Eventos de erro e performance são capturados e enviados
-- **Desenvolvimento**: Observabilidade desabilitada por padrão para não poluir o ambiente
+- **Sem DSN**: Nenhum trÃ¡fego de eventos Ã© enviado
+- **Com DSN**: Eventos de erro e performance sÃ£o capturados e enviados
+- **Desenvolvimento**: Observabilidade desabilitada por padrÃ£o para nÃ£o poluir o ambiente
 
 ## Endpoints da API
 
-### Métricas
+### MÃ©tricas
 
 ```
 GET /api/metrics
 ```
 
-Retorna as métricas do dashboard do GLPI.
+Retorna as mÃ©tricas do dashboard do GLPI.
 
 ### KPIs
 
 ```
 GET /v1/kpis
-GET /v2/kpis  # Disponível quando flag use_v2_kpis está ativa
+GET /v2/kpis  # DisponÃ­vel quando flag use_v2_kpis estÃ¡ ativa
 ```
 
 Retorna os indicadores-chave de performance.
@@ -322,31 +322,31 @@ Retorna os indicadores-chave de performance.
 GET /api/status
 ```
 
-Retorna o status do sistema e da conexão com o GLPI.
-##  Metodologia de Revisão em Ciclos
+Retorna o status do sistema e da conexÃ£o com o GLPI.
+##  Metodologia de RevisÃ£o em Ciclos
 
-Este projeto implementa uma metodologia estruturada de revisão baseada em ciclos iterativos de três fases, focando na modularidade e melhoria contínua.
+Este projeto implementa uma metodologia estruturada de revisÃ£o baseada em ciclos iterativos de trÃªs fases, focando na modularidade e melhoria contÃ­nua.
 
-###  Ciclos de Revisão
+###  Ciclos de RevisÃ£o
 
-#### Ciclo A - Configuração e Ambiente
-- **Objetivo**: Garantir que variáveis de ambiente e dependências estejam corretas
+#### Ciclo A - ConfiguraÃ§Ã£o e Ambiente
+- **Objetivo**: Garantir que variÃ¡veis de ambiente e dependÃªncias estejam corretas
 - **Foco**: .env.local, CORS, state management React
-- **Critérios**: API responde, frontend exibe dados, sem variáveis ausentes
+- **CritÃ©rios**: API responde, frontend exibe dados, sem variÃ¡veis ausentes
 
 #### Ciclo B - Backend
-- **Objetivo**: Validar implementação do backend e qualidade de código
-- **Foco**: Testes, linting (ruff), type checking (mypy), segurança (bandit)
-- **Critérios**: Cobertura >80%, todos os testes verdes, sem vulnerabilidades
+- **Objetivo**: Validar implementaÃ§Ã£o do backend e qualidade de cÃ³digo
+- **Foco**: Testes, linting (ruff), type checking (mypy), seguranÃ§a (bandit)
+- **CritÃ©rios**: Cobertura >80%, todos os testes verdes, sem vulnerabilidades
 
 #### Ciclo C - Frontend
-- **Objetivo**: Garantir qualidade do frontend e integração com API
+- **Objetivo**: Garantir qualidade do frontend e integraÃ§Ã£o com API
 - **Foco**: ESLint, Prettier, TypeScript, testes (Vitest), build
-- **Critérios**: Zero warnings, cobertura >80%, build funcional
+- **CritÃ©rios**: Zero warnings, cobertura >80%, build funcional
 
 ###  Quality Gates
 
-O projeto implementa Quality Gates automáticos no CI/CD que impedem merge de código que não atenda aos critérios de qualidade:
+O projeto implementa Quality Gates automÃ¡ticos no CI/CD que impedem merge de cÃ³digo que nÃ£o atenda aos critÃ©rios de qualidade:
 
 #### Backend Quality Gates
 -  Code Quality (Ruff)
@@ -369,62 +369,62 @@ O projeto implementa Quality Gates automáticos no CI/CD que impedem merge de c�
 -  API Drift Check
 -  Security Aggregation
 
-###  Validação Local
+###  ValidaÃ§Ã£o Local
 
-Antes de fazer push, execute a validação local para garantir que seu código passará pelos Quality Gates:
+Antes de fazer push, execute a validaÃ§Ã£o local para garantir que seu cÃ³digo passarÃ¡ pelos Quality Gates:
 
 #### Windows (PowerShell)
 ```powershell
-# Validação completa
+# ValidaÃ§Ã£o completa
 .\scripts\validate-quality-gates.ps1
 
-# Pular validações específicas
+# Pular validaÃ§Ãµes especÃ­ficas
 .\scripts\validate-quality-gates.ps1 -SkipBackend
 .\scripts\validate-quality-gates.ps1 -SkipFrontend
 ```
 
 #### Linux/macOS (Bash)
 ```bash
-# Validação completa
+# ValidaÃ§Ã£o completa
 ./scripts/validate-quality-gates.sh
 
-# Pular validações específicas
+# Pular validaÃ§Ãµes especÃ­ficas
 ./scripts/validate-quality-gates.sh --skip-backend
 ./scripts/validate-quality-gates.sh --skip-frontend
 ./scripts/validate-quality-gates.sh --skip-integration
 ```
 
-###  Documentação da Metodologia
+###  DocumentaÃ§Ã£o da Metodologia
 
-- **[Metodologia Completa](docs/METODOLOGIA_REVISAO_CICLOS.md)**: Guia detalhado dos ciclos de revisão
-- **[Quality Gates CI](docs/QUALITY_GATES_CI.md)**: Configuração dos Quality Gates para CI/CD
+- **[Metodologia Completa](docs/METODOLOGIA_REVISAO_CICLOS.md)**: Guia detalhado dos ciclos de revisÃ£o
+- **[Quality Gates CI](docs/QUALITY_GATES_CI.md)**: ConfiguraÃ§Ã£o dos Quality Gates para CI/CD
 - **[E2E Coverage Guide](docs/E2E_COVERAGE_GUIDE.md)**: Guia de testes E2E e cobertura
 
 ###  Diretrizes para Prompts Futuros
 
 1. **Checagem Visual**: Sempre validar que o frontend renderiza dados reais
 2. **Ambiente Saneado**: Verificar .env.local antes de cada ciclo
-3. **Feedback Rápido**: Corrigir erros comuns (setState assíncrono)
-4. **Documentação**: Atualizar README após mudanças significativas
+3. **Feedback RÃ¡pido**: Corrigir erros comuns (setState assÃ­ncrono)
+4. **DocumentaÃ§Ã£o**: Atualizar README apÃ³s mudanÃ§as significativas
 
-###  Métricas de Sucesso
+###  MÃ©tricas de Sucesso
 
 #### Quantitativas
-- Cobertura de código: >80% (backend e frontend)
+- Cobertura de cÃ³digo: >80% (backend e frontend)
 - Tempo de build: <5 minutos
 - Testes passando: 100%
-- Vulnerabilidades: 0 críticas/altas
+- Vulnerabilidades: 0 crÃ­ticas/altas
 
 #### Qualitativas
 - Interface funcional com dados reais
-- Setup rápido e claro
-- Código limpo e bem documentado
-- CI/CD estável
+- Setup rÃ¡pido e claro
+- CÃ³digo limpo e bem documentado
+- CI/CD estÃ¡vel
 
 
 ##  Estrutura do Projeto
 
-Este projeto segue uma estrutura organizada e padronizada. Para detalhes completos sobre a organiza��o de arquivos e diretrizes, consulte:
+Este projeto segue uma estrutura organizada e padronizada. Para detalhes completos sobre a organização de arquivos e diretrizes, consulte:
 
  **[Guia de Estrutura do Projeto](docs/ESTRUTURA_PROJETO.md)**
 
@@ -432,18 +432,59 @@ Este projeto segue uma estrutura organizada e padronizada. Para detalhes complet
 ```
  backend/              # API Python/FastAPI
 ?? frontend/             # Interface React/TypeScript  
-?? scripts/              # Scripts de automa��o
-    analysis/        # An�lise e valida��o
+?? scripts/              # Scripts de automação
+    analysis/        # Análise e validação
     deployment/      # Deploy e CI/CD
-�   +-- validation/      # Quality Gates
-?? docs/                 # Documenta��o
-?? config/               # Configura��es
+¦   +-- validation/      # Quality Gates
+?? docs/                 # Documentação
+?? config/               # Configurações
 ?? tools/                # Ferramentas auxiliares
 ?? monitoring/           # Observabilidade
 ```
 
-### Scripts Principais
-- **Valida��o Local**: `scripts/validate-quality-gates.ps1`
+#
+##  Segurança
+
+Este projeto implementa múltiplas camadas de segurança para proteger contra vulnerabilidades comuns:
+
+### Headers de Segurança
+- **X-Frame-Options**: Proteção contra clickjacking
+- **Content-Security-Policy**: Prevenção de XSS e injeção de código
+- **X-Content-Type-Options**: Prevenção de MIME sniffing
+- **Strict-Transport-Security**: Força uso de HTTPS
+
+### Análise Estática (SAST)
+- **Bandit**: Análise de segurança para Python
+- **Semgrep**: Detecção de padrões inseguros
+- **Safety**: Verificação de vulnerabilidades em dependências
+
+### Detecção de Segredos
+- **GitLeaks**: Detecção de credenciais em commits
+- **TruffleHog**: Verificação de segredos em repositório
+
+### Comandos de Segurança
+```bash
+# Verificação completa de segurança
+make security
+
+# Verificação rápida
+make security-quick
+
+# Ferramentas individuais
+make security-bandit
+make security-safety
+make security-gitleaks
+
+# Pre-commit hooks
+make pre-commit
+```
+
+### Documentação Detalhada
+Para informações completas sobre implementações de segurança, consulte:
+**[ Documentação de Segurança](SECURITY.md)**
+## Scripts Principais
+- **Validação Local**: `scripts/validate-quality-gates.ps1`
 - **Ambiente Preview**: `scripts/start-preview.ps1`
 - **Monitoramento**: `scripts/monitor-quality.ps1`
 - **Dashboard**: `docs/quality-dashboard.html`
+

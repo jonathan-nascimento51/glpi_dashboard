@@ -1,7 +1,7 @@
-// Configuração centralizada da API para evitar problemas recorrentes
+﻿// ConfiguraÃ§Ã£o centralizada da API para evitar problemas recorrentes
 
 /**
- * Configurações de ambiente
+ * ConfiguraÃ§Ãµes de ambiente
  */
 export const API_CONFIG = {
   // URLs base
@@ -26,7 +26,7 @@ export const API_CONFIG = {
  * NUNCA hardcode URLs nos componentes!
  */
 export const API_ENDPOINTS = {
-  // KPIs e Métricas
+  // KPIs e MÃ©tricas
   KPIS: '/kpis',
   
   // Sistema
@@ -34,10 +34,10 @@ export const API_ENDPOINTS = {
   HEALTH_CHECK: '/health',
   
   // Tickets
-  TICKETS_NEW: '/tickets/new',
+  TICKETS_NEW: '/api/v1/tickets/new',
   TICKETS_SEARCH: '/tickets/search',
   
-  // Técnicos
+  // TÃ©cnicos
   TECHNICIANS_RANKING: '/technicians/ranking',
   
   // Cache
@@ -45,7 +45,7 @@ export const API_ENDPOINTS = {
 } as const;
 
 /**
- * Parâmetros padrão para diferentes tipos de requisição
+ * ParÃ¢metros padrÃ£o para diferentes tipos de requisiÃ§Ã£o
  */
 export const DEFAULT_PARAMS = {
   TICKETS_LIMIT: 6,
@@ -54,7 +54,7 @@ export const DEFAULT_PARAMS = {
 } as const;
 
 /**
- * Headers padrão
+ * Headers padrÃ£o
  */
 export const DEFAULT_HEADERS = {
   'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ export const DEFAULT_HEADERS = {
 } as const;
 
 /**
- * Função para construir URL completa
+ * FunÃ§Ã£o para construir URL completa
  */
 export function buildApiUrl(endpoint: string, params?: Record<string, any>): string {
   let url = endpoint;
@@ -81,13 +81,13 @@ export function buildApiUrl(endpoint: string, params?: Record<string, any>): str
 }
 
 /**
- * Validação de configuração
+ * ValidaÃ§Ã£o de configuraÃ§Ã£o
  */
 export function validateApiConfig(): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
   
   if (!API_CONFIG.BASE_URL) {
-    errors.push('BASE_URL não está definida');
+    errors.push('BASE_URL nÃ£o estÃ¡ definida');
   }
   
   if (!API_CONFIG.BASE_URL.includes('/api')) {
@@ -95,7 +95,7 @@ export function validateApiConfig(): { valid: boolean; errors: string[] } {
   }
   
   if (API_CONFIG.DEFAULT_TIMEOUT < 5000) {
-    errors.push('DEFAULT_TIMEOUT muito baixo (mínimo 5000ms)');
+    errors.push('DEFAULT_TIMEOUT muito baixo (mÃ­nimo 5000ms)');
   }
   
   return {
@@ -105,7 +105,7 @@ export function validateApiConfig(): { valid: boolean; errors: string[] } {
 }
 
 /**
- * Configuração de desenvolvimento vs produção
+ * ConfiguraÃ§Ã£o de desenvolvimento vs produÃ§Ã£o
  */
 export const ENV_CONFIG = {
   isDevelopment: import.meta.env.NODE_ENV === 'development',
@@ -122,26 +122,26 @@ export type ApiConfig = typeof API_CONFIG;
 export type EnvConfig = typeof ENV_CONFIG;
 
 /**
- * Função utilitária para log de debug
+ * FunÃ§Ã£o utilitÃ¡ria para log de debug
  */
 export function debugLog(message: string, data?: any): void {
   if (ENV_CONFIG.enableLogging) {
-    console.log(`🔧 [API Debug] ${message}`, data || '');
+    console.log(`ðŸ”§ [API Debug] ${message}`, data || '');
   }
 }
 
 /**
- * Função utilitária para log de erro
+ * FunÃ§Ã£o utilitÃ¡ria para log de erro
  */
 export function errorLog(message: string, error?: any): void {
-  console.error(`❌ [API Error] ${message}`, error || '');
+  console.error(`âŒ [API Error] ${message}`, error || '');
 }
 
 /**
- * Função utilitária para log de sucesso
+ * FunÃ§Ã£o utilitÃ¡ria para log de sucesso
  */
 export function successLog(message: string, data?: any): void {
   if (ENV_CONFIG.enableLogging) {
-    console.log(`✅ [API Success] ${message}`, data || '');
+    console.log(`âœ… [API Success] ${message}`, data || '');
   }
 }

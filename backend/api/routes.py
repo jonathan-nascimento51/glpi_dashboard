@@ -9,7 +9,7 @@ from backend.utils.performance import (
     extract_filter_params,
 )
 from backend.utils.response_formatter import ResponseFormatter
-from models.validation import MetricsData as DashboardMetrics
+from backend.models.validation import MetricsData as DashboardMetrics
 from pydantic import ValidationError
 import logging
 from datetime import datetime

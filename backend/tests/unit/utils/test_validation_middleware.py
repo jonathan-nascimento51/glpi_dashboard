@@ -27,21 +27,39 @@ class TestValidationMiddleware:
             "success": True,
             "data": {
                 "niveis": {
-                    "N1": {"total": 10, "resolvidos": 8, "pendentes": 2, "tempo_medio": 2.5},
-                    "N2": {"total": 5, "resolvidos": 4, "pendentes": 1, "tempo_medio": 4.0},
-                    "N3": {"total": 2, "resolvidos": 1, "pendentes": 1, "tempo_medio": 8.0}
+                    "N1": {
+                        "total": 10,
+                        "resolvidos": 8,
+                        "pendentes": 2,
+                        "tempo_medio": 2.5,
+                    },
+                    "N2": {
+                        "total": 5,
+                        "resolvidos": 4,
+                        "pendentes": 1,
+                        "tempo_medio": 4.0,
+                    },
+                    "N3": {
+                        "total": 2,
+                        "resolvidos": 1,
+                        "pendentes": 1,
+                        "tempo_medio": 8.0,
+                    },
                 },
                 "total_tickets": 17,
                 "tickets_resolvidos": 13,
                 "tickets_pendentes": 4,
                 "tempo_medio_resolucao": 3.5,
-                "satisfacao_cliente": 4.2
-            }
+                "satisfacao_cliente": 4.2,
+            },
         }
 
     @pytest.mark.asyncio
-    async def test_valid_metrics_response_passes_through(self, middleware, mock_request, valid_metrics_response):
+    async def test_valid_metrics_response_passes_through(
+        self, middleware, mock_request, valid_metrics_response
+    ):
         """Testa que uma resposta de metricas valida passa sem modificacao"""
+
         # Mock da funcao call_next
         async def mock_call_next(request):
             response = JSONResponse(content=valid_metrics_response)

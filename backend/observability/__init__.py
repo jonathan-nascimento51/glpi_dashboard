@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """Modulo de observabilidade - logging, metricas e exception handling"""
 
 # Logger
@@ -8,7 +8,7 @@ from .logger import (
     set_request_context,
     clear_request_context,
     generate_request_id,
-    StructuredLogger
+    StructuredLogger,
 )
 
 # Exceptions
@@ -18,7 +18,7 @@ from .exceptions import (
     ExternalServiceError,
     ValidationError,
     setup_exception_handlers,
-    create_error_response
+    create_error_response,
 )
 
 # Middleware
@@ -28,7 +28,7 @@ from .middleware import (
     get_metrics_summary,
     CacheMetrics,
     ExternalAPIMetrics,
-    MetricsMiddleware
+    MetricsMiddleware,
 )
 
 # Modules
@@ -47,9 +47,10 @@ def setup_observability(app, log_level: str = "INFO", enable_json_logs: bool = T
     logger.info(
         "Sistema de observabilidade configurado",
         log_level=log_level,
-        json_logs=enable_json_logs
+        json_logs=enable_json_logs,
     )
     return app
+
 
 __all__ = [
     # Modules
@@ -78,5 +79,5 @@ __all__ = [
     "CacheMetrics",
     "ExternalAPIMetrics",
     # Setup
-    "setup_observability"
+    "setup_observability",
 ]

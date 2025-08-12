@@ -1,7 +1,7 @@
-import { validateMetricsData, validateTechnicianRanking, validateSystemStatus } from '../types/validation';
+ï»¿import { validateMetricsData, validateTechnicianRanking, validateSystemStatus } from '../types/validation';
 import type { MetricsData, TechnicianRanking, SystemStatus } from '../types';
 
-// Middleware para validação de dados da API
+// Middleware para validaÃ§Ã£o de dados da API
 export class ApiValidationMiddleware {
   static validateApiResponse<T>(
     data: unknown,
@@ -29,7 +29,7 @@ export class ApiValidationMiddleware {
       data,
       validateMetricsData,
       this.getMetricsFallback(),
-      '/v1/kpis'
+      '/api/v1/kpis'
     );
   }
 
@@ -38,7 +38,7 @@ export class ApiValidationMiddleware {
       data,
       validateTechnicianRanking,
       [],
-      '/v1/ranking'
+      '/api/v1/ranking'
     );
   }
 
@@ -47,7 +47,7 @@ export class ApiValidationMiddleware {
       data,
       validateSystemStatus,
       this.getStatusFallback(),
-      '/v1/status'
+      '/api/v1/status'
     );
   }
 
@@ -103,7 +103,7 @@ export class ApiValidationMiddleware {
   }
 }
 
-// Hook personalizado para validação de dados
+// Hook personalizado para validaÃ§Ã£o de dados
 export const useValidatedApiData = () => {
   const validateAndLog = <T>(
     data: unknown,
@@ -134,7 +134,7 @@ export const createValidatedFetch = () => {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
-      // Clone response para poder ler o body múltiplas vezes
+      // Clone response para poder ler o body mÃºltiplas vezes
       const clonedResponse = response.clone();
       
       try {

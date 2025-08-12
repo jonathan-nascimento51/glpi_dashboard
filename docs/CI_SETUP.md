@@ -1,240 +1,274 @@
-﻿# CI/CD Setup Guide
+# CI/CD Pipeline - GLPI Dashboard
 
-Este guia explica como configurar todas as variáveis de ambiente e tokens necessários para o pipeline de CI/CD funcionar completamente.
+Este documento descreve a configuração e uso do pipeline de Integração Contínua (CI) para o projeto GLPI Dashboard.
 
-##  Variáveis de Ambiente Obrigatórias
+## 📋 Visão Geral
 
-### GitHub Secrets
+O pipeline CI está configurado com GitHub Actions e inclui:
 
-Configure as seguintes secrets no GitHub (Settings  Secrets and variables  Actions):
+- ✅ **Testes Backend**: Python com pytest
+- ✅ **Testes Frontend**: TypeScript/React com Vitest
+- ✅ **Linting**: flake8, isort, black (Python) + ESLint, Prettier (TypeScript)
+- ✅ **Análise de Segurança**: Bandit, Safety
+- ✅ **Relatórios de Cobertura**: Coverage.py (backend) + Vitest (frontend)
+- ✅ **Testes de Integração**: Com Redis
+- ✅ **Deploy Automático**: Para branch main
 
-#### SonarQube
-```bash
-SONAR_TOKEN=your_sonar_token_here
-SONAR_HOST_URL=https://sonarcloud.io  # ou sua instância SonarQube
-```
+## 🚀 Estrutura do Pipeline
 
-#### Chromatic (Visual Regression)
-```bash
-CHROMATIC_PROJECT_TOKEN=your_chromatic_project_token_here
-```
+### Jobs Principais
 
-#### GLPI API (para testes de integração)
-```bash
-GLPI_API_URL=https://your-glpi-instance.com/apirest.php
-GLPI_APP_TOKEN=your_glpi_app_token
-GLPI_USER_TOKEN=your_glpi_user_token
-```
+1. **backend-tests**: Testa o código Python
+2. **frontend-tests**: Testa o código TypeScript/React
+3. **integration-tests**: Testa a integração entre componentes
+4. **security-scan**: Análise de segurança
+5. **code-quality**: Análise de qualidade (SonarCloud)
+6. **build-and-deploy**: Build e deploy (apenas main)
+7. **notify**: Notificações de resultado
 
-#### Sentry (opcional)
-```bash
-SENTRY_AUTH_TOKEN=your_sentry_auth_token
-SENTRY_ORG=your_sentry_org
-SENTRY_PROJECT=your_sentry_project
-```
+### Triggers
 
-##  Como Obter os Tokens
+- **Push**: branches `main` e `develop`
+- **Pull Request**: para branches `main` e `develop`
 
-### 1. CHROMATIC_PROJECT_TOKEN
+## 🛠️ Configuração Local
 
-1. **Acesse o Chromatic**: https://www.chromatic.com/
-2. **Faça login** com sua conta GitHub
-3. **Crie um novo projeto**:
-   - Clique em "Add project"
-   - Conecte seu repositório GitHub
-   - Selecione o repositório `glpi_dashboard`
-4. **Obtenha o token**:
-   - Após criar o projeto, vá para "Manage"  "Configure"
-   - Copie o `CHROMATIC_PROJECT_TOKEN`
-   - Adicione como secret no GitHub
-
-### 2. SONAR_TOKEN
-
-#### Para SonarCloud (Recomendado)
-1. **Acesse**: https://sonarcloud.io/
-2. **Faça login** com GitHub
-3. **Importe o projeto**:
-   - Clique em "+"  "Analyze new project"
-   - Selecione seu repositório
-4. **Gere o token**:
-   - Vá para "My Account"  "Security"
-   - Clique em "Generate Tokens"
-   - Nome: `glpi_dashboard_ci`
-   - Copie o token gerado
-
-#### Para SonarQube Self-Hosted
-1. **Acesse sua instância SonarQube**
-2. **Vá para**: Administration  Security  Users
-3. **Gere token** para o usuário de CI
-4. **Configure** `SONAR_HOST_URL` com sua URL
-
-### 3. GLPI Tokens
-
-1. **Acesse seu GLPI** como administrador
-2. **Vá para**: Setup  General  API
-3. **Ative a API REST** se não estiver ativa
-4. **Crie App Token**:
-   - Setup  General  API  API clients
-   - Adicione novo cliente com nome `ci_tests`
-5. **Crie User Token**:
-   - Administration  Users  [seu usuário]
-   - Aba "Remote access keys"
-   - Gere nova chave
-
-### 4. Sentry Tokens (Opcional)
-
-1. **Acesse**: https://sentry.io/
-2. **Vá para**: Settings  Account  API  Auth Tokens
-3. **Crie token** com escopo `project:releases`
-4. **Obtenha org/project**:
-   - URL do projeto: `https://sentry.io/organizations/{org}/projects/{project}/`
-
-##  Configuração Local
-
-### Arquivo `.env.local` (para desenvolvimento)
+### Backend (Python)
 
 ```bash
-# Frontend
-VITE_GLPI_API_URL=http://localhost:8000
-VITE_UNLEASH_PROXY_URL=http://localhost:4242/proxy
-VITE_UNLEASH_PROXY_CLIENT_KEY=your_unleash_key
-VITE_UNLEASH_APP_NAME=glpi_dashboard_dev
+# Instalar dependências de desenvolvimento
+pip install flake8 black isort pytest pytest-cov bandit safety
 
-# Feature Flags (fallback local)
-VITE_FLAG_USE_V2_KPIS=false
+# Executar linting
+flake8 backend/
+isort --check-only --diff backend/
+black --check --diff backend/
 
-# Backend
-GLPI_API_URL=https://your-glpi-instance.com/apirest.php
-GLPI_APP_TOKEN=your_dev_app_token
-GLPI_USER_TOKEN=your_dev_user_token
-REDIS_URL=redis://localhost:6379
-
-# Sentry (opcional)
-SENTRY_DSN=your_sentry_dsn
-SENTRY_ENVIRONMENT=development
-```
-
-##  Verificação da Configuração
-
-### 1. Teste Local
-
-```bash
-# Backend
+# Executar testes com cobertura
 cd backend
-python -m pytest tests/ -v
-ruff check .
-mypy .
-bandit -r .
-safety check
+pytest --cov=. --cov-report=html --cov-report=term-missing
 
-# Frontend
-cd frontend
-npm run lint
-npm run type-check
-npm test
-npm run build
-npm run storybook:build
-npm run check:drift
+# Análise de segurança
+bandit -r backend/
+safety check -r requirements.txt
 ```
 
-### 2. Teste CI
+### Frontend (TypeScript/React)
 
-1. **Faça um commit** pequeno
-2. **Abra um PR** para testar o pipeline
-3. **Verifique** se todos os jobs passam:
-   -  Frontend: lint, types, tests, storybook
-   -  Backend: lint, types, tests, security
-   -  Integration: API tests
-   -  SonarQube: quality gate
-   -  Chromatic: visual regression (se configurado)
+```bash
+# Instalar dependências
+cd frontend
+npm install
 
-##  Quality Gates
+# Executar linting e formatação
+npm run lint
+npm run format:check
+npm run type-check
 
-### Critérios de Bloqueio
+# Executar testes com cobertura
+npm test
 
-O pipeline **bloqueia** o merge se:
+# Build para produção
+npm run build
+```
 
--  **Lint** falhar (frontend ou backend)
--  **Type check** falhar
--  **Testes unitários** falharem
--  **Cobertura** abaixo do limiar (80%)
--  **SonarQube** reprovar (bugs, vulnerabilidades, code smells)
--  **Security scan** encontrar vulnerabilidades críticas
--  **API fuzzing** encontrar erros críticos
--  **Testes de integração** falharem
--  **Build** falhar (frontend ou backend)
--  **Orval drift** detectado (API mudou sem atualizar cliente)
+## 📊 Relatórios de Cobertura
 
-### Aprovação Manual Necessária
+### Backend (Python)
 
--  **Visual regression**: Mudanças visuais no Chromatic
--  **Code review**: Pelo menos 1 aprovação de reviewer
+O pipeline gera relatórios de cobertura em múltiplos formatos:
 
-##  Monitoramento
+```bash
+# Executar testes com cobertura
+pytest --cov=. --cov-report=xml --cov-report=html --cov-report=term-missing
 
-### Dashboards
+# Arquivos gerados:
+# - coverage.xml (para Codecov)
+# - htmlcov/ (relatório HTML)
+# - Terminal output com linhas não cobertas
+```
 
-- **SonarQube**: Qualidade do código, cobertura, vulnerabilidades
-- **Chromatic**: Regressão visual, componentes
-- **GitHub Actions**: Status do pipeline, tempo de execução
-- **Sentry**: Erros em produção, performance
+**Configuração de Cobertura** (pyproject.toml):
+- Fonte: `backend/`
+- Exclusões: testes, migrações, venv
+- Meta: >80% de cobertura
+- Relatório HTML em `htmlcov/`
 
-### Métricas Importantes
+### Frontend (TypeScript/React)
 
-- **Cobertura de testes**: > 80% (global), > 85% (components/services), > 90% (hooks)
-- **Quality Gate**: A (SonarQube)
-- **Vulnerabilidades**: 0 críticas, < 5 altas
-- **Performance**: Build < 5min, testes < 2min
-- **Visual regression**: 0 mudanças não aprovadas
+```bash
+# Executar testes com cobertura
+npm test -- --coverage
 
-##  Troubleshooting
+# Arquivos gerados:
+# - coverage/lcov.info (para Codecov)
+# - coverage/ (relatório HTML)
+```
 
-### Problemas Comuns
+**Configuração de Cobertura** (vitest.config.ts):
+- Cobertura com V8
+- Formatos: text, json, html, lcov
+- Exclusões: node_modules, dist, tests
 
-1. **SonarQube falha**:
-   - Verifique se `SONAR_TOKEN` está correto
-   - Confirme se projeto existe no SonarCloud
+## 🔧 Configurações de Ferramentas
 
-2. **Chromatic falha**:
-   - Verifique se `CHROMATIC_PROJECT_TOKEN` está configurado
-   - Confirme se Storybook build está funcionando
+### Python Tools
 
-3. **Testes de integração falham**:
-   - Verifique tokens GLPI
-   - Confirme se API está acessível
+**flake8** (`.flake8`):
+- Max line length: 127
+- Max complexity: 10
+- Ignora E203, E501, W503, W504
 
-4. **Orval drift detectado**:
+**black** (pyproject.toml):
+- Line length: 127
+- Target: Python 3.11
+
+**isort** (pyproject.toml):
+- Profile: black
+- Line length: 127
+- Known first party: backend, config, utils, services, models, tests
+
+### TypeScript/React Tools
+
+**ESLint**:
+- TypeScript parser
+- React hooks plugin
+- Max warnings: 0
+
+**Prettier** (`.prettierrc`):
+- Single quotes
+- Semicolons
+- Print width: 100
+- Tab width: 2
+
+## 🔐 Secrets Necessários
+
+Para funcionalidade completa, configure estes secrets no GitHub:
+
+```yaml
+# Obrigatórios para testes de integração
+GLPI_URL: "https://seu-glpi.com/apirest.php"
+GLPI_APP_TOKEN: "seu_app_token"
+GLPI_USER_TOKEN: "seu_user_token"
+
+# Opcionais para análise de qualidade
+SONAR_TOKEN: "seu_sonar_token"  # Para SonarCloud
+CODECOV_TOKEN: "seu_codecov_token"  # Para Codecov (opcional)
+```
+
+## 📈 Monitoramento e Métricas
+
+### Codecov Integration
+
+- Upload automático de relatórios de cobertura
+- Comentários em PRs com mudanças de cobertura
+- Dashboards de tendências
+
+### SonarCloud Integration
+
+- Análise de qualidade de código
+- Detecção de code smells
+- Análise de segurança
+- Métricas de maintainability
+
+### Artifacts
+
+O pipeline salva os seguintes artifacts:
+
+- **backend-coverage-html**: Relatório HTML de cobertura do backend
+- **frontend-coverage-html**: Relatório HTML de cobertura do frontend
+- **security-reports**: Relatórios de segurança (Bandit)
+- **deployment-package**: Pacote de deploy (apenas main)
+
+## 🚨 Troubleshooting
+
+### Falhas Comuns
+
+1. **Testes falhando**:
    ```bash
-   cd frontend
-   npm run orval:generate
-   git add .
-   git commit -m "fix: update API client after schema changes"
+   # Executar localmente primeiro
+   pytest backend/tests/ -v
+   npm test
    ```
 
-### Logs Úteis
+2. **Linting errors**:
+   ```bash
+   # Corrigir automaticamente
+   black backend/
+   isort backend/
+   npm run lint:fix
+   npm run format
+   ```
+
+3. **Cobertura baixa**:
+   ```bash
+   # Verificar linhas não cobertas
+   pytest --cov=. --cov-report=term-missing
+   ```
+
+4. **Dependências desatualizadas**:
+   ```bash
+   # Backend
+   pip list --outdated
+   
+   # Frontend
+   npm outdated
+   ```
+
+### Debug do Pipeline
+
+1. Verificar logs detalhados no GitHub Actions
+2. Executar comandos localmente antes do push
+3. Usar `act` para testar GitHub Actions localmente:
+   ```bash
+   # Instalar act
+   # https://github.com/nektos/act
+   
+   # Executar pipeline localmente
+   act push
+   ```
+
+## 📝 Contribuindo
+
+### Pre-commit Hooks (Recomendado)
 
 ```bash
-# Ver logs do CI
-gh run list
-gh run view [run-id]
+# Instalar pre-commit
+pip install pre-commit
 
-# Logs locais detalhados
-npm run test -- --verbose
-pytest -v --tb=long
+# Configurar hooks
+pre-commit install
+
+# Executar em todos os arquivos
+pre-commit run --all-files
 ```
 
-##  Suporte
+### Workflow para Contribuições
 
-Para problemas com a configuração:
+1. Criar branch feature: `git checkout -b feature/nova-funcionalidade`
+2. Fazer alterações e commits
+3. Executar testes localmente: `pytest && npm test`
+4. Executar linting: `flake8 && npm run lint`
+5. Push e criar Pull Request
+6. Aguardar CI passar
+7. Review e merge
 
-1. **Verifique** este guia primeiro
-2. **Consulte** os logs do CI
-3. **Abra issue** com:
-   - Descrição do problema
-   - Logs relevantes
-   - Passos para reproduzir
+## 🔄 Atualizações do Pipeline
+
+Para modificar o pipeline:
+
+1. Editar `.github/workflows/ci.yml`
+2. Testar localmente com `act`
+3. Fazer commit e push
+4. Verificar execução no GitHub Actions
+
+### Versionamento
+
+- Actions: Usar versões específicas (ex: `@v4`)
+- Dependencies: Manter atualizadas
+- Python/Node: Versões LTS recomendadas
 
 ---
 
-**Última atualização**: $(Get-Date -Format "yyyy-MM-dd")
-**Versão**: 1.0.0
+**Documentação atualizada em**: $(date)
+**Versão do Pipeline**: 1.0.0

@@ -1,12 +1,12 @@
-ï»¿// Service Worker para cache de recursos estÃ¡ticos
-const CACHE_NAME = 'glpi-dashboard-v1';
+// Service Worker para cache de recursos estáticos
+const CACHE_NAME = 'glpi-dashboard-v2';
 const STATIC_CACHE_URLS = [
   '/',
   '/index.html',
   '/manifest.json'
 ];
 
-// InstalaÃ§Ã£o do Service Worker
+// Instalação do Service Worker
 self.addEventListener('install', (event) => {
   console.log('[SW] Installing Service Worker');
   event.waitUntil(
@@ -22,7 +22,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// AtivaÃ§Ã£o do Service Worker
+// Ativação do Service Worker
 self.addEventListener('activate', (event) => {
   console.log('[SW] Activating Service Worker');
   event.waitUntil(
@@ -44,7 +44,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// InterceptaÃ§Ã£o de requests
+// Interceptação de requests
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);

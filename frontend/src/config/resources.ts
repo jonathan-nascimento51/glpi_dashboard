@@ -61,15 +61,15 @@ export const RESOURCE_CONFIG = {
   preload: {
     // Recursos críticos para preload
     critical: [
-      '/api/tickets/summary',
-      '/api/tickets/by-status',
-      '/api/tickets/by-priority'
+      '/api/v1/metrics/levels/summary',
+      '/api/v1/metrics/levels',
+      '/api/v1/metrics/levels'
     ],
     // Recursos para prefetch
     prefetch: [
-      '/api/tickets/recent',
-      '/api/users/active',
-      '/api/assets/summary'
+      '/api/v1/metrics/levels',
+      '/api/v1/health/data',
+      '/api/v1/metrics/levels/health'
     ]
   },
   

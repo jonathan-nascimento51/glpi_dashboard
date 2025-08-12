@@ -1,10 +1,9 @@
-﻿"""Testes para o caso de uso GetDashboardMetricsUseCase."""
+"""Testes para o caso de uso GetDashboardMetricsUseCase."""
 
 import pytest
 from unittest.mock import AsyncMock, Mock
 from datetime import datetime, timezone
 
-from domain.entities.dashboard_metrics import DashboardMetrics
 from usecases.get_dashboard_metrics import GetDashboardMetricsUseCase
 from tests.factories import DashboardMetricsFactory
 
@@ -36,11 +35,13 @@ class TestGetDashboardMetricsUseCase:
             glpi_repository=mock_glpi_repository,
             cache_repository=mock_cache_repository,
             clock=mock_clock,
-            cache_ttl=300
+            cache_ttl=300,
         )
 
     @pytest.mark.asyncio
-    async def test_execute_without_cache(self, use_case, mock_glpi_repository, mock_cache_repository):
+    async def test_execute_without_cache(
+        self, use_case, mock_glpi_repository, mock_cache_repository
+    ):
         """Testa execucao sem cache."""
         # Arrange
         expected_metrics = DashboardMetricsFactory()
@@ -57,7 +58,9 @@ class TestGetDashboardMetricsUseCase:
         mock_cache_repository.set.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_execute_with_cache(self, use_case, mock_glpi_repository, mock_cache_repository):
+    async def test_execute_with_cache(
+        self, use_case, mock_glpi_repository, mock_cache_repository
+    ):
         """Testa execucao com cache."""
         # Arrange
         cached_metrics = DashboardMetricsFactory()
@@ -73,7 +76,9 @@ class TestGetDashboardMetricsUseCase:
         mock_cache_repository.set.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_execute_force_refresh(self, use_case, mock_glpi_repository, mock_cache_repository):
+    async def test_execute_force_refresh(
+        self, use_case, mock_glpi_repository, mock_cache_repository
+    ):
         """Testa execucao com refresh forcado."""
         # Arrange
         expected_metrics = DashboardMetricsFactory()

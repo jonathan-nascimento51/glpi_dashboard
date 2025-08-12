@@ -1,0 +1,20 @@
+﻿# Bandit Configuration - Minimal
+skips:
+  - B101  # assert_used
+  - B601  # paramiko_calls
+
+exclude_dirs:
+  - /tests/
+  - /test/
+  - /venv/
+  - /env/
+  - /.venv/
+  - /node_modules/
+  - /.git/
+  - /migrations/
+  - /__pycache__/
+  - /.pytest_cache/
+
+severity: MEDIUM
+confidence: MEDIUM
+format: json

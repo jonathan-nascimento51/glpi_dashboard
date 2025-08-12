@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Testes unitários para API Service"""
+
 import pytest
 from unittest.mock import Mock, patch
 

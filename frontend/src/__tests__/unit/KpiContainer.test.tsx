@@ -53,7 +53,7 @@ const mockKpisV2Response = [
 ];
 
 const server = setupServer(
-  http.get('http://localhost:8000/v1/kpis', () => {
+  http.get('http://localhost:8000/api/v1/kpis', () => {
     return HttpResponse.json(mockKpisV1Response);
   }),
   http.get('http://localhost:8000/v2/kpis', () => {
@@ -125,7 +125,7 @@ describe('KpiContainer', () => {
     vi.mocked(useFlag).mockReturnValue(false); // força v1
     
     server.use(
-      http.get('http://localhost:8000/v1/kpis', () => {
+      http.get('http://localhost:8000/api/v1/kpis', () => {
         return new HttpResponse(null, { status: 500 });
       })
     );
@@ -146,7 +146,7 @@ describe('KpiContainer', () => {
     vi.mocked(useFlag).mockReturnValue(false); // força v1
     
     server.use(
-      http.get('http://localhost:8000/v1/kpis', () => {
+      http.get('http://localhost:8000/api/v1/kpis', () => {
         return new HttpResponse('invalid json', {
           headers: { 'Content-Type': 'application/json' }
         });
@@ -167,7 +167,7 @@ describe('KpiContainer', () => {
     vi.mocked(useFlag).mockReturnValue(false); // força v1
     
     server.use(
-      http.get('http://localhost:8000/v1/kpis', () => {
+      http.get('http://localhost:8000/api/v1/kpis', () => {
         return new HttpResponse(null, { status: 404 });
       })
     );
@@ -202,7 +202,7 @@ describe('KpiContainer', () => {
     vi.mocked(useFlag).mockReturnValue(false); // força v1
     
     server.use(
-      http.get('http://localhost:8000/v1/kpis', () => {
+      http.get('http://localhost:8000/api/v1/kpis', () => {
         return HttpResponse.json([]);
       })
     );

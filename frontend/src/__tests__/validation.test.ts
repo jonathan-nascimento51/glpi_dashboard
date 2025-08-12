@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import {
   validateMetricsData,
   validateTechnicianRanking,
@@ -128,7 +128,7 @@ describe('Data Validation', () => {
       const validRanking = [
         {
           id: '1',
-          name: 'João Silva',
+          name: 'Jo�o Silva',
           level: 'N1',
           rank: 1,
           total: 25,

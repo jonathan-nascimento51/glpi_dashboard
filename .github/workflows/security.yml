@@ -1,0 +1,165 @@
+﻿name: Security Scan
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Executa diariamente às 2:00 AM UTC
+    - cron: '0 2 * * *'
+
+jobs:
+  secret-scan:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch full history for better secret detection
+    
+    - name: Run TruffleHog OSS
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: main
+        head: HEAD
+        extra_args: --debug --only-verified
+    
+    - name: Run GitLeaks
+      uses: gitleaks/gitleaks-action@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE}} # Only required for Gitleaks Enterprise
+  
+  sast-scan:
+    name: SAST Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install bandit[toml] safety semgrep
+    
+    - name: Run Bandit Security Linter
+      run: |
+        bandit -r backend/ -f json -o bandit-report.json || true
+        bandit -r backend/ -f txt
+    
+    - name: Run Safety Check
+      run: |
+        pip install -r backend/requirements.txt
+        safety check --json --output safety-report.json || true
+        safety check
+    
+    - name: Run Semgrep
+      run: |
+        semgrep --config=auto backend/ --json --output=semgrep-report.json || true
+        semgrep --config=auto backend/
+    
+    - name: Upload Security Reports
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: security-reports
+        path: |
+          bandit-report.json
+          safety-report.json
+          semgrep-report.json
+    
+    - name: Comment PR with Security Summary
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          let comment = '##  Security Scan Results\n\n';
+          
+          // Check if reports exist and add summary
+          try {
+            if (fs.existsSync('bandit-report.json')) {
+              const bandit = JSON.parse(fs.readFileSync('bandit-report.json', 'utf8'));
+              comment += `**Bandit:** ${bandit.results.length} issues found\n`;
+            }
+            if (fs.existsSync('safety-report.json')) {
+              const safety = JSON.parse(fs.readFileSync('safety-report.json', 'utf8'));
+              comment += `**Safety:** ${safety.length} vulnerabilities found\n`;
+            }
+            if (fs.existsSync('semgrep-report.json')) {
+              const semgrep = JSON.parse(fs.readFileSync('semgrep-report.json', 'utf8'));
+              comment += `**Semgrep:** ${semgrep.results.length} findings\n`;
+            }
+          } catch (e) {
+            comment += 'Security scan completed. Check artifacts for detailed reports.\n';
+          }
+          
+          comment += '\n Detailed reports available in workflow artifacts.';
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+  
+  dependency-check:
+    name: Dependency Vulnerability Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r backend/requirements.txt
+    
+    - name: Install Node.js dependencies
+      run: |
+        cd frontend
+        npm ci
+    
+    - name: Run Python dependency audit
+      run: |
+        pip install pip-audit
+        pip-audit --format=json --output=python-audit.json || true
+        pip-audit
+    
+    - name: Run Node.js dependency audit
+      run: |
+        cd frontend
+        npm audit --audit-level=moderate --json > ../node-audit.json || true
+        npm audit --audit-level=moderate
+    
+    - name: Upload Dependency Reports
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: dependency-reports
+        path: |
+          python-audit.json
+          node-audit.json

@@ -1,4 +1,4 @@
-// Sistema de validação de API para evitar problemas recorrentes
+﻿// Sistema de validaÃ§Ã£o de API para evitar problemas recorrentes
 import { httpClient } from '../services/httpClient';
 
 export interface ValidationResult {
@@ -14,16 +14,16 @@ export interface HealthCheckResult {
   timestamp: string;
 }
 
-// Lista de endpoints críticos que devem sempre funcionar
+// Lista de endpoints crÃ­ticos que devem sempre funcionar
 const CRITICAL_ENDPOINTS = [
-  '/v1/kpis',
-  '/v1/system/status',
-  '/v1/technicians/ranking',
-  '/v1/tickets/new?limit=5'
+  '/api/v1/kpis',
+  '/api/v1/system/status',
+  '/api/v1/technicians/ranking',
+  '/api/v1/tickets/new?limit=5'
 ];
 
 /**
- * Valida se um endpoint específico está funcionando
+ * Valida se um endpoint especÃ­fico estÃ¡ funcionando
  */
 export async function validateEndpoint(endpoint: string): Promise<ValidationResult> {
   const startTime = performance.now();
@@ -58,10 +58,10 @@ export async function validateEndpoint(endpoint: string): Promise<ValidationResu
 }
 
 /**
- * Executa health check completo de todos os endpoints críticos
+ * Executa health check completo de todos os endpoints crÃ­ticos
  */
 export async function performHealthCheck(): Promise<HealthCheckResult> {
-  console.log('🏥 Iniciando health check dos endpoints críticos...');
+  console.log('ðŸ¥ Iniciando health check dos endpoints crÃ­ticos...');
   
   const results: ValidationResult[] = [];
   
@@ -70,9 +70,9 @@ export async function performHealthCheck(): Promise<HealthCheckResult> {
     results.push(result);
     
     if (result.success) {
-      console.log(`✅ ${endpoint} - OK (${result.responseTime?.toFixed(0)}ms)`);
+      console.log(`âœ… ${endpoint} - OK (${result.responseTime?.toFixed(0)}ms)`);
     } else {
-      console.error(`❌ ${endpoint} - FALHOU: ${result.error}`);
+      console.error(`âŒ ${endpoint} - FALHOU: ${result.error}`);
     }
   }
   
@@ -86,21 +86,21 @@ export async function performHealthCheck(): Promise<HealthCheckResult> {
   };
   
   if (overall) {
-    console.log('🎉 Health check passou! Todos os endpoints estão funcionando.');
+    console.log('ðŸŽ‰ Health check passou! Todos os endpoints estÃ£o funcionando.');
   } else {
-    console.error('⚠️ Health check falhou! Alguns endpoints apresentaram problemas.');
+    console.error('âš ï¸ Health check falhou! Alguns endpoints apresentaram problemas.');
   }
   
   return healthCheck;
 }
 
 /**
- * Valida se a configuração da API está correta
+ * Valida se a configuraÃ§Ã£o da API estÃ¡ correta
  */
 export function validateApiConfiguration(): boolean {
   const issues: string[] = [];
   
-  // Verificar se o baseURL está correto
+  // Verificar se o baseURL estÃ¡ correto
   const baseURL = httpClient.defaults.baseURL;
   if (!baseURL || !baseURL.includes('/api')) {
     issues.push(`BaseURL incorreta: ${baseURL}. Deveria conter '/api'`);
@@ -116,36 +116,36 @@ export function validateApiConfiguration(): boolean {
   const headers = httpClient.defaults.headers;
   const contentType = headers?.['Content-Type'];
   if (!contentType || (typeof contentType === 'string' && !contentType.includes('application/json'))) {
-    issues.push('Header Content-Type não está configurado para application/json');
+    issues.push('Header Content-Type nÃ£o estÃ¡ configurado para application/json');
   }
   
   if (issues.length > 0) {
-    console.error('❌ Problemas na configuração da API:');
+    console.error('âŒ Problemas na configuraÃ§Ã£o da API:');
     issues.forEach(issue => console.error(`  - ${issue}`));
     return false;
   }
   
-  console.log('✅ Configuração da API está correta');
+  console.log('âœ… ConfiguraÃ§Ã£o da API estÃ¡ correta');
   return true;
 }
 
 /**
- * Sistema de monitoramento contínuo
+ * Sistema de monitoramento contÃ­nuo
  */
 export class ApiMonitor {
   private intervalId: NodeJS.Timeout | null = null;
   private lastHealthCheck: HealthCheckResult | null = null;
   
   /**
-   * Inicia monitoramento contínuo
+   * Inicia monitoramento contÃ­nuo
    */
   startMonitoring(intervalMs: number = 60000): void {
     if (this.intervalId) {
-      console.warn('⚠️ Monitoramento já está ativo');
+      console.warn('âš ï¸ Monitoramento jÃ¡ estÃ¡ ativo');
       return;
     }
     
-    console.log(`🔄 Iniciando monitoramento contínuo (intervalo: ${intervalMs}ms)`);
+    console.log(`ðŸ”„ Iniciando monitoramento contÃ­nuo (intervalo: ${intervalMs}ms)`);
     
     this.intervalId = setInterval(async () => {
       try {
@@ -158,40 +158,40 @@ export class ApiMonitor {
           }));
         }
       } catch (error) {
-        console.error('❌ Erro durante health check automático:', error);
+        console.error('âŒ Erro durante health check automÃ¡tico:', error);
       }
     }, intervalMs);
   }
   
   /**
-   * Para o monitoramento contínuo
+   * Para o monitoramento contÃ­nuo
    */
   stopMonitoring(): void {
     if (this.intervalId) {
       clearInterval(this.intervalId);
       this.intervalId = null;
-      console.log('🛑 Monitoramento parado');
+      console.log('ðŸ›‘ Monitoramento parado');
     }
   }
   
   /**
-   * Retorna o último resultado do health check
+   * Retorna o Ãºltimo resultado do health check
    */
   getLastHealthCheck(): HealthCheckResult | null {
     return this.lastHealthCheck;
   }
 }
 
-// Instância global do monitor
+// InstÃ¢ncia global do monitor
 export const apiMonitor = new ApiMonitor();
 
 /**
- * Função de inicialização que deve ser chamada no início da aplicação
+ * FunÃ§Ã£o de inicializaÃ§Ã£o que deve ser chamada no inÃ­cio da aplicaÃ§Ã£o
  */
 export async function initializeApiValidation(): Promise<boolean> {
-  console.log('🚀 Inicializando sistema de validação da API...');
+  console.log('ðŸš€ Inicializando sistema de validaÃ§Ã£o da API...');
   
-  // 1. Validar configuração
+  // 1. Validar configuraÃ§Ã£o
   const configValid = validateApiConfiguration();
   if (!configValid) {
     return false;
@@ -200,7 +200,7 @@ export async function initializeApiValidation(): Promise<boolean> {
   // 2. Executar health check inicial
   const healthCheck = await performHealthCheck();
   if (!healthCheck.overall) {
-    console.error('❌ Health check inicial falhou. Verifique a conectividade com a API.');
+    console.error('âŒ Health check inicial falhou. Verifique a conectividade com a API.');
     return false;
   }
   
@@ -209,16 +209,16 @@ export async function initializeApiValidation(): Promise<boolean> {
     apiMonitor.startMonitoring(30000); // 30 segundos em desenvolvimento
   }
   
-  console.log('✅ Sistema de validação da API inicializado com sucesso');
+  console.log('âœ… Sistema de validaÃ§Ã£o da API inicializado com sucesso');
   return true;
 }
 
 /**
- * Hook para React que pode ser usado para monitorar a saúde da API
+ * Hook para React que pode ser usado para monitorar a saÃºde da API
  */
 export function useApiHealth() {
-  // Este hook será implementado quando React estiver disponível
-  // Por enquanto, retornamos uma implementação básica
+  // Este hook serÃ¡ implementado quando React estiver disponÃ­vel
+  // Por enquanto, retornamos uma implementaÃ§Ã£o bÃ¡sica
   return {
     isHealthy: true,
     lastCheck: null as HealthCheckResult | null,

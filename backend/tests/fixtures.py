@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """Fixtures para testes usando pytest."""
 
 import pytest
@@ -10,7 +10,6 @@ from tests.factories import (
     TicketFactory,
     ResolvedTicketFactory,
     DashboardMetricsFactory,
-    LevelMetricsFactory
 )
 from domain.entities.ticket import Ticket, TicketStatus
 from domain.entities.dashboard_metrics import DashboardMetrics
@@ -79,11 +78,11 @@ def mock_glpi_response() -> Dict[str, Any]:
                 "date_creation": "2024-01-01 10:00:00",
                 "date_mod": "2024-01-01 11:00:00",
                 "groups_id_assign": "1",
-                "users_id_assign": "1"
+                "users_id_assign": "1",
             }
         ],
         "count": 1,
-        "totalcount": 1
+        "totalcount": 1,
     }
 
 
@@ -94,5 +93,5 @@ def date_range_params() -> Dict[str, str]:
     ontem = hoje - timedelta(days=1)
     return {
         "data_inicio": ontem.strftime("%Y-%m-%d"),
-        "data_fim": hoje.strftime("%Y-%m-%d")
+        "data_fim": hoje.strftime("%Y-%m-%d"),
     }

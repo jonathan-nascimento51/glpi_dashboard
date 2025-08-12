@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import pytest
 from unittest.mock import patch
 
@@ -9,13 +9,14 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 from services.glpi_service import GLPIService
 
+
 class TestGLPIService:
     """Testes unitarios para GLPIService"""
 
     @pytest.fixture
     def glpi_service(self):
         """Fixture que cria uma instancia do GLPIService para testes"""
-        with patch("services.glpi_service.active_config") as mock_config:    
+        with patch("services.glpi_service.active_config") as mock_config:
             mock_config.GLPI_URL = "https://test-glpi.com/apirest.php"
             mock_config.GLPI_APP_TOKEN = "test_app_token"
             mock_config.GLPI_USER_TOKEN = "test_user_token"

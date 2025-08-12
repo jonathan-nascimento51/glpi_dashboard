@@ -5,7 +5,7 @@ const API_BASE_URL = '/api';
 
 export const handlers = [
   // KPIs endpoint v1
-  http.get(`${API_BASE_URL}/v1/kpis`, () => {
+  http.get(`${API_BASE_URL}/kpis`, () => {
     return HttpResponse.json([
       { level: 'N1', total: 20, open: 5, in_progress: 10, closed: 5 },
       { level: 'N2', total: 12, open: 2, in_progress: 7, closed: 3 },

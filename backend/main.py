@@ -1,10 +1,14 @@
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import os
+from middleware.security import SecurityHeadersMiddleware
+from config.security import SecurityConfig
 from api.v1.endpoints import router as api_v1_router
 from api.v2_routes import router as v2_router
 from api.hexagonal_routes import router as hexagonal_router
@@ -22,15 +26,27 @@ app = FastAPI(
         "name": "Apache 2.0",
         "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
     },
+    swagger_ui_parameters={
+        "deepLinking": True,
+        "displayRequestDuration": True,
+    },
+    docs_url="/docs",
+    redoc_url="/redoc",
 )
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Em produção, restrinja para o domínio do frontend
+    allow_origins=SecurityConfig.get_cors_origins(),  # Em produÃ§Ã£o, restrinja para o domÃ­nio do frontend
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Authorization", "Content-Type"],
+)
+
+# Add Security Headers Middleware
+app.add_middleware(
+    SecurityHeadersMiddleware,
+    enabled=os.getenv("SECURITY_HEADERS_ENABLED", "true").lower() == "true",
 )
 
 # Include API routes
@@ -44,13 +60,16 @@ if os.getenv("FLAG_USE_V2_KPIS", "false").lower() == "true":
 if os.getenv("FLAG_USE_HEXAGONAL", "false").lower() == "true":
     app.include_router(hexagonal_router, prefix="/hexagonal", tags=["Hexagonal"])
 
+
 @app.get("/", include_in_schema=False)
 def read_root():
     return {"message": "GLPI Dashboard API is running."}
 
+
 @app.get("/health", tags=["Monitoring"])
 def health_check():
     return {"status": "healthy"}
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8001)

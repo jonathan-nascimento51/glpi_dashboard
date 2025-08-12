@@ -13,7 +13,7 @@ vi.mock('../../services/httpClient', () => ({
     delete: vi.fn(),
   },
   API_CONFIG: {
-    BASE_URL: 'http://localhost:8000/v1',
+    BASE_URL: 'http://localhost:8000/api/v1',
     TIMEOUT: 30000,
     RETRY_ATTEMPTS: 3,
     RETRY_DELAY: 1000,

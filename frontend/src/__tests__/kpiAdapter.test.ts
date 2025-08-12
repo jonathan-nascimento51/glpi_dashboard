@@ -93,7 +93,7 @@ describe('KPI Adapter', () => {
   describe('MSW integration', () => {
     it('should fetch and transform KPI data successfully', async () => {
       // Use the default handler from handlers.ts
-      const response = await fetch('http://localhost:8000/v1/kpis');
+      const response = await fetch('http://localhost:8000/api/v1/kpis');
       const data = await response.json();
       
       expect(response.ok).toBe(true);
@@ -110,7 +110,7 @@ describe('KPI Adapter', () => {
     it('should handle API errors gracefully', async () => {
       // Override handler to return error
       server.use(
-        http.get('http://localhost:8000/v1/kpis', () => {
+        http.get('http://localhost:8000/api/v1/kpis', () => {
           return HttpResponse.json(
             { error: 'Internal Server Error' },
             { status: 500 }
@@ -118,21 +118,21 @@ describe('KPI Adapter', () => {
         })
       );
 
-      const response = await fetch('http://localhost:8000/v1/kpis');
+      const response = await fetch('http://localhost:8000/api/v1/kpis');
       expect(response.status).toBe(500);
     });
 
     it('should handle malformed API response', async () => {
       // Override handler to return malformed data
       server.use(
-        http.get('http://localhost:8000/v1/kpis', () => {
+        http.get('http://localhost:8000/api/v1/kpis', () => {
           return HttpResponse.json([
             { level: 'INVALID', total: 'not a number' }
           ]);
         })
       );
 
-      const response = await fetch('http://localhost:8000/v1/kpis');
+      const response = await fetch('http://localhost:8000/api/v1/kpis');
       const data = await response.json();
       
       expect(response.ok).toBe(true);

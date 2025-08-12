@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """Script para executar testes de observabilidade e validação"""
 
-import subprocess
+import subprocess`r`nimport shlex
 import sys
 import json
 import time
@@ -13,7 +13,7 @@ def run_command(cmd, cwd=None):
     try:
         result = subprocess.run(
             cmd,
-            shell=True,
+            shell=False,
             capture_output=True,
             text=True,
             cwd=cwd
@@ -210,3 +210,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+

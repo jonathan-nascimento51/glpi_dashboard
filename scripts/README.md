@@ -1,59 +1,83 @@
-# Scripts do Projeto GLPI Dashboard
+﻿# Scripts de Validação do GLPI Dashboard
 
-Esta pasta contém todos os scripts auxiliares organizados por categoria.
+Este diretório contém scripts para validação automática da qualidade dos dados e funcionamento do GLPI Dashboard.
 
-## 📁 Estrutura
+## Scripts Disponíveis
 
-### `/debug`
-Scripts para debug e análise do sistema:
-- `debug_metrics.py` - Debug das métricas do dashboard
-- `debug_trends.py` - Debug das tendências e cálculos
-- `debug_react_keys.py` - Debug de chaves React duplicadas
-- `check_duplicate_keys.py` - Verificação de chaves duplicadas
+### 1. `validate_dashboard.py`
 
-### `/tests`
-Scripts e arquivos de teste:
-- `test_trends.py` - Testes das funcionalidades de tendências
-- `test_debounce_throttle.html` - Teste das implementações de debounce/throttle
-- `test_date_filters.html` - Teste dos filtros de data
-- `test_filters.html` - Teste geral dos filtros
+Script principal de validação visual automática do GLPI Dashboard.
 
-### `/validation`
-Scripts de validação e verificação:
-- `validate_frontend_trends.py` - Validação das tendências no frontend
-- `validate_trends_math.py` - Validação dos cálculos matemáticos das tendências
+**Funcionalidades:**
+- Verifica se os serviços backend estão rodando
+- Faz requisições aos endpoints críticos da API
+- Valida consistência dos dados (detecta problemas all-zero)
+- Salva artefatos de validação em `artifacts/`
+- Gera relatório de validação em JSON
 
-## 🚀 Como usar
-
-### Scripts de Debug
+**Como usar:**
 ```bash
-# Debug das métricas
-python scripts/debug/debug_metrics.py
-
-# Debug das tendências
-python scripts/debug/debug_trends.py
+# Certifique-se de que o backend está rodando em localhost:8000
+python scripts/validate_dashboard.py
 ```
 
-### Scripts de Teste
-```bash
-# Teste das tendências
-python scripts/tests/test_trends.py
+**Saída esperada:**
+- Exit code 0: Validação passou
+- Exit code 1: Validação falhou (problemas detectados)
 
-# Abrir testes HTML no navegador
-start scripts/tests/test_debounce_throttle.html
+**Artefatos gerados:**
+- `artifacts/backend_data_YYYYMMDD_HHMMSS.json` - Dados completos do backend
+- `artifacts/metrics_sample_YYYYMMDD_HHMMSS.json` - Amostra das métricas
+- `artifacts/validation_report_YYYYMMDD_HHMMSS.json` - Relatório de validação
+
+### 2. `test_validation_all_zero.py`
+
+Script de teste para verificar se a validação detecta corretamente cenários all-zero.
+
+**Funcionalidades:**
+- Força um cenário all-zero usando parâmetro `all_zero=true`
+- Testa se a validação detecta o problema corretamente
+- Valida que o sistema de qualidade está funcionando
+
+**Como usar:**
+```bash
+# Certifique-se de que o backend está rodando
+python scripts/test_validation_all_zero.py
 ```
 
-### Scripts de Validação
-```bash
-# Validar tendências do frontend
-python scripts/validation/validate_frontend_trends.py
+## Configurações
 
-# Validar cálculos matemáticos
-python scripts/validation/validate_trends_math.py
-```
+### URLs dos Serviços
+- Backend: `http://localhost:8000`
+- Frontend: `http://localhost:8050` (para futuras validações visuais)
 
-## 📋 Notas
+### Timeouts e Retries
+- Timeout padrão: 30 segundos
+- Máximo de tentativas: 10
+- Delay entre tentativas: 3 segundos
 
-- Todos os scripts Python devem ser executados a partir da raiz do projeto
-- Os arquivos HTML de teste podem ser abertos diretamente no navegador
-- Certifique-se de que o ambiente virtual esteja ativado antes de executar os scripts Python
+## Critérios de Validação
+
+### Validação Passa Quando:
+- Backend está disponível (status 200)
+- Endpoints críticos respondem corretamente
+- Não há problemas críticos de qualidade detectados
+- Sistema não detecta cenário all-zero quando há dados válidos
+
+### Validação Falha Quando:
+- Backend não está disponível
+- Endpoints retornam erro
+- Sistema detecta `all_zero=true` com `status=error`
+- Há issues críticos na qualidade dos dados
+
+## Troubleshooting
+
+### Backend não está disponível
+- Verifique se o backend está rodando: `curl http://localhost:8000/health`
+- Verifique logs do backend
+- Confirme que não há conflitos de porta
+
+### Validação falha com dados válidos
+- Verifique o relatório de validação em `artifacts/`
+- Analise os dados de saúde retornados pela API
+- Verifique se há issues críticos sendo reportados incorretamente

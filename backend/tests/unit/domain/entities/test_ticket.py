@@ -1,4 +1,3 @@
-﻿import pytest
 from datetime import datetime, timezone
 from domain.entities.ticket import Ticket, TicketStatus, TicketPriority
 from tests.factories import TicketFactory, ResolvedTicketFactory
@@ -16,9 +15,9 @@ class TestTicket:
             status=TicketStatus.NOVO,
             priority=TicketPriority.ALTA,
             created_at=now,
-            updated_at=now
+            updated_at=now,
         )
-        
+
         assert ticket.id == 1
         assert ticket.name == "Problema no sistema"
         assert ticket.status == TicketStatus.NOVO
@@ -33,7 +32,7 @@ class TestTicket:
     def test_create_ticket_with_factory(self):
         """Testa criação de ticket usando factory."""
         ticket = TicketFactory()
-        
+
         assert isinstance(ticket.id, int)
         assert isinstance(ticket.name, str)
         assert isinstance(ticket.status, TicketStatus)
@@ -44,7 +43,7 @@ class TestTicket:
     def test_resolved_ticket_factory(self):
         """Testa factory de ticket resolvido."""
         ticket = ResolvedTicketFactory()
-        
+
         assert ticket.status == TicketStatus.SOLUCIONADO
         assert ticket.resolved_at is not None
         assert ticket.resolved_at > ticket.created_at
@@ -72,7 +71,7 @@ class TestTicket:
         resolved_ticket = TicketFactory(status=TicketStatus.SOLUCIONADO)
         closed_ticket = TicketFactory(status=TicketStatus.FECHADO)
         new_ticket = TicketFactory(status=TicketStatus.NOVO)
-        
+
         assert resolved_ticket.is_resolved() is True
         assert closed_ticket.is_resolved() is True
         assert new_ticket.is_resolved() is False
@@ -81,7 +80,7 @@ class TestTicket:
         """Testa método is_pending."""
         pending_ticket = TicketFactory(status=TicketStatus.PENDENTE)
         new_ticket = TicketFactory(status=TicketStatus.NOVO)
-        
+
         assert pending_ticket.is_pending() is True
         assert new_ticket.is_pending() is False
 
@@ -90,7 +89,7 @@ class TestTicket:
         assigned_ticket = TicketFactory(status=TicketStatus.PROCESSANDO_ATRIBUIDO)
         planned_ticket = TicketFactory(status=TicketStatus.PROCESSANDO_PLANEJADO)
         new_ticket = TicketFactory(status=TicketStatus.NOVO)
-        
+
         assert assigned_ticket.is_in_progress() is True
         assert planned_ticket.is_in_progress() is True
         assert new_ticket.is_in_progress() is False
@@ -104,7 +103,7 @@ class TestTicket:
             status=TicketStatus.NOVO,
             priority=TicketPriority.MEDIA,
             created_at=now,
-            updated_at=now
+            updated_at=now,
         )
         ticket2 = Ticket(
             id=1,
@@ -112,7 +111,7 @@ class TestTicket:
             status=TicketStatus.NOVO,
             priority=TicketPriority.MEDIA,
             created_at=now,
-            updated_at=now
+            updated_at=now,
         )
         ticket3 = Ticket(
             id=2,
@@ -120,9 +119,9 @@ class TestTicket:
             status=TicketStatus.NOVO,
             priority=TicketPriority.MEDIA,
             created_at=now,
-            updated_at=now
+            updated_at=now,
         )
-        
+
         assert ticket1 == ticket2
         assert ticket1 != ticket3
 
@@ -130,6 +129,6 @@ class TestTicket:
         """Testa representação em string do ticket."""
         ticket = TicketFactory(id=123, name="Test Ticket")
         ticket_str = str(ticket)
-        
+
         assert "123" in ticket_str
         assert "Test Ticket" in ticket_str

@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Configuração de logging estruturado para o GLPI Dashboard.
 """
