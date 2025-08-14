@@ -1,0 +1,58 @@
+{
+  "timestamp": "20250812_061537",
+  "status": "running",
+  "services": {
+    "api": {
+      "url": "http://localhost:8000/",
+      "status_code": 200,
+      "healthy": true,
+      "response_time_ms": 297.0
+    },
+    "frontend": {
+      "url": "http://localhost:3000",
+      "status_code": 200,
+      "healthy": true,
+      "response_time_ms": 0.0
+    }
+  },
+  "health_data": {
+    "status": "ok",
+    "quality_level": "good",
+    "all_zero": false,
+    "anomalies": true,
+    "issues_count": 1,
+    "critical_issues": false,
+    "timestamp": "2025-08-12T06:15:39.362768",
+    "metrics": {
+      "total_fields": 7,
+      "numeric_fields": 25,
+      "total_issues": 1,
+      "critical_issues": 0,
+      "warning_issues": 1,
+      "data_completeness": 1.0,
+      "numeric_summary": {
+        "min": 0.0,
+        "max": 48.0,
+        "mean": 7.68,
+        "count": 25
+      }
+    },
+    "issues": [
+      {
+        "type": "anomaly",
+        "severity": "warning",
+        "message": "Valor anômalo detectado: 48.0 (z-score: 3.54)",
+        "field": "index_0"
+      }
+    ]
+  },
+  "screenshots": [],
+  "errors": [],
+  "summary": {
+    "final_status": "PASSED",
+    "status_emoji": "",
+    "all_zero_detected": false,
+    "critical_issues": false,
+    "quality_level": "good"
+  }
+}

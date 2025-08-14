@@ -1,0 +1,42 @@
+﻿{
+  "url": "http://localhost:3000/",
+  "fetchTime": "2025-08-12T07:59:44.376Z",
+  "version": "12.8.1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/138.0.0.0 Safari/537.36",
+  "scores": {
+    "performance": {
+      "title": "Performance",
+      "score": 0.54
+    },
+    "accessibility": {
+      "title": "Accessibility",
+      "score": 1
+    },
+    "best-practices": {
+      "title": "Best Practices",
+      "score": 0.96
+    },
+    "seo": {
+      "title": "SEO",
+      "score": 0.82
+    }
+  },
+  "metrics": {
+    "first-contentful-paint": {
+      "value": 14668.631999999998,
+      "displayValue": "14.7 s"
+    },
+    "largest-contentful-paint": {
+      "value": 27537.264,
+      "displayValue": "27.5 s"
+    },
+    "total-blocking-time": {
+      "value": 89,
+      "displayValue": "90 ms"
+    },
+    "interactive": {
+      "value": 27537.264000000003,
+      "displayValue": "27.5 s"
+    }
+  }
+}
