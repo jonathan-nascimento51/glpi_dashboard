@@ -1,4 +1,4 @@
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+﻿import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { httpClient } from '../../../services/httpClient';
 
 // Mock do fetch global
@@ -23,7 +23,7 @@ describe('httpClient Service', () => {
   });
 
   describe('GET requests', () => {
-    it('deve fazer requisição GET com sucesso', async () => {
+    it('deve fazer requisicao GET com sucesso', async () => {
       const mockData = { id: 1, name: 'Test' };
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -44,7 +44,7 @@ describe('httpClient Service', () => {
       expect(result).toEqual(mockData);
     });
 
-    it('deve adicionar parâmetros de query à URL', async () => {
+    it('deve adicionar parametros de query a URL', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -62,7 +62,7 @@ describe('httpClient Service', () => {
       );
     });
 
-    it('deve lidar com parâmetros de query vazios', async () => {
+    it('deve lidar com parametros de query vazios', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -105,7 +105,7 @@ describe('httpClient Service', () => {
   });
 
   describe('POST requests', () => {
-    it('deve fazer requisição POST com dados JSON', async () => {
+    it('deve fazer requisicao POST com dados JSON', async () => {
       const requestData = { name: 'Test', value: 123 };
       const responseData = { id: 1, ...requestData };
       
@@ -129,7 +129,7 @@ describe('httpClient Service', () => {
       expect(result).toEqual(responseData);
     });
 
-    it('deve fazer requisição POST com FormData', async () => {
+    it('deve fazer requisicao POST com FormData', async () => {
       const formData = new FormData();
       formData.append('file', new Blob(['test'], { type: 'text/plain' }));
       formData.append('name', 'test-file');
@@ -154,7 +154,7 @@ describe('httpClient Service', () => {
   });
 
   describe('PUT requests', () => {
-    it('deve fazer requisição PUT com dados', async () => {
+    it('deve fazer requisicao PUT com dados', async () => {
       const requestData = { id: 1, name: 'Updated Test' };
       
       mockFetch.mockResolvedValueOnce({
@@ -179,7 +179,7 @@ describe('httpClient Service', () => {
   });
 
   describe('DELETE requests', () => {
-    it('deve fazer requisição DELETE', async () => {
+    it('deve fazer requisicao DELETE', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 204,
@@ -200,7 +200,7 @@ describe('httpClient Service', () => {
   });
 
   describe('Error handling', () => {
-    it('deve lançar erro para status HTTP de erro', async () => {
+    it('deve lancar erro para status HTTP de erro', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 404,
@@ -234,7 +234,7 @@ describe('httpClient Service', () => {
         .toThrow();
     });
 
-    it('deve lidar com resposta JSON inválida', async () => {
+    it('deve lidar com resposta JSON invalida', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -248,7 +248,7 @@ describe('httpClient Service', () => {
         .toThrow('Invalid JSON');
     });
 
-    it('deve retornar texto para resposta não-JSON', async () => {
+    it('deve retornar texto para resposta nao-JSON', async () => {
       const textResponse = 'Plain text response';
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -341,7 +341,7 @@ describe('httpClient Service', () => {
       expect(result).toEqual({ success: true });
     });
 
-    it('deve falhar após esgotar tentativas', async () => {
+    it('deve falhar apos esgotar tentativas', async () => {
       mockFetch.mockRejectedValue(new Error('Persistent error'));
 
       await expect(httpClient.get('/api/test', { retry: 2 }))
@@ -353,7 +353,7 @@ describe('httpClient Service', () => {
   });
 
   describe('Cache mechanism', () => {
-    it('deve usar cache para requisições GET idênticas', async () => {
+    it('deve usar cache para requisicoes GET identicas', async () => {
       const mockData = { id: 1, cached: true };
       mockFetch.mockResolvedValue({
         ok: true,
@@ -362,10 +362,10 @@ describe('httpClient Service', () => {
         headers: new Headers({ 'content-type': 'application/json' }),
       });
 
-      // Primeira requisição
+      // Primeira requisicao
       const result1 = await httpClient.get('/api/test', { cache: true });
       
-      // Segunda requisição (deve usar cache)
+      // Segunda requisicao (deve usar cache)
       const result2 = await httpClient.get('/api/test', { cache: true });
 
       expect(mockFetch).toHaveBeenCalledTimes(1);
@@ -373,7 +373,7 @@ describe('httpClient Service', () => {
       expect(result2).toEqual(mockData);
     });
 
-    it('deve ignorar cache para métodos diferentes de GET', async () => {
+    it('deve ignorar cache para metodos diferentes de GET', async () => {
       const mockData = { id: 1 };
       mockFetch.mockResolvedValue({
         ok: true,
@@ -390,7 +390,7 @@ describe('httpClient Service', () => {
   });
 
   describe('AbortController', () => {
-    it('deve cancelar requisição quando abortada', async () => {
+    it('deve cancelar requisicao quando abortada', async () => {
       const controller = new AbortController();
       
       mockFetch.mockImplementationOnce(() => 

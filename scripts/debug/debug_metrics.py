@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Script de debug para investigar inconsistência entre métricas gerais e por nível
@@ -29,7 +29,7 @@ def debug_metrics_inconsistency():
     # Autenticar e descobrir field IDs
     print("Autenticando e descobrindo field IDs...")
     if not glpi._ensure_authenticated():
-        print("❌ Falha na autenticação!")
+        print("❌ Falha na autenticaçáo!")
         return
     
     if not glpi.discover_field_ids():
@@ -89,7 +89,7 @@ def debug_metrics_inconsistency():
     print(f"  Total de todos os níveis: {level_total_all}")
     
     print("\n" + "=" * 60)
-    print("COMPARAÇÃO:")
+    print("COMPARAÇáO:")
     print(f"Resolvidos - Geral: {general_resolvidos}")
     print(f"Resolvidos - Níveis: {level_resolvidos}")
     print(f"Diferença: {general_resolvidos - level_resolvidos}")
@@ -100,7 +100,7 @@ def debug_metrics_inconsistency():
     # Verificar se há tickets fora dos grupos N1-N4
     if general_total > level_total_all:
         print(f"\n⚠️  PROBLEMA IDENTIFICADO:")
-        print(f"Existem {general_total - level_total_all} tickets que não estão nos grupos N1-N4")
+        print(f"Existem {general_total - level_total_all} tickets que náo estáo nos grupos N1-N4")
         print("Isso explica a inconsistência nos dados!")
         
         # Investigar quais grupos existem
@@ -133,7 +133,7 @@ def debug_metrics_inconsistency():
         for level_data in level_filtered.values()
     )
     
-    print(f"\nCOMPARAÇÃO COM FILTROS:")
+    print(f"\nCOMPARAÇáO COM FILTROS:")
     print(f"Resolvidos - Geral: {general_resolvidos_f}")
     print(f"Resolvidos - Níveis: {level_resolvidos_f}")
     print(f"Diferença: {general_resolvidos_f - level_resolvidos_f}")

@@ -1,0 +1,1682 @@
+﻿[
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\.env",
+        "Name":  ".env",
+        "Extension":  ".env",
+        "Length":  1418,
+        "LastWriteTime":  "\/Date(1755143094773)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\.env.example",
+        "Name":  ".env.example",
+        "Extension":  ".example",
+        "Length":  1417,
+        "LastWriteTime":  "\/Date(1755141383265)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\.flake8",
+        "Name":  ".flake8",
+        "Extension":  ".flake8",
+        "Length":  530,
+        "LastWriteTime":  "\/Date(1754708646709)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\.isort.cfg",
+        "Name":  ".isort.cfg",
+        "Extension":  ".cfg",
+        "Length":  517,
+        "LastWriteTime":  "\/Date(1754708657004)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\.pre-commit-config.yaml",
+        "Name":  ".pre-commit-config.yaml",
+        "Extension":  ".yaml",
+        "Length":  3632,
+        "LastWriteTime":  "\/Date(1755136326726)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\ai_context_system.py",
+        "Name":  "ai_context_system.py",
+        "Extension":  ".py",
+        "Length":  26463,
+        "LastWriteTime":  "\/Date(1755218055821)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\app.py",
+        "Name":  "app.py",
+        "Extension":  ".py",
+        "Length":  4739,
+        "LastWriteTime":  "\/Date(1755203527313)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\app_backup.py",
+        "Name":  "app_backup.py",
+        "Extension":  ".py",
+        "Length":  4739,
+        "LastWriteTime":  "\/Date(1755203663056)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\app_mock.py",
+        "Name":  "app_mock.py",
+        "Extension":  ".py",
+        "Length":  1371,
+        "LastWriteTime":  "\/Date(1755143369971)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\app_mock_v2.py",
+        "Name":  "app_mock_v2.py",
+        "Extension":  ".py",
+        "Length":  2335,
+        "LastWriteTime":  "\/Date(1755203663070)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\ARCHITECTURE.md",
+        "Name":  "ARCHITECTURE.md",
+        "Extension":  ".md",
+        "Length":  6556,
+        "LastWriteTime":  "\/Date(1755216633211)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\CHANGELOG.md",
+        "Name":  "CHANGELOG.md",
+        "Extension":  ".md",
+        "Length":  6283,
+        "LastWriteTime":  "\/Date(1755216421260)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\CI_SETUP.md",
+        "Name":  "CI_SETUP.md",
+        "Extension":  ".md",
+        "Length":  6450,
+        "LastWriteTime":  "\/Date(1755136326728)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\codecov.yml",
+        "Name":  "codecov.yml",
+        "Extension":  ".yml",
+        "Length":  1950,
+        "LastWriteTime":  "\/Date(1755136326832)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\config_ai_context.py",
+        "Name":  "config_ai_context.py",
+        "Extension":  ".py",
+        "Length":  12779,
+        "LastWriteTime":  "\/Date(1755218067107)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\config_monitoring.py",
+        "Name":  "config_monitoring.py",
+        "Extension":  ".py",
+        "Length":  14927,
+        "LastWriteTime":  "\/Date(1755216289925)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\config_safe_changes.py",
+        "Name":  "config_safe_changes.py",
+        "Extension":  ".py",
+        "Length":  4102,
+        "LastWriteTime":  "\/Date(1755215764491)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\CONTRIBUTING.md",
+        "Name":  "CONTRIBUTING.md",
+        "Extension":  ".md",
+        "Length":  12211,
+        "LastWriteTime":  "\/Date(1754709381257)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\diagnostico_glpi.md",
+        "Name":  "diagnostico_glpi.md",
+        "Extension":  ".md",
+        "Length":  2654,
+        "LastWriteTime":  "\/Date(1755149098774)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\docker-compose.yml",
+        "Name":  "docker-compose.yml",
+        "Extension":  ".yml",
+        "Length":  1241,
+        "LastWriteTime":  "\/Date(1755141353401)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\enhanced_validation.py",
+        "Name":  "enhanced_validation.py",
+        "Extension":  ".py",
+        "Length":  25222,
+        "LastWriteTime":  "\/Date(1755214984026)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\example_ai_context.py",
+        "Name":  "example_ai_context.py",
+        "Extension":  ".py",
+        "Length":  16127,
+        "LastWriteTime":  "\/Date(1755218031813)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\example_monitoring.py",
+        "Name":  "example_monitoring.py",
+        "Extension":  ".py",
+        "Length":  2594,
+        "LastWriteTime":  "\/Date(1755216782257)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\example_safe_changes.py",
+        "Name":  "example_safe_changes.py",
+        "Extension":  ".py",
+        "Length":  5752,
+        "LastWriteTime":  "\/Date(1755215712018)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\mock_endpoint.txt",
+        "Name":  "mock_endpoint.txt",
+        "Extension":  ".txt",
+        "Length":  1696,
+        "LastWriteTime":  "\/Date(1755143339860)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\monitoring_system.py",
+        "Name":  "monitoring_system.py",
+        "Extension":  ".py",
+        "Length":  30708,
+        "LastWriteTime":  "\/Date(1755216101107)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\pyproject.toml",
+        "Name":  "pyproject.toml",
+        "Extension":  ".toml",
+        "Length":  2479,
+        "LastWriteTime":  "\/Date(1755136327047)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\README.md",
+        "Name":  "README.md",
+        "Extension":  ".md",
+        "Length":  6464,
+        "LastWriteTime":  "\/Date(1755136326732)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\README_AI_CONTEXT.md",
+        "Name":  "README_AI_CONTEXT.md",
+        "Extension":  ".md",
+        "Length":  9652,
+        "LastWriteTime":  "\/Date(1755218006769)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\README_MONITORING.md",
+        "Name":  "README_MONITORING.md",
+        "Extension":  ".md",
+        "Length":  6111,
+        "LastWriteTime":  "\/Date(1755217242773)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\README_SAFE_CHANGES.md",
+        "Name":  "README_SAFE_CHANGES.md",
+        "Extension":  ".md",
+        "Length":  7864,
+        "LastWriteTime":  "\/Date(1755216860005)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\reorganization_report.txt",
+        "Name":  "reorganization_report.txt",
+        "Extension":  ".txt",
+        "Length":  229,
+        "LastWriteTime":  "\/Date(1755137163642)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\reorganize_structure.py",
+        "Name":  "reorganize_structure.py",
+        "Extension":  ".py",
+        "Length":  10923,
+        "LastWriteTime":  "\/Date(1755203589914)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\run_scripts.py",
+        "Name":  "run_scripts.py",
+        "Extension":  ".py",
+        "Length":  3683,
+        "LastWriteTime":  "\/Date(1755203663088)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\safe_change_protocol.py",
+        "Name":  "safe_change_protocol.py",
+        "Extension":  ".py",
+        "Length":  24555,
+        "LastWriteTime":  "\/Date(1755215677913)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\sonar-project.properties",
+        "Name":  "sonar-project.properties",
+        "Extension":  ".properties",
+        "Length":  1341,
+        "LastWriteTime":  "\/Date(1755136327071)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\TESTING_README.md",
+        "Name":  "TESTING_README.md",
+        "Extension":  ".md",
+        "Length":  7900,
+        "LastWriteTime":  "\/Date(1755136326733)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\trae-context.yml",
+        "Name":  "trae-context.yml",
+        "Extension":  ".yml",
+        "Length":  5130,
+        "LastWriteTime":  "\/Date(1755218753437)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\TRAE_AI_INTEGRATION_REPORT.md",
+        "Name":  "TRAE_AI_INTEGRATION_REPORT.md",
+        "Extension":  ".md",
+        "Length":  3118,
+        "LastWriteTime":  "\/Date(1755219137264)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\trae_ai_integration_validator.py",
+        "Name":  "trae_ai_integration_validator.py",
+        "Extension":  ".py",
+        "Length":  10467,
+        "LastWriteTime":  "\/Date(1755219049056)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\trae_quick_check.py",
+        "Name":  "trae_quick_check.py",
+        "Extension":  ".py",
+        "Length":  2034,
+        "LastWriteTime":  "\/Date(1755219098242)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\validate_simple.py",
+        "Name":  "validate_simple.py",
+        "Extension":  ".py",
+        "Length":  3129,
+        "LastWriteTime":  "\/Date(1755144033644)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\validate_system.py",
+        "Name":  "validate_system.py",
+        "Extension":  ".py",
+        "Length":  21956,
+        "LastWriteTime":  "\/Date(1755203546285)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\.trae\\rules\\integrated_system_rules.md",
+        "Name":  "integrated_system_rules.md",
+        "Extension":  ".md",
+        "Length":  4829,
+        "LastWriteTime":  "\/Date(1755218716673)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\.trae\\rules\\project_rules.md",
+        "Name":  "project_rules.md",
+        "Extension":  ".md",
+        "Length":  0,
+        "LastWriteTime":  "\/Date(1755215069936)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\.vscode\\PythonImportHelper-v2-Completion.json",
+        "Name":  "PythonImportHelper-v2-Completion.json",
+        "Extension":  ".json",
+        "Length":  154007,
+        "LastWriteTime":  "\/Date(1754715030077)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\alerts\\alert_20250814.json",
+        "Name":  "alert_20250814.json",
+        "Extension":  ".json",
+        "Length":  128,
+        "LastWriteTime":  "\/Date(1755218299320)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\.env",
+        "Name":  ".env",
+        "Extension":  ".env",
+        "Length":  437,
+        "LastWriteTime":  "\/Date(1755156130853)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\.env.backup.20250814-042210",
+        "Name":  ".env.backup.20250814-042210",
+        "Extension":  ".20250814-042210",
+        "Length":  425,
+        "LastWriteTime":  "\/Date(1755048923025)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\.env.local",
+        "Name":  ".env.local",
+        "Extension":  ".local",
+        "Length":  42,
+        "LastWriteTime":  "\/Date(1754966651821)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\debug_discover_field.py",
+        "Name":  "debug_discover_field.py",
+        "Extension":  ".py",
+        "Length":  6200,
+        "LastWriteTime":  "\/Date(1755206327908)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\debug_field_complete.py",
+        "Name":  "debug_field_complete.py",
+        "Extension":  ".py",
+        "Length":  3693,
+        "LastWriteTime":  "\/Date(1755207117473)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\debug_field_discovery.py",
+        "Name":  "debug_field_discovery.py",
+        "Extension":  ".py",
+        "Length":  2570,
+        "LastWriteTime":  "\/Date(1755206968066)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\debug_field_discovery_fixed.py",
+        "Name":  "debug_field_discovery_fixed.py",
+        "Extension":  ".py",
+        "Length":  2436,
+        "LastWriteTime":  "\/Date(1755207024726)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\debug_glpi.py",
+        "Name":  "debug_glpi.py",
+        "Extension":  ".py",
+        "Length":  2371,
+        "LastWriteTime":  "\/Date(1755203650559)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\debug_glpi_fixed.py",
+        "Name":  "debug_glpi_fixed.py",
+        "Extension":  ".py",
+        "Length":  2825,
+        "LastWriteTime":  "\/Date(1755203650566)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\debug_glpi_service.py",
+        "Name":  "debug_glpi_service.py",
+        "Extension":  ".py",
+        "Length":  2909,
+        "LastWriteTime":  "\/Date(1755203650586)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\debug_method_specific.py",
+        "Name":  "debug_method_specific.py",
+        "Extension":  ".py",
+        "Length":  3736,
+        "LastWriteTime":  "\/Date(1755211919046)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\debug_string_comparison.py",
+        "Name":  "debug_string_comparison.py",
+        "Extension":  ".py",
+        "Length":  3606,
+        "LastWriteTime":  "\/Date(1755207219066)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\diagnose_tokens.ps1",
+        "Name":  "diagnose_tokens.ps1",
+        "Extension":  ".ps1",
+        "Length":  1443,
+        "LastWriteTime":  "\/Date(1755155612878)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\diagnostico_conectividade_glpi.md",
+        "Name":  "diagnostico_conectividade_glpi.md",
+        "Extension":  ".md",
+        "Length":  1244,
+        "LastWriteTime":  "\/Date(1755155128632)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\DIAGNOSTICO_GLPI_FINAL.md",
+        "Name":  "DIAGNOSTICO_GLPI_FINAL.md",
+        "Extension":  ".md",
+        "Length":  2391,
+        "LastWriteTime":  "\/Date(1755155651577)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\main.py",
+        "Name":  "main.py",
+        "Extension":  ".py",
+        "Length":  816,
+        "LastWriteTime":  "\/Date(1755203650592)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\metrics_response.json",
+        "Name":  "metrics_response.json",
+        "Extension":  ".json",
+        "Length":  864,
+        "LastWriteTime":  "\/Date(1755154622469)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\pyproject.toml",
+        "Name":  "pyproject.toml",
+        "Extension":  ".toml",
+        "Length":  2611,
+        "LastWriteTime":  "\/Date(1755136326813)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\pytest.ini",
+        "Name":  "pytest.ini",
+        "Extension":  ".ini",
+        "Length":  4342,
+        "LastWriteTime":  "\/Date(1755136326814)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\simple_test.py",
+        "Name":  "simple_test.py",
+        "Extension":  ".py",
+        "Length":  1096,
+        "LastWriteTime":  "\/Date(1755148421521)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\test_auth_comparison.py",
+        "Name":  "test_auth_comparison.py",
+        "Extension":  ".py",
+        "Length":  3361,
+        "LastWriteTime":  "\/Date(1755203650607)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\test_comparison.py",
+        "Name":  "test_comparison.py",
+        "Extension":  ".py",
+        "Length":  2064,
+        "LastWriteTime":  "\/Date(1755206376147)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\test_curl_glpi.ps1",
+        "Name":  "test_curl_glpi.ps1",
+        "Extension":  ".ps1",
+        "Length":  681,
+        "LastWriteTime":  "\/Date(1755155566237)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\test_discover_field.py",
+        "Name":  "test_discover_field.py",
+        "Extension":  ".py",
+        "Length":  3129,
+        "LastWriteTime":  "\/Date(1755206205963)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\test_fallback.py",
+        "Name":  "test_fallback.py",
+        "Extension":  ".py",
+        "Length":  3865,
+        "LastWriteTime":  "\/Date(1755203650615)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\test_field_5.py",
+        "Name":  "test_field_5.py",
+        "Extension":  ".py",
+        "Length":  5875,
+        "LastWriteTime":  "\/Date(1755205988659)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\test_field_mapping.py",
+        "Name":  "test_field_mapping.py",
+        "Extension":  ".py",
+        "Length":  7117,
+        "LastWriteTime":  "\/Date(1755205936718)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\test_glpi_auth.py",
+        "Name":  "test_glpi_auth.py",
+        "Extension":  ".py",
+        "Length":  3867,
+        "LastWriteTime":  "\/Date(1755203650622)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\test_glpi_connection.py",
+        "Name":  "test_glpi_connection.py",
+        "Extension":  ".py",
+        "Length":  4023,
+        "LastWriteTime":  "\/Date(1755203650662)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\test_ranking_debug.py",
+        "Name":  "test_ranking_debug.py",
+        "Extension":  ".py",
+        "Length":  2884,
+        "LastWriteTime":  "\/Date(1755205508505)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\test_ranking_simple.py",
+        "Name":  "test_ranking_simple.py",
+        "Extension":  ".py",
+        "Length":  5301,
+        "LastWriteTime":  "\/Date(1755205650783)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\test_simple_glpi.py",
+        "Name":  "test_simple_glpi.py",
+        "Extension":  ".py",
+        "Length":  1187,
+        "LastWriteTime":  "\/Date(1755203650664)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\update_tokens_guide.ps1",
+        "Name":  "update_tokens_guide.ps1",
+        "Extension":  ".ps1",
+        "Length":  1538,
+        "LastWriteTime":  "\/Date(1755155964472)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\update_tokens_interactive.ps1",
+        "Name":  "update_tokens_interactive.ps1",
+        "Extension":  ".ps1",
+        "Length":  3602,
+        "LastWriteTime":  "\/Date(1755156032776)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\__init__.py",
+        "Name":  "__init__.py",
+        "Extension":  ".py",
+        "Length":  43,
+        "LastWriteTime":  "\/Date(1755136326803)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\api\\__init__.py",
+        "Name":  "__init__.py",
+        "Extension":  ".py",
+        "Length":  23,
+        "LastWriteTime":  "\/Date(1755136326804)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\app\\main.py",
+        "Name":  "main.py",
+        "Extension":  ".py",
+        "Length":  788,
+        "LastWriteTime":  "\/Date(1755153940163)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\app\\__init__.py",
+        "Name":  "__init__.py",
+        "Extension":  ".py",
+        "Length":  0,
+        "LastWriteTime":  "\/Date(1755137129455)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\app\\api\\routes.py",
+        "Name":  "routes.py",
+        "Extension":  ".py",
+        "Length":  20752,
+        "LastWriteTime":  "\/Date(1755153884480)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\app\\api\\__init__.py",
+        "Name":  "__init__.py",
+        "Extension":  ".py",
+        "Length":  0,
+        "LastWriteTime":  "\/Date(1755137129458)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\app\\core\\config.py",
+        "Name":  "config.py",
+        "Extension":  ".py",
+        "Length":  2840,
+        "LastWriteTime":  "\/Date(1755136326809)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\app\\core\\logging.py",
+        "Name":  "logging.py",
+        "Extension":  ".py",
+        "Length":  6936,
+        "LastWriteTime":  "\/Date(1755136326808)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\app\\core\\__init__.py",
+        "Name":  "__init__.py",
+        "Extension":  ".py",
+        "Length":  0,
+        "LastWriteTime":  "\/Date(1755137129472)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\app\\models\\__init__.py",
+        "Name":  "__init__.py",
+        "Extension":  ".py",
+        "Length":  0,
+        "LastWriteTime":  "\/Date(1755137129495)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\app\\schemas\\dashboard.py",
+        "Name":  "dashboard.py",
+        "Extension":  ".py",
+        "Length":  2833,
+        "LastWriteTime":  "\/Date(1755136326815)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\app\\schemas\\__init__.py",
+        "Name":  "__init__.py",
+        "Extension":  ".py",
+        "Length":  0,
+        "LastWriteTime":  "\/Date(1755137129510)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\app\\services\\api_service.py",
+        "Name":  "api_service.py",
+        "Extension":  ".py",
+        "Length":  4694,
+        "LastWriteTime":  "\/Date(1755153890501)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\app\\services\\glpi_service.py",
+        "Name":  "glpi_service.py",
+        "Extension":  ".py",
+        "Length":  105325,
+        "LastWriteTime":  "\/Date(1755212166757)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\app\\services\\glpi_service.py.backup",
+        "Name":  "glpi_service.py.backup",
+        "Extension":  ".backup",
+        "Length":  105926,
+        "LastWriteTime":  "\/Date(1755154753546)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\app\\services\\__init__.py",
+        "Name":  "__init__.py",
+        "Extension":  ".py",
+        "Length":  0,
+        "LastWriteTime":  "\/Date(1755137129507)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\app\\utils\\performance.py",
+        "Name":  "performance.py",
+        "Extension":  ".py",
+        "Length":  6356,
+        "LastWriteTime":  "\/Date(1755136326830)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\app\\utils\\response_formatter.py",
+        "Name":  "response_formatter.py",
+        "Extension":  ".py",
+        "Length":  5923,
+        "LastWriteTime":  "\/Date(1755202531191)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\app\\utils\\structured_logger.py",
+        "Name":  "structured_logger.py",
+        "Extension":  ".py",
+        "Length":  11581,
+        "LastWriteTime":  "\/Date(1755136326831)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\app\\utils\\__init__.py",
+        "Name":  "__init__.py",
+        "Extension":  ".py",
+        "Length":  0,
+        "LastWriteTime":  "\/Date(1755137129511)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\docs\\LOGGING_SETUP.md",
+        "Name":  "LOGGING_SETUP.md",
+        "Extension":  ".md",
+        "Length":  9416,
+        "LastWriteTime":  "\/Date(1754712359233)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\tests\\conftest.py",
+        "Name":  "conftest.py",
+        "Extension":  ".py",
+        "Length":  5882,
+        "LastWriteTime":  "\/Date(1755203650436)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\tests\\test_structured_logger.py",
+        "Name":  "test_structured_logger.py",
+        "Extension":  ".py",
+        "Length":  4925,
+        "LastWriteTime":  "\/Date(1755203650480)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\tests\\integration\\test_api_integration.py",
+        "Name":  "test_api_integration.py",
+        "Extension":  ".py",
+        "Length":  10900,
+        "LastWriteTime":  "\/Date(1755193732479)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\tests\\load\\test_load_testing.py",
+        "Name":  "test_load_testing.py",
+        "Extension":  ".py",
+        "Length":  19476,
+        "LastWriteTime":  "\/Date(1755136545682)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\tests\\performance\\test_api_performance.py",
+        "Name":  "test_api_performance.py",
+        "Extension":  ".py",
+        "Length":  12201,
+        "LastWriteTime":  "\/Date(1755136545683)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\tests\\unit\\test_api_service.py",
+        "Name":  "test_api_service.py",
+        "Extension":  ".py",
+        "Length":  8618,
+        "LastWriteTime":  "\/Date(1755193725860)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\tests\\unit\\test_glpi_service.py",
+        "Name":  "test_glpi_service.py",
+        "Extension":  ".py",
+        "Length":  23889,
+        "LastWriteTime":  "\/Date(1755203650422)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\tests\\unit\\test_glpi_service.py.bak",
+        "Name":  "test_glpi_service.py.bak",
+        "Extension":  ".bak",
+        "Length":  4326,
+        "LastWriteTime":  "\/Date(1755043032036)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\backend\\tests\\unit\\__init__.py",
+        "Name":  "__init__.py",
+        "Extension":  ".py",
+        "Length":  81,
+        "LastWriteTime":  "\/Date(1755136326827)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\changes\\change_20250814_213933_be86d3bb.json",
+        "Name":  "change_20250814_213933_be86d3bb.json",
+        "Extension":  ".json",
+        "Length":  142362,
+        "LastWriteTime":  "\/Date(1755218423472)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\config\\.env.local",
+        "Name":  ".env.local",
+        "Extension":  ".local",
+        "Length":  2136,
+        "LastWriteTime":  "\/Date(1754701196300)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\docs\\AUDITORIA_COMPLETA_RESULTADOS.md",
+        "Name":  "AUDITORIA_COMPLETA_RESULTADOS.md",
+        "Extension":  ".md",
+        "Length":  3944,
+        "LastWriteTime":  "\/Date(1754700430940)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\docs\\DEPENDENCY_MAP.md",
+        "Name":  "DEPENDENCY_MAP.md",
+        "Extension":  ".md",
+        "Length":  1182,
+        "LastWriteTime":  "\/Date(1755216872651)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\docs\\GUIA_IMPLEMENTACAO_FILTROS_DATA_GLPI.md",
+        "Name":  "GUIA_IMPLEMENTACAO_FILTROS_DATA_GLPI.md",
+        "Extension":  ".md",
+        "Length":  25909,
+        "LastWriteTime":  "\/Date(1754700430941)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\docs\\TESTING_GUIDE.md",
+        "Name":  "TESTING_GUIDE.md",
+        "Extension":  ".md",
+        "Length":  12209,
+        "LastWriteTime":  "\/Date(1754718486070)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\docs\\TROUBLESHOOTING_METRICS.md",
+        "Name":  "TROUBLESHOOTING_METRICS.md",
+        "Extension":  ".md",
+        "Length":  8341,
+        "LastWriteTime":  "\/Date(1755217202412)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\.env",
+        "Name":  ".env",
+        "Extension":  ".env",
+        "Length":  45,
+        "LastWriteTime":  "\/Date(1755156817194)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\.env.example",
+        "Name":  ".env.example",
+        "Extension":  ".example",
+        "Length":  469,
+        "LastWriteTime":  "\/Date(1755136326833)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\.env.local",
+        "Name":  ".env.local",
+        "Extension":  ".local",
+        "Length":  45,
+        "LastWriteTime":  "\/Date(1755156787878)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\.env.local.backup",
+        "Name":  ".env.local.backup",
+        "Extension":  ".backup",
+        "Length":  368,
+        "LastWriteTime":  "\/Date(1755131236223)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\.env.test",
+        "Name":  ".env.test",
+        "Extension":  ".test",
+        "Length":  990,
+        "LastWriteTime":  "\/Date(1755113393385)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\.prettierignore",
+        "Name":  ".prettierignore",
+        "Extension":  ".prettierignore",
+        "Length":  589,
+        "LastWriteTime":  "\/Date(1754708746171)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\.prettierrc",
+        "Name":  ".prettierrc",
+        "Extension":  ".prettierrc",
+        "Length":  386,
+        "LastWriteTime":  "\/Date(1754708736483)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\components.json",
+        "Name":  "components.json",
+        "Extension":  ".json",
+        "Length":  461,
+        "LastWriteTime":  "\/Date(1754520055340)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\index.html",
+        "Name":  "index.html",
+        "Extension":  ".html",
+        "Length":  722,
+        "LastWriteTime":  "\/Date(1755136326834)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\jest.config.js",
+        "Name":  "jest.config.js",
+        "Extension":  ".js",
+        "Length":  6101,
+        "LastWriteTime":  "\/Date(1755136326835)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\package-lock.json",
+        "Name":  "package-lock.json",
+        "Extension":  ".json",
+        "Length":  365478,
+        "LastWriteTime":  "\/Date(1755136326839)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\package.json",
+        "Name":  "package.json",
+        "Extension":  ".json",
+        "Length":  2524,
+        "LastWriteTime":  "\/Date(1755136326841)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\playwright.config.ts",
+        "Name":  "playwright.config.ts",
+        "Extension":  ".ts",
+        "Length":  2926,
+        "LastWriteTime":  "\/Date(1755136326842)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\postcss.config.js",
+        "Name":  "postcss.config.js",
+        "Extension":  ".js",
+        "Length":  84,
+        "LastWriteTime":  "\/Date(1755136326843)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\tailwind.config.js",
+        "Name":  "tailwind.config.js",
+        "Extension":  ".js",
+        "Length":  3382,
+        "LastWriteTime":  "\/Date(1755136327042)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\tsconfig.json",
+        "Name":  "tsconfig.json",
+        "Extension":  ".json",
+        "Length":  725,
+        "LastWriteTime":  "\/Date(1754520055370)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\tsconfig.node.json",
+        "Name":  "tsconfig.node.json",
+        "Extension":  ".json",
+        "Length":  221,
+        "LastWriteTime":  "\/Date(1754520055370)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\vite.config.ts",
+        "Name":  "vite.config.ts",
+        "Extension":  ".ts",
+        "Length":  834,
+        "LastWriteTime":  "\/Date(1755157084439)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\vitest.config.integration.ts",
+        "Name":  "vitest.config.integration.ts",
+        "Extension":  ".ts",
+        "Length":  2316,
+        "LastWriteTime":  "\/Date(1755136327044)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\vitest.config.unit.ts",
+        "Name":  "vitest.config.unit.ts",
+        "Extension":  ".ts",
+        "Length":  2828,
+        "LastWriteTime":  "\/Date(1755136327046)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\App.tsx",
+        "Name":  "App.tsx",
+        "Extension":  ".tsx",
+        "Length":  10335,
+        "LastWriteTime":  "\/Date(1755136326844)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\index.css",
+        "Name":  "index.css",
+        "Extension":  ".css",
+        "Length":  25563,
+        "LastWriteTime":  "\/Date(1755136326979)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\main.tsx",
+        "Name":  "main.tsx",
+        "Extension":  ".tsx",
+        "Length":  947,
+        "LastWriteTime":  "\/Date(1755136326981)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\test-setup.ts",
+        "Name":  "test-setup.ts",
+        "Extension":  ".ts",
+        "Length":  10112,
+        "LastWriteTime":  "\/Date(1755144195851)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\vite-env.d.ts",
+        "Name":  "vite-env.d.ts",
+        "Extension":  ".ts",
+        "Length":  396,
+        "LastWriteTime":  "\/Date(1754700430978)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\DashboardMetrics.tsx",
+        "Name":  "DashboardMetrics.tsx",
+        "Extension":  ".tsx",
+        "Length":  13039,
+        "LastWriteTime":  "\/Date(1754700430945)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\DataIntegrityMonitor.tsx",
+        "Name":  "DataIntegrityMonitor.tsx",
+        "Extension":  ".tsx",
+        "Length":  9585,
+        "LastWriteTime":  "\/Date(1754700430946)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\DateRangeFilter.tsx",
+        "Name":  "DateRangeFilter.tsx",
+        "Extension":  ".tsx",
+        "Length":  11516,
+        "LastWriteTime":  "\/Date(1754700430947)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\Footer.tsx",
+        "Name":  "Footer.tsx",
+        "Extension":  ".tsx",
+        "Length":  1315,
+        "LastWriteTime":  "\/Date(1754520055348)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\Header.tsx",
+        "Name":  "Header.tsx",
+        "Extension":  ".tsx",
+        "Length":  16164,
+        "LastWriteTime":  "\/Date(1754703349145)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\LazyComponents.tsx",
+        "Name":  "LazyComponents.tsx",
+        "Extension":  ".tsx",
+        "Length":  3032,
+        "LastWriteTime":  "\/Date(1754700430948)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\LevelsSection.tsx",
+        "Name":  "LevelsSection.tsx",
+        "Extension":  ".tsx",
+        "Length":  3754,
+        "LastWriteTime":  "\/Date(1754700430949)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\LoadingSpinner.tsx",
+        "Name":  "LoadingSpinner.tsx",
+        "Extension":  ".tsx",
+        "Length":  5162,
+        "LastWriteTime":  "\/Date(1755136326864)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\MetricCard.tsx",
+        "Name":  "MetricCard.tsx",
+        "Extension":  ".tsx",
+        "Length":  7666,
+        "LastWriteTime":  "\/Date(1754700430950)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\MetricsGrid.tsx",
+        "Name":  "MetricsGrid.tsx",
+        "Extension":  ".tsx",
+        "Length":  7442,
+        "LastWriteTime":  "\/Date(1755136326865)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\NotificationSystem.tsx",
+        "Name":  "NotificationSystem.tsx",
+        "Extension":  ".tsx",
+        "Length":  6598,
+        "LastWriteTime":  "\/Date(1754700430953)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\PerformanceDashboard.tsx",
+        "Name":  "PerformanceDashboard.tsx",
+        "Extension":  ".tsx",
+        "Length":  17695,
+        "LastWriteTime":  "\/Date(1754700430954)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\ProfessionalDashboard.tsx",
+        "Name":  "ProfessionalDashboard.tsx",
+        "Extension":  ".tsx",
+        "Length":  16936,
+        "LastWriteTime":  "\/Date(1754700430955)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\SimpleTechIcon.tsx",
+        "Name":  "SimpleTechIcon.tsx",
+        "Extension":  ".tsx",
+        "Length":  605,
+        "LastWriteTime":  "\/Date(1754700211741)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\dashboard\\LevelMetricsGrid.tsx",
+        "Name":  "LevelMetricsGrid.tsx",
+        "Extension":  ".tsx",
+        "Length":  8616,
+        "LastWriteTime":  "\/Date(1755136326870)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\dashboard\\MetricsGrid.tsx",
+        "Name":  "MetricsGrid.tsx",
+        "Extension":  ".tsx",
+        "Length":  6581,
+        "LastWriteTime":  "\/Date(1755136326871)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\dashboard\\ModernDashboard.tsx",
+        "Name":  "ModernDashboard.tsx",
+        "Extension":  ".tsx",
+        "Length":  6946,
+        "LastWriteTime":  "\/Date(1755136326882)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\dashboard\\NewTicketsList.tsx",
+        "Name":  "NewTicketsList.tsx",
+        "Extension":  ".tsx",
+        "Length":  10796,
+        "LastWriteTime":  "\/Date(1755136326884)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\dashboard\\RankingTable.tsx",
+        "Name":  "RankingTable.tsx",
+        "Extension":  ".tsx",
+        "Length":  10773,
+        "LastWriteTime":  "\/Date(1755136326920)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\dashboard\\StatusCard.tsx",
+        "Name":  "StatusCard.tsx",
+        "Extension":  ".tsx",
+        "Length":  9597,
+        "LastWriteTime":  "\/Date(1755136326921)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\dashboard\\TicketChart.tsx",
+        "Name":  "TicketChart.tsx",
+        "Extension":  ".tsx",
+        "Length":  9100,
+        "LastWriteTime":  "\/Date(1754700430961)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\ui\\badge.tsx",
+        "Name":  "badge.tsx",
+        "Extension":  ".tsx",
+        "Length":  1176,
+        "LastWriteTime":  "\/Date(1755136326924)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\ui\\button.tsx",
+        "Name":  "button.tsx",
+        "Extension":  ".tsx",
+        "Length":  1959,
+        "LastWriteTime":  "\/Date(1755136326962)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\ui\\card.tsx",
+        "Name":  "card.tsx",
+        "Extension":  ".tsx",
+        "Length":  1897,
+        "LastWriteTime":  "\/Date(1755136326964)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\ui\\dialog.tsx",
+        "Name":  "dialog.tsx",
+        "Extension":  ".tsx",
+        "Length":  3955,
+        "LastWriteTime":  "\/Date(1754520055360)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\ui\\input.tsx",
+        "Name":  "input.tsx",
+        "Extension":  ".tsx",
+        "Length":  790,
+        "LastWriteTime":  "\/Date(1754520055360)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\ui\\select.tsx",
+        "Name":  "select.tsx",
+        "Extension":  ".tsx",
+        "Length":  5888,
+        "LastWriteTime":  "\/Date(1754520055360)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\ui\\SimpleTooltip.tsx",
+        "Name":  "SimpleTooltip.tsx",
+        "Extension":  ".tsx",
+        "Length":  3535,
+        "LastWriteTime":  "\/Date(1754700430961)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\ui\\table.tsx",
+        "Name":  "table.tsx",
+        "Extension":  ".tsx",
+        "Length":  2979,
+        "LastWriteTime":  "\/Date(1754520055360)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\ui\\Tooltip.tsx",
+        "Name":  "Tooltip.tsx",
+        "Extension":  ".tsx",
+        "Length":  5476,
+        "LastWriteTime":  "\/Date(1754700430962)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\components\\__tests__\\ApiConsumer.test.tsx",
+        "Name":  "ApiConsumer.test.tsx",
+        "Extension":  ".tsx",
+        "Length":  7925,
+        "LastWriteTime":  "\/Date(1755136326867)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\config\\constants.ts",
+        "Name":  "constants.ts",
+        "Extension":  ".ts",
+        "Length":  7719,
+        "LastWriteTime":  "\/Date(1755157046632)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\hooks\\useApi.ts",
+        "Name":  "useApi.ts",
+        "Extension":  ".ts",
+        "Length":  5275,
+        "LastWriteTime":  "\/Date(1754711151839)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\hooks\\useDashboard.ts",
+        "Name":  "useDashboard.ts",
+        "Extension":  ".ts",
+        "Length":  6542,
+        "LastWriteTime":  "\/Date(1755136326969)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\hooks\\useDebounce.ts",
+        "Name":  "useDebounce.ts",
+        "Extension":  ".ts",
+        "Length":  3743,
+        "LastWriteTime":  "\/Date(1754544180561)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\hooks\\usePerformanceMonitoring.ts",
+        "Name":  "usePerformanceMonitoring.ts",
+        "Extension":  ".ts",
+        "Length":  9353,
+        "LastWriteTime":  "\/Date(1754539632353)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\hooks\\__tests__\\useApi.test.tsx",
+        "Name":  "useApi.test.tsx",
+        "Extension":  ".tsx",
+        "Length":  7169,
+        "LastWriteTime":  "\/Date(1755136326967)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\lib\\utils.ts",
+        "Name":  "utils.ts",
+        "Extension":  ".ts",
+        "Length":  2826,
+        "LastWriteTime":  "\/Date(1754520055364)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\mocks\\handlers.ts",
+        "Name":  "handlers.ts",
+        "Extension":  ".ts",
+        "Length":  10013,
+        "LastWriteTime":  "\/Date(1755144180704)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\mocks\\mockData.ts",
+        "Name":  "mockData.ts",
+        "Extension":  ".ts",
+        "Length":  11920,
+        "LastWriteTime":  "\/Date(1754714125936)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\mocks\\server.ts",
+        "Name":  "server.ts",
+        "Extension":  ".ts",
+        "Length":  3770,
+        "LastWriteTime":  "\/Date(1755136326983)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\services\\api.ts",
+        "Name":  "api.ts",
+        "Extension":  ".ts",
+        "Length":  19185,
+        "LastWriteTime":  "\/Date(1755136326984)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\services\\httpClient.ts",
+        "Name":  "httpClient.ts",
+        "Extension":  ".ts",
+        "Length":  7133,
+        "LastWriteTime":  "\/Date(1755157074472)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\services\\README.md",
+        "Name":  "README.md",
+        "Extension":  ".md",
+        "Length":  5829,
+        "LastWriteTime":  "\/Date(1754712231858)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\test\\setup.ts",
+        "Name":  "setup.ts",
+        "Extension":  ".ts",
+        "Length":  2116,
+        "LastWriteTime":  "\/Date(1755136326987)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\types\\api.ts",
+        "Name":  "api.ts",
+        "Extension":  ".ts",
+        "Length":  7800,
+        "LastWriteTime":  "\/Date(1755136326987)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\types\\index.ts",
+        "Name":  "index.ts",
+        "Extension":  ".ts",
+        "Length":  2840,
+        "LastWriteTime":  "\/Date(1755136326988)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\utils\\dataMonitor.ts",
+        "Name":  "dataMonitor.ts",
+        "Extension":  ".ts",
+        "Length":  15495,
+        "LastWriteTime":  "\/Date(1755136326996)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\utils\\dataValidation.ts",
+        "Name":  "dataValidation.ts",
+        "Extension":  ".ts",
+        "Length":  11562,
+        "LastWriteTime":  "\/Date(1754700430973)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\utils\\formatters.ts",
+        "Name":  "formatters.ts",
+        "Extension":  ".ts",
+        "Length":  9709,
+        "LastWriteTime":  "\/Date(1755136326997)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\utils\\performanceBaseline.ts",
+        "Name":  "performanceBaseline.ts",
+        "Extension":  ".ts",
+        "Length":  11521,
+        "LastWriteTime":  "\/Date(1755136326998)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\utils\\performanceMonitor.ts",
+        "Name":  "performanceMonitor.ts",
+        "Extension":  ".ts",
+        "Length":  11159,
+        "LastWriteTime":  "\/Date(1755136326999)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\utils\\performanceTestSuite.ts",
+        "Name":  "performanceTestSuite.ts",
+        "Extension":  ".ts",
+        "Length":  17693,
+        "LastWriteTime":  "\/Date(1755136326999)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\utils\\validation.ts",
+        "Name":  "validation.ts",
+        "Extension":  ".ts",
+        "Length":  9842,
+        "LastWriteTime":  "\/Date(1755136327040)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\utils\\webVitalsMonitor.ts",
+        "Name":  "webVitalsMonitor.ts",
+        "Extension":  ".ts",
+        "Length":  12180,
+        "LastWriteTime":  "\/Date(1755136327041)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\__tests__\\accessibility\\accessibility.test.tsx",
+        "Name":  "accessibility.test.tsx",
+        "Extension":  ".tsx",
+        "Length":  21411,
+        "LastWriteTime":  "\/Date(1755136326845)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\__tests__\\contract\\api-contract.test.ts",
+        "Name":  "api-contract.test.ts",
+        "Extension":  ".ts",
+        "Length":  27086,
+        "LastWriteTime":  "\/Date(1755136326846)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\__tests__\\e2e\\dashboard.spec.ts",
+        "Name":  "dashboard.spec.ts",
+        "Extension":  ".ts",
+        "Length":  13952,
+        "LastWriteTime":  "\/Date(1754719744884)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\__tests__\\e2e\\global-setup.ts",
+        "Name":  "global-setup.ts",
+        "Extension":  ".ts",
+        "Length":  2288,
+        "LastWriteTime":  "\/Date(1755144215567)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\__tests__\\e2e\\global-teardown.ts",
+        "Name":  "global-teardown.ts",
+        "Extension":  ".ts",
+        "Length":  3533,
+        "LastWriteTime":  "\/Date(1754714351806)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\__tests__\\e2e\\tickets.spec.ts",
+        "Name":  "tickets.spec.ts",
+        "Extension":  ".ts",
+        "Length":  16780,
+        "LastWriteTime":  "\/Date(1754719877550)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\__tests__\\integration\\api-integration.test.ts",
+        "Name":  "api-integration.test.ts",
+        "Extension":  ".ts",
+        "Length":  24990,
+        "LastWriteTime":  "\/Date(1755136326848)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\__tests__\\integration\\ApiIntegration.test.tsx",
+        "Name":  "ApiIntegration.test.tsx",
+        "Extension":  ".tsx",
+        "Length":  9126,
+        "LastWriteTime":  "\/Date(1755136326847)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\__tests__\\mutation\\mutation.test.ts",
+        "Name":  "mutation.test.ts",
+        "Extension":  ".ts",
+        "Length":  24393,
+        "LastWriteTime":  "\/Date(1755136326849)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\__tests__\\snapshot\\component-snapshots.test.tsx",
+        "Name":  "component-snapshots.test.tsx",
+        "Extension":  ".tsx",
+        "Length":  30978,
+        "LastWriteTime":  "\/Date(1755136326851)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\__tests__\\snapshot\\__snapshots__\\component-snapshots.test.tsx.snap",
+        "Name":  "component-snapshots.test.tsx.snap",
+        "Extension":  ".snap",
+        "Length":  29295,
+        "LastWriteTime":  "\/Date(1754719015304)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\__tests__\\unit\\components.test.tsx",
+        "Name":  "components.test.tsx",
+        "Extension":  ".tsx",
+        "Length":  20821,
+        "LastWriteTime":  "\/Date(1755136326853)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\__tests__\\unit\\Dashboard.test.tsx",
+        "Name":  "Dashboard.test.tsx",
+        "Extension":  ".tsx",
+        "Length":  11439,
+        "LastWriteTime":  "\/Date(1755136326852)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\__tests__\\unit\\hooks.test.tsx",
+        "Name":  "hooks.test.tsx",
+        "Extension":  ".tsx",
+        "Length":  27505,
+        "LastWriteTime":  "\/Date(1755136326856)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\__tests__\\unit\\utils.test.ts",
+        "Name":  "utils.test.ts",
+        "Extension":  ".ts",
+        "Length":  30026,
+        "LastWriteTime":  "\/Date(1755136326861)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\__tests__\\unit\\components\\TicketCard.test.tsx",
+        "Name":  "TicketCard.test.tsx",
+        "Extension":  ".tsx",
+        "Length":  11990,
+        "LastWriteTime":  "\/Date(1755136326854)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\__tests__\\unit\\hooks\\useApi.test.ts",
+        "Name":  "useApi.test.ts",
+        "Extension":  ".ts",
+        "Length":  9607,
+        "LastWriteTime":  "\/Date(1755136326858)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\__tests__\\unit\\services\\httpClient.test.ts",
+        "Name":  "httpClient.test.ts",
+        "Extension":  ".ts",
+        "Length":  15086,
+        "LastWriteTime":  "\/Date(1755136326860)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\frontend\\src\\__tests__\\visual\\visual-regression.test.tsx",
+        "Name":  "visual-regression.test.tsx",
+        "Extension":  ".tsx",
+        "Length":  32925,
+        "LastWriteTime":  "\/Date(1755136326862)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\reports\\inventory.json",
+        "Name":  "inventory.json",
+        "Extension":  ".json",
+        "Length":  0,
+        "LastWriteTime":  "\/Date(1755219435508)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\scripts\\install-redis-windows.ps1",
+        "Name":  "install-redis-windows.ps1",
+        "Extension":  ".ps1",
+        "Length":  6057,
+        "LastWriteTime":  "\/Date(1755141457602)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\scripts\\README.md",
+        "Name":  "README.md",
+        "Extension":  ".md",
+        "Length":  1806,
+        "LastWriteTime":  "\/Date(1755136327057)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\scripts\\setup-environment.ps1",
+        "Name":  "setup-environment.ps1",
+        "Extension":  ".ps1",
+        "Length":  6216,
+        "LastWriteTime":  "\/Date(1755141414415)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\scripts\\update_docs.py",
+        "Name":  "update_docs.py",
+        "Extension":  ".py",
+        "Length":  9790,
+        "LastWriteTime":  "\/Date(1755215367973)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\scripts\\debug\\check_duplicate_keys.py",
+        "Name":  "check_duplicate_keys.py",
+        "Extension":  ".py",
+        "Length":  8052,
+        "LastWriteTime":  "\/Date(1755203604967)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\scripts\\debug\\debug_metrics.py",
+        "Name":  "debug_metrics.py",
+        "Extension":  ".py",
+        "Length":  7151,
+        "LastWriteTime":  "\/Date(1755203604973)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\scripts\\debug\\debug_react_keys.py",
+        "Name":  "debug_react_keys.py",
+        "Extension":  ".py",
+        "Length":  6142,
+        "LastWriteTime":  "\/Date(1755203604989)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\scripts\\debug\\debug_trends.py",
+        "Name":  "debug_trends.py",
+        "Extension":  ".py",
+        "Length":  5921,
+        "LastWriteTime":  "\/Date(1755203604999)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\scripts\\tests\\test_date_filters.html",
+        "Name":  "test_date_filters.html",
+        "Extension":  ".html",
+        "Length":  16396,
+        "LastWriteTime":  "\/Date(1755136327066)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\scripts\\tests\\test_debounce_throttle.html",
+        "Name":  "test_debounce_throttle.html",
+        "Extension":  ".html",
+        "Length":  8327,
+        "LastWriteTime":  "\/Date(1755136327066)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\scripts\\tests\\test_filters.html",
+        "Name":  "test_filters.html",
+        "Extension":  ".html",
+        "Length":  9249,
+        "LastWriteTime":  "\/Date(1755136327067)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\scripts\\tests\\test_trends.py",
+        "Name":  "test_trends.py",
+        "Extension":  ".py",
+        "Length":  4720,
+        "LastWriteTime":  "\/Date(1755203605005)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\scripts\\validation\\validate_frontend_trends.py",
+        "Name":  "validate_frontend_trends.py",
+        "Extension":  ".py",
+        "Length":  7409,
+        "LastWriteTime":  "\/Date(1755203605101)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\scripts\\validation\\validate_trends_math.py",
+        "Name":  "validate_trends_math.py",
+        "Extension":  ".py",
+        "Length":  6867,
+        "LastWriteTime":  "\/Date(1755203605121)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\tests\\test_api.py",
+        "Name":  "test_api.py",
+        "Extension":  ".py",
+        "Length":  1253,
+        "LastWriteTime":  "\/Date(1755204089174)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\tests\\.hypothesis\\unicode_data\\15.0.0\\charmap.json.gz",
+        "Name":  "charmap.json.gz",
+        "Extension":  ".gz",
+        "Length":  21726,
+        "LastWriteTime":  "\/Date(1755204170280)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\tools\\glpi_mapping\\glpi_mapping.egg-info\\dependency_links.txt",
+        "Name":  "dependency_links.txt",
+        "Extension":  ".txt",
+        "Length":  1,
+        "LastWriteTime":  "\/Date(1754631888290)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\tools\\glpi_mapping\\glpi_mapping.egg-info\\entry_points.txt",
+        "Name":  "entry_points.txt",
+        "Extension":  ".txt",
+        "Length":  55,
+        "LastWriteTime":  "\/Date(1754631888290)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\tools\\glpi_mapping\\glpi_mapping.egg-info\\PKG-INFO",
+        "Name":  "PKG-INFO",
+        "Extension":  "",
+        "Length":  627,
+        "LastWriteTime":  "\/Date(1754631888284)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\tools\\glpi_mapping\\glpi_mapping.egg-info\\requires.txt",
+        "Name":  "requires.txt",
+        "Extension":  ".txt",
+        "Length":  172,
+        "LastWriteTime":  "\/Date(1754631888290)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\tools\\glpi_mapping\\glpi_mapping.egg-info\\SOURCES.txt",
+        "Name":  "SOURCES.txt",
+        "Extension":  ".txt",
+        "Length":  259,
+        "LastWriteTime":  "\/Date(1754631888305)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\Administrador\\project\\glpi_dashboard\\tools\\glpi_mapping\\glpi_mapping.egg-info\\top_level.txt",
+        "Name":  "top_level.txt",
+        "Extension":  ".txt",
+        "Length":  11,
+        "LastWriteTime":  "\/Date(1754631888290)\/"
+    }
+]

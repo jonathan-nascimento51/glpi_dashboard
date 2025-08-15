@@ -1,0 +1,7 @@
+RELATORIO DE REORGANIZACAO DA ESTRUTURA
+==================================================
+
+Data: 2025-08-13 23:06:03
+Total de mudancas: 1
+
+- REMOVED_EMPTY_DIR: C:\Users\Administrador\project\glpi_dashboard\backend\routes

@@ -1,6 +1,6 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+﻿// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Testes de Snapshot de Componentes > Alertas > deve capturar snapshot de alerta dismissível 1`] = `
+exports[`Testes de Snapshot de Componentes > Alertas > deve capturar snapshot de alerta dismissivel 1`] = `
 <div
   class="alert alert-info"
 >
@@ -19,7 +19,7 @@ exports[`Testes de Snapshot de Componentes > Alertas > deve capturar snapshot de
     <div
       class="alert-message"
     >
-      Este alerta pode ser fechado pelo usuário.
+      Este alerta pode ser fechado pelo usuario.
     </div>
   </div>
   <button
@@ -59,7 +59,7 @@ exports[`Testes de Snapshot de Componentes > Alertas > deve capturar snapshot de
       <div
         class="alert-message"
       >
-        Operação realizada com sucesso!
+        Operacao realizada com sucesso!
       </div>
     </div>
   </div>
@@ -86,7 +86,7 @@ exports[`Testes de Snapshot de Componentes > Alertas > deve capturar snapshot de
       <div
         class="alert-message"
       >
-        Ocorreu um erro ao processar a solicitação.
+        Ocorreu um erro ao processar a solicitacao.
       </div>
     </div>
   </div>
@@ -113,7 +113,7 @@ exports[`Testes de Snapshot de Componentes > Alertas > deve capturar snapshot de
       <div
         class="alert-message"
       >
-        Esta ação não pode ser desfeita.
+        Esta acao nao pode ser desfeita.
       </div>
     </div>
   </div>
@@ -135,19 +135,19 @@ exports[`Testes de Snapshot de Componentes > Alertas > deve capturar snapshot de
       <div
         class="alert-title"
       >
-        Informação
+        Informacao
       </div>
       <div
         class="alert-message"
       >
-        Informação importante para o usuário.
+        Informacao importante para o usuario.
       </div>
     </div>
   </div>
 </div>
 `;
 
-exports[`Testes de Snapshot de Componentes > Botões > deve capturar snapshot de botões de diferentes tamanhos 1`] = `
+exports[`Testes de Snapshot de Componentes > Botoes > deve capturar snapshot de botoes de diferentes tamanhos 1`] = `
 <div>
   <button
     class="btn btn-primary btn-small  "
@@ -157,7 +157,7 @@ exports[`Testes de Snapshot de Componentes > Botões > deve capturar snapshot de
   <button
     class="btn btn-primary btn-medium  "
   >
-    Médio
+    Medio
   </button>
   <button
     class="btn btn-primary btn-large  "
@@ -167,7 +167,7 @@ exports[`Testes de Snapshot de Componentes > Botões > deve capturar snapshot de
 </div>
 `;
 
-exports[`Testes de Snapshot de Componentes > Botões > deve capturar snapshot do botão com loading 1`] = `
+exports[`Testes de Snapshot de Componentes > Botoes > deve capturar snapshot do botao com loading 1`] = `
 <button
   class="btn btn-primary btn-medium  loading"
 >
@@ -180,32 +180,32 @@ exports[`Testes de Snapshot de Componentes > Botões > deve capturar snapshot do
 </button>
 `;
 
-exports[`Testes de Snapshot de Componentes > Botões > deve capturar snapshot do botão desabilitado 1`] = `
+exports[`Testes de Snapshot de Componentes > Botoes > deve capturar snapshot do botao desabilitado 1`] = `
 <button
   class="btn btn-primary btn-medium disabled "
   disabled=""
 >
-  Botão Desabilitado
+  Botao Desabilitado
 </button>
 `;
 
-exports[`Testes de Snapshot de Componentes > Botões > deve capturar snapshot do botão primário 1`] = `
+exports[`Testes de Snapshot de Componentes > Botoes > deve capturar snapshot do botao primario 1`] = `
 <button
   class="btn btn-primary btn-medium  "
 >
-  Botão Primário
+  Botao Primario
 </button>
 `;
 
-exports[`Testes de Snapshot de Componentes > Botões > deve capturar snapshot do botão secundário 1`] = `
+exports[`Testes de Snapshot de Componentes > Botoes > deve capturar snapshot do botao secundario 1`] = `
 <button
   class="btn btn-secondary btn-medium  "
 >
-  Botão Secundário
+  Botao Secundario
 </button>
 `;
 
-exports[`Testes de Snapshot de Componentes > Cards > deve capturar snapshot de card básico 1`] = `
+exports[`Testes de Snapshot de Componentes > Cards > deve capturar snapshot de card basico 1`] = `
 <div
   class="card card-default"
 >
@@ -218,7 +218,7 @@ exports[`Testes de Snapshot de Componentes > Cards > deve capturar snapshot de c
       <h3
         class="card-title"
       >
-        Título do Card
+        Titulo do Card
       </h3>
     </div>
   </div>
@@ -226,13 +226,13 @@ exports[`Testes de Snapshot de Componentes > Cards > deve capturar snapshot de c
     class="card-content"
   >
     <p>
-      Conteúdo do card
+      Conteudo do card
     </p>
   </div>
 </div>
 `;
 
-exports[`Testes de Snapshot de Componentes > Cards > deve capturar snapshot de card com ações 1`] = `
+exports[`Testes de Snapshot de Componentes > Cards > deve capturar snapshot de card com acoes 1`] = `
 <div
   class="card card-default"
 >
@@ -245,12 +245,12 @@ exports[`Testes de Snapshot de Componentes > Cards > deve capturar snapshot de c
       <h3
         class="card-title"
       >
-        Card com Ações
+        Card com Acoes
       </h3>
       <p
         class="card-subtitle"
       >
-        Subtítulo do card
+        Subtitulo do card
       </p>
     </div>
     <div
@@ -274,7 +274,7 @@ exports[`Testes de Snapshot de Componentes > Cards > deve capturar snapshot de c
     class="card-content"
   >
     <p>
-      Conteúdo do card com ações
+      Conteudo do card com acoes
     </p>
   </div>
 </div>
@@ -294,7 +294,7 @@ exports[`Testes de Snapshot de Componentes > Cards > deve capturar snapshot de c
         <h3
           class="card-title"
         >
-          Card Padrão
+          Card Padrao
         </h3>
       </div>
     </div>
@@ -302,7 +302,7 @@ exports[`Testes de Snapshot de Componentes > Cards > deve capturar snapshot de c
       class="card-content"
     >
       <p>
-        Conteúdo padrão
+        Conteudo padrao
       </p>
     </div>
   </div>
@@ -326,7 +326,7 @@ exports[`Testes de Snapshot de Componentes > Cards > deve capturar snapshot de c
       class="card-content"
     >
       <p>
-        Operação realizada com sucesso
+        Operacao realizada com sucesso
       </p>
     </div>
   </div>
@@ -350,7 +350,7 @@ exports[`Testes de Snapshot de Componentes > Cards > deve capturar snapshot de c
       class="card-content"
     >
       <p>
-        Atenção necessária
+        Atencao necessaria
       </p>
     </div>
   </div>
@@ -490,7 +490,7 @@ exports[`Testes de Snapshot de Componentes > Componentes de Feedback > deve capt
   <div
     class="tooltip tooltip-top"
   >
-    Informação adicional
+    Informacao adicional
   </div>
 </div>
 `;
@@ -514,7 +514,7 @@ exports[`Testes de Snapshot de Componentes > Estados Vazios > deve capturar snap
   <p
     class="empty-state-description"
   >
-    Não há tickets para exibir no momento.
+    Nao ha tickets para exibir no momento.
   </p>
   <div
     class="empty-state-action"
@@ -582,7 +582,7 @@ exports[`Testes de Snapshot de Componentes > Estados de Loading > deve capturar 
 </div>
 `;
 
-exports[`Testes de Snapshot de Componentes > Formulários > deve capturar snapshot de formulário completo 1`] = `
+exports[`Testes de Snapshot de Componentes > Formularios > deve capturar snapshot de formulario completo 1`] = `
 <form
   class="form"
 >
@@ -592,7 +592,7 @@ exports[`Testes de Snapshot de Componentes > Formulários > deve capturar snapsh
     <label
       class="form-label required"
     >
-      Título
+      Titulo
       <span
         class="required-asterisk"
       >
@@ -601,7 +601,7 @@ exports[`Testes de Snapshot de Componentes > Formulários > deve capturar snapsh
     </label>
     <input
       class="form-input  "
-      placeholder="Digite o título"
+      placeholder="Digite o titulo"
       required=""
       type="text"
       value=""
@@ -613,7 +613,7 @@ exports[`Testes de Snapshot de Componentes > Formulários > deve capturar snapsh
     <label
       class="form-label "
     >
-      Descrição
+      Descricao
     </label>
     <input
       class="form-input  "
@@ -652,7 +652,7 @@ exports[`Testes de Snapshot de Componentes > Formulários > deve capturar snapsh
       <option
         value="medium"
       >
-        Média
+        Media
       </option>
       <option
         value="high"
@@ -678,7 +678,7 @@ exports[`Testes de Snapshot de Componentes > Formulários > deve capturar snapsh
 </form>
 `;
 
-exports[`Testes de Snapshot de Componentes > Formulários > deve capturar snapshot de input com erro 1`] = `
+exports[`Testes de Snapshot de Componentes > Formularios > deve capturar snapshot de input com erro 1`] = `
 <div
   class="form-group"
 >
@@ -695,12 +695,12 @@ exports[`Testes de Snapshot de Componentes > Formulários > deve capturar snapsh
   <span
     class="error-message"
   >
-    Email inválido
+    Email invalido
   </span>
 </div>
 `;
 
-exports[`Testes de Snapshot de Componentes > Formulários > deve capturar snapshot de input de texto 1`] = `
+exports[`Testes de Snapshot de Componentes > Formularios > deve capturar snapshot de input de texto 1`] = `
 <div
   class="form-group"
 >
@@ -724,7 +724,7 @@ exports[`Testes de Snapshot de Componentes > Formulários > deve capturar snapsh
 </div>
 `;
 
-exports[`Testes de Snapshot de Componentes > Formulários > deve capturar snapshot de select 1`] = `
+exports[`Testes de Snapshot de Componentes > Formularios > deve capturar snapshot de select 1`] = `
 <div
   class="form-group"
 >
@@ -755,7 +755,7 @@ exports[`Testes de Snapshot de Componentes > Formulários > deve capturar snapsh
     <option
       value="medium"
     >
-      Média
+      Media
     </option>
     <option
       value="high"
@@ -871,7 +871,7 @@ exports[`Testes de Snapshot de Componentes > Layouts Complexos > deve capturar s
             <h3
               class="card-title"
             >
-              Tempo Médio
+              Tempo Medio
             </h3>
           </div>
         </div>
@@ -1106,7 +1106,7 @@ exports[`Testes de Snapshot de Componentes > Layouts Complexos > deve capturar s
           class="card-content"
         >
           <p>
-            Solicitação de novo usuário
+            Solicitacao de novo usuario
           </p>
           <div
             class="ticket-meta"
@@ -1176,7 +1176,7 @@ exports[`Testes de Snapshot de Componentes > Layouts Complexos > deve capturar s
         <button
           class="pagination-btn"
         >
-          Próximo
+          Proximo
         </button>
       </div>
     </div>
@@ -1214,7 +1214,7 @@ exports[`Testes de Snapshot de Componentes > Modais > deve capturar snapshot de 
         class="modal-body"
       >
         <p>
-          Conteúdo pequeno
+          Conteudo pequeno
         </p>
       </div>
     </div>
@@ -1247,7 +1247,7 @@ exports[`Testes de Snapshot de Componentes > Modais > deve capturar snapshot de 
         class="modal-body"
       >
         <p>
-          Conteúdo extenso com mais informações
+          Conteudo extenso com mais informacoes
         </p>
       </div>
     </div>
@@ -1255,7 +1255,7 @@ exports[`Testes de Snapshot de Componentes > Modais > deve capturar snapshot de 
 </div>
 `;
 
-exports[`Testes de Snapshot de Componentes > Modais > deve capturar snapshot de modal básico 1`] = `
+exports[`Testes de Snapshot de Componentes > Modais > deve capturar snapshot de modal basico 1`] = `
 <div
   class="modal-overlay"
 >
@@ -1268,7 +1268,7 @@ exports[`Testes de Snapshot de Componentes > Modais > deve capturar snapshot de 
       <h3
         class="modal-title"
       >
-        Modal de Confirmação
+        Modal de Confirmacao
       </h3>
       <button
         class="modal-close"
@@ -1284,7 +1284,7 @@ exports[`Testes de Snapshot de Componentes > Modais > deve capturar snapshot de 
       class="modal-body"
     >
       <p>
-        Tem certeza que deseja realizar esta ação?
+        Tem certeza que deseja realizar esta acao?
       </p>
       <div
         class="modal-actions"
@@ -1305,7 +1305,7 @@ exports[`Testes de Snapshot de Componentes > Modais > deve capturar snapshot de 
 </div>
 `;
 
-exports[`Testes de Snapshot de Componentes > Navegação > deve capturar snapshot de breadcrumb 1`] = `
+exports[`Testes de Snapshot de Componentes > Navegacao > deve capturar snapshot de breadcrumb 1`] = `
 <nav
   class="breadcrumb"
 >
@@ -1351,7 +1351,7 @@ exports[`Testes de Snapshot de Componentes > Navegação > deve capturar snapsho
 </nav>
 `;
 
-exports[`Testes de Snapshot de Componentes > Navegação > deve capturar snapshot de tabs 1`] = `
+exports[`Testes de Snapshot de Componentes > Navegacao > deve capturar snapshot de tabs 1`] = `
 <div
   class="tabs"
 >
@@ -1366,25 +1366,25 @@ exports[`Testes de Snapshot de Componentes > Navegação > deve capturar snapsho
     <button
       class="tab active"
     >
-      Configurações
+      Configuracoes
     </button>
     <button
       class="tab "
     >
-      Avançado
+      Avancado
     </button>
   </div>
   <div
     class="tab-content"
   >
     <div>
-      Conteúdo de configurações
+      Conteudo de configuracoes
     </div>
   </div>
 </div>
 `;
 
-exports[`Testes de Snapshot de Componentes > Paginação > deve capturar snapshot de paginação 1`] = `
+exports[`Testes de Snapshot de Componentes > Paginacao > deve capturar snapshot de paginacao 1`] = `
 <div
   class="pagination"
 >
@@ -1460,13 +1460,13 @@ exports[`Testes de Snapshot de Componentes > Paginação > deve capturar snapsho
     <button
       class="pagination-btn"
     >
-      Próximo
+      Proximo
     </button>
   </div>
 </div>
 `;
 
-exports[`Testes de Snapshot de Componentes > Paginação > deve capturar snapshot de paginação na primeira página 1`] = `
+exports[`Testes de Snapshot de Componentes > Paginacao > deve capturar snapshot de paginacao na primeira pagina 1`] = `
 <div
   class="pagination"
 >
@@ -1518,13 +1518,13 @@ exports[`Testes de Snapshot de Componentes > Paginação > deve capturar snapsho
     <button
       class="pagination-btn"
     >
-      Próximo
+      Proximo
     </button>
   </div>
 </div>
 `;
 
-exports[`Testes de Snapshot de Componentes > Paginação > deve capturar snapshot de paginação na última página 1`] = `
+exports[`Testes de Snapshot de Componentes > Paginacao > deve capturar snapshot de paginacao na ultima pagina 1`] = `
 <div
   class="pagination"
 >
@@ -1576,7 +1576,7 @@ exports[`Testes de Snapshot de Componentes > Paginação > deve capturar snapsho
       class="pagination-btn"
       disabled=""
     >
-      Próximo
+      Proximo
     </button>
   </div>
 </div>
@@ -1659,7 +1659,7 @@ exports[`Testes de Snapshot de Componentes > Tabelas > deve capturar snapshot de
         <th
           class=""
         >
-          Ações
+          Acoes
         </th>
       </tr>
     </thead>

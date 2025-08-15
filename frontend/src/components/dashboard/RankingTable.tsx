@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo, useCallback } from "react"
+﻿import React, { useRef, useEffect, useMemo, useCallback } from "react"
 import { motion } from "framer-motion"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -21,7 +21,7 @@ interface RankingTableProps {
   className?: string
 }
 
-// Função auxiliar para obter estilos de nível movida para fora do componente
+// Funcao auxiliar para obter estilos de nivel movida para fora do componente
 function getLevelStyle(level?: string) {
   switch (level) {
     case 'N4': // Expert - Azul profissional
@@ -34,7 +34,7 @@ function getLevelStyle(level?: string) {
         iconBg: 'bg-blue-100',
         iconColor: 'text-blue-600'
       }
-    case 'N3': // Sênior - Verde confiável
+    case 'N3': // Senior - Verde confiavel
       return {
         bgColor: 'bg-emerald-50',
         borderColor: 'border-emerald-200',
@@ -54,7 +54,7 @@ function getLevelStyle(level?: string) {
         iconBg: 'bg-orange-100',
         iconColor: 'text-orange-600'
       }
-    case 'N1': // Júnior - Roxo motivacional
+    case 'N1': // Junior - Roxo motivacional
       return {
         bgColor: 'bg-purple-50',
         borderColor: 'border-purple-200',
@@ -77,7 +77,7 @@ function getLevelStyle(level?: string) {
   }
 }
 
-// Variantes de animação movidas para fora do componente
+// Variantes de animacao movidas para fora do componente
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -157,9 +157,9 @@ const TechnicianCard = React.memo<{
         isTopThree && position === 3 && "ring-amber-400"
       )}
     >
-      {/* Header - Posição e Nível */}
+      {/* Header - Posicao e Nivel */}
       <div className="flex items-center justify-between mb-3">
-        {/* Indicador de posição */}
+        {/* Indicador de posicao */}
         <div className={cn(
           "w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm",
           isTopThree ? "text-white" : "text-gray-600 bg-gray-100",
@@ -174,7 +174,7 @@ const TechnicianCard = React.memo<{
           {position > 3 && position}
         </div>
         
-        {/* Nível */}
+        {/* Nivel */}
         {technician.level && (
           <div className="flex items-center space-x-1">
             <div className={cn(
@@ -193,7 +193,7 @@ const TechnicianCard = React.memo<{
         )}
       </div>
 
-      {/* Nome do técnico */}
+      {/* Nome do tecnico */}
       <div className="text-center mb-3">
         <div className="font-medium text-gray-900 text-sm leading-tight">
           {formattedName}
@@ -231,7 +231,7 @@ const TechnicianCard = React.memo<{
 
 export const RankingTable = React.memo<RankingTableProps>(function RankingTable({ 
   data, 
-  title: _ = "Ranking de Técnicos", 
+  title: _ = "Ranking de Tecnicos", 
   className 
 }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -251,12 +251,12 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
     })
   }, [data, trackRender, measureRender])
   
-  // Pegar todos os técnicos e ordenar por número de chamados - memoizado
+  // Pegar todos os tecnicos e ordenar por numero de chamados - memoizado
   const topTechnicians = useMemo(() => {
     return [...data].sort((a, b) => b.total - a.total)
   }, [data])
 
-  // Estatísticas por nível para o cabeçalho - memoizado
+  // Estatisticas por nivel para o cabecalho - memoizado
   const levelStats = useMemo(() => {
     return topTechnicians.reduce((acc, tech) => {
       const level = tech.level || 'Outros'
@@ -296,7 +296,7 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
             <div className="p-2 rounded-xl bg-gradient-to-br from-slate-500 to-slate-600 shadow-lg">
               <Users className="h-5 w-5 text-white" />
             </div>
-            Ranking de Técnicos
+            Ranking de Tecnicos
           </CardTitle>
           <div className="flex items-center gap-2">
             {Object.entries(levelStats).map(([level, count]) => {

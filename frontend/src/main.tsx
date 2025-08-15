@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
@@ -10,11 +10,11 @@ window.addEventListener('error', (event) => {
 
 // Handle connection status
 window.addEventListener('online', () => {
-  console.log('Conexão restabelecida');
+  console.log('Conexao restabelecida');
 });
 
 window.addEventListener('offline', () => {
-  console.log('Conexão perdida. Trabalhando offline.');
+  console.log('Conexao perdida. Trabalhando offline.');
 });
 
 // Performance monitoring

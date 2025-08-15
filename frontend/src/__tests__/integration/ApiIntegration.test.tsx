@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+﻿import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import React from 'react';
 import { httpClient } from '../../services/httpClient';
@@ -43,7 +43,7 @@ const TestComponent: React.FC<{ endpoint: string }> = ({ endpoint }) => {
   );
 };
 
-// Componente que testa auto-execução
+// Componente que testa auto-execucao
 const AutoExecuteComponent: React.FC = () => {
   const apiFunction = async () => {
     const response = await httpClient.get('/metrics');
@@ -95,7 +95,7 @@ const ErrorTestComponent: React.FC<{ errorType: string }> = ({ errorType }) => {
   );
 };
 
-describe('Integração API - Componentes com httpClient', () => {
+describe('Integracao API - Componentes com httpClient', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -104,7 +104,7 @@ describe('Integração API - Componentes com httpClient', () => {
     vi.restoreAllMocks();
   });
 
-  it('deve fazer requisição GET com parâmetros corretamente', async () => {
+  it('deve fazer requisicao GET com parametros corretamente', async () => {
     const mockData = { id: 1, name: 'Test Data' };
     const mockGet = vi.mocked(httpClient.get);
     mockGet.mockResolvedValue({ data: mockData });
@@ -122,7 +122,7 @@ describe('Integração API - Componentes com httpClient', () => {
       expect(screen.getByTestId('data')).toBeInTheDocument();
     });
 
-    // Verificar se a requisição foi feita corretamente
+    // Verificar se a requisicao foi feita corretamente
     expect(mockGet).toHaveBeenCalledWith('/test-endpoint', {
       params: { test: 'param' }
     });
@@ -133,7 +133,7 @@ describe('Integração API - Componentes com httpClient', () => {
     expect(screen.queryByTestId('error')).not.toBeInTheDocument();
   });
 
-  it('deve executar automaticamente quando autoExecute é true', async () => {
+  it('deve executar automaticamente quando autoExecute e true', async () => {
     const mockData = { metrics: { total: 100 } };
     const mockGet = vi.mocked(httpClient.get);
     mockGet.mockResolvedValue({ data: mockData });
@@ -148,7 +148,7 @@ describe('Integração API - Componentes com httpClient', () => {
       expect(screen.getByTestId('auto-data')).toBeInTheDocument();
     });
 
-    // Verificar se a requisição foi feita automaticamente
+    // Verificar se a requisicao foi feita automaticamente
     expect(mockGet).toHaveBeenCalledWith('/metrics');
     expect(screen.getByTestId('auto-data')).toHaveTextContent(JSON.stringify(mockData));
   });
@@ -180,7 +180,7 @@ describe('Integração API - Componentes com httpClient', () => {
     expect(screen.getByTestId('error-message')).toHaveTextContent('Request timeout');
   });
 
-  it('deve tratar erro de autenticação corretamente', async () => {
+  it('deve tratar erro de autenticacao corretamente', async () => {
     render(<ErrorTestComponent errorType="auth" />);
 
     const button = screen.getByText('Testar auth');
@@ -206,13 +206,13 @@ describe('Integração API - Componentes com httpClient', () => {
     expect(screen.getByTestId('error-message')).toHaveTextContent('Internal server error');
   });
 
-  it('deve limpar erro ao fazer nova requisição bem-sucedida', async () => {
+  it('deve limpar erro ao fazer nova requisicao bem-sucedida', async () => {
     const mockGet = vi.mocked(httpClient.get);
     
     render(<TestComponent endpoint="/test" />);
     const button = screen.getByText('Carregar Dados');
 
-    // Primeira requisição com erro
+    // Primeira requisicao com erro
     mockGet.mockRejectedValueOnce(new Error('Primeiro erro'));
     fireEvent.click(button);
 
@@ -222,7 +222,7 @@ describe('Integração API - Componentes com httpClient', () => {
 
     expect(screen.getByTestId('error')).toHaveTextContent('Erro: Primeiro erro');
 
-    // Segunda requisição com sucesso
+    // Segunda requisicao com sucesso
     const successData = { success: true };
     mockGet.mockResolvedValueOnce({ data: successData });
     fireEvent.click(button);
@@ -235,31 +235,31 @@ describe('Integração API - Componentes com httpClient', () => {
     expect(screen.queryByTestId('error')).not.toBeInTheDocument();
   });
 
-  it('deve cancelar requisição anterior quando nova é iniciada', async () => {
+  it('deve cancelar requisicao anterior quando nova e iniciada', async () => {
     const mockGet = vi.mocked(httpClient.get);
     
     render(<TestComponent endpoint="/slow-endpoint" />);
     const button = screen.getByText('Carregar Dados');
 
-    // Primeira requisição lenta
+    // Primeira requisicao lenta
     mockGet.mockImplementationOnce(
       () => new Promise(resolve => 
         setTimeout(() => resolve({ data: { result: 'first' } }), 200)
       )
     );
 
-    // Segunda requisição rápida
+    // Segunda requisicao rapida
     mockGet.mockImplementationOnce(
       () => new Promise(resolve => 
         setTimeout(() => resolve({ data: { result: 'second' } }), 50)
       )
     );
 
-    // Primeira requisição
+    // Primeira requisicao
     fireEvent.click(button);
     expect(screen.getByTestId('loading')).toBeInTheDocument();
 
-    // Segunda requisição antes da primeira terminar
+    // Segunda requisicao antes da primeira terminar
     fireEvent.click(button);
 
     // Aguardar resultado
@@ -267,11 +267,11 @@ describe('Integração API - Componentes com httpClient', () => {
       expect(screen.getByTestId('data')).toBeInTheDocument();
     }, { timeout: 300 });
 
-    // Deve mostrar resultado da segunda requisição
+    // Deve mostrar resultado da segunda requisicao
     expect(screen.getByTestId('data')).toHaveTextContent('"result":"second"');
   });
 
-  it('deve manter configuração do httpClient', async () => {
+  it('deve manter configuracao do httpClient', async () => {
     const { API_CONFIG } = await import('../../services/httpClient');
     
     expect(API_CONFIG.BASE_URL).toBe('http://localhost:5000/api');

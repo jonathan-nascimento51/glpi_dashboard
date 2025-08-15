@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { TicketCard } from '../../../components/TicketCard';
@@ -13,7 +13,7 @@ vi.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: any) => children,
 }));
 
-// Mock dos ícones
+// Mock dos icones
 vi.mock('lucide-react', () => ({
   Clock: () => <div data-testid="clock-icon" />,
   User: () => <div data-testid="user-icon" />,
@@ -27,11 +27,11 @@ vi.mock('lucide-react', () => ({
 const mockTicket: Ticket = {
   id: 1,
   title: 'Problema no sistema',
-  description: 'Descrição detalhada do problema',
+  description: 'Descricao detalhada do problema',
   status: 'open',
   priority: 'high',
   category: 'Hardware',
-  requester: 'João Silva',
+  requester: 'Joao Silva',
   assignee: 'Maria Santos',
   created_at: '2024-01-15T10:30:00Z',
   updated_at: '2024-01-15T14:20:00Z',
@@ -53,12 +53,12 @@ describe('TicketCard Component', () => {
     vi.clearAllMocks();
   });
 
-  it('deve renderizar informações básicas do ticket', () => {
+  it('deve renderizar informacoes basicas do ticket', () => {
     render(<TicketCard {...defaultProps} />);
 
     expect(screen.getByText('Problema no sistema')).toBeInTheDocument();
-    expect(screen.getByText('Descrição detalhada do problema')).toBeInTheDocument();
-    expect(screen.getByText('João Silva')).toBeInTheDocument();
+    expect(screen.getByText('Descricao detalhada do problema')).toBeInTheDocument();
+    expect(screen.getByText('Joao Silva')).toBeInTheDocument();
     expect(screen.getByText('Maria Santos')).toBeInTheDocument();
     expect(screen.getByText('Hardware')).toBeInTheDocument();
   });
@@ -89,10 +89,10 @@ describe('TicketCard Component', () => {
     // Prioridade alta
     expect(screen.getByText('Alta')).toBeInTheDocument();
 
-    // Prioridade média
+    // Prioridade media
     const mediumTicket = { ...mockTicket, priority: 'medium' as const };
     rerender(<TicketCard {...defaultProps} ticket={mediumTicket} />);
-    expect(screen.getByText('Média')).toBeInTheDocument();
+    expect(screen.getByText('Media')).toBeInTheDocument();
 
     // Prioridade baixa
     const lowTicket = { ...mockTicket, priority: 'low' as const };
@@ -103,7 +103,7 @@ describe('TicketCard Component', () => {
   it('deve formatar datas corretamente', () => {
     render(<TicketCard {...defaultProps} />);
 
-    // Verifica se as datas estão formatadas
+    // Verifica se as datas estao formatadas
     expect(screen.getByText(/15\/01\/2024/)).toBeInTheDocument();
     expect(screen.getByText(/20\/01\/2024/)).toBeInTheDocument();
   });
@@ -115,10 +115,10 @@ describe('TicketCard Component', () => {
     expect(screen.getByText('hardware')).toBeInTheDocument();
   });
 
-  it('deve exibir contadores de comentários e anexos', () => {
+  it('deve exibir contadores de comentarios e anexos', () => {
     render(<TicketCard {...defaultProps} />);
 
-    expect(screen.getByText('3 comentários')).toBeInTheDocument();
+    expect(screen.getByText('3 comentarios')).toBeInTheDocument();
     expect(screen.getByText('2 anexos')).toBeInTheDocument();
   });
 
@@ -130,7 +130,7 @@ describe('TicketCard Component', () => {
     expect(onClickMock).toHaveBeenCalledWith(mockTicket);
   });
 
-  it('deve permitir mudança de status', async () => {
+  it('deve permitir mudanca de status', async () => {
     const onStatusChangeMock = vi.fn();
     render(<TicketCard {...defaultProps} onStatusChange={onStatusChangeMock} />);
 
@@ -143,12 +143,12 @@ describe('TicketCard Component', () => {
       expect(screen.getByText('Fechado')).toBeInTheDocument();
     });
 
-    // Clica em uma nova opção
+    // Clica em uma nova opcao
     fireEvent.click(screen.getByText('Em Progresso'));
     expect(onStatusChangeMock).toHaveBeenCalledWith(mockTicket.id, 'in_progress');
   });
 
-  it('deve permitir mudança de prioridade', async () => {
+  it('deve permitir mudanca de prioridade', async () => {
     const onPriorityChangeMock = vi.fn();
     render(<TicketCard {...defaultProps} onPriorityChange={onPriorityChangeMock} />);
 
@@ -157,11 +157,11 @@ describe('TicketCard Component', () => {
 
     // Verifica se o menu de prioridade aparece
     await waitFor(() => {
-      expect(screen.getByText('Média')).toBeInTheDocument();
+      expect(screen.getByText('Media')).toBeInTheDocument();
       expect(screen.getByText('Baixa')).toBeInTheDocument();
     });
 
-    // Clica em uma nova opção
+    // Clica em uma nova opcao
     fireEvent.click(screen.getByText('Baixa'));
     expect(onPriorityChangeMock).toHaveBeenCalledWith(mockTicket.id, 'low');
   });
@@ -177,7 +177,7 @@ describe('TicketCard Component', () => {
     expect(screen.getByText(/Vencido/)).toBeInTheDocument();
   });
 
-  it('deve exibir indicador de ticket próximo ao vencimento', () => {
+  it('deve exibir indicador de ticket proximo ao vencimento', () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     
@@ -199,7 +199,7 @@ describe('TicketCard Component', () => {
     
     render(<TicketCard {...defaultProps} ticket={unassignedTicket} />);
     
-    expect(screen.getByText('Não atribuído')).toBeInTheDocument();
+    expect(screen.getByText('Nao atribuido')).toBeInTheDocument();
   });
 
   it('deve lidar com ticket sem tags', () => {
@@ -244,22 +244,22 @@ describe('TicketCard Component', () => {
     expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
   });
 
-  it('deve truncar descrição longa', () => {
+  it('deve truncar descricao longa', () => {
     const longDescriptionTicket = {
       ...mockTicket,
-      description: 'Esta é uma descrição muito longa que deveria ser truncada para não ocupar muito espaço no card e manter a interface limpa e organizada.',
+      description: 'Esta e uma descricao muito longa que deveria ser truncada para nao ocupar muito espaco no card e manter a interface limpa e organizada.',
     };
     
     render(<TicketCard {...defaultProps} ticket={longDescriptionTicket} />);
     
-    const description = screen.getByText(/Esta é uma descrição muito longa/);
+    const description = screen.getByText(/Esta e uma descricao muito longa/);
     expect(description).toHaveClass('truncated');
   });
 
-  it('deve permitir expandir descrição truncada', async () => {
+  it('deve permitir expandir descricao truncada', async () => {
     const longDescriptionTicket = {
       ...mockTicket,
-      description: 'Esta é uma descrição muito longa que deveria ser truncada para não ocupar muito espaço no card e manter a interface limpa e organizada.',
+      description: 'Esta e uma descricao muito longa que deveria ser truncada para nao ocupar muito espaco no card e manter a interface limpa e organizada.',
     };
     
     render(<TicketCard {...defaultProps} ticket={longDescriptionTicket} />);
@@ -272,7 +272,7 @@ describe('TicketCard Component', () => {
     });
   });
 
-  it('deve exibir avatar do usuário quando disponível', () => {
+  it('deve exibir avatar do usuario quando disponivel', () => {
     const ticketWithAvatar = {
       ...mockTicket,
       requester_avatar: 'https://example.com/avatar.jpg',
@@ -280,17 +280,17 @@ describe('TicketCard Component', () => {
     
     render(<TicketCard {...defaultProps} ticket={ticketWithAvatar} />);
     
-    const avatar = screen.getByRole('img', { name: /João Silva/ });
+    const avatar = screen.getByRole('img', { name: /Joao Silva/ });
     expect(avatar).toHaveAttribute('src', 'https://example.com/avatar.jpg');
   });
 
-  it('deve exibir iniciais quando avatar não está disponível', () => {
+  it('deve exibir iniciais quando avatar nao esta disponivel', () => {
     render(<TicketCard {...defaultProps} />);
     
-    expect(screen.getByText('JS')).toBeInTheDocument(); // Iniciais de João Silva
+    expect(screen.getByText('JS')).toBeInTheDocument(); // Iniciais de Joao Silva
   });
 
-  it('deve aplicar animações de hover', () => {
+  it('deve aplicar animacoes de hover', () => {
     render(<TicketCard {...defaultProps} />);
     
     const card = screen.getByRole('article');
@@ -302,13 +302,13 @@ describe('TicketCard Component', () => {
     expect(card).not.toHaveClass('hovered');
   });
 
-  it('deve ser acessível via teclado', () => {
+  it('deve ser acessivel via teclado', () => {
     const onClickMock = vi.fn();
     render(<TicketCard {...defaultProps} onClick={onClickMock} />);
 
     const card = screen.getByRole('article');
     
-    // Deve ser focável
+    // Deve ser focavel
     card.focus();
     expect(card).toHaveFocus();
     
@@ -321,7 +321,7 @@ describe('TicketCard Component', () => {
     expect(onClickMock).toHaveBeenCalledTimes(2);
   });
 
-  it('deve exibir tooltip com informações adicionais', async () => {
+  it('deve exibir tooltip com informacoes adicionais', async () => {
     render(<TicketCard {...defaultProps} showTooltip />);
     
     const card = screen.getByRole('article');
@@ -334,7 +334,7 @@ describe('TicketCard Component', () => {
     });
   });
 
-  it('deve permitir ações em lote quando selecionado', () => {
+  it('deve permitir acoes em lote quando selecionado', () => {
     const onBatchActionMock = vi.fn();
     render(
       <TicketCard 

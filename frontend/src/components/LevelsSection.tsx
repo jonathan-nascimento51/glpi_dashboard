@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+﻿import React, { useMemo } from 'react';
 // import { Users, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { MetricsData, LevelMetrics } from '../types';
 
@@ -12,7 +12,7 @@ interface LevelCardProps {
   resolucaoRate: number;
 }
 
-// Função auxiliar para calcular taxa de resolução
+// Funcao auxiliar para calcular taxa de resolucao
 const calculateResolutionRate = (data: LevelMetrics): number => {
   const total = data.novos + data.progresso + data.pendentes + data.resolvidos;
   return total > 0 ? Math.round((data.resolvidos / total) * 100) : 0;
@@ -28,9 +28,9 @@ const LevelCard = React.memo<LevelCardProps>(({ level, data, resolucaoRate }) =>
     <div className="card-base p-6 col-span-3 md:col-span-6 lg:col-span-3">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-h3 text-primary">Nível {level}</h3>
+        <h3 className="text-h3 text-primary">Nivel {level}</h3>
         <span className="text-meta status-resolved">
-          {resolucaoRate}% Resolução
+          {resolucaoRate}% Resolucao
         </span>
       </div>
       
@@ -66,16 +66,16 @@ const LevelCard = React.memo<LevelCardProps>(({ level, data, resolucaoRate }) =>
 });
 
 export const LevelsSection = React.memo<LevelsSectionProps>(({ metrics }) => {
-  // Verificação de segurança para evitar erros
+  // Verificacao de seguranca para evitar erros
   if (!metrics || !metrics.niveis) {
     return (
       <div className="space-y-6">
-        <div className="text-center text-gray-500">Carregando métricas por nível...</div>
+        <div className="text-center text-gray-500">Carregando metricas por nivel...</div>
       </div>
     );
   }
 
-  // Memoizar as taxas de resolução calculadas
+  // Memoizar as taxas de resolucao calculadas
   const resolutionRates = useMemo(() => ({
     n1: calculateResolutionRate(metrics.niveis.n1),
     n2: calculateResolutionRate(metrics.niveis.n2),
@@ -86,7 +86,7 @@ export const LevelsSection = React.memo<LevelsSectionProps>(({ metrics }) => {
   return (
     <section className="grid-container mb-8">
       <div className="col-span-12">
-        <h2 className="text-h1 text-primary mb-6">Níveis de Atendimento</h2>
+        <h2 className="text-h1 text-primary mb-6">Niveis de Atendimento</h2>
         <div className="grid grid-cols-12 gap-4">
           <LevelCard level="1" data={metrics.niveis.n1} resolucaoRate={resolutionRates.n1} />
           <LevelCard level="2" data={metrics.niveis.n2} resolucaoRate={resolutionRates.n2} />

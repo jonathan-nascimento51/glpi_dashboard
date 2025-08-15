@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+﻿import React, { useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Plus, Clock, AlertCircle, CheckCircle } from 'lucide-react';
 import { TicketStatus } from '../types';
@@ -10,7 +10,7 @@ interface MetricCardProps {
   onClick?: () => void;
 }
 
-// Funções auxiliares movidas para fora do componente
+// Funcoes auxiliares movidas para fora do componente
 const getMetricConfig = (type: TicketStatus) => {
   switch (type) {
     case 'new':
@@ -74,7 +74,7 @@ const parseChange = (change: string) => {
   };
 };
 
-// Variantes de animação movidas para fora do componente
+// Variantes de animacao movidas para fora do componente
 const cardVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.9 },
   visible: {
@@ -125,13 +125,13 @@ export const MetricCard = React.memo<MetricCardProps>(function MetricCard({
   change,
   onClick,
 }) {
-  // Memoizar configuração do tipo
+  // Memoizar configuracao do tipo
   const config = useMemo(() => getMetricConfig(type), [type]);
   
-  // Memoizar dados de mudança
+  // Memoizar dados de mudanca
   const changeData = useMemo(() => parseChange(change), [change]);
   
-  // Memoizar ícones
+  // Memoizar icones
   const Icon = useMemo(() => config.icon, [config.icon]);
   const TrendIcon = useMemo(() => 
     changeData.isPositive ? TrendingUp : TrendingDown, 

@@ -1,0 +1,163 @@
+{
+  "timestamp": "2025-08-14T16:36:03.810662",
+  "tests": {
+    "config_glpi_url": {
+      "status": "PASS",
+      "message": "Variável GLPI_URL configurada",
+      "details": "http://cau.ppiratini.intra.rs.gov.br/glpi/apirest.php",
+      "timestamp": "2025-08-14T16:36:03.817328"
+    },
+    "config_glpi_user_token": {
+      "status": "PASS",
+      "message": "Variável GLPI_USER_TOKEN configurada",
+      "details": "TQdSxqg2...tRnq",
+      "timestamp": "2025-08-14T16:36:03.817328"
+    },
+    "config_glpi_app_token": {
+      "status": "PASS",
+      "message": "Variável GLPI_APP_TOKEN configurada",
+      "details": "aY3f9F5a...ULid",
+      "timestamp": "2025-08-14T16:36:03.819328"
+    },
+    "glpi_url_reachable": {
+      "status": "PASS",
+      "message": "URL do GLPI acessível",
+      "details": "Status: 200",
+      "timestamp": "2025-08-14T16:36:04.100609"
+    },
+    "glpi_authentication": {
+      "status": "FAIL",
+      "message": "Erro durante autenticação GLPI",
+      "details": "'NoneType' object is not subscriptable",
+      "timestamp": "2025-08-14T16:36:04.101610"
+    },
+    "field_discovery": {
+      "status": "PASS",
+      "message": "IDs de campos descobertos com sucesso",
+      "details": {
+        "GROUP": "8",
+        "STATUS": "12",
+        "DATE_CREATION": "15"
+      },
+      "timestamp": "2025-08-14T16:36:04.102617"
+    },
+    "general_metrics": {
+      "status": "PASS",
+      "message": "Métricas gerais obtidas - Total: 0 tickets",
+      "details": {
+        "Novo": 0,
+        "Processando (atribuÃ­do)": 0,
+        "Processando (planejado)": 0,
+        "Pendente": 0,
+        "Solucionado": 0,
+        "Fechado": 0
+      },
+      "timestamp": "2025-08-14T16:36:04.104127"
+    },
+    "general_metrics_data": {
+      "status": "WARN",
+      "message": "Nenhum ticket encontrado nas métricas gerais",
+      "details": null,
+      "timestamp": "2025-08-14T16:36:04.104127"
+    },
+    "level_metrics": {
+      "status": "PASS",
+      "message": "Métricas por nível obtidas",
+      "details": {
+        "N1": 0,
+        "N2": 0,
+        "N3": 0,
+        "N4": 0
+      },
+      "timestamp": "2025-08-14T16:36:04.109137"
+    },
+    "level_metrics_data": {
+      "status": "WARN",
+      "message": "Nenhum ticket encontrado nos grupos N1-N4",
+      "details": null,
+      "timestamp": "2025-08-14T16:36:04.110138"
+    },
+    "dashboard_metrics": {
+      "status": "PASS",
+      "message": "Métricas do dashboard obtidas - Total: 0 tickets",
+      "details": {
+        "novos": 0,
+        "progresso": 0,
+        "pendentes": 0,
+        "resolvidos": 0,
+        "total": 0
+      },
+      "timestamp": "2025-08-14T16:36:04.127831"
+    },
+    "dashboard_levels_structure": {
+      "status": "PASS",
+      "message": "Estrutura de níveis presente",
+      "details": [
+        "geral",
+        "n1",
+        "n2",
+        "n3",
+        "n4"
+      ],
+      "timestamp": "2025-08-14T16:36:04.127831"
+    },
+    "dashboard_data_validation": {
+      "status": "WARN",
+      "message": "Dashboard retornando dados zerados",
+      "details": null,
+      "timestamp": "2025-08-14T16:36:04.127831"
+    },
+    "backend_health": {
+      "status": "PASS",
+      "message": "Backend health check OK",
+      "details": {
+        "status": "healthy"
+      },
+      "timestamp": "2025-08-14T16:36:06.158478"
+    },
+    "backend_metrics_endpoint": {
+      "status": "PASS",
+      "message": "Endpoint de métricas funcionando",
+      "details": {
+        "success": true,
+        "data_keys": [
+          "niveis",
+          "novos",
+          "pendentes",
+          "progresso",
+          "resolvidos",
+          "tendencias",
+          "total"
+        ]
+      },
+      "timestamp": "2025-08-14T16:36:08.217285"
+    },
+    "backend_metrics_data": {
+      "status": "WARN",
+      "message": "API retornando dados zerados",
+      "details": null,
+      "timestamp": "2025-08-14T16:36:08.217285"
+    },
+    "frontend_accessibility": {
+      "status": "PASS",
+      "message": "Frontend acessível",
+      "details": "Status: 200",
+      "timestamp": "2025-08-14T16:36:08.224289"
+    }
+  },
+  "summary": {
+    "total_tests": 17,
+    "passed": 12,
+    "failed": 1,
+    "warnings": 4
+  },
+  "recommendations": [
+    "Verifique se existem tickets no sistema GLPI",
+    "Verifique se os IDs dos grupos N1-N4 estão corretos no código",
+    "Investigar por que o dashboard está retornando dados zerados",
+    "Corrigir 1 testes que falharam: glpi_authentication",
+    "Investigar 4 avisos: general_metrics_data, level_metrics_data, dashboard_data_validation, backend_metrics_data",
+    "Verificar configuração e conectividade com o servidor GLPI",
+    "Verificar se há dados reais no sistema GLPI para exibição"
+  ]
+}

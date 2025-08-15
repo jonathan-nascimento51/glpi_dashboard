@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 import { memo, useMemo } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -24,7 +24,7 @@ interface StatusCardProps {
   onClick?: () => void
 }
 
-// Função auxiliar definida fora do componente para evitar recriação
+// Funcao auxiliar definida fora do componente para evitar recriacao
 const getStatusGradient = (status?: string) => {
   switch (status) {
     case 'online': return 'from-green-500 to-emerald-600'
@@ -37,25 +37,25 @@ const getStatusGradient = (status?: string) => {
   }
 }
 
-// Função para determinar a direção da tendência
+// Funcao para determinar a direcao da tendencia
 const getTrendDirection = (trendValue: number): 'up' | 'down' | 'neutral' => {
   if (trendValue > 0) return 'up'
   if (trendValue < 0) return 'down'
   return 'neutral'
 }
 
-// Função para gerar explicação da tendência
+// Funcao para gerar explicacao da tendencia
 const getTrendExplanation = (trendValue: number, title: string): React.ReactNode => {
   const direction = getTrendDirection(trendValue)
   
   if (direction === 'neutral') {
     return (
       <div className="text-left">
-        <div className="font-semibold mb-2">📊 Tendência: {title}</div>
+        <div className="font-semibold mb-2">📊 Tendencia: {title}</div>
         <div className="text-sm space-y-1">
-          <div>• <strong>Variação:</strong> Sem mudança</div>
-          <div>• <strong>Período:</strong> Comparação com últimos 7 dias</div>
-          <div>• <strong>Status:</strong> Estável</div>
+          <div>• <strong>Variacao:</strong> Sem mudanca</div>
+          <div>• <strong>Periodo:</strong> Comparacao com ultimos 7 dias</div>
+          <div>• <strong>Status:</strong> Estavel</div>
         </div>
       </div>
     )
@@ -63,19 +63,19 @@ const getTrendExplanation = (trendValue: number, title: string): React.ReactNode
 
   const isExtreme = Math.abs(trendValue) > 500
   const explanation = isExtreme 
-    ? "Valor muito alto devido à comparação entre dados históricos completos vs. período específico de 7 dias"
-    : "Variação normal baseada na comparação com o período anterior"
+    ? "Valor muito alto devido a comparacao entre dados historicos completos vs. periodo especifico de 7 dias"
+    : "Variacao normal baseada na comparacao com o periodo anterior"
 
   return (
     <div className="text-left">
-      <div className="font-semibold mb-2">📊 Tendência: {title}</div>
+      <div className="font-semibold mb-2">📊 Tendencia: {title}</div>
       <div className="text-sm space-y-1">
-        <div>• <strong>Variação:</strong> {direction === 'up' ? '↗️' : '↘️'} {Math.abs(trendValue).toFixed(1)}%</div>
-        <div>• <strong>Período:</strong> vs. últimos 7 dias</div>
-        <div>• <strong>Interpretação:</strong> {explanation}</div>
+        <div>• <strong>Variacao:</strong> {direction === 'up' ? '↗️' : '↘️'} {Math.abs(trendValue).toFixed(1)}%</div>
+        <div>• <strong>Periodo:</strong> vs. ultimos 7 dias</div>
+        <div>• <strong>Interpretacao:</strong> {explanation}</div>
         {isExtreme && (
           <div className="mt-2 p-2 bg-slate-800 border border-slate-600 rounded text-xs text-slate-200">
-            <strong className="text-amber-400">💡 Nota:</strong> Percentuais altos são normais quando comparamos dados históricos completos com períodos específicos.
+            <strong className="text-amber-400">💡 Nota:</strong> Percentuais altos sao normais quando comparamos dados historicos completos com periodos especificos.
           </div>
         )}
       </div>
@@ -83,7 +83,7 @@ const getTrendExplanation = (trendValue: number, title: string): React.ReactNode
   )
 }
 
-// Variantes de animação definidas fora do componente
+// Variantes de animacao definidas fora do componente
 const cardVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.9 },
   visible: { 
@@ -138,7 +138,7 @@ export const StatusCard = memo<StatusCardProps>(function StatusCard({
   variant: _ = 'default',
   onClick
 }) {
-  // Memoizar ícones para evitar recálculos
+  // Memoizar icones para evitar recalculos
   const StatusIcon = useMemo(() => 
     icon || (status ? getStatusIcon(status) : null), 
     [icon, status]
@@ -232,7 +232,7 @@ export const StatusCard = memo<StatusCardProps>(function StatusCard({
                   >
                     {TrendIcon && <TrendIcon className="h-4 w-4" />}
                     <span>
-                      {trend.value === 0 ? 'sem alteração' : (
+                      {trend.value === 0 ? 'sem alteracao' : (
                         `${trend.direction === 'up' ? '+' : trend.direction === 'down' ? '-' : ''}${formatNumber(trend.value)}`
                       )}
                     </span>

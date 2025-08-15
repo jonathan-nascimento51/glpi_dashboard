@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react';
+﻿import { renderHook, act } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { useCache } from '../../../hooks/useCache';
 
@@ -25,7 +25,7 @@ describe('useCache Hook', () => {
     vi.useRealTimers();
   });
 
-  it('deve inicializar com valor padrão quando cache está vazio', () => {
+  it('deve inicializar com valor padrao quando cache esta vazio', () => {
     localStorageMock.getItem.mockReturnValue(null);
     
     const { result } = renderHook(() => 
@@ -37,7 +37,7 @@ describe('useCache Hook', () => {
     expect(localStorageMock.getItem).toHaveBeenCalledWith('test-key');
   });
 
-  it('deve carregar valor válido do cache', () => {
+  it('deve carregar valor valido do cache', () => {
     const cachedData = {
       value: 'cached-value',
       timestamp: Date.now(),
@@ -56,7 +56,7 @@ describe('useCache Hook', () => {
   it('deve detectar cache expirado', () => {
     const expiredData = {
       value: 'expired-value',
-      timestamp: Date.now() - 10000, // 10 segundos atrás
+      timestamp: Date.now() - 10000, // 10 segundos atras
       ttl: 5000 // TTL de 5 segundos
     };
     localStorageMock.getItem.mockReturnValue(JSON.stringify(expiredData));
@@ -118,7 +118,7 @@ describe('useCache Hook', () => {
     expect(localStorageMock.removeItem).toHaveBeenCalledWith('test-key');
   });
 
-  it('deve lidar com JSON inválido no localStorage', () => {
+  it('deve lidar com JSON invalido no localStorage', () => {
     localStorageMock.getItem.mockReturnValue('invalid-json');
     
     const { result } = renderHook(() => 
@@ -191,7 +191,7 @@ describe('useCache Hook', () => {
 
     expect(result.current.isExpired).toBe(false);
 
-    // Avança o tempo em 2 segundos
+    // Avanca o tempo em 2 segundos
     act(() => {
       vi.advanceTimersByTime(2000);
     });
@@ -204,7 +204,7 @@ describe('useCache Hook', () => {
     expect(newResult.current.isExpired).toBe(true);
   });
 
-  it('deve manter referência estável das funções', () => {
+  it('deve manter referencia estavel das funcoes', () => {
     localStorageMock.getItem.mockReturnValue(null);
     
     const { result, rerender } = renderHook(() => 
@@ -230,7 +230,7 @@ describe('useCache Hook', () => {
       useCache('test-key', 'default-value')
     );
 
-    // Não deve lançar erro
+    // Nao deve lancar erro
     act(() => {
       result.current.setValue('new-value');
     });
@@ -262,10 +262,10 @@ describe('useCache Hook', () => {
     );
   });
 
-  it('deve verificar expiração corretamente com TTL 0', () => {
+  it('deve verificar expiracao corretamente com TTL 0', () => {
     const permanentData = {
       value: 'permanent-value',
-      timestamp: Date.now() - 100000, // Muito tempo atrás
+      timestamp: Date.now() - 100000, // Muito tempo atras
       ttl: 0 // Cache permanente
     };
     localStorageMock.getItem.mockReturnValue(JSON.stringify(permanentData));
@@ -275,10 +275,10 @@ describe('useCache Hook', () => {
     );
 
     expect(result.current.value).toBe('permanent-value');
-    expect(result.current.isExpired).toBe(false); // Não deve expirar com TTL 0
+    expect(result.current.isExpired).toBe(false); // Nao deve expirar com TTL 0
   });
 
-  it('deve permitir atualização de valor sem alterar timestamp', () => {
+  it('deve permitir atualizacao de valor sem alterar timestamp', () => {
     const originalTimestamp = Date.now() - 1000;
     const cachedData = {
       value: 'old-value',
@@ -324,7 +324,7 @@ describe('useCache Hook', () => {
     );
   });
 
-  it('deve lidar com mudanças na chave do cache', () => {
+  it('deve lidar com mudancas na chave do cache', () => {
     localStorageMock.getItem.mockReturnValue(null);
     
     const { result, rerender } = renderHook(
@@ -341,7 +341,7 @@ describe('useCache Hook', () => {
     // Muda a chave
     rerender({ key: 'key2' });
 
-    // Deve voltar ao valor padrão para a nova chave
+    // Deve voltar ao valor padrao para a nova chave
     expect(result.current.value).toBe('default-value');
     expect(localStorageMock.getItem).toHaveBeenCalledWith('key2');
   });

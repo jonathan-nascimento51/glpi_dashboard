@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Hook personalizado para monitoramento de performance em componentes React
  * Integra com React DevTools Profiler e Performance API
  */
@@ -56,7 +56,7 @@ export const usePerformanceMonitoring = (componentName: string) => {
 };
 
 /**
- * Hook para monitorar operações de filtro
+ * Hook para monitorar operacoes de filtro
  */
 export const useFilterPerformance = () => {
   const [isFiltering, setIsFiltering] = useState(false);
@@ -128,7 +128,7 @@ export const useApiPerformance = () => {
       
       setLastApiTime(duration);
       setApiMetrics(prev => [
-        ...prev.slice(-9), // Manter apenas os últimos 10
+        ...prev.slice(-9), // Manter apenas os ultimos 10
         {
           endpoint,
           duration,
@@ -157,7 +157,7 @@ export const useApiPerformance = () => {
 };
 
 /**
- * Hook para relatórios de performance
+ * Hook para relatorios de performance
  */
 export const usePerformanceReports = () => {
   const [reports, setReports] = useState<PerformanceReport[]>([]);
@@ -167,11 +167,11 @@ export const usePerformanceReports = () => {
     setIsGenerating(true);
     
     try {
-      // Aguardar um pouco para capturar métricas pendentes
+      // Aguardar um pouco para capturar metricas pendentes
       await new Promise(resolve => setTimeout(resolve, 100));
       
       const report = performanceMonitor.generateReport();
-      setReports(prev => [...prev.slice(-9), report]); // Manter últimos 10
+      setReports(prev => [...prev.slice(-9), report]); // Manter ultimos 10
       
       // Log detalhado em desenvolvimento
       if (process.env.NODE_ENV === 'development') {
@@ -253,7 +253,7 @@ export const usePerformanceDebug = () => {
     
     const info = {
       stats,
-      browserMetrics: browserMetrics.slice(-10), // Últimas 10 métricas
+      browserMetrics: browserMetrics.slice(-10), // ultimas 10 metricas
       timestamp: new Date().toISOString()
     };
     
@@ -285,7 +285,7 @@ export const usePerformanceDebug = () => {
 };
 
 /**
- * Hook para monitoramento automático de re-renderizações
+ * Hook para monitoramento automatico de re-renderizacoes
  */
 export const useRenderTracker = (componentName: string, dependencies: any[] = []) => {
   const renderCount = useRef(0);
@@ -298,7 +298,7 @@ export const useRenderTracker = (componentName: string, dependencies: any[] = []
     const timeSinceLastRender = now - lastRenderTime.current;
     lastRenderTime.current = now;
 
-    // Detectar mudanças nas dependências
+    // Detectar mudancas nas dependencias
     const depsChanged = dependencies.some((dep, index) => 
       dep !== prevDeps.current[index]
     );

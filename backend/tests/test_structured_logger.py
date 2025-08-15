@@ -29,7 +29,7 @@ def test_basic_logging():
     logger = create_glpi_logger("DEBUG")
     
     # Testes básicos
-    logger.info("Aplicação iniciada", version="1.0.0", environment="test")
+    logger.info("Aplicaçáo iniciada", version="1.0.0", environment="test")
     logger.debug("Debug message", user_id=123, action="login")
     logger.warning("Warning message", threshold_exceeded=True)
     logger.error("Error message", error_code=500, endpoint="/api/test")
@@ -45,8 +45,8 @@ def test_api_call_decorator():
     
     @log_api_call(logger)
     def mock_api_function(param1, param2=None):
-        """Função mock para teste."""
-        time.sleep(0.1)  # Simular tempo de execução
+        """Funçáo mock para teste."""
+        time.sleep(0.1)  # Simular tempo de execuçáo
         return {"status": "success", "data": [1, 2, 3]}
     
     result = mock_api_function("test_param", param2="test_value")
@@ -99,8 +99,8 @@ def test_api_response_logging():
 
 
 def test_integration_example():
-    """Exemplo de integração completa."""
-    print("\n=== Teste de Integração Completa ===")
+    """Exemplo de integraçáo completa."""
+    print("\n=== Teste de Integraçáo Completa ===")
     
     # Criar logger
     logger = create_glpi_logger("DEBUG")
@@ -138,7 +138,7 @@ def test_integration_example():
     assert len(tickets) == 2
     assert tickets[0]["id"] == 1
     
-    print(" Integração completa funcionando")
+    print(" Integraçáo completa funcionando")
 
 
 if __name__ == "__main__":
@@ -155,9 +155,10 @@ if __name__ == "__main__":
         print("    Logs em formato JSON")
         print("    Decoradores funcionando")
         print("    Contexto rico nos logs")
-        print("    Integração completa testada")
+        print("    Integraçáo completa testada")
         
     except Exception as e:
         print(f"\n Erro durante os testes: {e}")
         import traceback
         traceback.print_exc()
+

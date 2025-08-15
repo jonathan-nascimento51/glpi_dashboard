@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """Configurações compartilhadas para todos os testes"""
 import pytest
 import logging
@@ -9,7 +9,7 @@ from unittest.mock import Mock, patch
 # Adicionar o diretório backend ao path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from services.glpi_service import GLPIService
+from app.services.glpi_service import GLPIService
 
 
 @pytest.fixture(autouse=True)
@@ -20,7 +20,7 @@ def setup_logging():
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
     
-    # Silencia logs durante testes para não poluir a saída
+    # Silencia logs durante testes para náo poluir a saída
     logging.getLogger('glpi_service').setLevel(logging.CRITICAL)
     logging.getLogger('requests').setLevel(logging.CRITICAL)
     logging.getLogger('urllib3').setLevel(logging.CRITICAL)
@@ -38,7 +38,7 @@ def mock_glpi_config():
 
 @pytest.fixture
 def mock_requests_session():
-    """Mock de uma sessão de requests"""
+    """Mock de uma sessáo de requests"""
     session = Mock()
     response = Mock()
     response.ok = True
@@ -60,8 +60,8 @@ def sample_ticket_data():
                 "1": "Ticket 1",  # Nome
                 "12": "1",  # Status (Novo)
                 "8": "89",  # Grupo (N1)
-                "15": "2024-01-15 10:30:00",  # Data de criação
-                "21": "Descrição do ticket 1",  # Conteúdo
+                "15": "2024-01-15 10:30:00",  # Data de criaçáo
+                "21": "Descriçáo do ticket 1",  # Conteúdo
             },
             {
                 "2": "2",
@@ -69,7 +69,7 @@ def sample_ticket_data():
                 "12": "2",  # Status (Processando)
                 "8": "90",  # Grupo (N2)
                 "15": "2024-01-16 14:20:00",
-                "21": "Descrição do ticket 2",
+                "21": "Descriçáo do ticket 2",
             },
             {
                 "2": "3",
@@ -77,7 +77,7 @@ def sample_ticket_data():
                 "12": "5",  # Status (Solucionado)
                 "8": "91",  # Grupo (N3)
                 "15": "2024-01-17 09:15:00",
-                "21": "Descrição do ticket 3",
+                "21": "Descriçáo do ticket 3",
             }
         ]
     }
@@ -94,7 +94,7 @@ def sample_user_data():
                 "1": "user1",  # Username
                 "name": "user1",
                 "realname": "Silva",
-                "firstname": "João",
+                "firstname": "Joáo",
                 "is_active": 1,
                 "is_deleted": 0
             },
@@ -175,8 +175,8 @@ def sample_metrics_data():
 
 @pytest.fixture
 def glpi_service(mock_glpi_config):
-    """Fixture para instanciar GLPIService com configuração mockada"""
-    with patch('services.glpi_service.active_config', mock_glpi_config):
+    """Fixture para instanciar GLPIService com configuraçáo mockada"""
+    with patch('app.services.glpi_service.active_config', mock_glpi_config):
         service = GLPIService()
         return service
 
@@ -199,3 +199,4 @@ def mock_authenticated_service(glpi_service, mock_http_response):
     glpi_service.token_created_at = 1640995200  # Data fixa para testes
     glpi_service.token_expires_at = 1640998800
     return glpi_service
+

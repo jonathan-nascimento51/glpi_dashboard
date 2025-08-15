@@ -1,7 +1,7 @@
-import '@testing-library/jest-dom';
+﻿import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
-// Mock das variáveis de ambiente para testes
+// Mock das variaveis de ambiente para testes
 Object.defineProperty(import.meta, 'env', {
   value: {
     VITE_API_BASE_URL: 'http://localhost:5000/api',
@@ -23,7 +23,7 @@ Object.defineProperty(import.meta, 'env', {
   writable: true
 });
 
-// Mock do console para evitar logs desnecessários durante os testes
+// Mock do console para evitar logs desnecessarios durante os testes
 global.console = {
   ...console,
   log: vi.fn(),

@@ -1,0 +1,17 @@
+[
+  {
+    "id": "test_validation",
+    "type": "testing",
+    "title": "Teste de Validação",
+    "content": "Item de teste para validação do sistema",
+    "priority": "low",
+    "tags": [
+      "test",
+      "validation"
+    ],
+    "last_updated": "2025-08-14T21:37:53.647440",
+    "source_file": null,
+    "dependencies": [],
+    "metadata": {}
+  }
+]

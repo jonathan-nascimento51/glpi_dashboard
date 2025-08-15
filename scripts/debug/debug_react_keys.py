@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Script para debugar chaves duplicadas no React
@@ -66,7 +66,7 @@ def check_api_data():
                 # Verificar levels duplicados
                 levels = [t.get('level') for t in technicians if t.get('level')]
                 level_counts = Counter(levels)
-                print(f"   📊 Distribuição de níveis: {dict(level_counts)}")
+                print(f"   📊 Distribuiçáo de níveis: {dict(level_counts)}")
             print()
     except Exception as e:
         print(f"❌ Erro ao verificar técnicos: {e}\n")
@@ -94,7 +94,7 @@ def check_api_data():
                 # Verificar status duplicados
                 statuses = [t.get('status') for t in tickets if t.get('status')]
                 status_counts = Counter(statuses)
-                print(f"   📊 Distribuição de status: {dict(status_counts)}")
+                print(f"   📊 Distribuiçáo de status: {dict(status_counts)}")
             print()
     except Exception as e:
         print(f"❌ Erro ao verificar tickets: {e}\n")
@@ -117,10 +117,10 @@ def analyze_react_patterns():
     print("   1. Usar chaves compostas: key={`${component}-${status}`}")
     print("   2. Adicionar prefixos únicos por componente")
     print("   3. Usar UUIDs para componentes temporários")
-    print("   4. Verificar se componentes estão sendo renderizados múltiplas vezes")
+    print("   4. Verificar se componentes estáo sendo renderizados múltiplas vezes")
 
 def main():
-    """Função principal"""
+    """Funçáo principal"""
     print("🚀 DEBUG DE CHAVES DUPLICADAS NO REACT")
     print("=" * 50)
     

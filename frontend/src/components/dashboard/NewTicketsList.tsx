@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useTransition } from "react"
+﻿import React, { useState, useEffect, useMemo, useTransition } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -21,9 +21,9 @@ interface NewTicketsListProps {
   limit?: number
 }
 
-// Configuração de prioridades movida para fora do componente
+// Configuracao de prioridades movida para fora do componente
 const priorityConfig = {
-  'Crítica': {
+  'Critica': {
     color: 'figma-status-badge-red',
     icon: '🔴'
   },
@@ -35,7 +35,7 @@ const priorityConfig = {
     color: 'figma-priority-badge text-orange-700 dark:text-orange-300',
     icon: '🟠'
   },
-  'Média': {
+  'Media': {
     color: 'figma-status-badge-yellow',
     icon: '🟡'
   },
@@ -53,7 +53,7 @@ const priorityConfig = {
   }
 }
 
-// Variantes de animação movidas para fora do componente
+// Variantes de animacao movidas para fora do componente
 const itemVariants = {
   hidden: { opacity: 0, x: -20 },
   visible: {
@@ -76,12 +76,12 @@ const containerVariants = {
   }
 } as const
 
-// Função auxiliar para obter configuração de prioridade
+// Funcao auxiliar para obter configuracao de prioridade
 const getPriorityConfig = (priority: string) => {
   return priorityConfig[priority as keyof typeof priorityConfig] || priorityConfig['Normal']
 }
 
-// Função auxiliar para formatação de data
+// Funcao auxiliar para formatacao de data
 const formatDate = (dateString: string) => {
   try {
     const date = new Date(dateString)
@@ -92,7 +92,7 @@ const formatDate = (dateString: string) => {
       minute: '2-digit'
     })
   } catch {
-    return 'Data inválida'
+    return 'Data invalida'
   }
 }
 
@@ -108,7 +108,7 @@ const TicketItem = React.memo<{ ticket: NewTicket; index: number }>(({ ticket })
       className="group p-5 figma-glass-card rounded-lg transition-all duration-200 border border-transparent shadow-none"
     >
       <div className="flex items-start gap-4">
-        {/* Ícone de prioridade */}
+        {/* icone de prioridade */}
         <div className="flex-shrink-0 mt-0.5">
           <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${priorityConf.color}`}>
             <span className="mr-1">{priorityConf.icon}</span>
@@ -116,7 +116,7 @@ const TicketItem = React.memo<{ ticket: NewTicket; index: number }>(({ ticket })
           </div>
         </div>
         
-        {/* Conteúdo do ticket */}
+        {/* Conteudo do ticket */}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-2">
             <div className="flex items-center gap-2">
@@ -192,12 +192,12 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
   useEffect(() => {
     fetchTickets()
     
-    // CORREÇÃO: Auto-refresh otimizado para 5 minutos com controle de interação
+    // CORREcaO: Auto-refresh otimizado para 5 minutos com controle de interacao
     const interval = setInterval(() => {
-      // Verificar se auto-refresh está habilitado
+      // Verificar se auto-refresh esta habilitado
       const autoRefreshEnabled = localStorage.getItem('autoRefreshEnabled')
       if (autoRefreshEnabled === 'false') {
-        console.log('⏸️ Auto-refresh de tickets desabilitado pelo usuário')
+        console.log('⏸️ Auto-refresh de tickets desabilitado pelo usuario')
         return
       }
 
@@ -205,12 +205,12 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
       const now = Date.now()
       const timeSinceInteraction = lastInteraction ? now - parseInt(lastInteraction) : Infinity
       
-      // Só atualiza se não houver interação recente (últimos 2 minutos)
+      // So atualiza se nao houver interacao recente (ultimos 2 minutos)
       if (timeSinceInteraction > 120000) {
         console.log('🎫 Atualizando lista de tickets novos')
         fetchTickets()
       } else {
-        console.log('⏸️ Atualização da lista de tickets pausada (interação recente)')
+        console.log('⏸️ Atualizacao da lista de tickets pausada (interacao recente)')
       }
     }, 300000) // 5 minutos
     

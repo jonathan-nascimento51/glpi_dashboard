@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+﻿import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
@@ -63,7 +63,7 @@ class ApiClient {
   }
 }
 
-// Mock para serviços
+// Mock para servicos
 class DashboardService {
   constructor(private apiClient: ApiClient) {}
 
@@ -208,17 +208,17 @@ const mockTickets = {
     {
       id: 1,
       title: 'Problema no sistema de login',
-      description: 'Usuários não conseguem fazer login',
+      description: 'Usuarios nao conseguem fazer login',
       status: 'open',
       priority: 'high',
-      assignee: 'João Silva',
+      assignee: 'Joao Silva',
       createdAt: '2024-01-15T10:00:00Z',
       updatedAt: '2024-01-15T10:00:00Z'
     },
     {
       id: 2,
-      title: 'Solicitação de novo usuário',
-      description: 'Criar conta para novo funcionário',
+      title: 'Solicitacao de novo usuario',
+      description: 'Criar conta para novo funcionario',
       status: 'in-progress',
       priority: 'medium',
       assignee: 'Maria Santos',
@@ -238,7 +238,7 @@ const mockUsers = {
   data: [
     {
       id: 1,
-      name: 'João Silva',
+      name: 'Joao Silva',
       email: 'joao@empresa.com',
       role: 'admin',
       active: true,
@@ -312,7 +312,7 @@ const server = setupServer(
     const ticket = mockTickets.data.find(t => t.id === parseInt(id as string));
     
     if (!ticket) {
-      return res(ctx.status(404), ctx.json({ error: 'Ticket não encontrado' }));
+      return res(ctx.status(404), ctx.json({ error: 'Ticket nao encontrado' }));
     }
     
     return res(ctx.json(ticket));
@@ -346,7 +346,7 @@ const server = setupServer(
       id: 1,
       ticketId: parseInt(req.params.id as string),
       comment: (req.body as any).comment,
-      author: 'Usuário Atual',
+      author: 'Usuario Atual',
       createdAt: new Date().toISOString()
     }));
   }),
@@ -374,7 +374,7 @@ const server = setupServer(
     const user = mockUsers.data.find(u => u.id === parseInt(id as string));
     
     if (!user) {
-      return res(ctx.status(404), ctx.json({ error: 'Usuário não encontrado' }));
+      return res(ctx.status(404), ctx.json({ error: 'Usuario nao encontrado' }));
     }
     
     return res(ctx.json(user));
@@ -413,7 +413,7 @@ const server = setupServer(
       }));
     }
     
-    return res(ctx.status(401), ctx.json({ error: 'Credenciais inválidas' }));
+    return res(ctx.status(401), ctx.json({ error: 'Credenciais invalidas' }));
   }),
   
   rest.post('/api/auth/logout', (req, res, ctx) => {
@@ -430,7 +430,7 @@ const server = setupServer(
     const authHeader = req.headers.get('Authorization');
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res(ctx.status(401), ctx.json({ error: 'Token não fornecido' }));
+      return res(ctx.status(401), ctx.json({ error: 'Token nao fornecido' }));
     }
     
     return res(ctx.json({
@@ -442,7 +442,7 @@ const server = setupServer(
   })
 );
 
-describe('Testes de Integração da API', () => {
+describe('Testes de Integracao da API', () => {
   let apiClient: ApiClient;
   let dashboardService: DashboardService;
   let ticketService: TicketService;
@@ -465,7 +465,7 @@ describe('Testes de Integração da API', () => {
   });
 
   describe('Dashboard Service', () => {
-    it('deve buscar métricas do dashboard', async () => {
+    it('deve buscar metricas do dashboard', async () => {
       const metrics = await dashboardService.getMetrics();
       
       expect(metrics).toEqual(mockMetrics);
@@ -473,7 +473,7 @@ describe('Testes de Integração da API', () => {
       expect(metrics.openTickets).toBe(456);
     });
 
-    it('deve buscar métricas com filtros de data', async () => {
+    it('deve buscar metricas com filtros de data', async () => {
       const filters = {
         startDate: '2024-01-01',
         endDate: '2024-01-31'
@@ -483,7 +483,7 @@ describe('Testes de Integração da API', () => {
       expect(metrics).toEqual(mockMetrics);
     });
 
-    it('deve buscar dados de gráfico por tipo', async () => {
+    it('deve buscar dados de grafico por tipo', async () => {
       const chartData = await dashboardService.getChartData('status');
       
       expect(chartData.type).toBe('status');
@@ -531,7 +531,7 @@ describe('Testes de Integração da API', () => {
       expect(tickets.data[0].title).toContain('login');
     });
 
-    it('deve buscar ticket específico por ID', async () => {
+    it('deve buscar ticket especifico por ID', async () => {
       const ticket = await ticketService.getTicket(1);
       
       expect(ticket.id).toBe(1);
@@ -546,7 +546,7 @@ describe('Testes de Integração da API', () => {
     it('deve criar novo ticket', async () => {
       const newTicket = {
         title: 'Novo ticket',
-        description: 'Descrição do novo ticket',
+        description: 'Descricao do novo ticket',
         priority: 'medium'
       };
       
@@ -561,14 +561,14 @@ describe('Testes de Integração da API', () => {
     it('deve atualizar ticket existente', async () => {
       const updateData = {
         status: 'in-progress',
-        assignee: 'Novo Responsável'
+        assignee: 'Novo Responsavel'
       };
       
       const updatedTicket = await ticketService.updateTicket(1, updateData);
       
       expect(updatedTicket.id).toBe(1);
       expect(updatedTicket.status).toBe('in-progress');
-      expect(updatedTicket.assignee).toBe('Novo Responsável');
+      expect(updatedTicket.assignee).toBe('Novo Responsavel');
       expect(updatedTicket.updatedAt).toBeDefined();
     });
 
@@ -576,56 +576,56 @@ describe('Testes de Integração da API', () => {
       await expect(ticketService.deleteTicket(1)).resolves.toBeUndefined();
     });
 
-    it('deve adicionar comentário ao ticket', async () => {
-      const comment = await ticketService.addComment(1, 'Novo comentário');
+    it('deve adicionar comentario ao ticket', async () => {
+      const comment = await ticketService.addComment(1, 'Novo comentario');
       
       expect(comment.id).toBe(1);
       expect(comment.ticketId).toBe(1);
-      expect(comment.comment).toBe('Novo comentário');
-      expect(comment.author).toBe('Usuário Atual');
+      expect(comment.comment).toBe('Novo comentario');
+      expect(comment.author).toBe('Usuario Atual');
       expect(comment.createdAt).toBeDefined();
     });
   });
 
   describe('User Service', () => {
-    it('deve buscar lista de usuários', async () => {
+    it('deve buscar lista de usuarios', async () => {
       const users = await userService.getUsers();
       
       expect(users.data).toHaveLength(2);
-      expect(users.data[0].name).toBe('João Silva');
+      expect(users.data[0].name).toBe('Joao Silva');
       expect(users.data[1].name).toBe('Maria Santos');
     });
 
-    it('deve filtrar usuários por role', async () => {
+    it('deve filtrar usuarios por role', async () => {
       const users = await userService.getUsers({ role: 'admin' });
       
       expect(users.data).toHaveLength(1);
       expect(users.data[0].role).toBe('admin');
     });
 
-    it('deve filtrar usuários por status ativo', async () => {
+    it('deve filtrar usuarios por status ativo', async () => {
       const users = await userService.getUsers({ active: true });
       
       expect(users.data).toHaveLength(2);
       expect(users.data.every(user => user.active)).toBe(true);
     });
 
-    it('deve buscar usuário específico por ID', async () => {
+    it('deve buscar usuario especifico por ID', async () => {
       const user = await userService.getUser(1);
       
       expect(user.id).toBe(1);
-      expect(user.name).toBe('João Silva');
+      expect(user.name).toBe('Joao Silva');
       expect(user.role).toBe('admin');
     });
 
-    it('deve retornar erro para usuário inexistente', async () => {
+    it('deve retornar erro para usuario inexistente', async () => {
       await expect(userService.getUser(999))
         .rejects.toThrow('HTTP 404: Not Found');
     });
 
-    it('deve criar novo usuário', async () => {
+    it('deve criar novo usuario', async () => {
       const newUser = {
-        name: 'Novo Usuário',
+        name: 'Novo Usuario',
         email: 'novo@empresa.com',
         role: 'user'
       };
@@ -639,7 +639,7 @@ describe('Testes de Integração da API', () => {
       expect(createdUser.createdAt).toBeDefined();
     });
 
-    it('deve atualizar usuário existente', async () => {
+    it('deve atualizar usuario existente', async () => {
       const updateData = {
         name: 'Nome Atualizado',
         role: 'technician'
@@ -654,7 +654,7 @@ describe('Testes de Integração da API', () => {
   });
 
   describe('Auth Service', () => {
-    it('deve fazer login com credenciais válidas', async () => {
+    it('deve fazer login com credenciais validas', async () => {
       const response = await authService.login('admin', 'password');
       
       expect(response.token).toBe('mock-jwt-token');
@@ -663,7 +663,7 @@ describe('Testes de Integração da API', () => {
       expect(localStorage.getItem('auth_token')).toBe('mock-jwt-token');
     });
 
-    it('deve rejeitar login com credenciais inválidas', async () => {
+    it('deve rejeitar login com credenciais invalidas', async () => {
       await expect(authService.login('invalid', 'credentials'))
         .rejects.toThrow('HTTP 401: Unauthorized');
     });
@@ -684,7 +684,7 @@ describe('Testes de Integração da API', () => {
       expect(response.token).toBe('new-mock-jwt-token');
     });
 
-    it('deve buscar usuário atual com token válido', async () => {
+    it('deve buscar usuario atual com token valido', async () => {
       apiClient.setToken('valid-token');
       const user = await authService.getCurrentUser();
       
@@ -693,25 +693,25 @@ describe('Testes de Integração da API', () => {
       expect(user.role).toBe('admin');
     });
 
-    it('deve rejeitar busca de usuário sem token', async () => {
+    it('deve rejeitar busca de usuario sem token', async () => {
       await expect(authService.getCurrentUser())
         .rejects.toThrow('HTTP 401: Unauthorized');
     });
   });
 
-  describe('Integração entre Serviços', () => {
-    it('deve manter autenticação entre chamadas', async () => {
+  describe('Integracao entre Servicos', () => {
+    it('deve manter autenticacao entre chamadas', async () => {
       // Login
       await authService.login('admin', 'password');
       
       // Verificar se o token foi definido
       expect(localStorage.getItem('auth_token')).toBe('mock-jwt-token');
       
-      // Buscar usuário atual (requer autenticação)
+      // Buscar usuario atual (requer autenticacao)
       const user = await authService.getCurrentUser();
       expect(user.name).toBe('Administrador');
       
-      // Outras operações também devem funcionar com o token
+      // Outras operacoes tambem devem funcionar com o token
       const tickets = await ticketService.getTickets();
       expect(tickets.data).toHaveLength(2);
     });
@@ -719,7 +719,7 @@ describe('Testes de Integração da API', () => {
     it('deve lidar com fluxo completo de ticket', async () => {
       // Criar ticket
       const newTicket = {
-        title: 'Ticket de integração',
+        title: 'Ticket de integracao',
         description: 'Teste de fluxo completo',
         priority: 'high'
       };
@@ -730,11 +730,11 @@ describe('Testes de Integração da API', () => {
       // Atualizar status
       const updatedTicket = await ticketService.updateTicket(createdTicket.id, {
         status: 'in-progress',
-        assignee: 'Técnico Responsável'
+        assignee: 'Tecnico Responsavel'
       });
       expect(updatedTicket.status).toBe('in-progress');
       
-      // Adicionar comentário
+      // Adicionar comentario
       const comment = await ticketService.addComment(createdTicket.id, 'Iniciando trabalho');
       expect(comment.comment).toBe('Iniciando trabalho');
       
@@ -744,7 +744,7 @@ describe('Testes de Integração da API', () => {
     });
 
     it('deve sincronizar dados entre dashboard e tickets', async () => {
-      // Buscar métricas
+      // Buscar metricas
       const metrics = await dashboardService.getMetrics();
       expect(metrics.totalTickets).toBe(1234);
       
@@ -752,7 +752,7 @@ describe('Testes de Integração da API', () => {
       const tickets = await ticketService.getTickets();
       expect(tickets.data).toHaveLength(2);
       
-      // Verificar consistência (em um cenário real, os números deveriam bater)
+      // Verificar consistencia (em um cenario real, os numeros deveriam bater)
       expect(typeof metrics.totalTickets).toBe('number');
       expect(Array.isArray(tickets.data)).toBe(true);
     });
@@ -761,7 +761,7 @@ describe('Testes de Integração da API', () => {
       // Simular erro de rede
       server.use(
         rest.get('/api/tickets', (req, res, ctx) => {
-          return res.networkError('Erro de conexão');
+          return res.networkError('Erro de conexao');
         })
       );
       
@@ -783,10 +783,10 @@ describe('Testes de Integração da API', () => {
   });
 
   describe('Cache e Performance', () => {
-    it('deve fazer múltiplas chamadas independentes', async () => {
+    it('deve fazer multiplas chamadas independentes', async () => {
       const startTime = Date.now();
       
-      // Fazer múltiplas chamadas em paralelo
+      // Fazer multiplas chamadas em paralelo
       const [metrics, tickets, users] = await Promise.all([
         dashboardService.getMetrics(),
         ticketService.getTickets(),
@@ -804,7 +804,7 @@ describe('Testes de Integração da API', () => {
       expect(duration).toBeLessThan(1000);
     });
 
-    it('deve lidar com timeout de requisições', async () => {
+    it('deve lidar com timeout de requisicoes', async () => {
       // Simular timeout
       server.use(
         rest.get('/api/tickets', (req, res, ctx) => {
@@ -812,8 +812,8 @@ describe('Testes de Integração da API', () => {
         })
       );
       
-      // Em um cenário real, haveria um timeout configurado no cliente
-      // Por enquanto, apenas verificamos que a requisição pode ser feita
+      // Em um cenario real, haveria um timeout configurado no cliente
+      // Por enquanto, apenas verificamos que a requisicao pode ser feita
       const promise = ticketService.getTickets();
       expect(promise).toBeInstanceOf(Promise);
     });

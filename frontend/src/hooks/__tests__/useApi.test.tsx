@@ -1,4 +1,4 @@
-import { renderHook, act, waitFor } from '@testing-library/react';
+﻿import { renderHook, act, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { useApi } from '../useApi';
 import { apiService } from '../../services/api';
@@ -40,7 +40,7 @@ describe('useApi Hook', () => {
     // Estado inicial
     expect(result.current.loading).toBe(false);
 
-    // Executar requisição
+    // Executar requisicao
     act(() => {
       result.current.execute();
     });
@@ -49,7 +49,7 @@ describe('useApi Hook', () => {
     expect(result.current.loading).toBe(true);
     expect(result.current.error).toBeNull();
 
-    // Aguardar conclusão
+    // Aguardar conclusao
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
@@ -65,7 +65,7 @@ describe('useApi Hook', () => {
 
     const { result } = renderHook(() => useApi(apiService.getMetrics));
 
-    // Executar requisição
+    // Executar requisicao
     act(() => {
       result.current.execute();
     });
@@ -79,15 +79,15 @@ describe('useApi Hook', () => {
     expect(result.current.error).toBe(errorMessage);
   });
 
-  it('deve limpar erro ao executar nova requisição', async () => {
+  it('deve limpar erro ao executar nova requisicao', async () => {
     const mockGetMetrics = vi.mocked(apiService.getMetrics);
     
-    // Primeira requisição com erro
+    // Primeira requisicao com erro
     mockGetMetrics.mockRejectedValueOnce(new Error('First error'));
     
     const { result } = renderHook(() => useApi(apiService.getMetrics));
 
-    // Executar primeira requisição
+    // Executar primeira requisicao
     act(() => {
       result.current.execute();
     });
@@ -96,7 +96,7 @@ describe('useApi Hook', () => {
       expect(result.current.error).toBe('First error');
     });
 
-    // Segunda requisição com sucesso
+    // Segunda requisicao com sucesso
     mockGetMetrics.mockResolvedValueOnce({ niveis: {}, tendencias: {} });
     
     act(() => {
@@ -122,7 +122,7 @@ describe('useApi Hook', () => {
 
     const { result } = renderHook(() => useApi(apiService.getMetrics));
 
-    // Executar requisição
+    // Executar requisicao
     act(() => {
       result.current.execute();
     });
@@ -141,7 +141,7 @@ describe('useApi Hook', () => {
     expect(result.current.error).toBeNull();
   });
 
-  it('deve aceitar parâmetros na função execute', async () => {
+  it('deve aceitar parametros na funcao execute', async () => {
     const mockData = { niveis: {}, tendencias: {} };
     const mockGetMetrics = vi.mocked(apiService.getMetrics);
     mockGetMetrics.mockResolvedValue(mockData);
@@ -153,7 +153,7 @@ describe('useApi Hook', () => {
       endDate: '2024-01-31'
     };
 
-    // Executar com parâmetros
+    // Executar com parametros
     act(() => {
       result.current.execute(dateRange);
     });
@@ -165,39 +165,39 @@ describe('useApi Hook', () => {
     expect(mockGetMetrics).toHaveBeenCalledWith(dateRange);
   });
 
-  it('deve cancelar requisição anterior se nova for iniciada', async () => {
+  it('deve cancelar requisicao anterior se nova for iniciada', async () => {
     const mockGetMetrics = vi.mocked(apiService.getMetrics);
     
-    // Primeira requisição lenta
+    // Primeira requisicao lenta
     mockGetMetrics.mockImplementationOnce(
       () => new Promise(resolve => setTimeout(() => resolve({ data: 'first' }), 200))
     );
     
-    // Segunda requisição rápida
+    // Segunda requisicao rapida
     mockGetMetrics.mockImplementationOnce(
       () => new Promise(resolve => setTimeout(() => resolve({ data: 'second' }), 50))
     );
 
     const { result } = renderHook(() => useApi(apiService.getMetrics));
 
-    // Primeira requisição
+    // Primeira requisicao
     act(() => {
       result.current.execute();
     });
 
     expect(result.current.loading).toBe(true);
 
-    // Segunda requisição antes da primeira terminar
+    // Segunda requisicao antes da primeira terminar
     act(() => {
       result.current.execute();
     });
 
-    // Aguardar segunda requisição
+    // Aguardar segunda requisicao
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
 
-    // Deve ter o resultado da segunda requisição
+    // Deve ter o resultado da segunda requisicao
     expect(result.current.data).toEqual({ data: 'second' });
   });
 
@@ -213,7 +213,7 @@ describe('useApi Hook', () => {
     });
   });
 
-  it('deve reexecutar quando dependências mudarem', async () => {
+  it('deve reexecutar quando dependencias mudarem', async () => {
     const mockData = { niveis: {}, tendencias: {} };
     const mockGetMetrics = vi.mocked(apiService.getMetrics);
     mockGetMetrics.mockResolvedValue(mockData);
@@ -231,7 +231,7 @@ describe('useApi Hook', () => {
       expect(mockGetMetrics).toHaveBeenCalledTimes(1);
     });
 
-    // Mudar dependências
+    // Mudar dependencias
     deps = ['dep2'];
     rerender({ dependencies: deps });
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { fetchDashboardMetrics } from '../services/api';
 import type {
   DashboardMetrics,
@@ -37,7 +37,7 @@ interface UseDashboardReturn {
 const initialSystemStatus: SystemStatus = {
   api: 'offline',
   glpi: 'offline',
-  glpi_message: 'Sistema não conectado',
+  glpi_message: 'Sistema nao conectado',
   glpi_response_time: 0,
   last_update: new Date().toISOString(),
   version: '1.0.0',
@@ -113,7 +113,7 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
         setData(combinedData);
         setError(null);
       } else {
-        console.error('❌ useDashboard - Resultado de métricas é null/undefined');
+        console.error('❌ useDashboard - Resultado de metricas e null/undefined');
         setError('Falha ao carregar dados do dashboard');
       }
     } catch (err) {
@@ -166,7 +166,7 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     addNotification: (notification: Partial<NotificationData>) => {
       const completeNotification: NotificationData = {
         id: notification.id || Date.now().toString(),
-        title: notification.title || 'Notificação',
+        title: notification.title || 'Notificacao',
         message: notification.message || '',
         type: notification.type || 'info',
         timestamp: notification.timestamp || new Date(),

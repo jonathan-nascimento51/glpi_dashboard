@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 
 interface CacheNotification {
   id: string;
@@ -10,23 +10,23 @@ export const useCacheNotifications = () => {
   const [notifications, setNotifications] = useState<CacheNotification[]>([]);
 
   useEffect(() => {
-    // Intercepta logs do console para detectar ativações de cache
+    // Intercepta logs do console para detectar ativacoes de cache
     const originalLog = console.log;
     
     console.log = (...args: any[]) => {
       const message = args.join(' ');
       
-      // Detecta mensagens de ativação de cache
+      // Detecta mensagens de ativacao de cache
       if (message.includes('🚀 Cache ativado automaticamente')) {
         const notification: CacheNotification = {
           id: Date.now().toString(),
-          message: message.replace('🚀 Cache ativado automaticamente para padrão detectado: ', ''),
+          message: message.replace('🚀 Cache ativado automaticamente para padrao detectado: ', ''),
           timestamp: Date.now()
         };
         
         setNotifications(prev => [...prev, notification]);
         
-        // Remove notificação após 10 segundos
+        // Remove notificacao apos 10 segundos
         setTimeout(() => {
           setNotifications(prev => prev.filter(n => n.id !== notification.id));
         }, 10000);

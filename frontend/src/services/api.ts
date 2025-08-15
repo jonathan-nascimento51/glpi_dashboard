@@ -1,4 +1,4 @@
-import { httpClient, apiUtils, API_CONFIG, updateAuthTokens } from './httpClient';
+﻿import { httpClient, apiUtils, API_CONFIG, updateAuthTokens } from './httpClient';
 import { SystemStatus, DateRange } from '../types';
 import type {
   ApiResult,
@@ -24,7 +24,7 @@ const API_BASE_URL = API_CONFIG.BASE_URL;
 // Cliente HTTP (alias para compatibilidade)
 const api = httpClient;
 
-// Os interceptadores agora estão centralizados no httpClient.ts
+// Os interceptadores agora estao centralizados no httpClient.ts
 
 // API Response wrapper interface
 interface ApiResponse<T> {
@@ -38,14 +38,14 @@ export const apiService = {
   async getMetrics(dateRange?: DateRange): Promise<import('../types/api').DashboardMetrics> {
     const startTime = Date.now();
     
-    // Criar parâmetros para o cache
+    // Criar parametros para o cache
     const cacheParams = {
       endpoint: 'metrics',
       start_date: dateRange?.startDate || 'none',
       end_date: dateRange?.endDate || 'none'
     };
 
-    // Cache completamente desabilitado para forçar novas requisições
+    // Cache completamente desabilitado para forcar novas requisicoes
     console.log('🚫 Cache completamente desabilitado - sempre buscando dados frescos');
 
     try {
@@ -70,7 +70,7 @@ export const apiService = {
           
           
           
-          // Verificar se há filtros aplicados (estrutura diferente)
+          // Verificar se ha filtros aplicados (estrutura diferente)
           let processedNiveis: import('../types/api').NiveisMetrics;
           
           if (rawData.general || rawData.by_level) {
@@ -89,7 +89,7 @@ export const apiService = {
                 const levelKey = level.toLowerCase() as keyof typeof processedNiveis;
                 if (processedNiveis[levelKey]) {
                   const novos = data['Novo'] || 0;
-                  const progresso = (data['Processando (atribuído)'] || 0) + (data['Processando (planejado)'] || 0);
+                  const progresso = (data['Processando (atribuido)'] || 0) + (data['Processando (planejado)'] || 0);
                   const pendentes = data['Pendente'] || 0;
                   const resolvidos = (data['Solucionado'] || 0) + (data['Fechado'] || 0);
                   processedNiveis[levelKey] = {
@@ -103,7 +103,7 @@ export const apiService = {
               });
             }
 
-            // Calcular totais gerais dos níveis específicos (excluindo geral)
+            // Calcular totais gerais dos niveis especificos (excluindo geral)
             const levelValues = Object.entries(processedNiveis)
               .filter(([key]) => key !== 'geral')
               .map(([, value]) => value);
@@ -115,21 +115,21 @@ export const apiService = {
               resolvidos: levelValues.reduce((sum, nivel) => sum + nivel.resolvidos, 0)
             };
             
-            // Atualizar o nível geral
+            // Atualizar o nivel geral
             processedNiveis.geral = {
               ...geralTotals,
               total: geralTotals.novos + geralTotals.pendentes + geralTotals.progresso + geralTotals.resolvidos
             };
             
-            // processedNiveis já está definido
+            // processedNiveis ja esta definido
           } else {
             // Estrutura normal
             
-            // Processar dados dos níveis
+            // Processar dados dos niveis
             if (rawData.niveis) {
               processedNiveis = rawData.niveis;
             } else if (rawData.levels) {
-              // Caso os dados venham como 'levels' ao invés de 'niveis'
+              // Caso os dados venham como 'levels' ao inves de 'niveis'
               processedNiveis = rawData.levels;
             } else {
               // Fallback com zeros
@@ -143,7 +143,7 @@ export const apiService = {
             }
           }
           
-          // Garantir que todos os campos necessários existam
+          // Garantir que todos os campos necessarios existam
           const data: DashboardMetrics = {
             niveis: processedNiveis,
             tendencias: rawData.tendencias || {
@@ -170,7 +170,7 @@ export const apiService = {
           },
           tendencias: { novos: '0', pendentes: '0', progresso: '0', resolvidos: '0' }
         };
-        // Não cachear dados de fallback
+        // Nao cachear dados de fallback
         return fallbackData;
       }
     } catch (error) {
@@ -186,7 +186,7 @@ export const apiService = {
         },
         tendencias: { novos: '0', pendentes: '0', progresso: '0', resolvidos: '0' }
       };
-      // Não cachear dados de fallback
+      // Nao cachear dados de fallback
       return fallbackData;
     }
   },
@@ -217,7 +217,7 @@ export const apiService = {
         return data;
       } else {
         console.error('API returned unsuccessful response:', response.data);
-        // Return fallback data (não cachear)
+        // Return fallback data (nao cachear)
         return {
           status: 'offline',
           sistema_ativo: false,
@@ -226,7 +226,7 @@ export const apiService = {
       }
     } catch (error) {
       console.error('Error fetching system status:', error);
-      // Return fallback data instead of throwing (não cachear)
+      // Return fallback data instead of throwing (nao cachear)
       return {
         status: 'offline',
         sistema_ativo: false,
@@ -307,12 +307,12 @@ export const apiService = {
         return data;
       } else {
         console.error('API returned unsuccessful response:', response.data);
-        // Return mock data as fallback (não cachear)
+        // Return mock data as fallback (nao cachear)
         return [
           {
             id: '12345',
             title: 'Problema com impressora',
-            requester: 'João Silva',
+            requester: 'Joao Silva',
             date: new Date().toISOString(),
             priority: 'Alta'
           },
@@ -321,11 +321,11 @@ export const apiService = {
             title: 'Erro no sistema',
             requester: 'Maria Santos',
             date: new Date(Date.now() - 3600000).toISOString(),
-            priority: 'Média'
+            priority: 'Media'
           },
           {
             id: '12347',
-            title: 'Solicitação de acesso',
+            title: 'Solicitacao de acesso',
             requester: 'Pedro Costa',
             date: new Date(Date.now() - 7200000).toISOString(),
             priority: 'Baixa'
@@ -334,12 +334,12 @@ export const apiService = {
       }
     } catch (error) {
       console.error('Error fetching new tickets:', error);
-      // Return mock data instead of throwing error (não cachear)
+      // Return mock data instead of throwing error (nao cachear)
       return [
         {
           id: '12345',
           title: 'Problema com impressora',
-          requester: 'João Silva',
+          requester: 'Joao Silva',
           date: new Date().toISOString(),
           priority: 'Alta'
         },
@@ -348,11 +348,11 @@ export const apiService = {
           title: 'Erro no sistema',
           requester: 'Maria Santos',
           date: new Date(Date.now() - 3600000).toISOString(),
-          priority: 'Média'
+          priority: 'Media'
         },
         {
           id: '12347',
-          title: 'Solicitação de acesso',
+          title: 'Solicitacao de acesso',
           requester: 'Pedro Costa',
           date: new Date(Date.now() - 7200000).toISOString(),
           priority: 'Baixa'
@@ -381,14 +381,14 @@ export const apiService = {
           id: '1',
           type: 'ticket',
           title: `Chamado relacionado a: ${query}`,
-          description: 'Descrição do chamado...',
+          description: 'Descricao do chamado...',
           status: 'new'
         },
         {
           id: '2',
           type: 'technician',
-          title: `Técnico: ${query}`,
-          description: 'Informações do técnico...',
+          title: `Tecnico: ${query}`,
+          description: 'Informacoes do tecnico...',
         }
       ];
       
@@ -438,7 +438,7 @@ export { updateAuthTokens, apiUtils, API_CONFIG } from './httpClient';
 // Export the centralized HTTP client
 export { httpClient } from './httpClient';
 
-// Função para buscar métricas do dashboard com tipagem forte
+// Funcao para buscar metricas do dashboard com tipagem forte
 export const fetchDashboardMetrics = async (
   filters: FilterParams = {}
 ): Promise<DashboardMetrics | null> => {
@@ -460,12 +460,12 @@ export const fetchDashboardMetrics = async (
       queryParams.append('start_date', filters.dateRange.startDate);
       queryParams.append('end_date', filters.dateRange.endDate);
     } else {
-      console.log('⚠️ dateRange não encontrado ou incompleto:', filters.dateRange);
+      console.log('⚠️ dateRange nao encontrado ou incompleto:', filters.dateRange);
     }
     
-    // Adicionar filtros como parâmetros de query com validação de tipos
+    // Adicionar filtros como parametros de query com validacao de tipos
     Object.entries(filters).forEach(([key, value]) => {
-      if (key === 'dateRange') return; // Já processado acima
+      if (key === 'dateRange') return; // Ja processado acima
       if (value !== null && value !== undefined && value !== '') {
         const apiKey = filterMapping[key] || key;
         queryParams.append(apiKey, value.toString());
@@ -477,8 +477,8 @@ export const fetchDashboardMetrics = async (
       : `${API_BASE_URL}/metrics`;
     
     console.log('🔍 Filtros originais:', filters);
-    console.log('🔍 Query params construídos:', queryParams.toString());
-    console.log('🔍 Fazendo requisição para:', url);
+    console.log('🔍 Query params construidos:', queryParams.toString());
+    console.log('🔍 Fazendo requisicao para:', url);
     
     const startTime = performance.now();
     
@@ -509,15 +509,15 @@ export const fetchDashboardMetrics = async (
       timestamp: new Date(),
       endpoint: '/metrics'
     };
-    console.log('Métricas de performance:', perfMetrics);
+    console.log('Metricas de performance:', perfMetrics);
     
-    // Verificar se a resposta é um erro
+    // Verificar se a resposta e um erro
     if (isApiError(result)) {
       console.error('API retornou erro:', result.error);
       return null;
     }
     
-    // Verificar se é uma resposta de sucesso
+    // Verificar se e uma resposta de sucesso
     if (isApiResponse(result)) {
       // Processar dados para garantir estrutura consistente
       const processedData = transformLegacyData(result.data);
@@ -530,7 +530,7 @@ export const fetchDashboardMetrics = async (
     return null;
     
   } catch (error) {
-    console.error('Erro ao buscar métricas:', error);
+    console.error('Erro ao buscar metricas:', error);
     console.error('Tipo do erro:', typeof error);
     console.error('Stack trace:', error instanceof Error ? error.stack : 'N/A');
     console.error('URL tentada:', url);

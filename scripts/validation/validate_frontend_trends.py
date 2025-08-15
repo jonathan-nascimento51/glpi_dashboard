@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Script para validar a matemática das tendências tanto no backend quanto no frontend
-Verifica se os cálculos estão corretos e se a exibição na interface está adequada
+Verifica se os cálculos estáo corretos e se a exibiçáo na interface está adequada
 """
 
 import requests
@@ -11,7 +11,7 @@ import re
 from datetime import datetime, timedelta
 
 def calculate_percentage_change(current: int, previous: int) -> str:
-    """Replica a função de cálculo de percentual do backend"""
+    """Replica a funçáo de cálculo de percentual do backend"""
     if previous == 0:
         return "+100%" if current > 0 else "0%"
     
@@ -66,7 +66,7 @@ def test_api_trends():
             frontend_data = parse_trend_frontend(trend_str)
             print(f"\n{categoria.upper()}:")
             print(f"  String original: {trend_str}")
-            print(f"  Direção: {frontend_data['direction']}")
+            print(f"  Direçáo: {frontend_data['direction']}")
             print(f"  Valor absoluto: {frontend_data['value']}%")
             print(f"  Display: {frontend_data['display']}")
         
@@ -91,7 +91,7 @@ def test_api_trends():
             frontend_data = parse_trend_frontend(trend_str)
             print(f"\n{categoria.upper()} (com filtro):")
             print(f"  String original: {trend_str}")
-            print(f"  Direção: {frontend_data['direction']}")
+            print(f"  Direçáo: {frontend_data['direction']}")
             print(f"  Valor absoluto: {frontend_data['value']}%")
             print(f"  Display: {frontend_data['display']}")
         
@@ -114,7 +114,7 @@ def test_mathematical_consistency():
         (0, 5, "-100.0%"),     # Voltou ao zero
         (0, 0, "0%"),          # Permaneceu zero
         (15, 3, "+400.0%"),    # Alto crescimento
-        (100, 200, "-50.0%"),  # Redução significativa
+        (100, 200, "-50.0%"),  # Reduçáo significativa
     ]
     
     all_passed = True
@@ -126,7 +126,7 @@ def test_mathematical_consistency():
         print(f"\nTeste {i}: atual={atual}, anterior={anterior}")
         print(f"  Esperado: {esperado}")
         print(f"  Calculado: {resultado}")
-        print(f"  Frontend - Direção: {frontend_data['direction']}, Valor: {frontend_data['value']}%")
+        print(f"  Frontend - Direçáo: {frontend_data['direction']}, Valor: {frontend_data['value']}%")
         
         if resultado == esperado:
             print(f"  ✅ PASSOU")
@@ -138,7 +138,7 @@ def test_mathematical_consistency():
 
 def validate_frontend_processing():
     """Valida o processamento das tendências no frontend"""
-    print("\n\n=== VALIDAÇÃO DO PROCESSAMENTO FRONTEND ===")
+    print("\n\n=== VALIDAÇáO DO PROCESSAMENTO FRONTEND ===")
     
     trend_examples = [
         "+100.0%",
@@ -152,20 +152,20 @@ def validate_frontend_processing():
     for trend in trend_examples:
         frontend_data = parse_trend_frontend(trend)
         print(f"\nTendência: {trend}")
-        print(f"  Direção: {frontend_data['direction']}")
+        print(f"  Direçáo: {frontend_data['direction']}")
         print(f"  Valor absoluto: {frontend_data['value']}")
         print(f"  Display: {frontend_data['display']}")
         
-        # Validar lógica de direção
+        # Validar lógica de direçáo
         expected_direction = 'up' if trend.startswith('+') and not trend == '+0%' else ('down' if trend.startswith('-') and not trend == '-0%' else 'stable')
         if frontend_data['direction'] == expected_direction:
-            print(f"  ✅ Direção correta")
+            print(f"  ✅ Direçáo correta")
         else:
-            print(f"  ❌ Direção incorreta - Esperado: {expected_direction}, Obtido: {frontend_data['direction']}")
+            print(f"  ❌ Direçáo incorreta - Esperado: {expected_direction}, Obtido: {frontend_data['direction']}")
 
 def main():
-    """Função principal que executa todos os testes"""
-    print("🔍 VALIDAÇÃO COMPLETA DA MATEMÁTICA DAS TENDÊNCIAS")
+    """Funçáo principal que executa todos os testes"""
+    print("🔍 VALIDAÇáO COMPLETA DA MATEMÁTICA DAS TENDÊNCIAS")
     print("=" * 60)
     
     # Teste 1: API
@@ -179,8 +179,8 @@ def main():
     
     # Resumo final
     print("\n\n=== RESUMO FINAL ===")
-    print(f"✅ API funcionando: {'Sim' if api_ok else 'Não'}")
-    print(f"✅ Matemática correta: {'Sim' if math_ok else 'Não'}")
+    print(f"✅ API funcionando: {'Sim' if api_ok else 'Náo'}")
+    print(f"✅ Matemática correta: {'Sim' if math_ok else 'Náo'}")
     print(f"✅ Processamento frontend: Validado")
     
     if api_ok and math_ok:
@@ -189,7 +189,7 @@ def main():
         print("\nComo funciona:")
         print("1. Backend calcula: ((atual - anterior) / anterior) * 100")
         print("2. Backend formata: +X.X% ou -X.X% ou 0%")
-        print("3. Frontend processa a string para extrair direção e valor")
+        print("3. Frontend processa a string para extrair direçáo e valor")
         print("4. Frontend exibe com ícones e cores apropriadas")
     else:
         print("\n⚠️ ALGUNS TESTES FALHARAM")

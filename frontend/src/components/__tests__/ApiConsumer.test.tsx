@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { httpClient } from '../../services/httpClient';
@@ -83,8 +83,8 @@ describe('ApiConsumer Component', () => {
     vi.resetAllMocks();
   });
 
-  it('deve mostrar estado de loading durante a requisição', async () => {
-    // Mock de uma requisição que demora para resolver
+  it('deve mostrar estado de loading durante a requisicao', async () => {
+    // Mock de uma requisicao que demora para resolver
     const mockGetMetrics = vi.mocked(apiService.getMetrics);
     mockGetMetrics.mockImplementation(
       () => new Promise(resolve => setTimeout(() => resolve({ niveis: {} }), 100))
@@ -99,13 +99,13 @@ describe('ApiConsumer Component', () => {
     expect(screen.getByTestId('loading')).toBeInTheDocument();
     expect(screen.getByText('Carregando...')).toBeInTheDocument();
 
-    // Aguardar a requisição terminar
+    // Aguardar a requisicao terminar
     await waitFor(() => {
       expect(screen.queryByTestId('loading')).not.toBeInTheDocument();
     });
   });
 
-  it('deve mostrar dados de sucesso quando a API retorna dados válidos', async () => {
+  it('deve mostrar dados de sucesso quando a API retorna dados validos', async () => {
     const mockData = {
       niveis: {
         geral: { novos: 10, pendentes: 5, progresso: 3, resolvidos: 20, total: 38 },
@@ -135,7 +135,7 @@ describe('ApiConsumer Component', () => {
   });
 
   it('deve mostrar erro quando a API falha', async () => {
-    const errorMessage = 'Falha na conexão com o servidor';
+    const errorMessage = 'Falha na conexao com o servidor';
     
     const mockGetMetrics = vi.mocked(apiService.getMetrics);
     mockGetMetrics.mockRejectedValue(new Error(errorMessage));
@@ -154,10 +154,10 @@ describe('ApiConsumer Component', () => {
     expect(screen.getByText(`Erro: ${errorMessage}`)).toBeInTheDocument();
   });
 
-  it('deve limpar erro anterior ao fazer nova requisição', async () => {
+  it('deve limpar erro anterior ao fazer nova requisicao', async () => {
     const mockGetMetrics = vi.mocked(apiService.getMetrics);
     
-    // Primeira requisição com erro
+    // Primeira requisicao com erro
     mockGetMetrics.mockRejectedValueOnce(new Error('Primeiro erro'));
     
     render(<TestApiConsumer />);
@@ -170,7 +170,7 @@ describe('ApiConsumer Component', () => {
       expect(screen.getByTestId('error')).toBeInTheDocument();
     });
 
-    // Segunda requisição com sucesso
+    // Segunda requisicao com sucesso
     mockGetMetrics.mockResolvedValueOnce({ niveis: {}, tendencias: {} });
     
     fireEvent.click(fetchButton);
@@ -185,7 +185,7 @@ describe('ApiConsumer Component', () => {
     });
   });
 
-  it('deve não mostrar loading quando não há requisição ativa', () => {
+  it('deve nao mostrar loading quando nao ha requisicao ativa', () => {
     render(<TestApiConsumer />);
     
     expect(screen.queryByTestId('loading')).not.toBeInTheDocument();
@@ -234,7 +234,7 @@ describe('API Error Handling', () => {
     });
   });
 
-  it('deve tratar erro de autenticação', async () => {
+  it('deve tratar erro de autenticacao', async () => {
     const authError = new Error('Authentication failed');
     authError.name = 'AuthenticationError';
     

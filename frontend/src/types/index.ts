@@ -1,4 +1,4 @@
-export interface MetricsData {
+﻿export interface MetricsData {
   novos: number;
   pendentes: number;
   progresso: number;
@@ -87,7 +87,7 @@ export interface TechnicianRanking {
   nome?: string; // Campo alternativo da API
   level: string;
   rank: number;
-  total: number; // Total de tickets do técnico
+  total: number; // Total de tickets do tecnico
   score?: number; // Campo opcional para compatibilidade
   ticketsResolved?: number; // Campo opcional para compatibilidade
   ticketsInProgress?: number; // Campo opcional para compatibilidade
@@ -118,6 +118,6 @@ export interface DashboardState {
   dateRange?: DateRange;
 
   technicianRanking: TechnicianRanking[];
-  dataIntegrityReport: any | null; // Será tipado adequadamente quando importado
+  dataIntegrityReport: any | null; // Sera tipado adequadamente quando importado
   monitoringAlerts: any[];
 }

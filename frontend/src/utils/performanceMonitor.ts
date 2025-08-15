@@ -1,6 +1,6 @@
-/**
+﻿/**
  * Sistema de Monitoramento de Performance para Dashboard GLPI
- * Implementa medições detalhadas usando Performance API e integração com React DevTools
+ * Implementa medicoes detalhadas usando Performance API e integracao com React DevTools
  */
 
 export interface PerformanceMetric {
@@ -39,7 +39,7 @@ class PerformanceMonitor {
   private reports: PerformanceReport[] = [];
 
   constructor() {
-    // Limpar marcações antigas ao inicializar
+    // Limpar marcacoes antigas ao inicializar
     if (typeof performance !== 'undefined' && performance.clearMarks) {
       performance.clearMarks();
       performance.clearMeasures();
@@ -47,7 +47,7 @@ class PerformanceMonitor {
   }
 
   /**
-   * Inicia uma medição de performance
+   * Inicia uma medicao de performance
    */
   startMeasure(name: string, metadata?: Record<string, any>): void {
     if (!this.isEnabled) return;
@@ -61,18 +61,18 @@ class PerformanceMonitor {
       metadata
     });
 
-    console.log(`🚀 Performance: Iniciando medição '${name}'`, metadata);
+    console.log(`🚀 Performance: Iniciando medicao '${name}'`, metadata);
   }
 
   /**
-   * Finaliza uma medição de performance
+   * Finaliza uma medicao de performance
    */
   endMeasure(name: string, metadata?: Record<string, any>): number {
     if (!this.isEnabled) return 0;
 
     const metric = this.metrics.get(name);
     if (!metric) {
-      console.warn(`⚠️ Performance: Medição '${name}' não foi iniciada`);
+      console.warn(`⚠️ Performance: Medicao '${name}' nao foi iniciada`);
       return 0;
     }
 
@@ -86,14 +86,14 @@ class PerformanceMonitor {
     performance.mark(markEndName);
     performance.measure(measureName, markStartName, markEndName);
 
-    // Atualizar métrica
+    // Atualizar metrica
     metric.endTime = endTime;
     metric.duration = duration;
     if (metadata) {
       metric.metadata = { ...metric.metadata, ...metadata };
     }
 
-    console.log(`✅ Performance: '${name}' concluído em ${duration.toFixed(2)}ms`, {
+    console.log(`✅ Performance: '${name}' concluido em ${duration.toFixed(2)}ms`, {
       duration,
       metadata: metric.metadata
     });
@@ -102,7 +102,7 @@ class PerformanceMonitor {
   }
 
   /**
-   * Mede o tempo de uma operação assíncrona
+   * Mede o tempo de uma operacao assincrona
    */
   async measureAsync<T>(
     name: string, 
@@ -121,7 +121,7 @@ class PerformanceMonitor {
   }
 
   /**
-   * Registra métricas de componente React
+   * Registra metricas de componente React
    */
   recordComponentRender(
     componentName: string, 
@@ -152,7 +152,7 @@ class PerformanceMonitor {
   }
 
   /**
-   * Marca renderização de componente (alias para recordComponentRender)
+   * Marca renderizacao de componente (alias para recordComponentRender)
    */
   markComponentRender(
     componentName: string,
@@ -176,7 +176,7 @@ class PerformanceMonitor {
   }
 
   /**
-   * Mede operação completa de filtro
+   * Mede operacao completa de filtro
    */
   async measureFilterOperation<T>(
     filterType: string,
@@ -187,14 +187,14 @@ class PerformanceMonitor {
   }
 
   /**
-   * Gera relatório de performance
+   * Gera relatorio de performance
    */
   generateReport(): PerformanceReport {
     const timestamp = Date.now();
     const metrics = Array.from(this.metrics.values());
     const componentMetrics = Array.from(this.componentMetrics.values());
 
-    // Calcular métricas resumidas
+    // Calcular metricas resumidas
     const filterMetrics = metrics.filter(m => m.name.startsWith('filter-'));
     const apiMetrics = metrics.filter(m => m.name.startsWith('api-'));
     const renderMetrics = metrics.filter(m => m.name.includes('render'));
@@ -215,7 +215,7 @@ class PerformanceMonitor {
 
     this.reports.push(report);
     
-    // Manter apenas os últimos 10 relatórios
+    // Manter apenas os ultimos 10 relatorios
     if (this.reports.length > 10) {
       this.reports = this.reports.slice(-10);
     }
@@ -224,7 +224,7 @@ class PerformanceMonitor {
   }
 
   /**
-   * Obtém métricas do Performance API do navegador
+   * Obtem metricas do Performance API do navegador
    */
   getBrowserMetrics(): PerformanceEntry[] {
     if (typeof performance === 'undefined') return [];
@@ -248,7 +248,7 @@ class PerformanceMonitor {
   }
 
   /**
-   * Calcula média de uma lista de valores
+   * Calcula media de uma lista de valores
    */
   private calculateAverage(values: number[]): number {
     if (values.length === 0) return 0;
@@ -256,7 +256,7 @@ class PerformanceMonitor {
   }
 
   /**
-   * Limpa todas as métricas
+   * Limpa todas as metricas
    */
   clear(): void {
     this.metrics.clear();
@@ -265,11 +265,11 @@ class PerformanceMonitor {
       performance.clearMarks();
       performance.clearMeasures();
     }
-    console.log('🧹 Performance: Métricas limpas');
+    console.log('🧹 Performance: Metricas limpas');
   }
 
   /**
-   * Obtém estatísticas detalhadas
+   * Obtem estatisticas detalhadas
    */
   getDetailedStats(): {
     totalMeasurements: number;
@@ -313,18 +313,18 @@ class PerformanceMonitor {
   }
 
   /**
-   * Exporta dados para analytics (produção)
+   * Exporta dados para analytics (producao)
    */
   exportToAnalytics(): void {
     if (process.env.NODE_ENV !== 'production') return;
     
     const report = this.generateReport();
     
-    // Em produção, enviar para serviço de analytics
+    // Em producao, enviar para servico de analytics
     // Exemplo: Google Analytics, DataDog, etc.
-    console.log('📊 Enviando métricas para analytics:', report.summary);
+    console.log('📊 Enviando metricas para analytics:', report.summary);
     
-    // Implementar integração com serviço de analytics aqui
+    // Implementar integracao com servico de analytics aqui
     // gtag('event', 'performance_metric', {
     //   filter_time: report.summary.filterChangeTime,
     //   api_time: report.summary.apiResponseTime,
@@ -333,7 +333,7 @@ class PerformanceMonitor {
   }
 }
 
-// Instância singleton
+// Instancia singleton
 export const performanceMonitor = new PerformanceMonitor();
 
 // Hook para React DevTools Profiler
@@ -363,7 +363,7 @@ export const usePerformanceProfiler = () => {
   return { onRenderCallback };
 };
 
-// Utilitários para debugging
+// Utilitarios para debugging
 export const debugPerformance = {
   logCurrentMetrics: () => {
     const stats = performanceMonitor.getDetailedStats();

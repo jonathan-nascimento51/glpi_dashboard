@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react"
+﻿import React, { useMemo, useCallback } from "react"
 import { motion } from "framer-motion"
 import {
   ResponsiveContainer,
@@ -45,7 +45,7 @@ const COLORS = {
 
 const PIE_COLORS = ['#3B82F6', '#F59E0B', '#EF4444', '#10B981']
 
-// Variantes de animação movidas para fora do componente para evitar recriação
+// Variantes de animacao movidas para fora do componente para evitar recriacao
 const chartVariants = {
   hidden: { opacity: 0, scale: 0.95 },
   visible: {
@@ -58,7 +58,7 @@ const chartVariants = {
   }
 } as const
 
-// Configurações de margem memoizadas
+// Configuracoes de margem memoizadas
 const chartMargins = {
   top: 20,
   right: 30,
@@ -69,7 +69,7 @@ const chartMargins = {
 export const TicketChart = React.memo<TicketChartProps>(function TicketChart({ 
   data, 
   type = 'area', 
-  title = "Evolução dos Tickets",
+  title = "Evolucao dos Tickets",
   className 
 }) {
 
@@ -90,7 +90,7 @@ export const TicketChart = React.memo<TicketChartProps>(function TicketChart({
     return null
   }, [])
 
-  // Dados do gráfico de pizza memoizados
+  // Dados do grafico de pizza memoizados
   const pieData = useMemo(() => {
     if (data.length === 0) return []
     const lastDataPoint = data[data.length - 1]
@@ -102,7 +102,7 @@ export const TicketChart = React.memo<TicketChartProps>(function TicketChart({
     ]
   }, [data])
 
-  // Ícone do gráfico memoizado
+  // icone do grafico memoizado
   const chartIcon = useMemo(() => {
     switch (type) {
       case 'bar': return <BarChart3 className="h-5 w-5" />
@@ -111,13 +111,13 @@ export const TicketChart = React.memo<TicketChartProps>(function TicketChart({
     }
   }, [type])
 
-  // Label do tipo de gráfico memoizado
+  // Label do tipo de grafico memoizado
   const typeLabel = useMemo(() => {
     switch (type) {
-      case 'area': return 'Área'
+      case 'area': return 'area'
       case 'bar': return 'Barras'
       case 'pie': return 'Pizza'
-      default: return 'Área'
+      default: return 'area'
     }
   }, [type])
 

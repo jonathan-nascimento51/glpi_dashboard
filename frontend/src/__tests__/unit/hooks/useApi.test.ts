@@ -1,4 +1,4 @@
-import { renderHook, act, waitFor } from '@testing-library/react';
+﻿import { renderHook, act, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { useApi } from '../../../hooks/useApi';
 import { httpClient } from '../../../services/httpClient';
@@ -22,7 +22,7 @@ describe('useApi Hook', () => {
     vi.restoreAllMocks();
   });
 
-  it('deve inicializar com estado padrão', () => {
+  it('deve inicializar com estado padrao', () => {
     const apiFunction = vi.fn();
     const { result } = renderHook(() => useApi(apiFunction));
 
@@ -32,7 +32,7 @@ describe('useApi Hook', () => {
     expect(typeof result.current.execute).toBe('function');
   });
 
-  it('deve executar função da API com sucesso', async () => {
+  it('deve executar funcao da API com sucesso', async () => {
     const mockData = { id: 1, name: 'Test' };
     const apiFunction = vi.fn().mockResolvedValue(mockData);
     
@@ -46,7 +46,7 @@ describe('useApi Hook', () => {
     expect(result.current.loading).toBe(true);
     expect(result.current.error).toBeNull();
 
-    // Aguarda conclusão
+    // Aguarda conclusao
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
@@ -74,7 +74,7 @@ describe('useApi Hook', () => {
     expect(result.current.error).toBe(errorMessage);
   });
 
-  it('deve executar automaticamente quando autoExecute é true', async () => {
+  it('deve executar automaticamente quando autoExecute e true', async () => {
     const mockData = { test: 'data' };
     const apiFunction = vi.fn().mockResolvedValue(mockData);
     
@@ -82,7 +82,7 @@ describe('useApi Hook', () => {
       useApi(apiFunction, { autoExecute: true })
     );
 
-    // Deve começar em loading
+    // Deve comecar em loading
     expect(result.current.loading).toBe(true);
 
     await waitFor(() => {
@@ -93,7 +93,7 @@ describe('useApi Hook', () => {
     expect(apiFunction).toHaveBeenCalledTimes(1);
   });
 
-  it('deve passar parâmetros para a função da API', async () => {
+  it('deve passar parametros para a funcao da API', async () => {
     const mockData = { result: 'success' };
     const apiFunction = vi.fn().mockResolvedValue(mockData);
     const params = { id: 123, filter: 'active' };
@@ -111,7 +111,7 @@ describe('useApi Hook', () => {
     expect(apiFunction).toHaveBeenCalledWith(params);
   });
 
-  it('deve cancelar requisições pendentes ao desmontar', async () => {
+  it('deve cancelar requisicoes pendentes ao desmontar', async () => {
     const apiFunction = vi.fn().mockImplementation(
       () => new Promise((resolve) => setTimeout(resolve, 1000))
     );
@@ -127,20 +127,20 @@ describe('useApi Hook', () => {
     // Desmonta o componente
     unmount();
 
-    // Aguarda um pouco para verificar se não há vazamentos
+    // Aguarda um pouco para verificar se nao ha vazamentos
     await new Promise(resolve => setTimeout(resolve, 100));
     
-    // Não deve haver erros ou warnings sobre state updates
+    // Nao deve haver erros ou warnings sobre state updates
   });
 
-  it('deve limpar erro ao executar nova requisição', async () => {
+  it('deve limpar erro ao executar nova requisicao', async () => {
     const apiFunction = vi.fn()
       .mockRejectedValueOnce(new Error('First error'))
       .mockResolvedValueOnce({ success: true });
     
     const { result } = renderHook(() => useApi(apiFunction));
 
-    // Primeira execução com erro
+    // Primeira execucao com erro
     act(() => {
       result.current.execute();
     });
@@ -149,7 +149,7 @@ describe('useApi Hook', () => {
       expect(result.current.error).toBe('First error');
     });
 
-    // Segunda execução com sucesso
+    // Segunda execucao com sucesso
     act(() => {
       result.current.execute();
     });
@@ -166,7 +166,7 @@ describe('useApi Hook', () => {
     expect(result.current.error).toBeNull();
   });
 
-  it('deve lidar com múltiplas execuções concorrentes', async () => {
+  it('deve lidar com multiplas execucoes concorrentes', async () => {
     let resolveFirst: (value: any) => void;
     let resolveSecond: (value: any) => void;
 
@@ -176,12 +176,12 @@ describe('useApi Hook', () => {
     
     const { result } = renderHook(() => useApi(apiFunction));
 
-    // Primeira execução
+    // Primeira execucao
     act(() => {
       result.current.execute();
     });
 
-    // Segunda execução antes da primeira terminar
+    // Segunda execucao antes da primeira terminar
     act(() => {
       result.current.execute();
     });
@@ -231,7 +231,7 @@ describe('useApi Hook', () => {
     }
   });
 
-  it('deve manter referência estável da função execute', () => {
+  it('deve manter referencia estavel da funcao execute', () => {
     const apiFunction = vi.fn();
     const { result, rerender } = renderHook(() => useApi(apiFunction));
 
@@ -242,11 +242,11 @@ describe('useApi Hook', () => {
 
     const secondExecute = result.current.execute;
 
-    // A função execute deve manter a mesma referência
+    // A funcao execute deve manter a mesma referencia
     expect(firstExecute).toBe(secondExecute);
   });
 
-  it('deve lidar com timeout de requisições', async () => {
+  it('deve lidar com timeout de requisicoes', async () => {
     const apiFunction = vi.fn().mockImplementation(
       () => new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Request timeout')), 100)
@@ -267,7 +267,7 @@ describe('useApi Hook', () => {
     expect(result.current.data).toBeNull();
   });
 
-  it('deve permitir retry manual após erro', async () => {
+  it('deve permitir retry manual apos erro', async () => {
     const apiFunction = vi.fn()
       .mockRejectedValueOnce(new Error('Network error'))
       .mockResolvedValueOnce({ success: true });
@@ -297,9 +297,9 @@ describe('useApi Hook', () => {
     expect(apiFunction).toHaveBeenCalledTimes(2);
   });
 
-  it('deve funcionar com funções assíncronas complexas', async () => {
+  it('deve funcionar com funcoes assincronas complexas', async () => {
     const complexApiFunction = async (params: any) => {
-      // Simula operações complexas
+      // Simula operacoes complexas
       await new Promise(resolve => setTimeout(resolve, 10));
       
       if (params?.shouldFail) {

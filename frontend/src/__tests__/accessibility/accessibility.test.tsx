@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import userEvent from '@testing-library/user-event';
@@ -12,20 +12,20 @@ const MockDashboard = () => (
   <div>
     <header>
       <h1>Dashboard GLPI</h1>
-      <nav aria-label="Navegação principal">
+      <nav aria-label="Navegacao principal">
         <ul>
           <li><a href="/dashboard">Dashboard</a></li>
           <li><a href="/tickets">Tickets</a></li>
-          <li><a href="/users">Usuários</a></li>
+          <li><a href="/users">Usuarios</a></li>
         </ul>
       </nav>
     </header>
     <main>
       <section aria-labelledby="metrics-heading">
-        <h2 id="metrics-heading">Métricas</h2>
-        <div role="region" aria-label="Gráficos de métricas">
-          <canvas aria-label="Gráfico de tickets por status" role="img">
-            Gráfico mostrando distribuição de tickets por status
+        <h2 id="metrics-heading">Metricas</h2>
+        <div role="region" aria-label="Graficos de metricas">
+          <canvas aria-label="Grafico de tickets por status" role="img">
+            Grafico mostrando distribuicao de tickets por status
           </canvas>
         </div>
       </section>
@@ -127,7 +127,7 @@ const MockForm = () => {
     const title = formData.get('title') as string;
     
     if (!title) {
-      setErrors({ title: 'Título é obrigatório' });
+      setErrors({ title: 'Titulo e obrigatorio' });
     } else {
       setErrors({});
     }
@@ -136,7 +136,7 @@ const MockForm = () => {
   return (
     <form onSubmit={handleSubmit} noValidate>
       <div className="form-group">
-        <label htmlFor="ticket-title">Título do Ticket *</label>
+        <label htmlFor="ticket-title">Titulo do Ticket *</label>
         <input 
           type="text" 
           id="ticket-title" 
@@ -154,7 +154,7 @@ const MockForm = () => {
       </div>
       
       <div className="form-group">
-        <label htmlFor="ticket-description">Descrição</label>
+        <label htmlFor="ticket-description">Descricao</label>
         <textarea 
           id="ticket-description" 
           name="description"
@@ -162,7 +162,7 @@ const MockForm = () => {
           aria-describedby="description-help"
         />
         <div id="description-help" className="help-text">
-          Descreva o problema ou solicitação em detalhes
+          Descreva o problema ou solicitacao em detalhes
         </div>
       </div>
       
@@ -174,7 +174,7 @@ const MockForm = () => {
             <label htmlFor="priority-low">Baixa</label>
             
             <input type="radio" id="priority-medium" name="priority" value="medium" defaultChecked />
-            <label htmlFor="priority-medium">Média</label>
+            <label htmlFor="priority-medium">Media</label>
             
             <input type="radio" id="priority-high" name="priority" value="high" />
             <label htmlFor="priority-high">Alta</label>
@@ -202,8 +202,8 @@ const MockDataTable = ({ data }: { data: any[] }) => (
             </button>
           </th>
           <th scope="col">
-            <button aria-label="Ordenar por título">
-              Título
+            <button aria-label="Ordenar por titulo">
+              Titulo
             </button>
           </th>
           <th scope="col">
@@ -216,7 +216,7 @@ const MockDataTable = ({ data }: { data: any[] }) => (
               Prioridade
             </button>
           </th>
-          <th scope="col">Ações</th>
+          <th scope="col">Acoes</th>
         </tr>
       </thead>
       <tbody>
@@ -254,13 +254,13 @@ const MockDataTable = ({ data }: { data: any[] }) => (
 
 describe('Testes de Acessibilidade', () => {
   describe('Dashboard', () => {
-    it('deve não ter violações de acessibilidade', async () => {
+    it('deve nao ter violacoes de acessibilidade', async () => {
       const { container } = render(<MockDashboard />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
     
-    it('deve ter estrutura semântica correta', () => {
+    it('deve ter estrutura semantica correta', () => {
       render(<MockDashboard />);
       
       // Verificar landmarks
@@ -276,13 +276,13 @@ describe('Testes de Acessibilidade', () => {
       expect(h2s).toHaveLength(2);
     });
     
-    it('deve ter navegação acessível por teclado', async () => {
+    it('deve ter navegacao acessivel por teclado', async () => {
       const user = userEvent.setup();
       render(<MockDashboard />);
       
       const links = screen.getAllByRole('link');
       
-      // Testar navegação por Tab
+      // Testar navegacao por Tab
       await user.tab();
       expect(links[0]).toHaveFocus();
       
@@ -298,19 +298,19 @@ describe('Testes de Acessibilidade', () => {
     const mockTicket = {
       id: 1,
       title: 'Problema no sistema',
-      description: 'Sistema apresentando lentidão',
+      description: 'Sistema apresentando lentidao',
       status: 'open',
       priority: 'high',
       createdAt: '2024-01-15'
     };
     
-    it('deve não ter violações de acessibilidade', async () => {
+    it('deve nao ter violacoes de acessibilidade', async () => {
       const { container } = render(<MockTicketCard ticket={mockTicket} />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
     
-    it('deve ter labels e descrições adequadas', () => {
+    it('deve ter labels e descricoes adequadas', () => {
       render(<MockTicketCard ticket={mockTicket} />);
       
       // Verificar article com label
@@ -320,12 +320,12 @@ describe('Testes de Acessibilidade', () => {
       // Verificar status com label
       expect(screen.getByLabelText('Status: open')).toBeInTheDocument();
       
-      // Verificar botões com labels descritivos
+      // Verificar botoes com labels descritivos
       expect(screen.getByLabelText('Editar ticket Problema no sistema')).toBeInTheDocument();
       expect(screen.getByLabelText('Excluir ticket Problema no sistema')).toBeInTheDocument();
     });
     
-    it('deve ser navegável por teclado', async () => {
+    it('deve ser navegavel por teclado', async () => {
       const user = userEvent.setup();
       render(<MockTicketCard ticket={mockTicket} />);
       
@@ -337,7 +337,7 @@ describe('Testes de Acessibilidade', () => {
       await user.tab();
       expect(article).toHaveFocus();
       
-      // Testar navegação para botões
+      // Testar navegacao para botoes
       await user.tab();
       expect(editButton).toHaveFocus();
       
@@ -347,10 +347,10 @@ describe('Testes de Acessibilidade', () => {
   });
   
   describe('Modal', () => {
-    it('deve não ter violações de acessibilidade', async () => {
+    it('deve nao ter violacoes de acessibilidade', async () => {
       const { container } = render(
         <MockModal isOpen={true} onClose={() => {}} title="Teste Modal">
-          <p>Conteúdo do modal</p>
+          <p>Conteudo do modal</p>
         </MockModal>
       );
       const results = await axe(container);
@@ -360,7 +360,7 @@ describe('Testes de Acessibilidade', () => {
     it('deve ter atributos ARIA corretos', () => {
       render(
         <MockModal isOpen={true} onClose={() => {}} title="Teste Modal">
-          <p>Conteúdo do modal</p>
+          <p>Conteudo do modal</p>
         </MockModal>
       );
       
@@ -377,14 +377,14 @@ describe('Testes de Acessibilidade', () => {
       
       render(
         <MockModal isOpen={true} onClose={onClose} title="Teste Modal">
-          <button>Botão no modal</button>
+          <button>Botao no modal</button>
         </MockModal>
       );
       
       const closeButton = screen.getByLabelText('Fechar modal');
-      const modalButton = screen.getByText('Botão no modal');
+      const modalButton = screen.getByText('Botao no modal');
       
-      // Testar navegação por Tab dentro do modal
+      // Testar navegacao por Tab dentro do modal
       await user.tab();
       expect(closeButton).toHaveFocus();
       
@@ -397,8 +397,8 @@ describe('Testes de Acessibilidade', () => {
     });
   });
   
-  describe('Formulários', () => {
-    it('deve não ter violações de acessibilidade', async () => {
+  describe('Formularios', () => {
+    it('deve nao ter violacoes de acessibilidade', async () => {
       const { container } = render(<MockForm />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
@@ -407,37 +407,37 @@ describe('Testes de Acessibilidade', () => {
     it('deve ter labels associados corretamente', () => {
       render(<MockForm />);
       
-      // Verificar associação label-input
-      const titleInput = screen.getByLabelText('Título do Ticket *');
+      // Verificar associacao label-input
+      const titleInput = screen.getByLabelText('Titulo do Ticket *');
       expect(titleInput).toHaveAttribute('id', 'ticket-title');
       
-      const descriptionTextarea = screen.getByLabelText('Descrição');
+      const descriptionTextarea = screen.getByLabelText('Descricao');
       expect(descriptionTextarea).toHaveAttribute('id', 'ticket-description');
     });
     
-    it('deve indicar campos obrigatórios', () => {
+    it('deve indicar campos obrigatorios', () => {
       render(<MockForm />);
       
-      const titleInput = screen.getByLabelText('Título do Ticket *');
+      const titleInput = screen.getByLabelText('Titulo do Ticket *');
       expect(titleInput).toHaveAttribute('required');
       expect(titleInput).toHaveAttribute('aria-required', 'true');
     });
     
-    it('deve exibir mensagens de erro acessíveis', async () => {
+    it('deve exibir mensagens de erro acessiveis', async () => {
       const user = userEvent.setup();
       render(<MockForm />);
       
       const submitButton = screen.getByText('Criar Ticket');
       
-      // Submeter formulário sem preencher campo obrigatório
+      // Submeter formulario sem preencher campo obrigatorio
       await user.click(submitButton);
       
       // Verificar mensagem de erro
       const errorMessage = screen.getByRole('alert');
-      expect(errorMessage).toHaveTextContent('Título é obrigatório');
+      expect(errorMessage).toHaveTextContent('Titulo e obrigatorio');
       
-      // Verificar associação com o campo
-      const titleInput = screen.getByLabelText('Título do Ticket *');
+      // Verificar associacao com o campo
+      const titleInput = screen.getByLabelText('Titulo do Ticket *');
       expect(titleInput).toHaveAttribute('aria-invalid', 'true');
       expect(titleInput).toHaveAttribute('aria-describedby', 'title-error');
     });
@@ -451,17 +451,17 @@ describe('Testes de Acessibilidade', () => {
       const radioButtons = screen.getAllByRole('radio');
       expect(radioButtons).toHaveLength(3);
       
-      // Verificar que um está selecionado por padrão
-      expect(screen.getByLabelText('Média')).toBeChecked();
+      // Verificar que um esta selecionado por padrao
+      expect(screen.getByLabelText('Media')).toBeChecked();
     });
     
     it('deve ter texto de ajuda associado', () => {
       render(<MockForm />);
       
-      const descriptionTextarea = screen.getByLabelText('Descrição');
+      const descriptionTextarea = screen.getByLabelText('Descricao');
       expect(descriptionTextarea).toHaveAttribute('aria-describedby', 'description-help');
       
-      const helpText = screen.getByText('Descreva o problema ou solicitação em detalhes');
+      const helpText = screen.getByText('Descreva o problema ou solicitacao em detalhes');
       expect(helpText).toHaveAttribute('id', 'description-help');
     });
   });
@@ -472,13 +472,13 @@ describe('Testes de Acessibilidade', () => {
       { id: 2, title: 'Ticket 2', status: 'closed', priority: 'low', createdAt: '2024-01-14' }
     ];
     
-    it('deve não ter violações de acessibilidade', async () => {
+    it('deve nao ter violacoes de acessibilidade', async () => {
       const { container } = render(<MockDataTable data={mockData} />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
     
-    it('deve ter estrutura de tabela semântica', () => {
+    it('deve ter estrutura de tabela semantica', () => {
       render(<MockDataTable data={mockData} />);
       
       const table = screen.getByRole('table');
@@ -497,30 +497,30 @@ describe('Testes de Acessibilidade', () => {
       });
     });
     
-    it('deve ter botões de ordenação acessíveis', () => {
+    it('deve ter botoes de ordenacao acessiveis', () => {
       render(<MockDataTable data={mockData} />);
       
       expect(screen.getByLabelText('Ordenar por ID')).toBeInTheDocument();
-      expect(screen.getByLabelText('Ordenar por título')).toBeInTheDocument();
+      expect(screen.getByLabelText('Ordenar por titulo')).toBeInTheDocument();
       expect(screen.getByLabelText('Ordenar por status')).toBeInTheDocument();
       expect(screen.getByLabelText('Ordenar por prioridade')).toBeInTheDocument();
     });
     
-    it('deve ter links e botões com labels descritivos', () => {
+    it('deve ter links e botoes com labels descritivos', () => {
       render(<MockDataTable data={mockData} />);
       
       // Verificar links dos tickets
       expect(screen.getByRole('link', { name: 'Ticket 1' })).toBeInTheDocument();
       expect(screen.getByRole('link', { name: 'Ticket 2' })).toBeInTheDocument();
       
-      // Verificar botões de ação
+      // Verificar botoes de acao
       expect(screen.getByLabelText('Editar ticket Ticket 1')).toBeInTheDocument();
       expect(screen.getByLabelText('Excluir ticket Ticket 1')).toBeInTheDocument();
     });
   });
   
-  describe('Navegação por Teclado', () => {
-    it('deve permitir navegação completa por teclado', async () => {
+  describe('Navegacao por Teclado', () => {
+    it('deve permitir navegacao completa por teclado', async () => {
       const user = userEvent.setup();
       
       render(
@@ -530,7 +530,7 @@ describe('Testes de Acessibilidade', () => {
         </div>
       );
       
-      // Testar navegação sequencial
+      // Testar navegacao sequencial
       const focusableElements = [
         screen.getAllByRole('link'),
         screen.getAllByRole('button'),
@@ -538,51 +538,51 @@ describe('Testes de Acessibilidade', () => {
         screen.getAllByRole('radio')
       ].flat();
       
-      // Navegar por todos os elementos focáveis
+      // Navegar por todos os elementos focaveis
       for (let i = 0; i < Math.min(5, focusableElements.length); i++) {
         await user.tab();
         expect(document.activeElement).toBeInstanceOf(HTMLElement);
       }
     });
     
-    it('deve permitir ativação por Enter e Space', async () => {
+    it('deve permitir ativacao por Enter e Space', async () => {
       const user = userEvent.setup();
       const onClick = vi.fn();
       
       render(
-        <button onClick={onClick}>Botão Teste</button>
+        <button onClick={onClick}>Botao Teste</button>
       );
       
-      const button = screen.getByText('Botão Teste');
+      const button = screen.getByText('Botao Teste');
       
-      // Focar no botão
+      // Focar no botao
       button.focus();
       
-      // Testar ativação com Enter
+      // Testar ativacao com Enter
       await user.keyboard('{Enter}');
       expect(onClick).toHaveBeenCalledTimes(1);
       
-      // Testar ativação com Space
+      // Testar ativacao com Space
       await user.keyboard(' ');
       expect(onClick).toHaveBeenCalledTimes(2);
     });
   });
   
   describe('Contraste e Visibilidade', () => {
-    it('deve ter elementos visíveis para screen readers', () => {
+    it('deve ter elementos visiveis para screen readers', () => {
       render(
         <div>
           <span className="sr-only">Texto apenas para screen readers</span>
-          <button aria-label="Botão com label invisível">
+          <button aria-label="Botao com label invisivel">
             <span aria-hidden="true">👍</span>
           </button>
         </div>
       );
       
-      // Verificar que elementos com sr-only ainda são acessíveis
+      // Verificar que elementos com sr-only ainda sao acessiveis
       expect(screen.getByText('Texto apenas para screen readers')).toBeInTheDocument();
       
-      // Verificar que ícones decorativos estão ocultos
+      // Verificar que icones decorativos estao ocultos
       const icon = screen.getByText('👍');
       expect(icon).toHaveAttribute('aria-hidden', 'true');
     });
@@ -596,13 +596,13 @@ describe('Testes de Acessibilidade', () => {
             Carregando dados...
           </div>
           <div aria-busy="true">
-            Conteúdo sendo carregado
+            Conteudo sendo carregado
           </div>
         </div>
       );
       
       expect(screen.getByRole('status')).toHaveTextContent('Carregando dados...');
-      expect(screen.getByText('Conteúdo sendo carregado')).toHaveAttribute('aria-busy', 'true');
+      expect(screen.getByText('Conteudo sendo carregado')).toHaveAttribute('aria-busy', 'true');
     });
     
     it('deve anunciar mensagens de erro', () => {
@@ -612,13 +612,13 @@ describe('Testes de Acessibilidade', () => {
             Erro ao carregar dados
           </div>
           <div aria-live="assertive">
-            Operação falhou
+            Operacao falhou
           </div>
         </div>
       );
       
       expect(screen.getByRole('alert')).toHaveTextContent('Erro ao carregar dados');
-      expect(screen.getByText('Operação falhou')).toHaveAttribute('aria-live', 'assertive');
+      expect(screen.getByText('Operacao falhou')).toHaveAttribute('aria-live', 'assertive');
     });
   });
   
@@ -633,7 +633,7 @@ describe('Testes de Acessibilidade', () => {
       
       render(<MockDashboard />);
       
-      // Verificar que elementos essenciais ainda estão presentes
+      // Verificar que elementos essenciais ainda estao presentes
       expect(screen.getByRole('banner')).toBeInTheDocument();
       expect(screen.getByRole('main')).toBeInTheDocument();
       expect(screen.getByRole('navigation')).toBeInTheDocument();

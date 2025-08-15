@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useMemo } from "react"
+﻿import React, { useEffect, useCallback, useMemo } from "react"
 import { motion } from "framer-motion"
 import { StatusCard } from "./StatusCard"
 import { MetricsData, TicketStatus } from "@/types"
@@ -13,7 +13,7 @@ interface MetricsGridProps {
   className?: string
 }
 
-// Funções auxiliares movidas para fora do componente
+// Funcoes auxiliares movidas para fora do componente
 function getTrendDirection(trend?: string): 'up' | 'down' | 'stable' {
   if (!trend) return 'stable'
   const value = parseFloat(trend.replace('%', '').replace('+', ''))
@@ -27,7 +27,7 @@ function parseTrendValue(trend?: string): number {
   return Math.abs(parseFloat(trend.replace('%', '').replace('+', '')))
 }
 
-// Variantes de animação movidas para fora do componente
+// Variantes de animacao movidas para fora do componente
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -72,11 +72,11 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
     })
   }, [metrics, trackRender, measureRender, onFilterByStatus])
   
-  // Componente renderizado com métricas válidas
+  // Componente renderizado com metricas validas
 
-  // Verificação de segurança
+  // Verificacao de seguranca
   if (!metrics) {
-    // console.log('⚠️ MetricsGrid - Metrics é null/undefined, mostrando skeleton')
+    // console.log('⚠️ MetricsGrid - Metrics e null/undefined, mostrando skeleton')
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[...Array(4)].map((_, i) => (
@@ -117,7 +117,7 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
   const handlePendingClick = useThrottledCallback(handlePendingClickImmediate, 500)
   const handleResolvedClick = useThrottledCallback(handleResolvedClickImmediate, 500)
 
-  // Configuração dos cards de métricas memoizada
+  // Configuracao dos cards de metricas memoizada
   const metricCards = useMemo(() => {
     const cards = [
       {
@@ -128,7 +128,7 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
         trend: {
           direction: getTrendDirection(metrics.tendencias?.novos),
           value: parseTrendValue(metrics.tendencias?.novos),
-          label: "vs. período anterior"
+          label: "vs. periodo anterior"
         },
         onClick: handleNewClick
       },
@@ -140,7 +140,7 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
         trend: {
           direction: getTrendDirection(metrics.tendencias?.progresso),
           value: parseTrendValue(metrics.tendencias?.progresso),
-          label: "vs. período anterior"
+          label: "vs. periodo anterior"
         },
         onClick: handleProgressClick
       },
@@ -152,7 +152,7 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
         trend: {
           direction: getTrendDirection(metrics.tendencias?.pendentes),
           value: parseTrendValue(metrics.tendencias?.pendentes),
-          label: "vs. período anterior"
+          label: "vs. periodo anterior"
         },
         onClick: handlePendingClick
       },
@@ -164,7 +164,7 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
         trend: {
           direction: getTrendDirection(metrics.tendencias?.resolvidos),
           value: parseTrendValue(metrics.tendencias?.resolvidos),
-          label: "vs. período anterior"
+          label: "vs. periodo anterior"
         },
         onClick: handleResolvedClick
       }

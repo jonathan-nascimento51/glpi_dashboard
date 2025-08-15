@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+﻿import { useState, useEffect, useRef, useCallback } from 'react';
 
 /**
  * Hook para implementar debounce em valores
  * @param value - Valor a ser debounced
- * @param delay - Delay em milissegundos (padrão: 300ms)
+ * @param delay - Delay em milissegundos (padrao: 300ms)
  * @returns Valor debounced
  */
 export function useDebounce<T>(value: T, delay: number = 300): T {
@@ -24,9 +24,9 @@ export function useDebounce<T>(value: T, delay: number = 300): T {
 
 /**
  * Hook para implementar debounce em callbacks
- * @param callback - Função a ser debounced
- * @param delay - Delay em milissegundos (padrão: 300ms)
- * @returns Função debounced
+ * @param callback - Funcao a ser debounced
+ * @param delay - Delay em milissegundos (padrao: 300ms)
+ * @returns Funcao debounced
  */
 export function useDebouncedCallback<T extends (...args: any[]) => any>(
   callback: T,
@@ -35,7 +35,7 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const callbackRef = useRef(callback);
 
-  // Atualizar a referência do callback
+  // Atualizar a referencia do callback
   useEffect(() => {
     callbackRef.current = callback;
   }, [callback]);
@@ -65,9 +65,9 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
 
 /**
  * Hook para implementar throttle em callbacks
- * @param callback - Função a ser throttled
- * @param delay - Delay em milissegundos (padrão: 100ms)
- * @returns Função throttled
+ * @param callback - Funcao a ser throttled
+ * @param delay - Delay em milissegundos (padrao: 100ms)
+ * @returns Funcao throttled
  */
 export function useThrottledCallback<T extends (...args: any[]) => any>(
   callback: T,
@@ -77,7 +77,7 @@ export function useThrottledCallback<T extends (...args: any[]) => any>(
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const callbackRef = useRef(callback);
 
-  // Atualizar a referência do callback
+  // Atualizar a referencia do callback
   useEffect(() => {
     callbackRef.current = callback;
   }, [callback]);
@@ -101,7 +101,7 @@ export function useThrottledCallback<T extends (...args: any[]) => any>(
         lastCallRef.current = now;
         callbackRef.current(...args);
       } else {
-        // Agendar execução para o final do período de throttle
+        // Agendar execucao para o final do periodo de throttle
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current);
         }
@@ -118,11 +118,11 @@ export function useThrottledCallback<T extends (...args: any[]) => any>(
 
 /**
  * Hook combinado para debounce com throttle
- * Útil para campos de busca que precisam de resposta rápida mas controlada
- * @param callback - Função a ser processada
- * @param debounceDelay - Delay do debounce (padrão: 300ms)
- * @param throttleDelay - Delay do throttle (padrão: 100ms)
- * @returns Objeto com funções debounced e throttled
+ * util para campos de busca que precisam de resposta rapida mas controlada
+ * @param callback - Funcao a ser processada
+ * @param debounceDelay - Delay do debounce (padrao: 300ms)
+ * @param throttleDelay - Delay do throttle (padrao: 100ms)
+ * @returns Objeto com funcoes debounced e throttled
  */
 export function useDebounceThrottle<T extends (...args: any[]) => any>(
   callback: T,

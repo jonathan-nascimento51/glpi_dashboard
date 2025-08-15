@@ -11,8 +11,8 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 from api.routes import app
-from services.glpi_service import GLPIService
-from services.api_service import APIService
+from app.services.glpi_service import GLPIService
+from app.services.api_service import APIService
 
 
 @pytest.fixture

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { render } from '@testing-library/react';
 import { vi } from 'vitest';
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
@@ -40,7 +40,7 @@ vi.mock('react-chartjs-2', () => ({
   )
 }));
 
-// Mock para ícones
+// Mock para icones
 vi.mock('lucide-react', () => ({
   Calendar: () => <div data-testid="calendar-icon" className="icon icon-calendar">📅</div>,
   Filter: () => <div data-testid="filter-icon" className="icon icon-filter">🔍</div>,
@@ -99,7 +99,7 @@ const MockDashboard = () => (
         <div className="metric-change positive">+8%</div>
       </div>
       <div className="metric-card">
-        <h3>Tempo Médio</h3>
+        <h3>Tempo Medio</h3>
         <div className="metric-value">2.5h</div>
         <div className="metric-change neutral">0%</div>
       </div>
@@ -115,7 +115,7 @@ const MockDashboard = () => (
       <div className="chart-container">
         <div data-testid="pie-chart" className="chart chart-pie">
           <div className="chart-title">Tickets por Prioridade</div>
-          <div className="chart-data">["Alta", "Média", "Baixa"]</div>
+          <div className="chart-data">["Alta", "Media", "Baixa"]</div>
         </div>
       </div>
     </div>
@@ -143,7 +143,7 @@ const MockTicketList = () => (
       <select className="filter-select">
         <option>Todas as Prioridades</option>
         <option>Alta</option>
-        <option>Média</option>
+        <option>Media</option>
         <option>Baixa</option>
       </select>
     </div>
@@ -158,11 +158,11 @@ const MockTicketList = () => (
             </span>
           </div>
           <div className="ticket-content">
-            <p>Descrição do ticket {id}</p>
+            <p>Descricao do ticket {id}</p>
             <div className="ticket-meta">
               <span className="priority priority-high">Alta</span>
               <span className="date">15/01/2024</span>
-              <span className="assignee">João Silva</span>
+              <span className="assignee">Joao Silva</span>
             </div>
           </div>
           <div className="ticket-actions">
@@ -183,12 +183,12 @@ const MockTicketForm = () => (
     
     <form className="form">
       <div className="form-group">
-        <label htmlFor="title">Título *</label>
-        <input type="text" id="title" className="form-input" placeholder="Digite o título do ticket" />
+        <label htmlFor="title">Titulo *</label>
+        <input type="text" id="title" className="form-input" placeholder="Digite o titulo do ticket" />
       </div>
       
       <div className="form-group">
-        <label htmlFor="description">Descrição</label>
+        <label htmlFor="description">Descricao</label>
         <textarea id="description" className="form-textarea" rows={4} placeholder="Descreva o problema..." />
       </div>
       
@@ -197,7 +197,7 @@ const MockTicketForm = () => (
           <label htmlFor="priority">Prioridade</label>
           <select id="priority" className="form-select">
             <option>Baixa</option>
-            <option>Média</option>
+            <option>Media</option>
             <option>Alta</option>
           </select>
         </div>
@@ -213,10 +213,10 @@ const MockTicketForm = () => (
       </div>
       
       <div className="form-group">
-        <label htmlFor="assignee">Responsável</label>
+        <label htmlFor="assignee">Responsavel</label>
         <select id="assignee" className="form-select">
           <option>Selecionar...</option>
-          <option>João Silva</option>
+          <option>Joao Silva</option>
           <option>Maria Santos</option>
           <option>Pedro Costa</option>
         </select>
@@ -234,19 +234,19 @@ const MockModal = ({ variant = 'default' }: { variant?: 'default' | 'warning' | 
   <div className="modal-overlay">
     <div className={`modal modal-${variant}`}>
       <div className="modal-header">
-        <h3>Confirmar Ação</h3>
+        <h3>Confirmar Acao</h3>
         <button className="modal-close">×</button>
       </div>
       <div className="modal-body">
-        <p>Tem certeza que deseja realizar esta ação?</p>
+        <p>Tem certeza que deseja realizar esta acao?</p>
         {variant === 'warning' && (
           <div className="warning-message">
-            ⚠️ Esta ação não pode ser desfeita.
+            ⚠️ Esta acao nao pode ser desfeita.
           </div>
         )}
         {variant === 'error' && (
           <div className="error-message">
-            ❌ Ocorreu um erro ao processar a solicitação.
+            ❌ Ocorreu um erro ao processar a solicitacao.
           </div>
         )}
       </div>
@@ -261,7 +261,7 @@ const MockModal = ({ variant = 'default' }: { variant?: 'default' | 'warning' | 
 const MockDataTable = () => (
   <div className="data-table">
     <div className="table-header">
-      <h3>Relatório de Tickets</h3>
+      <h3>Relatorio de Tickets</h3>
       <div className="table-actions">
         <button className="btn btn-sm btn-secondary">Exportar CSV</button>
         <button className="btn btn-sm btn-secondary">Imprimir</button>
@@ -273,12 +273,12 @@ const MockDataTable = () => (
         <thead>
           <tr>
             <th>ID</th>
-            <th>Título</th>
+            <th>Titulo</th>
             <th>Status</th>
             <th>Prioridade</th>
-            <th>Responsável</th>
+            <th>Responsavel</th>
             <th>Data</th>
-            <th>Ações</th>
+            <th>Acoes</th>
           </tr>
         </thead>
         <tbody>
@@ -293,10 +293,10 @@ const MockDataTable = () => (
               </td>
               <td>
                 <span className={`priority priority-${id % 3 === 0 ? 'low' : id % 2 === 0 ? 'medium' : 'high'}`}>
-                  {id % 3 === 0 ? 'Baixa' : id % 2 === 0 ? 'Média' : 'Alta'}
+                  {id % 3 === 0 ? 'Baixa' : id % 2 === 0 ? 'Media' : 'Alta'}
                 </span>
               </td>
-              <td>Usuário {id}</td>
+              <td>Usuario {id}</td>
               <td>15/01/2024</td>
               <td>
                 <button className="btn btn-xs btn-primary">Ver</button>
@@ -317,17 +317,17 @@ const MockDataTable = () => (
         <button className="btn btn-sm btn-primary">1</button>
         <button className="btn btn-sm btn-secondary">2</button>
         <button className="btn btn-sm btn-secondary">3</button>
-        <button className="btn btn-sm btn-secondary">Próximo</button>
+        <button className="btn btn-sm btn-secondary">Proximo</button>
       </div>
     </div>
   </div>
 );
 
-// Função para adicionar estilos CSS para os testes visuais
+// Funcao para adicionar estilos CSS para os testes visuais
 const addTestStyles = () => {
   const style = document.createElement('style');
   style.textContent = `
-    /* Reset básico */
+    /* Reset basico */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
     
@@ -435,7 +435,7 @@ const addTestStyles = () => {
   document.head.appendChild(style);
 };
 
-describe('Testes de Regressão Visual', () => {
+describe('Testes de Regressao Visual', () => {
   beforeAll(() => {
     addTestStyles();
   });
@@ -450,11 +450,11 @@ describe('Testes de Regressão Visual', () => {
       });
     });
     
-    it('deve renderizar métricas com diferentes estados', () => {
+    it('deve renderizar metricas com diferentes estados', () => {
       const { container } = render(
         <div className="dashboard-metrics">
           <div className="metric-card">
-            <h3>Tickets Críticos</h3>
+            <h3>Tickets Criticos</h3>
             <div className="metric-value">15</div>
             <div className="metric-change negative">+25%</div>
           </div>
@@ -464,7 +464,7 @@ describe('Testes de Regressão Visual', () => {
             <div className="metric-change positive">+12%</div>
           </div>
           <div className="metric-card">
-            <h3>Tempo Médio</h3>
+            <h3>Tempo Medio</h3>
             <div className="metric-value">4.2h</div>
             <div className="metric-change neutral">0%</div>
           </div>
@@ -506,9 +506,9 @@ describe('Testes de Regressão Visual', () => {
               <span className="status status-progress">Em Andamento</span>
             </div>
             <div className="ticket-content">
-              <p>Manutenção programada</p>
+              <p>Manutencao programada</p>
               <div className="ticket-meta">
-                <span className="priority priority-medium">Média</span>
+                <span className="priority priority-medium">Media</span>
                 <span className="date">14/01/2024</span>
               </div>
             </div>
@@ -534,19 +534,19 @@ describe('Testes de Regressão Visual', () => {
     });
   });
   
-  describe('Formulários', () => {
-    it('deve renderizar o formulário de ticket corretamente', () => {
+  describe('Formularios', () => {
+    it('deve renderizar o formulario de ticket corretamente', () => {
       const { container } = render(<MockTicketForm />);
       expect(container.firstChild).toMatchImageSnapshot({
         customSnapshotIdentifier: 'ticket-form-default'
       });
     });
     
-    it('deve renderizar formulário com estados de erro', () => {
+    it('deve renderizar formulario com estados de erro', () => {
       const { container } = render(
         <div className="form">
           <div className="form-group">
-            <label htmlFor="title">Título *</label>
+            <label htmlFor="title">Titulo *</label>
             <input 
               type="text" 
               id="title" 
@@ -555,7 +555,7 @@ describe('Testes de Regressão Visual', () => {
               defaultValue=""
             />
             <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '5px' }}>
-              Este campo é obrigatório
+              Este campo e obrigatorio
             </div>
           </div>
           <div className="form-group">
@@ -568,7 +568,7 @@ describe('Testes de Regressão Visual', () => {
               defaultValue="email-invalido"
             />
             <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '5px' }}>
-              Email inválido
+              Email invalido
             </div>
           </div>
         </div>
@@ -580,7 +580,7 @@ describe('Testes de Regressão Visual', () => {
   });
   
   describe('Modais', () => {
-    it('deve renderizar modal padrão corretamente', () => {
+    it('deve renderizar modal padrao corretamente', () => {
       const { container } = render(<MockModal />);
       expect(container.firstChild).toMatchImageSnapshot({
         customSnapshotIdentifier: 'modal-default'
@@ -692,12 +692,12 @@ describe('Testes de Regressão Visual', () => {
   });
   
   describe('Estados de Erro', () => {
-    it('deve renderizar página de erro 404', () => {
+    it('deve renderizar pagina de erro 404', () => {
       const { container } = render(
         <div style={{ textAlign: 'center', padding: '60px 20px' }}>
           <div style={{ fontSize: '72px', marginBottom: '20px' }}>404</div>
-          <h2 style={{ marginBottom: '10px', color: '#374151' }}>Página não encontrada</h2>
-          <p style={{ color: '#6b7280', marginBottom: '30px' }}>A página que você está procurando não existe.</p>
+          <h2 style={{ marginBottom: '10px', color: '#374151' }}>Pagina nao encontrada</h2>
+          <p style={{ color: '#6b7280', marginBottom: '30px' }}>A pagina que voce esta procurando nao existe.</p>
           <button className="btn btn-primary">Voltar ao Dashboard</button>
         </div>
       );
@@ -706,7 +706,7 @@ describe('Testes de Regressão Visual', () => {
       });
     });
     
-    it('deve renderizar estado de erro genérico', () => {
+    it('deve renderizar estado de erro generico', () => {
       const { container } = render(
         <div style={{ textAlign: 'center', padding: '40px 20px' }}>
           <div style={{ fontSize: '48px', marginBottom: '20px' }}>⚠️</div>
@@ -730,7 +730,7 @@ describe('Testes de Regressão Visual', () => {
         <div style={{ textAlign: 'center', padding: '60px 20px' }}>
           <div style={{ fontSize: '48px', marginBottom: '20px' }}>📋</div>
           <h3 style={{ marginBottom: '10px', color: '#374151' }}>Nenhum ticket encontrado</h3>
-          <p style={{ color: '#6b7280', marginBottom: '30px' }}>Não há tickets para exibir no momento.</p>
+          <p style={{ color: '#6b7280', marginBottom: '30px' }}>Nao ha tickets para exibir no momento.</p>
           <button className="btn btn-primary">Criar Primeiro Ticket</button>
         </div>
       );

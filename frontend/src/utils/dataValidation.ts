@@ -1,12 +1,12 @@
-/**
- * Utilitários para validação e sanitização de dados do dashboard
- * Implementa verificações robustas para garantir consistência dos dados
+﻿/**
+ * Utilitarios para validacao e sanitizacao de dados do dashboard
+ * Implementa verificacoes robustas para garantir consistencia dos dados
  */
 
 import { SystemStatus, TechnicianRanking } from '../types';
 import { DashboardMetrics, NiveisMetrics } from '../types/api';
 
-// Tipos para resultados de validação
+// Tipos para resultados de validacao
 export interface ValidationResult<T> {
   isValid: boolean;
   data: T;
@@ -23,13 +23,13 @@ export interface DataIntegrityReport {
 }
 
 /**
- * Valida e sanitiza dados de métricas
+ * Valida e sanitiza dados de metricas
  */
 export function validateMetrics(data: any): ValidationResult<DashboardMetrics> {
   const errors: string[] = [];
   const warnings: string[] = [];
   
-  // Estrutura padrão para fallback
+  // Estrutura padrao para fallback
   const defaultMetrics: DashboardMetrics = {
     niveis: {
       geral: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
@@ -48,7 +48,7 @@ export function validateMetrics(data: any): ValidationResult<DashboardMetrics> {
 
   // Verificar se data existe
   if (!data) {
-    errors.push('Dados de métricas não fornecidos');
+    errors.push('Dados de metricas nao fornecidos');
     return {
       isValid: false,
       data: defaultMetrics,
@@ -68,7 +68,7 @@ export function validateMetrics(data: any): ValidationResult<DashboardMetrics> {
     technicianRanking: data.technicianRanking
   };
 
-  // Validar consistência dos níveis internamente
+  // Validar consistencia dos niveis internamente
   const { geral, ...specificLevels } = sanitizedData.niveis;
   const levelTotals = {
     novos: 0,
@@ -84,9 +84,9 @@ export function validateMetrics(data: any): ValidationResult<DashboardMetrics> {
     levelTotals.resolvidos += level.resolvidos;
   });
 
-  // Verificar se o geral está consistente com a soma dos níveis específicos
+  // Verificar se o geral esta consistente com a soma dos niveis especificos
   if (geral.novos !== levelTotals.novos) {
-    warnings.push(`Total geral de 'novos' (${geral.novos}) não corresponde à soma dos níveis (${levelTotals.novos})`);
+    warnings.push(`Total geral de 'novos' (${geral.novos}) nao corresponde a soma dos niveis (${levelTotals.novos})`);
   }
 
   return {
@@ -111,7 +111,7 @@ export function validateSystemStatus(data: any): ValidationResult<SystemStatus> 
   };
 
   if (!data) {
-    errors.push('Dados de status do sistema não fornecidos');
+    errors.push('Dados de status do sistema nao fornecidos');
     return {
       isValid: false,
       data: defaultStatus,
@@ -124,7 +124,7 @@ export function validateSystemStatus(data: any): ValidationResult<SystemStatus> 
   const status = validStatuses.includes(data.status) ? data.status : 'offline';
   
   if (data.status && !validStatuses.includes(data.status)) {
-    warnings.push(`Status inválido '${data.status}', usando 'offline'`);
+    warnings.push(`Status invalido '${data.status}', usando 'offline'`);
   }
 
   const sanitizedData: SystemStatus = {
@@ -142,7 +142,7 @@ export function validateSystemStatus(data: any): ValidationResult<SystemStatus> 
 }
 
 /**
- * Valida dados de ranking de técnicos
+ * Valida dados de ranking de tecnicos
  */
 export function validateTechnicianRanking(data: any): ValidationResult<TechnicianRanking[]> {
   const errors: string[] = [];
@@ -161,19 +161,19 @@ export function validateTechnicianRanking(data: any): ValidationResult<Technicia
   const sanitizedData: TechnicianRanking[] = data
     .map((tech, index) => {
       if (!tech || typeof tech !== 'object') {
-        warnings.push(`Técnico no índice ${index} é inválido`);
+        warnings.push(`Tecnico no indice ${index} e invalido`);
         return null;
       }
 
       return {
         id: String(tech.id || `unknown-${index}`),
-        name: String(tech.name || tech.nome || 'Nome não informado'),
+        name: String(tech.name || tech.nome || 'Nome nao informado'),
         level: String(tech.level || 'N1'),
-        score: validateNumber(tech.score || tech.total, `score do técnico ${tech.name}`, [], warnings),
-        total: validateNumber(tech.total || tech.score, `total do técnico ${tech.name}`, [], warnings),
-        ticketsResolved: validateNumber(tech.ticketsResolved || tech.total || tech.score, `tickets resolvidos do técnico ${tech.name}`, [], warnings),
-        ticketsInProgress: validateNumber(tech.ticketsInProgress, `tickets em progresso do técnico ${tech.name}`, [], warnings),
-        averageResolutionTime: validateNumber(tech.averageResolutionTime, `tempo médio do técnico ${tech.name}`, [], warnings)
+        score: validateNumber(tech.score || tech.total, `score do tecnico ${tech.name}`, [], warnings),
+        total: validateNumber(tech.total || tech.score, `total do tecnico ${tech.name}`, [], warnings),
+        ticketsResolved: validateNumber(tech.ticketsResolved || tech.total || tech.score, `tickets resolvidos do tecnico ${tech.name}`, [], warnings),
+        ticketsInProgress: validateNumber(tech.ticketsInProgress, `tickets em progresso do tecnico ${tech.name}`, [], warnings),
+        averageResolutionTime: validateNumber(tech.averageResolutionTime, `tempo medio do tecnico ${tech.name}`, [], warnings)
       };
     })
     .filter(tech => tech !== null) as TechnicianRanking[];
@@ -187,22 +187,22 @@ export function validateTechnicianRanking(data: any): ValidationResult<Technicia
 }
 
 /**
- * Valida um número, retornando 0 se inválido
+ * Valida um numero, retornando 0 se invalido
  */
 function validateNumber(value: any, fieldName: string, _errors: string[], warnings: string[]): number {
   if (value === null || value === undefined) {
-    warnings.push(`Campo '${fieldName}' é null/undefined, usando 0`);
+    warnings.push(`Campo '${fieldName}' e null/undefined, usando 0`);
     return 0;
   }
   
   const num = Number(value);
   if (isNaN(num)) {
-    warnings.push(`Campo '${fieldName}' não é um número válido (${value}), usando 0`);
+    warnings.push(`Campo '${fieldName}' nao e um numero valido (${value}), usando 0`);
     return 0;
   }
   
   if (num < 0) {
-    warnings.push(`Campo '${fieldName}' é negativo (${num}), usando 0`);
+    warnings.push(`Campo '${fieldName}' e negativo (${num}), usando 0`);
     return 0;
   }
   
@@ -210,7 +210,7 @@ function validateNumber(value: any, fieldName: string, _errors: string[], warnin
 }
 
 /**
- * Valida dados de um nível específico para API
+ * Valida dados de um nivel especifico para API
  */
 function validateLevel(data: any, levelName: string, warnings: string[]): import('../types/api').LevelMetrics {
   const defaultLevel: import('../types/api').LevelMetrics = {
@@ -222,7 +222,7 @@ function validateLevel(data: any, levelName: string, warnings: string[]): import
   };
 
   if (!data || typeof data !== 'object') {
-    warnings.push(`Dados do nível ${levelName} inválidos, usando valores padrão`);
+    warnings.push(`Dados do nivel ${levelName} invalidos, usando valores padrao`);
     return defaultLevel;
   }
 
@@ -242,7 +242,7 @@ function validateLevel(data: any, levelName: string, warnings: string[]): import
 }
 
 /**
- * Valida dados de níveis para DashboardMetrics (com propriedade geral)
+ * Valida dados de niveis para DashboardMetrics (com propriedade geral)
  */
 function validateNiveisMetrics(data: any, _errors: string[], warnings: string[]): NiveisMetrics {
   const defaultLevel: import('../types/api').LevelMetrics = {
@@ -262,7 +262,7 @@ function validateNiveisMetrics(data: any, _errors: string[], warnings: string[])
   };
 
   if (!data || typeof data !== 'object') {
-    warnings.push('Dados de níveis inválidos, usando valores padrão');
+    warnings.push('Dados de niveis invalidos, usando valores padrao');
     return defaultNiveis;
   }
 
@@ -276,7 +276,7 @@ function validateNiveisMetrics(data: any, _errors: string[], warnings: string[])
 }
 
 /**
- * Valida dados de tendências
+ * Valida dados de tendencias
  */
 function validateTrends(data: any, _errors: string[], warnings: string[]): DashboardMetrics['tendencias'] {
   const defaultTrends = {
@@ -287,7 +287,7 @@ function validateTrends(data: any, _errors: string[], warnings: string[]): Dashb
   };
 
   if (!data || typeof data !== 'object') {
-    warnings.push('Dados de tendências inválidos, usando valores padrão');
+    warnings.push('Dados de tendencias invalidos, usando valores padrao');
     return defaultTrends;
   }
 
@@ -300,7 +300,7 @@ function validateTrends(data: any, _errors: string[], warnings: string[]): Dashb
 }
 
 /**
- * Executa validação completa de todos os dados
+ * Executa validacao completa de todos os dados
  */
 export function validateAllData(
   metrics: any,
@@ -325,19 +325,19 @@ export function validateAllData(
 }
 
 /**
- * Gera relatório de integridade dos dados
+ * Gera relatorio de integridade dos dados
  */
 export function generateIntegrityReport(report: DataIntegrityReport): string {
   const lines: string[] = [];
   
-  lines.push(`=== RELATÓRIO DE INTEGRIDADE DOS DADOS ===`);
+  lines.push(`=== RELAToRIO DE INTEGRIDADE DOS DADOS ===`);
   lines.push(`Timestamp: ${report.timestamp.toISOString()}`);
-  lines.push(`Status Geral: ${report.overallValid ? 'VÁLIDO' : 'INVÁLIDO'}`);
+  lines.push(`Status Geral: ${report.overallValid ? 'VaLIDO' : 'INVaLIDO'}`);
   lines.push('');
   
-  // Métricas
-  lines.push(`MÉTRICAS:`);
-  lines.push(`  Status: ${report.metrics.isValid ? 'VÁLIDO' : 'INVÁLIDO'}`);
+  // Metricas
+  lines.push(`MeTRICAS:`);
+  lines.push(`  Status: ${report.metrics.isValid ? 'VaLIDO' : 'INVaLIDO'}`);
   if (report.metrics.errors.length > 0) {
     lines.push(`  Erros: ${report.metrics.errors.join(', ')}`);
   }
@@ -348,7 +348,7 @@ export function generateIntegrityReport(report: DataIntegrityReport): string {
   
   // Status do Sistema
   lines.push(`STATUS DO SISTEMA:`);
-  lines.push(`  Status: ${report.systemStatus.isValid ? 'VÁLIDO' : 'INVÁLIDO'}`);
+  lines.push(`  Status: ${report.systemStatus.isValid ? 'VaLIDO' : 'INVaLIDO'}`);
   if (report.systemStatus.errors.length > 0) {
     lines.push(`  Erros: ${report.systemStatus.errors.join(', ')}`);
   }
@@ -357,10 +357,10 @@ export function generateIntegrityReport(report: DataIntegrityReport): string {
   }
   lines.push('');
   
-  // Ranking de Técnicos
-  lines.push(`RANKING DE TÉCNICOS:`);
-  lines.push(`  Status: ${report.technicianRanking.isValid ? 'VÁLIDO' : 'INVÁLIDO'}`);
-  lines.push(`  Técnicos válidos: ${report.technicianRanking.data.length}`);
+  // Ranking de Tecnicos
+  lines.push(`RANKING DE TeCNICOS:`);
+  lines.push(`  Status: ${report.technicianRanking.isValid ? 'VaLIDO' : 'INVaLIDO'}`);
+  lines.push(`  Tecnicos validos: ${report.technicianRanking.data.length}`);
   if (report.technicianRanking.errors.length > 0) {
     lines.push(`  Erros: ${report.technicianRanking.errors.join(', ')}`);
   }

@@ -1,0 +1,16 @@
+{
+  "timestamp": "2025-08-14T21:40:16.727905",
+  "summary": {
+    "total_tests": 9,
+    "passed": 9,
+    "failed": 0,
+    "warnings": 0,
+    "skipped": 0
+  },
+  "total_execution_time": 0.16735553741455078,
+  "categories": {
+    "regression": [],
+    "integrity": [
+      {
+        "name": "data_integrity_consistency",
+        "status": 

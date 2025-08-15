@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 import pytest
 import time
 from unittest.mock import Mock, patch, MagicMock
@@ -10,8 +10,8 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from services.glpi_service import GLPIService
-from config.settings import active_config
+from app.services.glpi_service import GLPIService
+from app.core.config import active_config
 
 
 class TestGLPIService:
@@ -20,39 +20,39 @@ class TestGLPIService:
     @pytest.fixture
     def glpi_service(self):
         """Fixture que cria uma instância do GLPIService para testes"""
-        with patch('backend.services.glpi_service.active_config') as mock_config:
-            mock_config.GLPI_URL = "https://test-glpi.com/apirest.php"
-            mock_config.GLPI_APP_TOKEN = "test_app_token"
-            mock_config.GLPI_USER_TOKEN = "test_user_token"
-            service = GLPIService()
-            service.field_ids = {
-                "STATUS": "12",
-                "GROUP": "8",
-                "TECHNICIAN": "5"
+        return GLPIService(
+            glpi_url="http://test.glpi.com/apirest.php",
+            app_token="test_app_token",
+            user_token="test_user_token",
+            config={
+                'GLPI_URL': 'http://test.glpi.com/apirest.php',
+                'GLPI_APP_TOKEN': 'test_app_token',
+                'GLPI_USER_TOKEN': 'test_user_token',
+                'API_TIMEOUT': 30
             }
-            return service
+        )
     
     @pytest.fixture
     def mock_response(self):
         """Fixture que cria um mock de resposta HTTP"""
-        response = Mock()
-        response.ok = True
-        response.status_code = 200
-        response.json.return_value = {"session_token": "test_session_token"}
-        return response
+        mock = Mock()
+        mock.status_code = 200
+        mock.ok = True
+        mock.json.return_value = {"session_token": "test_session_token"}
+        return mock
     
     @pytest.fixture
     def mock_authenticated_service(self, glpi_service):
         """Fixture que cria um serviço já autenticado"""
         glpi_service.session_token = "test_session_token"
-        glpi_service.token_created_at = time.time()
+        glpi_service.token_expires_at = datetime.now() + timedelta(hours=1)
         return glpi_service
 
 
 class TestGetTicketCount:
     """Testes para o método get_ticket_count"""
     
-    @patch('services.glpi_service.requests')
+    @patch('app.services.glpi_service.requests')
     def test_get_ticket_count_success(self, mock_requests, mock_authenticated_service):
         """Testa contagem de tickets com sucesso"""
         # Mock da resposta da API
@@ -69,7 +69,7 @@ class TestGetTicketCount:
         result = mock_authenticated_service.get_ticket_count(89, 1)
         assert result == 42
     
-    @patch('services.glpi_service.requests')
+    @patch('app.services.glpi_service.requests')
     def test_get_ticket_count_with_date_filter(self, mock_requests, mock_authenticated_service):
         """Testa contagem de tickets com filtro de data"""
         # Mock da resposta da API
@@ -83,49 +83,49 @@ class TestGetTicketCount:
         mock_authenticated_service._make_authenticated_request = Mock(return_value=mock_response)
         mock_authenticated_service.field_ids = {"GROUP": "8", "STATUS": "12"}
         
+        # Testa com filtro de data
+        start_date = "2024-01-01"
+        end_date = "2024-01-31"
         result = mock_authenticated_service.get_ticket_count(
-            group_id=89, 
-            status_id=1, 
-            start_date="2024-01-01", 
-            end_date="2024-01-31"
+            89, 1, start_date=start_date, end_date=end_date
         )
         
         assert result == 15
+        
+        # Verifica se o filtro de data foi aplicado na chamada
+        call_args = mock_authenticated_service._make_authenticated_request.call_args
+        assert "searchText[date]" in call_args[1]['params']
     
     def test_get_ticket_count_no_field_ids(self, mock_authenticated_service):
-        """Testa quando não consegue descobrir field IDs"""
-        # Simula field_ids vazios e falha na descoberta
-        mock_authenticated_service.field_ids = {}
-        mock_authenticated_service.discover_field_ids = Mock(return_value=False)
+        """Testa comportamento quando field_ids náo está disponível"""
+        mock_authenticated_service.field_ids = None
         
-        result = mock_authenticated_service.get_ticket_count(group_id=89, status_id=1)
-        
-        assert result == 0  # Agora retorna 0 em vez de None para fallback gracioso
-        mock_authenticated_service.discover_field_ids.assert_called_once()
+        with patch.object(mock_authenticated_service.logger, 'error') as mock_logger:
+            result = mock_authenticated_service.get_ticket_count(89, 1)
+            
+            assert result == 0
+            mock_logger.assert_called_with(
+                "Field IDs náo disponíveis. Execute get_field_ids() primeiro."
+            )
     
     def test_get_ticket_count_request_failure(self, mock_authenticated_service):
-        """Testa falha na requisição"""
-        # Mock falha na requisição
+        """Testa falha na requisiçáo"""
         mock_authenticated_service._make_authenticated_request = Mock(return_value=None)
         mock_authenticated_service.field_ids = {"GROUP": "8", "STATUS": "12"}
         
-        result = mock_authenticated_service.get_ticket_count(group_id=89, status_id=1)
-        
-        assert result == 0  # Agora retorna 0 em vez de None para fallback gracioso
+        result = mock_authenticated_service.get_ticket_count(89, 1)
+        assert result == 0
     
     def test_get_ticket_count_authentication_failure(self, mock_authenticated_service):
-        """Testa falha de autenticação"""
-        # Mock falha de autenticação
-        mock_authenticated_service._make_authenticated_request = Mock(side_effect=Exception("Authentication failed"))
+        """Testa falha de autenticaçáo"""
         mock_authenticated_service.field_ids = {"GROUP": "8", "STATUS": "12"}
+        mock_authenticated_service._make_authenticated_request = Mock(side_effect=Exception("Auth failed"))
         
-        result = mock_authenticated_service.get_ticket_count(group_id=89, status_id=1)
-        
-        assert result == 0  # Agora retorna 0 em vez de None para fallback gracioso
+        result = mock_authenticated_service.get_ticket_count(89, 1)
+        assert result == 0
     
     def test_get_ticket_count_invalid_json_response(self, mock_authenticated_service):
-        """Testa resposta sem Content-Range header"""
-        # Mock resposta sem Content-Range header
+        """Testa resposta com JSON inválido"""
         mock_response = Mock()
         mock_response.headers = {}  # Sem Content-Range
         mock_response.status_code = 200
@@ -134,341 +134,293 @@ class TestGetTicketCount:
         mock_authenticated_service._make_authenticated_request = Mock(return_value=mock_response)
         mock_authenticated_service.field_ids = {"GROUP": "8", "STATUS": "12"}
         
-        result = mock_authenticated_service.get_ticket_count(group_id=89, status_id=1)
-        
-        assert result == 0  # Retorna 0 quando não há Content-Range mas status é 200
+        with patch.object(mock_authenticated_service.logger, 'warning') as mock_logger:
+            result = mock_authenticated_service.get_ticket_count(89, 1)
+            
+            assert result == 0
+            mock_logger.assert_called_with(
+                "Header Content-Range náo encontrado na resposta da API GLPI"
+            )
 
 
 class TestGetMetricsByLevelInternal:
     """Testes para o método _get_metrics_by_level_internal"""
     
     def test_get_metrics_by_level_internal_success(self, mock_authenticated_service):
-        """Testa obtenção de métricas por nível com sucesso"""
-        # Arrange
-        service = mock_authenticated_service
+        """Testa obtençáo de métricas por nível com sucesso"""
+        # Mock do método get_ticket_count para retornar valores diferentes
+        def mock_get_ticket_count(group_id, status_id, **kwargs):
+            # Simula diferentes contagens baseadas nos parâmetros
+            if group_id == 89:  # N1
+                if status_id == 1:  # Novo
+                    return 5
+                elif status_id == 2:  # Em andamento
+                    return 3
+                elif status_id == 4:  # Pendente
+                    return 2
+                elif status_id == 5:  # Resolvido
+                    return 10
+                elif status_id == 6:  # Fechado
+                    return 8
+            elif group_id == 90:  # N2
+                if status_id == 1:
+                    return 3
+                elif status_id == 2:
+                    return 2
+                elif status_id == 4:
+                    return 1
+                elif status_id == 5:
+                    return 7
+                elif status_id == 6:
+                    return 5
+            return 0
         
-        # Mock do get_ticket_count para retornar valores diferentes para cada combinação
-        def mock_get_ticket_count(group_id, status_id, start_date=None, end_date=None):
-            # Simula contagens diferentes baseadas no grupo e status
-            counts = {
-                (89, 1): 10,  # N1, Novo
-                (89, 2): 5,   # N1, Processando (atribuído)
-                (89, 3): 3,   # N1, Processando (planejado)
-                (89, 4): 2,   # N1, Pendente
-                (89, 5): 8,   # N1, Solucionado
-                (89, 6): 12,  # N1, Fechado
-                (90, 1): 15,  # N2, Novo
-                (90, 2): 7,   # N2, Processando (atribuído)
-                (90, 3): 4,   # N2, Processando (planejado)
-                (90, 4): 3,   # N2, Pendente
-                (90, 5): 6,   # N2, Solucionado
-                (90, 6): 9,   # N2, Fechado
-                (91, 1): 8,   # N3, Novo
-                (91, 2): 4,   # N3, Processando (atribuído)
-                (91, 3): 2,   # N3, Processando (planejado)
-                (91, 4): 1,   # N3, Pendente
-                (91, 5): 5,   # N3, Solucionado
-                (91, 6): 7,   # N3, Fechado
-                (92, 1): 12,  # N4, Novo
-                (92, 2): 6,   # N4, Processando (atribuído)
-                (92, 3): 3,   # N4, Processando (planejado)
-                (92, 4): 2,   # N4, Pendente
-                (92, 5): 4,   # N4, Solucionado
-                (92, 6): 8,   # N4, Fechado
+        mock_authenticated_service.get_ticket_count = Mock(side_effect=mock_get_ticket_count)
+        
+        result = mock_authenticated_service._get_metrics_by_level_internal()
+        
+        expected = {
+            "N1": {
+                "novos": 5,
+                "em_andamento": 3,
+                "pendentes": 2,
+                "resolvidos": 10,
+                "fechados": 8,
+                "total": 28
+            },
+            "N2": {
+                "novos": 3,
+                "em_andamento": 2,
+                "pendentes": 1,
+                "resolvidos": 7,
+                "fechados": 5,
+                "total": 18
             }
-            return counts.get((group_id, status_id), 0)
+        }
         
-        with patch.object(service, 'get_ticket_count', side_effect=mock_get_ticket_count):
-            # Act
-            result = service._get_metrics_by_level_internal()
-            
-            # Assert
-            assert isinstance(result, dict)
-            assert "N1" in result
-            assert "N2" in result
-            assert "N3" in result
-            assert "N4" in result
-            
-            # Verifica estrutura dos dados para N1
-            n1_metrics = result["N1"]
-            assert n1_metrics["Novo"] == 10
-            assert n1_metrics["Processando (atribuído)"] == 5
-            assert n1_metrics["Processando (planejado)"] == 3
-            assert n1_metrics["Pendente"] == 2
-            assert n1_metrics["Solucionado"] == 8
-            assert n1_metrics["Fechado"] == 12
+        assert result == expected
     
     def test_get_metrics_by_level_internal_with_date_filter(self, mock_authenticated_service):
-        """Testa obtenção de métricas por nível com filtro de data"""
-        # Arrange
-        service = mock_authenticated_service
+        """Testa obtençáo de métricas com filtro de data"""
+        mock_authenticated_service.get_ticket_count = Mock(return_value=5)
+        
         start_date = "2024-01-01"
         end_date = "2024-01-31"
         
-        with patch.object(service, 'get_ticket_count', return_value=5) as mock_get_count:
-            # Act
-            result = service._get_metrics_by_level_internal(start_date, end_date)
-            
-            # Assert
-            assert isinstance(result, dict)
-            # Verifica se get_ticket_count foi chamado com os parâmetros de data
-            mock_get_count.assert_called()
-            # Verifica se foi chamado com argumentos posicionais corretos
-            call_args = mock_get_count.call_args_list[0]
-            assert len(call_args[0]) >= 4  # group_id, status_id, start_date, end_date
-            assert call_args[0][2] == start_date  # terceiro argumento é start_date
-            assert call_args[0][3] == end_date    # quarto argumento é end_date
+        result = mock_authenticated_service._get_metrics_by_level_internal(
+            start_date=start_date, end_date=end_date
+        )
+        
+        # Verifica se o filtro de data foi passado para get_ticket_count
+        call_args_list = mock_authenticated_service.get_ticket_count.call_args_list
+        for call_args in call_args_list:
+            assert call_args[1]['start_date'] == start_date
+            assert call_args[1]['end_date'] == end_date
     
     def test_get_metrics_by_level_internal_ticket_count_failure(self, mock_authenticated_service):
         """Testa comportamento quando get_ticket_count falha"""
-        # Arrange
-        service = mock_authenticated_service
+        mock_authenticated_service.get_ticket_count = Mock(side_effect=Exception("API Error"))
         
-        with patch.object(service, 'get_ticket_count', return_value=None):
-            # Act
-            result = service._get_metrics_by_level_internal()
+        with patch.object(mock_authenticated_service.logger, 'error') as mock_logger:
+            result = mock_authenticated_service._get_metrics_by_level_internal()
             
-            # Assert
-            assert isinstance(result, dict)
-            # Verifica se os valores são 0 quando get_ticket_count retorna None
-            for level in ["N1", "N2", "N3", "N4"]:
-                for status in service.status_map.keys():
-                    assert result[level][status] == 0
+            # Deve retornar estrutura vazia em caso de erro
+            expected = {
+                "N1": {"novos": 0, "em_andamento": 0, "pendentes": 0, "resolvidos": 0, "fechados": 0, "total": 0},
+                "N2": {"novos": 0, "em_andamento": 0, "pendentes": 0, "resolvidos": 0, "fechados": 0, "total": 0},
+                "N3": {"novos": 0, "em_andamento": 0, "pendentes": 0, "resolvidos": 0, "fechados": 0, "total": 0},
+                "N4": {"novos": 0, "em_andamento": 0, "pendentes": 0, "resolvidos": 0, "fechados": 0, "total": 0}
+            }
+            
+            assert result == expected
+            mock_logger.assert_called()
     
     def test_get_metrics_by_level_internal_partial_failure(self, mock_authenticated_service):
-        """Testa comportamento com falhas parciais"""
-        # Arrange
-        service = mock_authenticated_service
-        
-        def mock_get_ticket_count(group_id, status_id, start_date=None, end_date=None):
-            # Simula falha apenas para N2
-            if group_id == 90:  # N2
-                return None
+        """Testa comportamento com falha parcial"""
+        def mock_get_ticket_count(group_id, status_id, **kwargs):
+            if group_id == 89 and status_id == 1:  # N1 Novo
+                raise Exception("Specific error")
             return 5
         
-        with patch.object(service, 'get_ticket_count', side_effect=mock_get_ticket_count):
-            # Act
-            result = service._get_metrics_by_level_internal()
+        mock_authenticated_service.get_ticket_count = Mock(side_effect=mock_get_ticket_count)
+        
+        with patch.object(mock_authenticated_service.logger, 'error') as mock_logger:
+            result = mock_authenticated_service._get_metrics_by_level_internal()
             
-            # Assert
-            assert isinstance(result, dict)
-            # N1, N3, N4 devem ter valores 5
-            assert all(result["N1"][status] == 5 for status in service.status_map.keys())
-            assert all(result["N3"][status] == 5 for status in service.status_map.keys())
-            assert all(result["N4"][status] == 5 for status in service.status_map.keys())
-            # N2 deve ter valores 0 (falha)
-            assert all(result["N2"][status] == 0 for status in service.status_map.keys())
+            # N1 deve ter 'novos' = 0 devido ao erro, mas outros valores devem ser 5
+            assert result["N1"]["novos"] == 0
+            assert result["N1"]["em_andamento"] == 5
+            mock_logger.assert_called()
 
 
 class TestGetDashboardMetricsWithDateFilter:
     """Testes para o método get_dashboard_metrics_with_date_filter"""
     
     def test_get_dashboard_metrics_with_date_filter_success(self, mock_authenticated_service):
-        """Testa obtenção de métricas do dashboard com filtro de data - sucesso"""
-        # Arrange
-        service = mock_authenticated_service
+        """Testa obtençáo de métricas do dashboard com filtro de data"""
+        # Mock dos métodos internos
+        mock_metrics = {
+            "N1": {"novos": 5, "em_andamento": 3, "pendentes": 2, "resolvidos": 10, "fechados": 8, "total": 28},
+            "N2": {"novos": 3, "em_andamento": 2, "pendentes": 1, "resolvidos": 7, "fechados": 5, "total": 18}
+        }
+        
+        mock_authenticated_service._get_metrics_by_level_internal = Mock(return_value=mock_metrics)
+        mock_authenticated_service._calculate_trends = Mock(return_value={
+            "novos": {"valor": 8, "percentual": 5.2},
+            "pendentes": {"valor": 3, "percentual": -2.1}
+        })
+        
         start_date = "2024-01-01"
         end_date = "2024-01-31"
         
-        # Mock das métricas por nível
-        mock_level_metrics = {
-            "N1": {"Novo": 10, "Processando (atribuído)": 5, "Processando (planejado)": 3, 
-                   "Pendente": 2, "Solucionado": 8, "Fechado": 12},
-            "N2": {"Novo": 15, "Processando (atribuído)": 7, "Processando (planejado)": 4, 
-                   "Pendente": 3, "Solucionado": 6, "Fechado": 9},
-            "N3": {"Novo": 8, "Processando (atribuído)": 4, "Processando (planejado)": 2, 
-                   "Pendente": 1, "Solucionado": 5, "Fechado": 7},
-            "N4": {"Novo": 12, "Processando (atribuído)": 6, "Processando (planejado)": 3, 
-                   "Pendente": 2, "Solucionado": 4, "Fechado": 8}
-        }
+        result = mock_authenticated_service.get_dashboard_metrics_with_date_filter(
+            start_date=start_date, end_date=end_date
+        )
         
-        # Mock das métricas gerais
-        mock_general_metrics = {
-            "Novo": 50, "Processando (atribuído)": 25, "Processando (planejado)": 15,
-            "Pendente": 10, "Solucionado": 30, "Fechado": 40
-        }
-        
-        with patch.object(service, '_get_metrics_by_level_internal', return_value=mock_level_metrics):
-            with patch.object(service, '_get_general_metrics_internal', return_value=mock_general_metrics):
-                with patch.object(service, '_ensure_authenticated', return_value=True):
-                    with patch.object(service, 'discover_field_ids', return_value=True):
-                        # Act
-                        result = service.get_dashboard_metrics_with_date_filter(start_date, end_date)
-                        
-                        # Assert
-                        assert isinstance(result, dict)
-                        assert result["success"] is True
-                        assert "data" in result
-                        assert "niveis" in result["data"]
-                        assert "filtros_aplicados" in result["data"]
-                        assert result["data"]["filtros_aplicados"]["data_inicio"] == start_date
-                        assert result["data"]["filtros_aplicados"]["data_fim"] == end_date
-                        
-                        # Verifica estrutura dos níveis
-                        niveis = result["data"]["niveis"]
-                        assert "geral" in niveis
-                        assert "n1" in niveis
-                        assert "n2" in niveis
-                        assert "n3" in niveis
-                        assert "n4" in niveis
+        assert "niveis" in result
+        assert "total" in result
+        assert "novos" in result
+        assert "pendentes" in result
+        assert "resolvidos" in result
+        assert "tendencias" in result
+        assert result["success"] is True
     
     def test_get_dashboard_metrics_with_date_filter_cache_hit(self, mock_authenticated_service):
-        """Testa uso do cache quando dados estão disponíveis"""
-        # Arrange
-        service = mock_authenticated_service
+        """Testa hit no cache"""
+        # Simula dados no cache
+        cached_data = {"niveis": {}, "total": 100, "success": True}
+        mock_authenticated_service._get_cached_data = Mock(return_value=cached_data)
+        
         start_date = "2024-01-01"
         end_date = "2024-01-31"
-        cache_key = f"{start_date}_{end_date}"
         
-        cached_data = {
-            "success": True,
-            "data": {"cached": True}
-        }
+        result = mock_authenticated_service.get_dashboard_metrics_with_date_filter(
+            start_date=start_date, end_date=end_date
+        )
         
-        with patch.object(service, '_is_cache_valid', return_value=True):
-            with patch.object(service, '_get_cache_data', return_value=cached_data):
-                # Act
-                result = service.get_dashboard_metrics_with_date_filter(start_date, end_date)
-                
-                # Assert
-                assert result == cached_data
+        assert result == cached_data
+        # Verifica que os métodos internos náo foram chamados
+        assert not hasattr(mock_authenticated_service, '_get_metrics_by_level_internal') or \
+               not mock_authenticated_service._get_metrics_by_level_internal.called
     
     def test_get_dashboard_metrics_with_date_filter_authentication_failure(self, mock_authenticated_service):
-        """Testa falha de autenticação"""
-        # Mock falha de autenticação
+        """Testa falha de autenticaçáo"""
         mock_authenticated_service._ensure_authenticated = Mock(return_value=False)
         
-        result = mock_authenticated_service.get_dashboard_metrics_with_date_filter("2024-01-01", "2024-01-31")
+        result = mock_authenticated_service.get_dashboard_metrics_with_date_filter()
         
-        assert result is None
-        mock_authenticated_service._ensure_authenticated.assert_called_once()
+        assert result["success"] is False
+        assert "error" in result
     
     def test_get_dashboard_metrics_with_date_filter_field_ids_failure(self, glpi_service):
-        """Testa falha ao descobrir field IDs"""
-        # Usar glpi_service sem field_ids configurados
+        """Testa falha ao obter field_ids"""
         service = glpi_service
-        service.field_ids = {}
+        service._ensure_authenticated = Mock(return_value=True)
+        service._ensure_field_ids = Mock(return_value=False)
         
-        with patch.object(service, '_ensure_authenticated', return_value=True):
-            with patch.object(service, 'discover_field_ids', return_value=False) as mock_discover:
-                result = service.get_dashboard_metrics_with_date_filter("2024-01-01", "2024-01-31")
-                
-                assert result is None
-                mock_discover.assert_called_once()
+        with patch.object(service.logger, 'error') as mock_logger:
+            result = service.get_dashboard_metrics_with_date_filter()
+            
+            assert result["success"] is False
+            assert "error" in result
+            mock_logger.assert_called()
     
     def test_get_dashboard_metrics_with_date_filter_exception(self, mock_authenticated_service):
-        """Testa tratamento de exceções"""
-        # Mock para simular exceção durante processamento
-        mock_authenticated_service._get_general_metrics_internal = Mock(side_effect=Exception("Test error"))
+        """Testa tratamento de exceçáo geral"""
+        mock_authenticated_service._get_metrics_by_level_internal = Mock(side_effect=Exception("Test error"))
         
-        result = mock_authenticated_service.get_dashboard_metrics_with_date_filter("2024-01-01", "2024-01-31")
+        result = mock_authenticated_service.get_dashboard_metrics_with_date_filter()
         
-        # O método deve retornar None em caso de exceção
-        assert result is None
+        assert result["success"] is False
+        assert "error" in result
     
     def test_get_dashboard_metrics_with_date_filter_no_dates(self, mock_authenticated_service):
-        """Testa comportamento sem filtros de data"""
-        # Arrange
-        service = mock_authenticated_service
-        
-        mock_level_metrics = {
-            "N1": {"Novo": 5, "Processando (atribuído)": 3, "Processando (planejado)": 2, 
-                   "Pendente": 1, "Solucionado": 4, "Fechado": 6}
+        """Testa comportamento sem filtro de data"""
+        mock_metrics = {
+            "N1": {"novos": 5, "em_andamento": 3, "pendentes": 2, "resolvidos": 10, "fechados": 8, "total": 28}
         }
         
-        mock_general_metrics = {
-            "Novo": 10, "Processando (atribuído)": 8, "Processando (planejado)": 5,
-            "Pendente": 3, "Solucionado": 12, "Fechado": 15
-        }
+        mock_authenticated_service._get_metrics_by_level_internal = Mock(return_value=mock_metrics)
+        mock_authenticated_service._calculate_trends = Mock(return_value={
+            "novos": {"valor": 5, "percentual": 0.0}
+        })
         
-        with patch.object(service, '_get_metrics_by_level_internal', return_value=mock_level_metrics):
-            with patch.object(service, '_get_general_metrics_internal', return_value=mock_general_metrics):
-                with patch.object(service, '_ensure_authenticated', return_value=True):
-                    with patch.object(service, 'discover_field_ids', return_value=True):
-                        # Act
-                        result = service.get_dashboard_metrics_with_date_filter()
-                        
-                        # Assert
-                        assert isinstance(result, dict)
-                        assert result["success"] is True
+        result = mock_authenticated_service.get_dashboard_metrics_with_date_filter()
+        
+        # Verifica que foi chamado sem parâmetros de data
+        mock_authenticated_service._get_metrics_by_level_internal.assert_called_with()
+        assert result["success"] is True
     
     def test_get_dashboard_metrics_with_date_filter_cache_storage(self, mock_authenticated_service):
         """Testa armazenamento no cache"""
-        # Arrange
-        service = mock_authenticated_service
+        mock_metrics = {
+            "N1": {"novos": 5, "em_andamento": 3, "pendentes": 2, "resolvidos": 10, "fechados": 8, "total": 28}
+        }
+        
+        mock_authenticated_service._get_cached_data = Mock(return_value=None)  # Cache miss
+        mock_authenticated_service._get_metrics_by_level_internal = Mock(return_value=mock_metrics)
+        mock_authenticated_service._calculate_trends = Mock(return_value={})
+        mock_authenticated_service._store_cached_data = Mock()
+        
         start_date = "2024-01-01"
         end_date = "2024-01-31"
         
-        mock_level_metrics = {"N1": {"Novo": 5}}
-        mock_general_metrics = {"Novo": 10}
+        result = mock_authenticated_service.get_dashboard_metrics_with_date_filter(
+            start_date=start_date, end_date=end_date
+        )
         
-        with patch.object(service, '_is_cache_valid', return_value=False):
-            with patch.object(service, '_get_metrics_by_level_internal', return_value=mock_level_metrics):
-                with patch.object(service, '_get_general_metrics_internal', return_value=mock_general_metrics):
-                    with patch.object(service, '_ensure_authenticated', return_value=True):
-                        with patch.object(service, 'discover_field_ids', return_value=True):
-                            with patch.object(service, '_set_cache_data') as mock_set_cache:
-                                # Act
-                                result = service.get_dashboard_metrics_with_date_filter(start_date, end_date)
-                                
-                                # Assert
-                                assert result["success"] is True
-                                mock_set_cache.assert_called_once()
+        # Verifica que os dados foram armazenados no cache
+        mock_authenticated_service._store_cached_data.assert_called_once()
+        assert result["success"] is True
 
 
 class TestTokenManagement:
-    """Testes para gerenciamento de tokens e autenticação"""
+    """Testes para gerenciamento de tokens"""
     
     def test_token_expiration_check(self, glpi_service):
-        """Testa verificação de expiração de token"""
-        # Arrange
+        """Testa verificaçáo de expiraçáo do token"""
         service = glpi_service
         
         # Token expirado
-        service.token_created_at = time.time() - 3700  # 1 hora e 2 minutos atrás
+        service.token_expires_at = datetime.now() - timedelta(minutes=1)
         assert service._is_token_expired() is True
         
         # Token válido
-        service.token_created_at = time.time() - 1800  # 30 minutos atrás
+        service.token_expires_at = datetime.now() + timedelta(hours=1)
         assert service._is_token_expired() is False
         
-        # Sem token
-        service.token_created_at = None
+        # Token náo definido
+        service.token_expires_at = None
         assert service._is_token_expired() is True
     
     def test_ensure_authenticated_with_expired_token(self, glpi_service):
-        """Testa re-autenticação quando token está expirado"""
-        # Arrange
+        """Testa autenticaçáo com token expirado"""
         service = glpi_service
         service.session_token = "old_token"
-        service.token_created_at = time.time() - 3700  # Token expirado
+        service.token_expires_at = datetime.now() - timedelta(minutes=1)
         
         with patch.object(service, '_authenticate_with_retry', return_value=True) as mock_auth:
-            # Act
             result = service._ensure_authenticated()
             
-            # Assert
             assert result is True
             mock_auth.assert_called_once()
     
     def test_ensure_authenticated_with_valid_token(self, mock_authenticated_service):
-        """Testa que não re-autentica quando token é válido"""
-        # Simula token válido (não expirado)
-        mock_authenticated_service.token_created_at = time.time() - 1800  # 30 minutos atrás
-        mock_authenticated_service._authenticate_with_retry = Mock(return_value=True)
+        """Testa comportamento com token válido"""
+        service = mock_authenticated_service
         
-        result = mock_authenticated_service._ensure_authenticated()
-        
-        # Com token válido, deve retornar True sem chamar autenticação
-        assert result is True
-        mock_authenticated_service._authenticate_with_retry.assert_not_called()
+        with patch.object(service, '_authenticate_with_retry') as mock_auth:
+            result = service._ensure_authenticated()
+            
+            assert result is True
+            mock_auth.assert_not_called()  # Náo deve tentar autenticar novamente
 
 
 class TestErrorHandling:
     """Testes para tratamento de erros"""
     
     def test_authentication_retry_mechanism(self, glpi_service):
-        """Testa mecanismo de retry na autenticação"""
+        """Testa mecanismo de retry na autenticaçáo"""
         # Arrange
         service = glpi_service
         
@@ -482,7 +434,7 @@ class TestErrorHandling:
                 assert mock_sleep.call_count == 2  # Duas tentativas falharam
     
     def test_authentication_max_retries_exceeded(self, glpi_service):
-        """Testa falha após esgotar tentativas de autenticação"""
+        """Testa falha após esgotar tentativas de autenticaçáo"""
         # Arrange
         service = glpi_service
         
@@ -497,7 +449,7 @@ class TestErrorHandling:
                     mock_logger.assert_called()
     
     def test_missing_tokens_configuration(self, glpi_service):
-        """Testa comportamento com tokens não configurados"""
+        """Testa comportamento com tokens náo configurados"""
         # Arrange
         service = glpi_service
         service.app_token = None
@@ -510,7 +462,7 @@ class TestErrorHandling:
             # Assert
             assert result is False
             mock_logger.assert_called_with(
-                "Tokens de autenticação do GLPI (GLPI_APP_TOKEN, GLPI_USER_TOKEN) não estão configurados."
+                "Tokens de autenticaçáo do GLPI (GLPI_APP_TOKEN, GLPI_USER_TOKEN) náo estáo configurados."
             )
     
     def test_network_timeout_handling(self, glpi_service):
@@ -518,7 +470,7 @@ class TestErrorHandling:
         # Arrange
         service = glpi_service
         
-        with patch('requests.get', side_effect=requests.exceptions.Timeout("Request timeout")):
+        with patch('app.services.glpi_service.requests.post', side_effect=requests.Timeout("Timeout")):
             with patch.object(service.logger, 'error') as mock_logger:
                 # Act
                 result = service._perform_authentication()
@@ -528,11 +480,11 @@ class TestErrorHandling:
                 mock_logger.assert_called()
     
     def test_connection_error_handling(self, glpi_service):
-        """Testa tratamento de erro de conexão"""
+        """Testa tratamento de erro de conexáo"""
         # Arrange
         service = glpi_service
         
-        with patch('requests.get', side_effect=requests.exceptions.ConnectionError("Connection failed")):
+        with patch('app.services.glpi_service.requests.post', side_effect=requests.ConnectionError("Connection failed")):
             with patch.object(service.logger, 'error') as mock_logger:
                 # Act
                 result = service._perform_authentication()
@@ -543,66 +495,65 @@ class TestErrorHandling:
 
 
 class TestCacheManagement:
-    """Testes para sistema de cache"""
+    """Testes para gerenciamento de cache"""
     
     def test_cache_validity_check(self, glpi_service):
-        """Testa verificação de validade do cache"""
-        # Arrange
+        """Testa verificaçáo de validade do cache"""
         service = glpi_service
         
         # Cache válido
-        service._cache['test_key'] = {
-            'data': {'test': 'data'},
-            'timestamp': time.time(),
-            'ttl': 300
+        cache_data = {
+            "timestamp": datetime.now().isoformat(),
+            "data": {"test": "value"}
         }
-        assert service._is_cache_valid('test_key') is True
+        
+        with patch.object(service, '_get_cache_data', return_value=cache_data):
+            result = service._get_cached_data("test_key")
+            assert result == {"test": "value"}
         
         # Cache expirado
-        service._cache['expired_key'] = {
-            'data': {'test': 'data'},
-            'timestamp': time.time() - 400,  # Mais antigo que TTL
-            'ttl': 300
+        old_cache_data = {
+            "timestamp": (datetime.now() - timedelta(hours=1)).isoformat(),
+            "data": {"test": "value"}
         }
-        assert service._is_cache_valid('expired_key') is False
         
-        # Cache inexistente
-        assert service._is_cache_valid('nonexistent_key') is False
+        with patch.object(service, '_get_cache_data', return_value=old_cache_data):
+            result = service._get_cached_data("test_key", max_age_minutes=30)
+            assert result is None
     
     def test_cache_data_operations(self, glpi_service):
         """Testa operações de dados do cache"""
-        # Arrange
         service = glpi_service
-        test_data = {'test': 'value'}
+        test_data = {"metrics": {"N1": {"total": 100}}}
         
-        # Set cache
-        service._set_cache_data('test_key', test_data, ttl=600)
-        
-        # Get cache
-        retrieved_data = service._get_cache_data('test_key')
-        assert retrieved_data == test_data
-        
-        # Verify cache structure
-        cache_entry = service._cache['test_key']
-        assert cache_entry['data'] == test_data
-        assert cache_entry['ttl'] == 600
-        assert isinstance(cache_entry['timestamp'], float)
+        # Mock das operações de cache
+        with patch.object(service, '_set_cache_data') as mock_set:
+            with patch.object(service, '_get_cache_data', return_value=None) as mock_get:
+                # Testa armazenamento
+                service._store_cached_data("test_key", test_data)
+                mock_set.assert_called_once()
+                
+                # Testa recuperaçáo (cache miss)
+                result = service._get_cached_data("test_key")
+                assert result is None
+                mock_get.assert_called_once()
     
     def test_cache_sub_key_operations(self, glpi_service):
-        """Testa operações de cache com sub-chaves"""
-        # Arrange
+        """Testa operações com sub-chaves do cache"""
         service = glpi_service
-        test_data = {'nested': 'value'}
         
-        # Set cache with sub-key
-        service._set_cache_data('main_key', test_data, ttl=300, sub_key='sub_key')
+        # Testa geraçáo de chave com filtros de data
+        key1 = service._generate_cache_key("metrics", start_date="2024-01-01", end_date="2024-01-31")
+        key2 = service._generate_cache_key("metrics", start_date="2024-02-01", end_date="2024-02-28")
         
-        # Get cache with sub-key
-        retrieved_data = service._get_cache_data('main_key', 'sub_key')
-        assert retrieved_data == test_data
+        assert key1 != key2
+        assert "2024-01-01" in key1
+        assert "2024-01-31" in key1
         
-        # Check validity with sub-key
-        assert service._is_cache_valid('main_key', 'sub_key') is True
+        # Testa chave sem filtros
+        key3 = service._generate_cache_key("metrics")
+        assert key3 != key1
+        assert "metrics" in key3
 
 
 if __name__ == '__main__':

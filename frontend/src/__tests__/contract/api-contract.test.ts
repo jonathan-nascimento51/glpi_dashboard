@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
+﻿import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { httpClient } from '../../services/httpClient';
 
-// Definição dos contratos da API
+// Definicao dos contratos da API
 interface ApiContract {
   endpoint: string;
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -13,7 +13,7 @@ interface ApiContract {
   headers?: Record<string, string>;
 }
 
-// Schemas de validação usando uma implementação simples
+// Schemas de validacao usando uma implementacao simples
 const createSchema = (schema: any) => ({
   validate: (data: any) => {
     try {
@@ -101,7 +101,7 @@ const isValidEmail = (email: string): boolean => {
   return emailRegex.test(email);
 };
 
-// Definição dos contratos da API
+// Definicao dos contratos da API
 const apiContracts: ApiContract[] = [
   // Dashboard Metrics
   {
@@ -365,7 +365,7 @@ const contractHandlers = [
         {
           id: 1,
           title: 'Problema no sistema',
-          description: 'Descrição do problema',
+          description: 'Descricao do problema',
           status: 'open',
           priority: 'high',
           assigneeId: 1,
@@ -374,8 +374,8 @@ const contractHandlers = [
         },
         {
           id: 2,
-          title: 'Manutenção programada',
-          description: 'Descrição da manutenção',
+          title: 'Manutencao programada',
+          description: 'Descricao da manutencao',
           status: 'in_progress',
           priority: 'medium',
           assigneeId: 2,
@@ -397,7 +397,7 @@ const contractHandlers = [
     return res(ctx.status(201), ctx.json({
       id: 3,
       title: 'Novo ticket',
-      description: 'Descrição do novo ticket',
+      description: 'Descricao do novo ticket',
       status: 'open',
       priority: 'medium',
       assigneeId: 1,
@@ -411,7 +411,7 @@ const contractHandlers = [
     return res(ctx.status(200), ctx.json({
       id: 1,
       title: 'Ticket atualizado',
-      description: 'Descrição atualizada',
+      description: 'Descricao atualizada',
       status: 'in_progress',
       priority: 'high',
       assigneeId: 2,
@@ -430,7 +430,7 @@ const contractHandlers = [
     return res(ctx.status(200), ctx.json([
       {
         id: 1,
-        name: 'João Silva',
+        name: 'Joao Silva',
         email: 'joao@example.com',
         role: 'admin',
         isActive: true,
@@ -547,7 +547,7 @@ describe('Testes de Contrato da API', () => {
     server.close();
   });
   
-  describe('Validação de Contratos de Resposta', () => {
+  describe('Validacao de Contratos de Resposta', () => {
     apiContracts.forEach((contract) => {
       it(`deve validar o contrato para ${contract.method} ${contract.endpoint}`, async () => {
         const url = contract.endpoint.replace(':id', '1');
@@ -595,11 +595,11 @@ describe('Testes de Contrato da API', () => {
     });
   });
   
-  describe('Validação de Contratos de Requisição', () => {
-    it('deve validar dados de criação de ticket', async () => {
+  describe('Validacao de Contratos de Requisicao', () => {
+    it('deve validar dados de criacao de ticket', async () => {
       const validData = {
         title: 'Novo ticket de teste',
-        description: 'Descrição detalhada do problema',
+        description: 'Descricao detalhada do problema',
         priority: 'high',
         assigneeId: 1,
         categoryId: 2
@@ -611,7 +611,7 @@ describe('Testes de Contrato da API', () => {
       expect(response.data.priority).toBe(validData.priority);
     });
     
-    it('deve validar dados de atualização de ticket', async () => {
+    it('deve validar dados de atualizacao de ticket', async () => {
       const updateData = {
         title: 'Ticket atualizado',
         status: 'in_progress',
@@ -625,8 +625,8 @@ describe('Testes de Contrato da API', () => {
     });
   });
   
-  describe('Validação de Códigos de Erro', () => {
-    it('deve retornar 404 para recurso não encontrado', async () => {
+  describe('Validacao de Codigos de Erro', () => {
+    it('deve retornar 404 para recurso nao encontrado', async () => {
       try {
         await httpClient.get('/api/tickets/999999');
         expect.fail('Should have thrown an error');
@@ -637,7 +637,7 @@ describe('Testes de Contrato da API', () => {
       }
     });
     
-    it('deve retornar 400 para dados inválidos', async () => {
+    it('deve retornar 400 para dados invalidos', async () => {
       try {
         await httpClient.post('/api/tickets/invalid', {});
         expect.fail('Should have thrown an error');
@@ -649,7 +649,7 @@ describe('Testes de Contrato da API', () => {
       }
     });
     
-    it('deve retornar 401 para acesso não autorizado', async () => {
+    it('deve retornar 401 para acesso nao autorizado', async () => {
       try {
         await httpClient.get('/api/admin/settings');
         expect.fail('Should have thrown an error');
@@ -683,8 +683,8 @@ describe('Testes de Contrato da API', () => {
     });
   });
   
-  describe('Validação de Tipos de Dados', () => {
-    it('deve validar tipos de dados em métricas do dashboard', async () => {
+  describe('Validacao de Tipos de Dados', () => {
+    it('deve validar tipos de dados em metricas do dashboard', async () => {
       const response = await httpClient.get('/api/dashboard/metrics');
       const data = response.data;
       
@@ -724,7 +724,7 @@ describe('Testes de Contrato da API', () => {
     });
   });
   
-  describe('Validação de Enums', () => {
+  describe('Validacao de Enums', () => {
     it('deve validar valores de status de ticket', async () => {
       const response = await httpClient.get('/api/tickets');
       const tickets = response.data.data;
@@ -747,7 +747,7 @@ describe('Testes de Contrato da API', () => {
       });
     });
     
-    it('deve validar valores de role de usuário', async () => {
+    it('deve validar valores de role de usuario', async () => {
       const response = await httpClient.get('/api/users');
       const users = response.data;
       
@@ -759,8 +759,8 @@ describe('Testes de Contrato da API', () => {
     });
   });
   
-  describe('Validação de Paginação', () => {
-    it('deve validar estrutura de paginação', async () => {
+  describe('Validacao de Paginacao', () => {
+    it('deve validar estrutura de paginacao', async () => {
       const response = await httpClient.get('/api/tickets');
       const { pagination } = response.data;
       
@@ -774,22 +774,22 @@ describe('Testes de Contrato da API', () => {
       expect(pagination.total).toBeGreaterThanOrEqual(0);
       expect(pagination.totalPages).toBeGreaterThanOrEqual(0);
       
-      // Validar consistência
+      // Validar consistencia
       const expectedTotalPages = Math.ceil(pagination.total / pagination.limit);
       expect(pagination.totalPages).toBe(expectedTotalPages);
     });
   });
   
-  describe('Validação de Consistência de Dados', () => {
-    it('deve validar consistência entre métricas do dashboard', async () => {
+  describe('Validacao de Consistencia de Dados', () => {
+    it('deve validar consistencia entre metricas do dashboard', async () => {
       const response = await httpClient.get('/api/dashboard/metrics');
       const data = response.data;
       
-      // Total deve ser igual à soma de abertos e fechados
+      // Total deve ser igual a soma de abertos e fechados
       const calculatedTotal = data.openTickets + data.closedTickets;
       expect(data.totalTickets).toBeGreaterThanOrEqual(calculatedTotal);
       
-      // Verificar consistência dos tickets por status
+      // Verificar consistencia dos tickets por status
       if (data.ticketsByStatus) {
         const statusTotal = data.ticketsByStatus.open + 
                            data.ticketsByStatus.inProgress + 
@@ -798,7 +798,7 @@ describe('Testes de Contrato da API', () => {
       }
     });
     
-    it('deve validar IDs únicos em listas', async () => {
+    it('deve validar IDs unicos em listas', async () => {
       const response = await httpClient.get('/api/tickets');
       const tickets = response.data.data;
       
@@ -810,7 +810,7 @@ describe('Testes de Contrato da API', () => {
   });
 });
 
-// Função auxiliar para gerar dados válidos baseados no schema
+// Funcao auxiliar para gerar dados validos baseados no schema
 function generateValidData(schema: any): any {
   if (schema.type === 'object') {
     const data: any = {};

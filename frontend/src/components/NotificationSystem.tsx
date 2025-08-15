@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useCallback } from 'react';
+﻿import React, { useEffect, useMemo, useCallback } from 'react';
 import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from 'lucide-react';
 import { NotificationData } from '../types';
 
@@ -135,7 +135,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onRem
         <button
           onClick={handleClose}
           className="flex-shrink-0 p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors duration-200"
-          aria-label="Fechar notificação"
+          aria-label="Fechar notificacao"
         >
           <X className="w-4 h-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" />
         </button>

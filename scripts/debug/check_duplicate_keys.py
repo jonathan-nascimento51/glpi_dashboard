@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Script para verificar se há dados duplicados na API que podem causar chaves duplicadas no React
@@ -70,7 +70,7 @@ def check_technician_ranking_duplicates(data):
     """Verifica duplicatas no ranking de técnicos"""
     print("   👥 Verificando ranking de técnicos...")
     
-    # Verificar se os dados estão no formato esperado
+    # Verificar se os dados estáo no formato esperado
     if isinstance(data, dict) and 'data' in data:
         technicians = data['data']
     elif isinstance(data, list):
@@ -115,7 +115,7 @@ def check_new_tickets_duplicates(data):
     """Verifica duplicatas nos tickets novos"""
     print("   🎫 Verificando tickets novos...")
     
-    # Verificar se os dados estão no formato esperado
+    # Verificar se os dados estáo no formato esperado
     if isinstance(data, dict) and 'data' in data:
         tickets = data['data']
     elif isinstance(data, list):
@@ -186,8 +186,8 @@ def check_react_key_patterns():
         print()
 
 def main():
-    """Função principal"""
-    print("🚀 Iniciando verificação de chaves duplicadas...")
+    """Funçáo principal"""
+    print("🚀 Iniciando verificaçáo de chaves duplicadas...")
     print(f"⏰ Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
     
     try:
@@ -195,7 +195,7 @@ def main():
         check_react_key_patterns()
         
         print("\n📋 RESUMO:")
-        print("✅ Verificação concluída")
+        print("✅ Verificaçáo concluída")
         print("💡 Se foram encontradas duplicatas, elas podem estar causando o warning do React")
         print("🔧 Soluções possíveis:")
         print("   1. Garantir IDs únicos na API")
@@ -203,7 +203,7 @@ def main():
         print("   3. Usar índices como fallback: key={item.id || index}")
         
     except Exception as e:
-        print(f"❌ Erro durante a verificação: {e}")
+        print(f"❌ Erro durante a verificaçáo: {e}")
         return 1
     
     return 0

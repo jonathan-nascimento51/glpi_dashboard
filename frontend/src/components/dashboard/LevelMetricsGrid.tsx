@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+﻿import React, { useMemo } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -19,25 +19,25 @@ interface LevelMetricsGridProps {
 
 const levelConfig = {
   n1: {
-    title: "Nível N1",
+    title: "Nivel N1",
     color: "from-slate-600 to-slate-700",
     bgColor: "bg-slate-100 dark:bg-slate-800",
     textColor: "text-slate-900 dark:text-slate-100 font-bold"
   },
   n2: {
-    title: "Nível N2",
+    title: "Nivel N2",
     color: "from-slate-700 to-slate-800",
     bgColor: "bg-slate-100 dark:bg-slate-800",
     textColor: "text-slate-900 dark:text-slate-100 font-bold"
   },
   n3: {
-    title: "Nível N3",
+    title: "Nivel N3",
     color: "from-slate-500 to-slate-600",
     bgColor: "bg-slate-100 dark:bg-slate-800",
     textColor: "text-slate-900 dark:text-slate-100 font-bold"
   },
   n4: {
-    title: "Nível N4",
+    title: "Nivel N4",
     color: "from-slate-800 to-slate-900",
     bgColor: "bg-slate-100 dark:bg-slate-800",
     textColor: "text-slate-900 dark:text-slate-100 font-bold"
@@ -75,7 +75,7 @@ const statusConfig = {
   }
 }
 
-// Variantes de animação movidas para fora do componente
+// Variantes de animacao movidas para fora do componente
 const itemVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.9 },
   visible: {
@@ -240,21 +240,21 @@ export const LevelMetricsGrid = React.memo<LevelMetricsGridProps>(function Level
   metrics,
   className
 }) {
-  // Verificação de segurança para evitar erros
+  // Verificacao de seguranca para evitar erros
   if (!metrics || !metrics.niveis) {
     return (
       <Card className={cn("figma-glass-card h-full shadow-none", className)}>
         <CardContent className="flex items-center justify-center h-48">
           <div className="text-center">
             <div className="figma-body mb-2">📊</div>
-        <div className="figma-body">Carregando métricas por nível...</div>
+        <div className="figma-body">Carregando metricas por nivel...</div>
           </div>
         </CardContent>
       </Card>
     )
   }
 
-  // Memoizar as entradas dos níveis
+  // Memoizar as entradas dos niveis
   const levelEntries = useMemo(() => {
     return Object.entries(metrics.niveis || {})
   }, [metrics.niveis])

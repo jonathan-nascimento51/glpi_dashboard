@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Teste simples para verificar o tratamento de erro com fallback gracioso
 no método get_ticket_count do GLPIService.
@@ -45,12 +45,12 @@ def test_fallback_gracioso():
         assert result == 0, f"Esperado 0, obtido {result}"
         print("✓ Retornou 0 quando API retornou status 500")
     
-    # Teste 4: Exceção durante a requisição
-    print("\n4. Testando exceção durante a requisição...")
+    # Teste 4: Exceçáo durante a requisiçáo
+    print("\n4. Testando exceçáo durante a requisiçáo...")
     with patch.object(service, '_make_authenticated_request', side_effect=Exception("Erro de rede")):
         result = service.get_ticket_count(group_id=89, status_id=1)
         assert result == 0, f"Esperado 0, obtido {result}"
-        print("✓ Retornou 0 quando ocorreu exceção")
+        print("✓ Retornou 0 quando ocorreu exceçáo")
     
     # Teste 5: Sucesso com Content-Range
     print("\n5. Testando sucesso com Content-Range...")
@@ -75,7 +75,7 @@ def test_fallback_gracioso():
         print("✓ Retornou 0 quando status 200 mas sem Content-Range")
     
     print("\n🎉 Todos os testes de fallback gracioso passaram!")
-    print("\n📝 Resumo da implementação:")
+    print("\n📝 Resumo da implementaçáo:")
     print("   - Retorna 0 em vez de None em todos os casos de erro")
     print("   - Logs detalhados com timestamp incluem contexto da chamada")
     print("   - Assinatura pública do método mantida inalterada")

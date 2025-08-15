@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Debug detalhado para investigar o cálculo de tendências
@@ -7,7 +7,7 @@ Debug detalhado para investigar o cálculo de tendências
 import sys
 sys.path.append('backend')
 
-from backend.services.glpi_service import GLPIService
+from backend.app.services.glpi_service import GLPIService
 from datetime import datetime, timedelta
 import json
 
@@ -28,12 +28,12 @@ def debug_trends_calculation():
     print(f"Data fim: {end_date_previous}")
     
     try:
-        # Testar autenticação
-        print("\n=== TESTE DE AUTENTICAÇÃO ===")
+        # Testar autenticaçáo
+        print("\n=== TESTE DE AUTENTICAÇáO ===")
         if not glpi_service._ensure_authenticated():
-            print("❌ ERRO: Falha na autenticação")
+            print("❌ ERRO: Falha na autenticaçáo")
             return
-        print("✅ Autenticação bem-sucedida")
+        print("✅ Autenticaçáo bem-sucedida")
         
         # Descobrir IDs dos campos
         print("\n=== DESCOBERTA DE CAMPOS ===")
@@ -79,7 +79,7 @@ def debug_trends_calculation():
         print(f"Resolvidos: {current_resolvidos}")
         
         # Simular cálculo de tendências
-        print("\n=== SIMULAÇÃO CÁLCULO DE TENDÊNCIAS ===")
+        print("\n=== SIMULAÇáO CÁLCULO DE TENDÊNCIAS ===")
         
         def calculate_percentage_change(current: int, previous: int) -> str:
             print(f"  Calculando: atual={current}, anterior={previous}")
@@ -119,10 +119,10 @@ def debug_trends_calculation():
         # Verificar se há dados no período anterior
         total_previous = previous_novos + previous_pendentes + previous_progresso + previous_resolvidos
         if total_previous == 0:
-            print("\n⚠️  PROBLEMA IDENTIFICADO: Não há dados no período anterior!")
+            print("\n⚠️  PROBLEMA IDENTIFICADO: Náo há dados no período anterior!")
             print("Isso explica por que todas as tendências mostram +100%")
             print("\nPossíveis causas:")
-            print("1. Não há tickets criados no período de 7-14 dias atrás")
+            print("1. Náo há tickets criados no período de 7-14 dias atrás")
             print("2. Problema na consulta com filtro de data")
             print("3. Formato de data incorreto na consulta")
         else:

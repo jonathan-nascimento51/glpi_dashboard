@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+﻿import { useCallback, useEffect, useState } from 'react';
 import { 
   clearAllCaches, 
   getAllCacheStats, 
@@ -39,7 +39,7 @@ export const useCache = () => {
   const [stats, setStats] = useState<CacheStats | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Função para atualizar estatísticas
+  // Funcao para atualizar estatisticas
   const updateStats = useCallback(() => {
     const allStats = getAllCacheStats();
     // Transform stats to match CacheStats interface
@@ -72,7 +72,7 @@ export const useCache = () => {
      setStats(transformedStats);
    }, []);
 
-  // Função para limpar todos os caches
+  // Funcao para limpar todos os caches
   const clearAll = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -86,7 +86,7 @@ export const useCache = () => {
     }
   }, [updateStats]);
 
-  // Função para limpar cache específico
+  // Funcao para limpar cache especifico
   const clearSpecificCache = useCallback((cacheType: 'metrics' | 'systemStatus' | 'technicianRanking' | 'newTickets') => {
     try {
       switch (cacheType) {
@@ -110,7 +110,7 @@ export const useCache = () => {
     }
   }, [updateStats]);
 
-  // Função para forçar refresh de um cache específico
+  // Funcao para forcar refresh de um cache especifico
   const refreshCache = useCallback(async (cacheType: 'metrics' | 'systemStatus' | 'technicianRanking' | 'newTickets') => {
     try {
       switch (cacheType) {
@@ -134,7 +134,7 @@ export const useCache = () => {
     }
   }, [updateStats]);
 
-  // Função para obter informações detalhadas de um cache
+  // Funcao para obter informacoes detalhadas de um cache
   const getCacheInfo = useCallback((cacheType: 'metrics' | 'systemStatus' | 'technicianRanking' | 'newTickets') => {
     switch (cacheType) {
       case 'metrics':
@@ -150,11 +150,11 @@ export const useCache = () => {
     }
   }, []);
 
-  // Atualizar estatísticas automaticamente
+  // Atualizar estatisticas automaticamente
   useEffect(() => {
     updateStats();
     
-    // Atualizar estatísticas a cada 30 segundos
+    // Atualizar estatisticas a cada 30 segundos
     const interval = setInterval(updateStats, 30000);
     
     return () => clearInterval(interval);

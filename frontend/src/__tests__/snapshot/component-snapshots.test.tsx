@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { render } from '@testing-library/react';
 import { vi } from 'vitest';
 
@@ -36,7 +36,7 @@ vi.mock('react-chartjs-2', () => ({
   )
 }));
 
-// Mock para ícones
+// Mock para icones
 vi.mock('lucide-react', () => ({
   Calendar: () => <span data-testid="calendar-icon">📅</span>,
   Filter: () => <span data-testid="filter-icon">🔍</span>,
@@ -324,7 +324,7 @@ const MockPagination = ({
           disabled={currentPage === totalPages}
           onClick={() => onPageChange?.(currentPage + 1)}
         >
-          Próximo
+          Proximo
         </button>
       </div>
     </div>
@@ -452,40 +452,40 @@ const MockEmptyState = ({
 );
 
 describe('Testes de Snapshot de Componentes', () => {
-  describe('Botões', () => {
-    it('deve capturar snapshot do botão primário', () => {
+  describe('Botoes', () => {
+    it('deve capturar snapshot do botao primario', () => {
       const { container } = render(
-        <MockButton variant="primary">Botão Primário</MockButton>
+        <MockButton variant="primary">Botao Primario</MockButton>
       );
       expect(container.firstChild).toMatchSnapshot();
     });
     
-    it('deve capturar snapshot do botão secundário', () => {
+    it('deve capturar snapshot do botao secundario', () => {
       const { container } = render(
-        <MockButton variant="secondary">Botão Secundário</MockButton>
+        <MockButton variant="secondary">Botao Secundario</MockButton>
       );
       expect(container.firstChild).toMatchSnapshot();
     });
     
-    it('deve capturar snapshot do botão desabilitado', () => {
+    it('deve capturar snapshot do botao desabilitado', () => {
       const { container } = render(
-        <MockButton disabled>Botão Desabilitado</MockButton>
+        <MockButton disabled>Botao Desabilitado</MockButton>
       );
       expect(container.firstChild).toMatchSnapshot();
     });
     
-    it('deve capturar snapshot do botão com loading', () => {
+    it('deve capturar snapshot do botao com loading', () => {
       const { container } = render(
         <MockButton loading>Carregando...</MockButton>
       );
       expect(container.firstChild).toMatchSnapshot();
     });
     
-    it('deve capturar snapshot de botões de diferentes tamanhos', () => {
+    it('deve capturar snapshot de botoes de diferentes tamanhos', () => {
       const { container } = render(
         <div>
           <MockButton size="small">Pequeno</MockButton>
-          <MockButton size="medium">Médio</MockButton>
+          <MockButton size="medium">Medio</MockButton>
           <MockButton size="large">Grande</MockButton>
         </div>
       );
@@ -493,7 +493,7 @@ describe('Testes de Snapshot de Componentes', () => {
     });
   });
   
-  describe('Formulários', () => {
+  describe('Formularios', () => {
     it('deve capturar snapshot de input de texto', () => {
       const { container } = render(
         <MockInput 
@@ -510,7 +510,7 @@ describe('Testes de Snapshot de Componentes', () => {
         <MockInput 
           label="Email" 
           value="email-invalido" 
-          error="Email inválido"
+          error="Email invalido"
         />
       );
       expect(container.firstChild).toMatchSnapshot();
@@ -519,7 +519,7 @@ describe('Testes de Snapshot de Componentes', () => {
     it('deve capturar snapshot de select', () => {
       const options = [
         { value: 'low', label: 'Baixa' },
-        { value: 'medium', label: 'Média' },
+        { value: 'medium', label: 'Media' },
         { value: 'high', label: 'Alta' }
       ];
       
@@ -533,24 +533,24 @@ describe('Testes de Snapshot de Componentes', () => {
       expect(container.firstChild).toMatchSnapshot();
     });
     
-    it('deve capturar snapshot de formulário completo', () => {
+    it('deve capturar snapshot de formulario completo', () => {
       const { container } = render(
         <form className="form">
           <MockInput 
-            label="Título" 
-            placeholder="Digite o título" 
+            label="Titulo" 
+            placeholder="Digite o titulo" 
             required
           />
           <MockInput 
             type="textarea" 
-            label="Descrição" 
+            label="Descricao" 
             placeholder="Descreva o problema"
           />
           <MockSelect 
             label="Prioridade" 
             options={[
               { value: 'low', label: 'Baixa' },
-              { value: 'medium', label: 'Média' },
+              { value: 'medium', label: 'Media' },
               { value: 'high', label: 'Alta' }
             ]}
             required
@@ -566,16 +566,16 @@ describe('Testes de Snapshot de Componentes', () => {
   });
   
   describe('Cards', () => {
-    it('deve capturar snapshot de card básico', () => {
+    it('deve capturar snapshot de card basico', () => {
       const { container } = render(
-        <MockCard title="Título do Card">
-          <p>Conteúdo do card</p>
+        <MockCard title="Titulo do Card">
+          <p>Conteudo do card</p>
         </MockCard>
       );
       expect(container.firstChild).toMatchSnapshot();
     });
     
-    it('deve capturar snapshot de card com ações', () => {
+    it('deve capturar snapshot de card com acoes', () => {
       const actions = (
         <div>
           <MockButton size="small">Editar</MockButton>
@@ -585,11 +585,11 @@ describe('Testes de Snapshot de Componentes', () => {
       
       const { container } = render(
         <MockCard 
-          title="Card com Ações" 
-          subtitle="Subtítulo do card"
+          title="Card com Acoes" 
+          subtitle="Subtitulo do card"
           actions={actions}
         >
-          <p>Conteúdo do card com ações</p>
+          <p>Conteudo do card com acoes</p>
         </MockCard>
       );
       expect(container.firstChild).toMatchSnapshot();
@@ -598,14 +598,14 @@ describe('Testes de Snapshot de Componentes', () => {
     it('deve capturar snapshot de cards de diferentes variantes', () => {
       const { container } = render(
         <div>
-          <MockCard variant="default" title="Card Padrão">
-            <p>Conteúdo padrão</p>
+          <MockCard variant="default" title="Card Padrao">
+            <p>Conteudo padrao</p>
           </MockCard>
           <MockCard variant="success" title="Card de Sucesso">
-            <p>Operação realizada com sucesso</p>
+            <p>Operacao realizada com sucesso</p>
           </MockCard>
           <MockCard variant="warning" title="Card de Aviso">
-            <p>Atenção necessária</p>
+            <p>Atencao necessaria</p>
           </MockCard>
           <MockCard variant="error" title="Card de Erro">
             <p>Erro encontrado</p>
@@ -617,10 +617,10 @@ describe('Testes de Snapshot de Componentes', () => {
   });
   
   describe('Modais', () => {
-    it('deve capturar snapshot de modal básico', () => {
+    it('deve capturar snapshot de modal basico', () => {
       const { container } = render(
-        <MockModal title="Modal de Confirmação">
-          <p>Tem certeza que deseja realizar esta ação?</p>
+        <MockModal title="Modal de Confirmacao">
+          <p>Tem certeza que deseja realizar esta acao?</p>
           <div className="modal-actions">
             <MockButton variant="primary">Confirmar</MockButton>
             <MockButton variant="secondary">Cancelar</MockButton>
@@ -634,10 +634,10 @@ describe('Testes de Snapshot de Componentes', () => {
       const { container } = render(
         <div>
           <MockModal size="small" title="Modal Pequeno">
-            <p>Conteúdo pequeno</p>
+            <p>Conteudo pequeno</p>
           </MockModal>
           <MockModal size="large" title="Modal Grande">
-            <p>Conteúdo extenso com mais informações</p>
+            <p>Conteudo extenso com mais informacoes</p>
           </MockModal>
         </div>
       );
@@ -650,26 +650,26 @@ describe('Testes de Snapshot de Componentes', () => {
       const { container } = render(
         <div>
           <MockAlert type="success" title="Sucesso">
-            Operação realizada com sucesso!
+            Operacao realizada com sucesso!
           </MockAlert>
           <MockAlert type="error" title="Erro">
-            Ocorreu um erro ao processar a solicitação.
+            Ocorreu um erro ao processar a solicitacao.
           </MockAlert>
           <MockAlert type="warning" title="Aviso">
-            Esta ação não pode ser desfeita.
+            Esta acao nao pode ser desfeita.
           </MockAlert>
-          <MockAlert type="info" title="Informação">
-            Informação importante para o usuário.
+          <MockAlert type="info" title="Informacao">
+            Informacao importante para o usuario.
           </MockAlert>
         </div>
       );
       expect(container.firstChild).toMatchSnapshot();
     });
     
-    it('deve capturar snapshot de alerta dismissível', () => {
+    it('deve capturar snapshot de alerta dismissivel', () => {
       const { container } = render(
         <MockAlert type="info" dismissible>
-          Este alerta pode ser fechado pelo usuário.
+          Este alerta pode ser fechado pelo usuario.
         </MockAlert>
       );
       expect(container.firstChild).toMatchSnapshot();
@@ -682,7 +682,7 @@ describe('Testes de Snapshot de Componentes', () => {
         { key: 'id', label: 'ID', sortable: true },
         { key: 'name', label: 'Nome', sortable: true },
         { key: 'status', label: 'Status' },
-        { key: 'actions', label: 'Ações' }
+        { key: 'actions', label: 'Acoes' }
       ];
       
       const data = [
@@ -726,8 +726,8 @@ describe('Testes de Snapshot de Componentes', () => {
     });
   });
   
-  describe('Paginação', () => {
-    it('deve capturar snapshot de paginação', () => {
+  describe('Paginacao', () => {
+    it('deve capturar snapshot de paginacao', () => {
       const { container } = render(
         <MockPagination 
           currentPage={3}
@@ -739,7 +739,7 @@ describe('Testes de Snapshot de Componentes', () => {
       expect(container.firstChild).toMatchSnapshot();
     });
     
-    it('deve capturar snapshot de paginação na primeira página', () => {
+    it('deve capturar snapshot de paginacao na primeira pagina', () => {
       const { container } = render(
         <MockPagination 
           currentPage={1}
@@ -751,7 +751,7 @@ describe('Testes de Snapshot de Componentes', () => {
       expect(container.firstChild).toMatchSnapshot();
     });
     
-    it('deve capturar snapshot de paginação na última página', () => {
+    it('deve capturar snapshot de paginacao na ultima pagina', () => {
       const { container } = render(
         <MockPagination 
           currentPage={5}
@@ -764,7 +764,7 @@ describe('Testes de Snapshot de Componentes', () => {
     });
   });
   
-  describe('Navegação', () => {
+  describe('Navegacao', () => {
     it('deve capturar snapshot de breadcrumb', () => {
       const items = [
         { label: 'Home', href: '/' },
@@ -780,9 +780,9 @@ describe('Testes de Snapshot de Componentes', () => {
     
     it('deve capturar snapshot de tabs', () => {
       const tabs = [
-        { label: 'Geral', content: <div>Conteúdo geral</div> },
-        { label: 'Configurações', content: <div>Conteúdo de configurações</div> },
-        { label: 'Avançado', content: <div>Conteúdo avançado</div> }
+        { label: 'Geral', content: <div>Conteudo geral</div> },
+        { label: 'Configuracoes', content: <div>Conteudo de configuracoes</div> },
+        { label: 'Avancado', content: <div>Conteudo avancado</div> }
       ];
       
       const { container } = render(
@@ -807,7 +807,7 @@ describe('Testes de Snapshot de Componentes', () => {
     
     it('deve capturar snapshot de tooltip', () => {
       const { container } = render(
-        <MockTooltip content="Informação adicional" position="top">
+        <MockTooltip content="Informacao adicional" position="top">
           <span>Hover para ver tooltip</span>
         </MockTooltip>
       );
@@ -858,7 +858,7 @@ describe('Testes de Snapshot de Componentes', () => {
         <MockEmptyState 
           icon={<span>📋</span>}
           title="Nenhum ticket encontrado"
-          description="Não há tickets para exibir no momento."
+          description="Nao ha tickets para exibir no momento."
           action={<MockButton variant="primary">Criar Ticket</MockButton>}
         />
       );
@@ -902,7 +902,7 @@ describe('Testes de Snapshot de Componentes', () => {
                 <div className="metric-change negative">-5%</div>
               </MockCard>
               
-              <MockCard title="Tempo Médio">
+              <MockCard title="Tempo Medio">
                 <div className="metric-value">2.5h</div>
                 <div className="metric-change neutral">0%</div>
               </MockCard>
@@ -961,7 +961,7 @@ describe('Testes de Snapshot de Componentes', () => {
               </MockCard>
               
               <MockCard title="Ticket #002">
-                <p>Solicitação de novo usuário</p>
+                <p>Solicitacao de novo usuario</p>
                 <div className="ticket-meta">
                   <MockBadge variant="info">Baixa</MockBadge>
                   <MockBadge variant="success">Fechado</MockBadge>

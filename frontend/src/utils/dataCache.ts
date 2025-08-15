@@ -1,6 +1,6 @@
-/**
+﻿/**
  * Sistema de cache inteligente para dados do dashboard
- * Implementa estratégias de cache com validação de integridade
+ * Implementa estrategias de cache com validacao de integridade
  */
 
 import { SystemStatus, TechnicianRanking } from '../types';
@@ -31,7 +31,7 @@ class DataCacheManager {
   private readonly MAX_STALE_DURATION = 600000; // 10 minutos
 
   /**
-   * Armazena dados no cache com validação
+   * Armazena dados no cache com validacao
    */
   set(
     metrics: DashboardMetrics,
@@ -80,7 +80,7 @@ class DataCacheManager {
   }
 
   /**
-   * Recupera dados do cache se ainda válidos
+   * Recupera dados do cache se ainda validos
    */
   get(): {
     metrics: DashboardMetrics | null;
@@ -92,7 +92,7 @@ class DataCacheManager {
   } {
     const now = Date.now();
     
-    // Verificar se há dados no cache
+    // Verificar se ha dados no cache
     if (!this.cache.metrics || !this.cache.systemStatus || !this.cache.technicianRanking) {
       return {
         metrics: null,
@@ -147,7 +147,7 @@ class DataCacheManager {
   }
 
   /**
-   * Verifica se o cache está válido e fresco
+   * Verifica se o cache esta valido e fresco
    */
   isFresh(): boolean {
     if (!this.cache.metrics) return false;
@@ -157,7 +157,7 @@ class DataCacheManager {
   }
 
   /**
-   * Verifica se o cache existe mas está obsoleto
+   * Verifica se o cache existe mas esta obsoleto
    */
   isStale(): boolean {
     if (!this.cache.metrics) return false;
@@ -179,7 +179,7 @@ class DataCacheManager {
   }
 
   /**
-   * Obtém informações sobre o estado do cache
+   * Obtem informacoes sobre o estado do cache
    */
   getInfo(): {
     hasData: boolean;
@@ -221,7 +221,7 @@ class DataCacheManager {
   }
 
   /**
-   * Força uma atualização do cache invalidando os dados atuais
+   * Forca uma atualizacao do cache invalidando os dados atuais
    */
   invalidate(): void {
     if (this.cache.metrics) {
@@ -234,8 +234,8 @@ class DataCacheManager {
   }
 
   /**
-   * Estratégia inteligente de recuperação de dados
-   * Retorna dados do cache se disponíveis, senão busca novos dados
+   * Estrategia inteligente de recuperacao de dados
+   * Retorna dados do cache se disponiveis, senao busca novos dados
    */
   async getOrFetch(
     fetchFunction: () => Promise<{
@@ -267,7 +267,7 @@ class DataCacheManager {
     
     // Se temos dados obsoletos, usar enquanto busca novos em background
     if (cached.cacheStatus === 'stale' && cached.metrics && cached.validationReport) {
-      // Buscar novos dados em background (não aguardar)
+      // Buscar novos dados em background (nao aguardar)
       fetchFunction().then(newData => {
         this.set(newData.metrics, newData.systemStatus, newData.technicianRanking);
       }).catch(error => {
@@ -303,10 +303,10 @@ class DataCacheManager {
   }
 }
 
-// Instância singleton do gerenciador de cache
+// Instancia singleton do gerenciador de cache
 export const dataCacheManager = new DataCacheManager();
 
-// Utilitários para debugging
+// Utilitarios para debugging
 export const debugCache = {
   info: () => dataCacheManager.getInfo(),
   clear: () => dataCacheManager.clear(),

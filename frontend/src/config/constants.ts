@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   AppConfig,
   CacheConfig,
   Theme,
@@ -7,12 +7,12 @@ import type {
 } from '../types/api';
 
 /**
- * Constantes e configurações da aplicação
+ * Constantes e configuracoes da aplicacao
  */
 
-// Configuração da API
+// Configuracao da API
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api',
   TIMEOUT: 30000, // 30 segundos
   RETRY_ATTEMPTS: 3,
   RETRY_DELAY: 1000, // 1 segundo
@@ -25,7 +25,7 @@ export const API_CONFIG = {
   }
 } as const;
 
-// Configuração de cache
+// Configuracao de cache
 export const CACHE_CONFIG: CacheConfig = {
   enabled: true,
   ttl: 300000, // 5 minutos
@@ -33,7 +33,7 @@ export const CACHE_CONFIG: CacheConfig = {
   strategy: 'lru'
 };
 
-// Configuração padrão da aplicação
+// Configuracao padrao da aplicacao
 export const DEFAULT_APP_CONFIG: AppConfig = {
   theme: 'light',
   language: 'pt-BR',
@@ -46,7 +46,7 @@ export const DEFAULT_APP_CONFIG: AppConfig = {
   timezone: 'America/Sao_Paulo'
 };
 
-// Preferências padrão do usuário
+// Preferencias padrao do usuario
 export const DEFAULT_USER_PREFERENCES: UserPreferences = {
   theme: 'light',
   language: 'pt-BR',
@@ -71,7 +71,7 @@ export const DEFAULT_USER_PREFERENCES: UserPreferences = {
   }
 };
 
-// Temas disponíveis
+// Temas disponiveis
 export const THEMES: Record<string, Theme> = {
   light: {
     name: 'light',
@@ -156,7 +156,7 @@ export const THEMES: Record<string, Theme> = {
   }
 };
 
-// Opções de status
+// Opcoes de status
 export const STATUS_OPTIONS = [
   { value: '', label: 'Todos' },
   { value: 'aberto', label: 'Aberto' },
@@ -165,25 +165,25 @@ export const STATUS_OPTIONS = [
   { value: 'atrasado', label: 'Atrasado' }
 ] as const;
 
-// Opções de prioridade
+// Opcoes de prioridade
 export const PRIORITY_OPTIONS = [
   { value: '', label: 'Todas' },
   { value: 'baixa', label: 'Baixa' },
-  { value: 'media', label: 'Média' },
+  { value: 'media', label: 'Media' },
   { value: 'alta', label: 'Alta' },
-  { value: 'critica', label: 'Crítica' }
+  { value: 'critica', label: 'Critica' }
 ] as const;
 
-// Opções de nível
+// Opcoes de nivel
 export const LEVEL_OPTIONS = [
   { value: '', label: 'Todos' },
-  { value: 'N1', label: 'Nível 1' },
-  { value: 'N2', label: 'Nível 2' },
-  { value: 'N3', label: 'Nível 3' },
-  { value: 'N4', label: 'Nível 4' }
+  { value: 'N1', label: 'Nivel 1' },
+  { value: 'N2', label: 'Nivel 2' },
+  { value: 'N3', label: 'Nivel 3' },
+  { value: 'N4', label: 'Nivel 4' }
 ] as const;
 
-// Configurações de exportação
+// Configuracoes de exportacao
 export const EXPORT_OPTIONS: ExportOptions = {
   format: 'pdf',
   includeFilters: true,
@@ -191,7 +191,7 @@ export const EXPORT_OPTIONS: ExportOptions = {
   filename: 'dashboard-export'
 };
 
-// Configurações de performance
+// Configuracoes de performance
 export const PERFORMANCE_CONFIG = {
   SLOW_REQUEST_THRESHOLD: 2000, // 2 segundos
   CACHE_HIT_RATE_THRESHOLD: 0.8, // 80%
@@ -200,7 +200,7 @@ export const PERFORMANCE_CONFIG = {
   MONITORING_INTERVAL: 10000 // 10 segundos
 } as const;
 
-// Configurações de notificação
+// Configuracoes de notificacao
 export const NOTIFICATION_CONFIG = {
   DEFAULT_DURATION: 5000, // 5 segundos
   MAX_NOTIFICATIONS: 5,
@@ -213,7 +213,7 @@ export const NOTIFICATION_CONFIG = {
   }
 } as const;
 
-// Configurações de validação
+// Configuracoes de validacao
 export const VALIDATION_CONFIG = {
   MAX_DATE_RANGE_DAYS: 365, // 1 ano
   MIN_REFRESH_INTERVAL: 5000, // 5 segundos
@@ -222,20 +222,20 @@ export const VALIDATION_CONFIG = {
   REQUIRED_FIELDS: ['startDate', 'endDate']
 } as const;
 
-// Mensagens de erro padrão
+// Mensagens de erro padrao
 export const ERROR_MESSAGES = {
-  NETWORK_ERROR: 'Erro de conexão com o servidor',
-  TIMEOUT_ERROR: 'Tempo limite de requisição excedido',
-  VALIDATION_ERROR: 'Dados inválidos fornecidos',
-  PERMISSION_ERROR: 'Permissão negada',
-  NOT_FOUND_ERROR: 'Recurso não encontrado',
+  NETWORK_ERROR: 'Erro de conexao com o servidor',
+  TIMEOUT_ERROR: 'Tempo limite de requisicao excedido',
+  VALIDATION_ERROR: 'Dados invalidos fornecidos',
+  PERMISSION_ERROR: 'Permissao negada',
+  NOT_FOUND_ERROR: 'Recurso nao encontrado',
   SERVER_ERROR: 'Erro interno do servidor',
   UNKNOWN_ERROR: 'Erro desconhecido',
   CACHE_ERROR: 'Erro no sistema de cache',
   PARSE_ERROR: 'Erro ao processar dados'
 } as const;
 
-// Configurações de debug
+// Configuracoes de debug
 export const DEBUG_CONFIG = {
   ENABLED: import.meta.env.DEV,
   LOG_LEVEL: import.meta.env.VITE_LOG_LEVEL || 'info',
@@ -244,7 +244,7 @@ export const DEBUG_CONFIG = {
   SHOW_CACHE_HITS: import.meta.env.VITE_SHOW_CACHE_HITS === 'true'
 } as const;
 
-// Configurações de layout
+// Configuracoes de layout
 export const LAYOUT_CONFIG = {
   SIDEBAR_WIDTH: 280,
   HEADER_HEIGHT: 64,
@@ -264,7 +264,7 @@ export const BREAKPOINTS = {
   '2xl': 1536
 } as const;
 
-// Configurações de gráficos
+// Configuracoes de graficos
 export const CHART_CONFIG = {
   DEFAULT_HEIGHT: 300,
   DEFAULT_COLORS: [
@@ -283,14 +283,14 @@ export const CHART_CONFIG = {
   GRID_ENABLED: true
 } as const;
 
-// Configurações de paginação
+// Configuracoes de paginacao
 export const PAGINATION_CONFIG = {
   DEFAULT_PAGE_SIZE: 20,
   PAGE_SIZE_OPTIONS: [10, 20, 50, 100],
   MAX_VISIBLE_PAGES: 5
 } as const;
 
-// Configurações de busca
+// Configuracoes de busca
 export const SEARCH_CONFIG = {
   MIN_SEARCH_LENGTH: 2,
   DEBOUNCE_DELAY: 300,

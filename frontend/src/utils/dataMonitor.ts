@@ -1,6 +1,6 @@
-/**
- * Sistema de monitoramento em tempo real para detectar inconsistências
- * Implementa verificações contínuas e alertas automáticos
+﻿/**
+ * Sistema de monitoramento em tempo real para detectar inconsistencias
+ * Implementa verificacoes continuas e alertas automaticos
  */
 
 import { SystemStatus, TechnicianRanking } from '../types';
@@ -55,14 +55,14 @@ class DataMonitor {
     this.rules = [
       {
         id: 'data-freshness',
-        name: 'Atualização dos Dados',
-        description: 'Verifica se os dados estão sendo atualizados regularmente',
+        name: 'Atualizacao dos Dados',
+        description: 'Verifica se os dados estao sendo atualizados regularmente',
         severity: 'high',
         check: ({ validationReport }) => {
           if (!validationReport || !validationReport.timestamp) {
             return {
               passed: false,
-              message: 'Relatório de validação não disponível',
+              message: 'Relatorio de validacao nao disponivel',
               details: { validationReport: !!validationReport }
             };
           }
@@ -75,7 +75,7 @@ class DataMonitor {
           return {
             passed: age <= maxAge,
             message: age > maxAge ? 
-              `Dados não atualizados há ${Math.round(age / 60000)} minutos` : 
+              `Dados nao atualizados ha ${Math.round(age / 60000)} minutos` : 
               undefined,
             details: { age, maxAge, lastUpdate }
           };
@@ -84,14 +84,14 @@ class DataMonitor {
       
       {
         id: 'metrics-consistency',
-        name: 'Consistência das Métricas',
-        description: 'Verifica se as métricas estão consistentes entre si',
+        name: 'Consistencia das Metricas',
+        description: 'Verifica se as metricas estao consistentes entre si',
         severity: 'critical',
         check: ({ metrics }) => {
           if (!metrics || !metrics.niveis || !metrics.niveis.geral) {
             return {
               passed: false,
-              message: 'Dados de métricas não disponíveis para verificação de consistência',
+              message: 'Dados de metricas nao disponiveis para verificacao de consistencia',
               details: { metrics }
             };
           }
@@ -99,19 +99,19 @@ class DataMonitor {
           const total = (metrics.niveis.geral.novos || 0) + (metrics.niveis.geral.pendentes || 0) +
                    (metrics.niveis.geral.progresso || 0) + (metrics.niveis.geral.resolvidos || 0);
           
-          // Verificar se o total geral bate com a soma dos níveis
+          // Verificar se o total geral bate com a soma dos niveis
           let levelTotal = 0;
           Object.values(metrics.niveis).forEach(level => {
               levelTotal += (level.novos || 0) + (level.pendentes || 0) + (level.progresso || 0) + (level.resolvidos || 0);
             });
           
           const discrepancy = Math.abs(total - levelTotal);
-          const tolerance = Math.max(1, total * 0.05); // 5% de tolerância
+          const tolerance = Math.max(1, total * 0.05); // 5% de tolerancia
           
           return {
             passed: discrepancy <= tolerance,
             message: discrepancy > tolerance ? 
-              `Inconsistência nas métricas: total geral (${total}) vs soma dos níveis (${levelTotal})` : 
+              `Inconsistencia nas metricas: total geral (${total}) vs soma dos niveis (${levelTotal})` : 
               undefined,
             details: { total, levelTotal, discrepancy, tolerance }
           };
@@ -121,13 +121,13 @@ class DataMonitor {
       {
         id: 'system-connectivity',
         name: 'Conectividade do Sistema',
-        description: 'Verifica se o sistema está respondendo adequadamente',
+        description: 'Verifica se o sistema esta respondendo adequadamente',
         severity: 'critical',
         check: ({ systemStatus }) => {
           if (!systemStatus) {
             return {
               passed: false,
-              message: 'Status do sistema não disponível',
+              message: 'Status do sistema nao disponivel',
               details: { systemStatus }
             };
           }
@@ -146,37 +146,37 @@ class DataMonitor {
       
       {
         id: 'technician-data-integrity',
-        name: 'Integridade dos Dados de Técnicos',
-        description: 'Verifica se os dados dos técnicos estão íntegros',
+        name: 'Integridade dos Dados de Tecnicos',
+        description: 'Verifica se os dados dos tecnicos estao integros',
         severity: 'medium',
         check: ({ technicianRanking, metrics }) => {
           if (!technicianRanking || !Array.isArray(technicianRanking) || !metrics || !metrics.niveis || !metrics.niveis.geral) {
             return {
               passed: false,
-              message: 'Dados de técnicos ou métricas não disponíveis',
+              message: 'Dados de tecnicos ou metricas nao disponiveis',
               details: { technicianRanking, metrics }
             };
           }
           
-          // Verificar se há técnicos duplicados
+          // Verificar se ha tecnicos duplicados
           const technicianIds = technicianRanking.map(t => t?.id).filter(Boolean);
           const uniqueIds = new Set(technicianIds);
           const hasDuplicates = technicianIds.length !== uniqueIds.size;
           
-          // Verificar se o total de tickets dos técnicos é razoável
+          // Verificar se o total de tickets dos tecnicos e razoavel
           const totalTechnicianTickets = technicianRanking.reduce((sum, t) => sum + (t?.total || 0), 0);
           const totalSystemTickets = (metrics.niveis.geral.novos || 0) + (metrics.niveis.geral.pendentes || 0) +
                                    (metrics.niveis.geral.progresso || 0) + (metrics.niveis.geral.resolvidos || 0);
           
           const ratio = totalSystemTickets > 0 ? totalTechnicianTickets / totalSystemTickets : 0;
-          const isReasonableRatio = ratio <= 2.0; // Máximo 200% (considerando tickets históricos)
+          const isReasonableRatio = ratio <= 2.0; // Maximo 200% (considerando tickets historicos)
           
           return {
             passed: !hasDuplicates && isReasonableRatio,
             message: hasDuplicates ? 
-              'Técnicos duplicados encontrados' : 
+              'Tecnicos duplicados encontrados' : 
               !isReasonableRatio ? 
-                `Proporção de tickets suspeita: ${(ratio * 100).toFixed(1)}%` : 
+                `Proporcao de tickets suspeita: ${(ratio * 100).toFixed(1)}%` : 
                 undefined,
             details: { 
               hasDuplicates, 
@@ -191,7 +191,7 @@ class DataMonitor {
       {
         id: 'cache-performance',
         name: 'Performance do Cache',
-        description: 'Monitora a eficiência do sistema de cache',
+        description: 'Monitora a eficiencia do sistema de cache',
         severity: 'low',
         check: () => {
           const cacheInfo = dataCacheManager.getInfo();
@@ -200,7 +200,7 @@ class DataMonitor {
           return {
             passed: isEfficient,
             message: !isEfficient ? 
-              'Cache não está sendo utilizado eficientemente' : 
+              'Cache nao esta sendo utilizado eficientemente' : 
               undefined,
             details: cacheInfo
           };
@@ -209,14 +209,14 @@ class DataMonitor {
       
       {
         id: 'validation-errors',
-        name: 'Erros de Validação',
-        description: 'Monitora erros críticos de validação de dados',
+        name: 'Erros de Validacao',
+        description: 'Monitora erros criticos de validacao de dados',
         severity: 'high',
         check: ({ validationReport }) => {
           if (!validationReport || !validationReport.metrics || !validationReport.systemStatus || !validationReport.technicianRanking) {
             return {
               passed: false,
-              message: 'Relatório de validação não disponível',
+              message: 'Relatorio de validacao nao disponivel',
               details: { validationReport }
             };
           }
@@ -228,7 +228,7 @@ class DataMonitor {
           return {
             passed: totalErrors === 0,
             message: totalErrors > 0 ? 
-              `${totalErrors} erros de validação encontrados` : 
+              `${totalErrors} erros de validacao encontrados` : 
               undefined,
             details: {
               metricsErrors: validationReport.metrics.errors || [],
@@ -262,7 +262,7 @@ class DataMonitor {
             ruleId: rule.id,
             ruleName: rule.name,
             severity: rule.severity,
-            message: result.message || 'Verificação falhou',
+            message: result.message || 'Verificacao falhou',
             details: result.details,
             timestamp: new Date(),
             acknowledged: false
@@ -275,10 +275,10 @@ class DataMonitor {
       }
     });
     
-    // Adicionar novos alertas à lista
+    // Adicionar novos alertas a lista
     this.alerts.push(...newAlerts);
     
-    // Limitar o número de alertas (manter apenas os últimos 100)
+    // Limitar o numero de alertas (manter apenas os ultimos 100)
     if (this.alerts.length > 100) {
       this.alerts = this.alerts.slice(-100);
     }
@@ -290,11 +290,11 @@ class DataMonitor {
   }
 
   /**
-   * Inicia o monitoramento contínuo
+   * Inicia o monitoramento continuo
    */
   startMonitoring(intervalMs: number = 30000): void {
     if (this.isMonitoring) {
-      console.warn('Monitoramento já está ativo');
+      console.warn('Monitoramento ja esta ativo');
       return;
     }
     
@@ -325,7 +325,7 @@ class DataMonitor {
   }
 
   /**
-   * Para o monitoramento contínuo
+   * Para o monitoramento continuo
    */
   stopMonitoring(): void {
     if (this.monitoringInterval) {
@@ -338,21 +338,21 @@ class DataMonitor {
   }
 
   /**
-   * Obtém todos os alertas
+   * Obtem todos os alertas
    */
   getAlerts(): MonitoringAlert[] {
     return [...this.alerts];
   }
 
   /**
-   * Obtém alertas por severidade
+   * Obtem alertas por severidade
    */
   getAlertsBySeverity(severity: 'low' | 'medium' | 'high' | 'critical'): MonitoringAlert[] {
     return this.alerts.filter(alert => alert.severity === severity);
   }
 
   /**
-   * Obtém alertas não reconhecidos
+   * Obtem alertas nao reconhecidos
    */
   getUnacknowledgedAlerts(): MonitoringAlert[] {
     return this.alerts.filter(alert => !alert.acknowledged);
@@ -388,7 +388,7 @@ class DataMonitor {
   }
 
   /**
-   * Adiciona um listener para mudanças nos alertas
+   * Adiciona um listener para mudancas nos alertas
    */
   addListener(listener: (alerts: MonitoringAlert[]) => void): void {
     this.listeners.push(listener);
@@ -418,13 +418,13 @@ class DataMonitor {
   }
 
   /**
-   * Obtém estatísticas dos alertas
+   * Obtem estatisticas dos alertas
    */
   getStatistics(): {
     total: number;
     bySeverity: Record<string, number>;
     unacknowledged: number;
-    recent: number; // últimas 24h
+    recent: number; // ultimas 24h
   } {
     const now = Date.now();
     const last24h = now - (24 * 60 * 60 * 1000);
@@ -457,7 +457,7 @@ class DataMonitor {
   }
 
   /**
-   * Força uma verificação imediata
+   * Forca uma verificacao imediata
    */
   async forceCheck(): Promise<MonitoringAlert[]> {
     const cached = dataCacheManager.get();
@@ -475,10 +475,10 @@ class DataMonitor {
   }
 }
 
-// Instância singleton do monitor
+// Instancia singleton do monitor
 export const dataMonitor = new DataMonitor();
 
-// Utilitários para debugging
+// Utilitarios para debugging
 export const debugMonitor = {
   getAlerts: () => dataMonitor.getAlerts(),
   getStats: () => dataMonitor.getStatistics(),

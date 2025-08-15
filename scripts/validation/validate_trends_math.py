@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Validação matemática das tendências do dashboard GLPI
+Validaçáo matemática das tendências do dashboard GLPI
 """
 
 import requests
@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 
 def validate_trend_calculation(current: int, previous: int, expected_trend: str):
     """Valida se o cálculo de tendência está correto"""
-    print(f"\n=== VALIDAÇÃO MATEMÁTICA ===")
+    print(f"\n=== VALIDAÇáO MATEMÁTICA ===")
     print(f"Valor atual: {current}")
     print(f"Valor anterior: {previous}")
     print(f"Tendência esperada: {expected_trend}")
@@ -114,7 +114,7 @@ def test_api_with_date_filters():
         start_date_previous = (current_start - timedelta(days=period_duration + 1)).strftime('%Y-%m-%d')
         
         print(f"\nPeríodo anterior calculado: {start_date_previous} a {end_date_previous}")
-        print(f"Duração do período: {period_duration} dias")
+        print(f"Duraçáo do período: {period_duration} dias")
         
         return True
         
@@ -152,9 +152,9 @@ def analyze_trend_logic():
     return all_correct
 
 def main():
-    """Função principal de validação"""
-    print("=== VALIDAÇÃO MATEMÁTICA DAS TENDÊNCIAS ===")
-    print("Este script valida se os cálculos de tendência estão matematicamente corretos.\n")
+    """Funçáo principal de validaçáo"""
+    print("=== VALIDAÇáO MATEMÁTICA DAS TENDÊNCIAS ===")
+    print("Este script valida se os cálculos de tendência estáo matematicamente corretos.\n")
     
     # Executar testes
     test1 = analyze_trend_logic()
@@ -167,8 +167,8 @@ def main():
     print(f"API com filtros: {'✅ FUNCIONANDO' if test3 else '❌ COM PROBLEMAS'}")
     
     if test1 and test2 and test3:
-        print("\n🎉 VALIDAÇÃO COMPLETA: Todos os testes passaram!")
-        print("Os cálculos de tendência estão matematicamente corretos.")
+        print("\n🎉 VALIDAÇáO COMPLETA: Todos os testes passaram!")
+        print("Os cálculos de tendência estáo matematicamente corretos.")
     else:
         print("\n⚠️  PROBLEMAS DETECTADOS: Alguns testes falharam.")
         print("Verifique os detalhes acima para identificar os problemas.")

@@ -9,7 +9,7 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from services.api_service import APIService
+from app.services.api_service import APIService
 from utils.response_formatter import ResponseFormatter
 
 

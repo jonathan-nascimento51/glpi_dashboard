@@ -1,0 +1,47 @@
+﻿{
+  "data": {
+    "niveis": {
+      "geral": {
+        "novos": 0,
+        "pendentes": 0,
+        "progresso": 0,
+        "resolvidos": 0,
+        "total": 0
+      },
+      "n1": {
+        "novos": 0,
+        "pendentes": 0,
+        "progresso": 0,
+        "resolvidos": 0
+      },
+      "n2": {
+        "novos": 0,
+        "pendentes": 0,
+        "progresso": 0,
+        "resolvidos": 0
+      },
+      "n3": {
+        "novos": 0,
+        "pendentes": 0,
+        "progresso": 0,
+        "resolvidos": 0
+      },
+      "n4": {
+        "novos": 0,
+        "pendentes": 0,
+        "progresso": 0,
+        "resolvidos": 0
+      }
+    },
+    "tendencias": {
+      "novos": "0%",
+      "pendentes": "0%",
+      "progresso": "0%",
+      "resolvidos": "0%"
+    }
+  },
+  "success": true,
+  "tempo_execucao": 3729.848623275757,
+  "timestamp": "2025-08-14T06:56:53Z"
+}
+

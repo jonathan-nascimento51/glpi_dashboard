@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+﻿import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import React from 'react';
 import Dashboard from '../../components/Dashboard';
@@ -47,7 +47,7 @@ const mockMetricsData = {
   level_metrics: {
     N1: {
       'Novo': 10,
-      'Processando (atribuído)': 5,
+      'Processando (atribuido)': 5,
       'Processando (planejado)': 3,
       'Pendente': 2,
       'Solucionado': 8,
@@ -55,7 +55,7 @@ const mockMetricsData = {
     },
     N2: {
       'Novo': 15,
-      'Processando (atribuído)': 7,
+      'Processando (atribuido)': 7,
       'Processando (planejado)': 4,
       'Pendente': 3,
       'Solucionado': 6,
@@ -63,7 +63,7 @@ const mockMetricsData = {
     },
     N3: {
       'Novo': 8,
-      'Processando (atribuído)': 4,
+      'Processando (atribuido)': 4,
       'Processando (planejado)': 2,
       'Pendente': 1,
       'Solucionado': 5,
@@ -71,7 +71,7 @@ const mockMetricsData = {
     },
     N4: {
       'Novo': 12,
-      'Processando (atribuído)': 6,
+      'Processando (atribuido)': 6,
       'Processando (planejado)': 3,
       'Pendente': 2,
       'Solucionado': 4,
@@ -80,7 +80,7 @@ const mockMetricsData = {
   },
   general_metrics: {
     'Novo': 45,
-    'Processando (atribuído)': 22,
+    'Processando (atribuido)': 22,
     'Processando (planejado)': 12,
     'Pendente': 8,
     'Solucionado': 23,
@@ -103,7 +103,7 @@ describe('Dashboard Component', () => {
 
     render(<Dashboard />);
 
-    // Verifica se o título está presente
+    // Verifica se o titulo esta presente
     expect(screen.getByText(/Dashboard GLPI/i)).toBeInTheDocument();
 
     // Aguarda o carregamento dos dados
@@ -111,7 +111,7 @@ describe('Dashboard Component', () => {
       expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
     });
 
-    // Verifica se os gráficos foram renderizados
+    // Verifica se os graficos foram renderizados
     expect(screen.getByTestId('bar-chart')).toBeInTheDocument();
     expect(screen.getByTestId('doughnut-chart')).toBeInTheDocument();
   });
@@ -136,7 +136,7 @@ describe('Dashboard Component', () => {
     });
   });
 
-  it('deve atualizar dados quando o botão de refresh é clicado', async () => {
+  it('deve atualizar dados quando o botao de refresh e clicado', async () => {
     const mockGet = vi.mocked(httpClient.get);
     mockGet.mockResolvedValue({ data: mockMetricsData });
 
@@ -147,7 +147,7 @@ describe('Dashboard Component', () => {
       expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
     });
 
-    // Clica no botão de refresh
+    // Clica no botao de refresh
     const refreshButton = screen.getByRole('button', { name: /atualizar/i });
     fireEvent.click(refreshButton);
 
@@ -166,7 +166,7 @@ describe('Dashboard Component', () => {
       expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
     });
 
-    // Simula seleção de filtro de data
+    // Simula selecao de filtro de data
     const startDateInput = screen.getByLabelText(/Data inicial/i);
     const endDateInput = screen.getByLabelText(/Data final/i);
 
@@ -176,7 +176,7 @@ describe('Dashboard Component', () => {
     const applyFilterButton = screen.getByRole('button', { name: /aplicar filtro/i });
     fireEvent.click(applyFilterButton);
 
-    // Verifica se a API foi chamada com os parâmetros corretos
+    // Verifica se a API foi chamada com os parametros corretos
     await waitFor(() => {
       expect(mockGet).toHaveBeenCalledWith('/api/metrics', {
         params: {
@@ -187,7 +187,7 @@ describe('Dashboard Component', () => {
     });
   });
 
-  it('deve exibir métricas corretas nos cards', async () => {
+  it('deve exibir metricas corretas nos cards', async () => {
     const mockGet = vi.mocked(httpClient.get);
     mockGet.mockResolvedValue({ data: mockMetricsData });
 
@@ -197,13 +197,13 @@ describe('Dashboard Component', () => {
       expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
     });
 
-    // Verifica se os totais estão corretos
+    // Verifica se os totais estao corretos
     expect(screen.getByText('45')).toBeInTheDocument(); // Total Novo
-    expect(screen.getByText('22')).toBeInTheDocument(); // Total Processando (atribuído)
+    expect(screen.getByText('22')).toBeInTheDocument(); // Total Processando (atribuido)
     expect(screen.getByText('23')).toBeInTheDocument(); // Total Solucionado
   });
 
-  it('deve alternar entre visualizações de gráfico', async () => {
+  it('deve alternar entre visualizacoes de grafico', async () => {
     const mockGet = vi.mocked(httpClient.get);
     mockGet.mockResolvedValue({ data: mockMetricsData });
 
@@ -213,14 +213,14 @@ describe('Dashboard Component', () => {
       expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
     });
 
-    // Verifica se o gráfico de barras está visível inicialmente
+    // Verifica se o grafico de barras esta visivel inicialmente
     expect(screen.getByTestId('bar-chart')).toBeInTheDocument();
 
-    // Clica no botão para alternar para gráfico de linha
-    const lineChartButton = screen.getByRole('button', { name: /gráfico de linha/i });
+    // Clica no botao para alternar para grafico de linha
+    const lineChartButton = screen.getByRole('button', { name: /grafico de linha/i });
     fireEvent.click(lineChartButton);
 
-    // Verifica se o gráfico de linha está visível
+    // Verifica se o grafico de linha esta visivel
     expect(screen.getByTestId('line-chart')).toBeInTheDocument();
   });
 
@@ -234,20 +234,20 @@ describe('Dashboard Component', () => {
       expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
     });
 
-    // Tenta inserir data inválida
+    // Tenta inserir data invalida
     const startDateInput = screen.getByLabelText(/Data inicial/i);
-    fireEvent.change(startDateInput, { target: { value: 'data-inválida' } });
+    fireEvent.change(startDateInput, { target: { value: 'data-invalida' } });
 
     const applyFilterButton = screen.getByRole('button', { name: /aplicar filtro/i });
     fireEvent.click(applyFilterButton);
 
-    // Verifica se a mensagem de erro é exibida
+    // Verifica se a mensagem de erro e exibida
     await waitFor(() => {
-      expect(screen.getByText(/Formato de data inválido/i)).toBeInTheDocument();
+      expect(screen.getByText(/Formato de data invalido/i)).toBeInTheDocument();
     });
   });
 
-  it('deve exibir tooltip nos gráficos', async () => {
+  it('deve exibir tooltip nos graficos', async () => {
     const mockGet = vi.mocked(httpClient.get);
     mockGet.mockResolvedValue({ data: mockMetricsData });
 
@@ -257,12 +257,12 @@ describe('Dashboard Component', () => {
       expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
     });
 
-    // Simula hover sobre elemento do gráfico
+    // Simula hover sobre elemento do grafico
     const chartElement = screen.getByTestId('bar-chart');
     fireEvent.mouseEnter(chartElement);
 
-    // Verifica se o tooltip é exibido (implementação específica pode variar)
-    // Esta verificação depende da implementação específica do tooltip
+    // Verifica se o tooltip e exibido (implementacao especifica pode variar)
+    // Esta verificacao depende da implementacao especifica do tooltip
   });
 
   it('deve ser responsivo em diferentes tamanhos de tela', async () => {
@@ -282,7 +282,7 @@ describe('Dashboard Component', () => {
       expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
     });
 
-    // Verifica se o layout mobile está ativo
+    // Verifica se o layout mobile esta ativo
     const container = screen.getByTestId('dashboard-container');
     expect(container).toHaveClass('mobile-layout');
   });
@@ -291,7 +291,7 @@ describe('Dashboard Component', () => {
     const mockGet = vi.mocked(httpClient.get);
     mockGet.mockResolvedValue({ data: mockMetricsData });
 
-    // Mock da função de download
+    // Mock da funcao de download
     const mockDownload = vi.fn();
     global.URL.createObjectURL = vi.fn();
     global.URL.revokeObjectURL = vi.fn();
@@ -302,15 +302,15 @@ describe('Dashboard Component', () => {
       expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
     });
 
-    // Clica no botão de exportar
+    // Clica no botao de exportar
     const exportButton = screen.getByRole('button', { name: /exportar/i });
     fireEvent.click(exportButton);
 
-    // Verifica se a função de download foi chamada
-    // (implementação específica pode variar)
+    // Verifica se a funcao de download foi chamada
+    // (implementacao especifica pode variar)
   });
 
-  it('deve manter estado dos filtros após atualização', async () => {
+  it('deve manter estado dos filtros apos atualizacao', async () => {
     const mockGet = vi.mocked(httpClient.get);
     mockGet.mockResolvedValue({ data: mockMetricsData });
 
@@ -342,7 +342,7 @@ describe('Dashboard Component', () => {
       expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
     });
 
-    // Verifica se os percentuais estão corretos
+    // Verifica se os percentuais estao corretos
     // Total geral: 146 tickets
     // Novo: 45/146 ≈ 30.8%
     expect(screen.getByText(/30\.8%/)).toBeInTheDocument();
@@ -363,7 +363,7 @@ describe('Dashboard Component', () => {
       expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
     });
 
-    // Verifica se a mensagem de "sem dados" é exibida
-    expect(screen.getByText(/Nenhum dado disponível/i)).toBeInTheDocument();
+    // Verifica se a mensagem de "sem dados" e exibida
+    expect(screen.getByText(/Nenhum dado disponivel/i)).toBeInTheDocument();
   });
 });

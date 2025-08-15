@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+﻿import React, { useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Trash2, 
@@ -34,9 +34,9 @@ const CacheManager: React.FC<CacheManagerProps> = ({ className = '' }) => {
   }, []);
 
   const cacheTypeLabels = useMemo(() => ({
-    metrics: 'Métricas',
+    metrics: 'Metricas',
     systemStatus: 'Status do Sistema',
-    technicianRanking: 'Ranking de Técnicos',
+    technicianRanking: 'Ranking de Tecnicos',
     newTickets: 'Novos Tickets'
   }), []);
 
@@ -60,7 +60,7 @@ const CacheManager: React.FC<CacheManagerProps> = ({ className = '' }) => {
       <div className={`bg-white rounded-lg shadow-sm border p-6 ${className}`}>
         <div className="flex items-center justify-center h-32">
           <RefreshCw className="w-6 h-6 animate-spin text-blue-500" />
-          <span className="ml-2 text-gray-600">Carregando estatísticas do cache...</span>
+          <span className="ml-2 text-gray-600">Carregando estatisticas do cache...</span>
         </div>
       </div>
     );
@@ -131,7 +131,7 @@ const CacheManager: React.FC<CacheManagerProps> = ({ className = '' }) => {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Requisições:</span>
+                  <span className="text-gray-600">Requisicoes:</span>
                   <span className="font-medium">{cacheStats.totalRequests}</span>
                 </div>
               </div>
@@ -163,7 +163,7 @@ const CacheManager: React.FC<CacheManagerProps> = ({ className = '' }) => {
               <p className="font-medium mb-1">Sobre o Cache</p>
               <p className="text-xs leading-relaxed">
                 O sistema de cache armazena resultados da API por 5 minutos para melhorar a performance. 
-                A taxa de acerto indica quantas requisições foram atendidas pelo cache sem precisar consultar a API.
+                A taxa de acerto indica quantas requisicoes foram atendidas pelo cache sem precisar consultar a API.
               </p>
             </div>
           </div>

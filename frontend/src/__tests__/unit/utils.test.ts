@@ -1,13 +1,13 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+﻿import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-// Utilitários de formatação
+// Utilitarios de formatacao
 export const formatters = {
-  // Formatação de data
+  // Formatacao de data
   formatDate: (date: string | Date, format: 'short' | 'long' | 'relative' = 'short'): string => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     
     if (isNaN(dateObj.getTime())) {
-      return 'Data inválida';
+      return 'Data invalida';
     }
     
     switch (format) {
@@ -27,21 +27,21 @@ export const formatters = {
         
         if (diffDays === 0) return 'Hoje';
         if (diffDays === 1) return 'Ontem';
-        if (diffDays < 7) return `${diffDays} dias atrás`;
-        if (diffDays < 30) return `${Math.floor(diffDays / 7)} semanas atrás`;
-        if (diffDays < 365) return `${Math.floor(diffDays / 30)} meses atrás`;
-        return `${Math.floor(diffDays / 365)} anos atrás`;
+        if (diffDays < 7) return `${diffDays} dias atras`;
+        if (diffDays < 30) return `${Math.floor(diffDays / 7)} semanas atras`;
+        if (diffDays < 365) return `${Math.floor(diffDays / 30)} meses atras`;
+        return `${Math.floor(diffDays / 365)} anos atras`;
       default:
         return dateObj.toLocaleDateString('pt-BR');
     }
   },
   
-  // Formatação de tempo
+  // Formatacao de tempo
   formatTime: (date: string | Date): string => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     
     if (isNaN(dateObj.getTime())) {
-      return 'Hora inválida';
+      return 'Hora invalida';
     }
     
     return dateObj.toLocaleTimeString('pt-BR', {
@@ -50,7 +50,7 @@ export const formatters = {
     });
   },
   
-  // Formatação de duração
+  // Formatacao de duracao
   formatDuration: (minutes: number): string => {
     if (minutes < 0) return '0 min';
     
@@ -68,7 +68,7 @@ export const formatters = {
     return `${hours}h ${remainingMinutes}min`;
   },
   
-  // Formatação de números
+  // Formatacao de numeros
   formatNumber: (num: number, decimals: number = 0): string => {
     return num.toLocaleString('pt-BR', {
       minimumFractionDigits: decimals,
@@ -76,14 +76,14 @@ export const formatters = {
     });
   },
   
-  // Formatação de porcentagem
+  // Formatacao de porcentagem
   formatPercentage: (value: number, total: number, decimals: number = 1): string => {
     if (total === 0) return '0%';
     const percentage = (value / total) * 100;
     return `${percentage.toFixed(decimals)}%`;
   },
   
-  // Formatação de tamanho de arquivo
+  // Formatacao de tamanho de arquivo
   formatFileSize: (bytes: number): string => {
     if (bytes === 0) return '0 B';
     
@@ -95,15 +95,15 @@ export const formatters = {
   }
 };
 
-// Utilitários de validação
+// Utilitarios de validacao
 export const validators = {
-  // Validação de email
+  // Validacao de email
   isValidEmail: (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   },
   
-  // Validação de senha
+  // Validacao de senha
   isValidPassword: (password: string): { valid: boolean; errors: string[] } => {
     const errors: string[] = [];
     
@@ -112,15 +112,15 @@ export const validators = {
     }
     
     if (!/[A-Z]/.test(password)) {
-      errors.push('Senha deve conter pelo menos uma letra maiúscula');
+      errors.push('Senha deve conter pelo menos uma letra maiuscula');
     }
     
     if (!/[a-z]/.test(password)) {
-      errors.push('Senha deve conter pelo menos uma letra minúscula');
+      errors.push('Senha deve conter pelo menos uma letra minuscula');
     }
     
     if (!/\d/.test(password)) {
-      errors.push('Senha deve conter pelo menos um número');
+      errors.push('Senha deve conter pelo menos um numero');
     }
     
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
@@ -133,7 +133,7 @@ export const validators = {
     };
   },
   
-  // Validação de CPF
+  // Validacao de CPF
   isValidCPF: (cpf: string): boolean => {
     const cleanCPF = cpf.replace(/\D/g, '');
     
@@ -161,13 +161,13 @@ export const validators = {
     return true;
   },
   
-  // Validação de telefone
+  // Validacao de telefone
   isValidPhone: (phone: string): boolean => {
     const cleanPhone = phone.replace(/\D/g, '');
     return cleanPhone.length === 10 || cleanPhone.length === 11;
   },
   
-  // Validação de URL
+  // Validacao de URL
   isValidURL: (url: string): boolean => {
     try {
       new URL(url);
@@ -178,7 +178,7 @@ export const validators = {
   }
 };
 
-// Utilitários de string
+// Utilitarios de string
 export const stringUtils = {
   // Capitalizar primeira letra
   capitalize: (str: string): string => {
@@ -222,7 +222,7 @@ export const stringUtils = {
   }
 };
 
-// Utilitários de array
+// Utilitarios de array
 export const arrayUtils = {
   // Remover duplicatas
   unique: <T>(arr: T[]): T[] => {
@@ -283,7 +283,7 @@ export const arrayUtils = {
   }
 };
 
-// Utilitários de objeto
+// Utilitarios de objeto
 export const objectUtils = {
   // Deep clone
   deepClone: <T>(obj: T): T => {
@@ -300,7 +300,7 @@ export const objectUtils = {
     return cloned;
   },
   
-  // Verificar se objeto está vazio
+  // Verificar se objeto esta vazio
   isEmpty: (obj: any): boolean => {
     if (obj === null || obj === undefined) return true;
     if (typeof obj === 'string' || Array.isArray(obj)) return obj.length === 0;
@@ -346,7 +346,7 @@ export const objectUtils = {
     return result;
   },
   
-  // Pegar apenas propriedades específicas
+  // Pegar apenas propriedades especificas
   pick: <T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> => {
     const result = {} as Pick<T, K>;
     keys.forEach(key => {
@@ -358,7 +358,7 @@ export const objectUtils = {
   }
 };
 
-// Utilitários de localStorage
+// Utilitarios de localStorage
 export const storageUtils = {
   // Salvar no localStorage
   set: (key: string, value: any): void => {
@@ -399,7 +399,7 @@ export const storageUtils = {
   }
 };
 
-// Utilitários de debounce e throttle
+// Utilitarios de debounce e throttle
 export const performanceUtils = {
   // Debounce
   debounce: <T extends (...args: any[]) => any>(
@@ -431,7 +431,7 @@ export const performanceUtils = {
   }
 };
 
-describe('Testes Unitários de Utilitários', () => {
+describe('Testes Unitarios de Utilitarios', () => {
   describe('Formatters', () => {
     describe('formatDate', () => {
       it('deve formatar data no formato curto', () => {
@@ -455,8 +455,8 @@ describe('Testes Unitários de Utilitários', () => {
         expect(formatters.formatDate(yesterday, 'relative')).toBe('Ontem');
       });
       
-      it('deve lidar com datas inválidas', () => {
-        expect(formatters.formatDate('invalid-date')).toBe('Data inválida');
+      it('deve lidar com datas invalidas', () => {
+        expect(formatters.formatDate('invalid-date')).toBe('Data invalida');
       });
       
       it('deve aceitar string como entrada', () => {
@@ -472,8 +472,8 @@ describe('Testes Unitários de Utilitários', () => {
         expect(formatted).toMatch(/\d{2}:\d{2}/);
       });
       
-      it('deve lidar com horas inválidas', () => {
-        expect(formatters.formatTime('invalid-time')).toBe('Hora inválida');
+      it('deve lidar com horas invalidas', () => {
+        expect(formatters.formatTime('invalid-time')).toBe('Hora invalida');
       });
     });
     
@@ -499,12 +499,12 @@ describe('Testes Unitários de Utilitários', () => {
     });
     
     describe('formatNumber', () => {
-      it('deve formatar números inteiros', () => {
+      it('deve formatar numeros inteiros', () => {
         expect(formatters.formatNumber(1234)).toBe('1.234');
         expect(formatters.formatNumber(1000000)).toBe('1.000.000');
       });
       
-      it('deve formatar números com decimais', () => {
+      it('deve formatar numeros com decimais', () => {
         expect(formatters.formatNumber(1234.56, 2)).toBe('1.234,56');
         expect(formatters.formatNumber(1234.5, 2)).toBe('1.234,50');
       });
@@ -516,7 +516,7 @@ describe('Testes Unitários de Utilitários', () => {
         expect(formatters.formatPercentage(1, 3, 2)).toBe('33.33%');
       });
       
-      it('deve lidar com divisão por zero', () => {
+      it('deve lidar com divisao por zero', () => {
         expect(formatters.formatPercentage(10, 0)).toBe('0%');
       });
     });
@@ -545,13 +545,13 @@ describe('Testes Unitários de Utilitários', () => {
   
   describe('Validators', () => {
     describe('isValidEmail', () => {
-      it('deve validar emails válidos', () => {
+      it('deve validar emails validos', () => {
         expect(validators.isValidEmail('test@example.com')).toBe(true);
         expect(validators.isValidEmail('user.name@domain.co.uk')).toBe(true);
         expect(validators.isValidEmail('user+tag@example.org')).toBe(true);
       });
       
-      it('deve rejeitar emails inválidos', () => {
+      it('deve rejeitar emails invalidos', () => {
         expect(validators.isValidEmail('invalid-email')).toBe(false);
         expect(validators.isValidEmail('test@')).toBe(false);
         expect(validators.isValidEmail('@example.com')).toBe(false);
@@ -572,20 +572,20 @@ describe('Testes Unitários de Utilitários', () => {
         expect(result.errors.length).toBeGreaterThan(0);
       });
       
-      it('deve identificar problemas específicos', () => {
+      it('deve identificar problemas especificos', () => {
         const result = validators.isValidPassword('lowercase123');
-        expect(result.errors).toContain('Senha deve conter pelo menos uma letra maiúscula');
+        expect(result.errors).toContain('Senha deve conter pelo menos uma letra maiuscula');
         expect(result.errors).toContain('Senha deve conter pelo menos um caractere especial');
       });
     });
     
     describe('isValidCPF', () => {
-      it('deve validar CPFs válidos', () => {
+      it('deve validar CPFs validos', () => {
         expect(validators.isValidCPF('11144477735')).toBe(true);
         expect(validators.isValidCPF('111.444.777-35')).toBe(true);
       });
       
-      it('deve rejeitar CPFs inválidos', () => {
+      it('deve rejeitar CPFs invalidos', () => {
         expect(validators.isValidCPF('11111111111')).toBe(false);
         expect(validators.isValidCPF('123456789')).toBe(false);
         expect(validators.isValidCPF('11144477736')).toBe(false);
@@ -593,27 +593,27 @@ describe('Testes Unitários de Utilitários', () => {
     });
     
     describe('isValidPhone', () => {
-      it('deve validar telefones válidos', () => {
+      it('deve validar telefones validos', () => {
         expect(validators.isValidPhone('1234567890')).toBe(true);
         expect(validators.isValidPhone('12345678901')).toBe(true);
         expect(validators.isValidPhone('(12) 3456-7890')).toBe(true);
         expect(validators.isValidPhone('(12) 99999-9999')).toBe(true);
       });
       
-      it('deve rejeitar telefones inválidos', () => {
+      it('deve rejeitar telefones invalidos', () => {
         expect(validators.isValidPhone('123456789')).toBe(false);
         expect(validators.isValidPhone('123456789012')).toBe(false);
       });
     });
     
     describe('isValidURL', () => {
-      it('deve validar URLs válidas', () => {
+      it('deve validar URLs validas', () => {
         expect(validators.isValidURL('https://example.com')).toBe(true);
         expect(validators.isValidURL('http://localhost:3000')).toBe(true);
         expect(validators.isValidURL('ftp://files.example.com')).toBe(true);
       });
       
-      it('deve rejeitar URLs inválidas', () => {
+      it('deve rejeitar URLs invalidas', () => {
         expect(validators.isValidURL('not-a-url')).toBe(false);
         expect(validators.isValidURL('http://')).toBe(false);
         expect(validators.isValidURL('')).toBe(false);
@@ -652,16 +652,16 @@ describe('Testes Unitários de Utilitários', () => {
     
     describe('removeAccents', () => {
       it('deve remover acentos', () => {
-        expect(stringUtils.removeAccents('café')).toBe('cafe');
-        expect(stringUtils.removeAccents('açúcar')).toBe('acucar');
-        expect(stringUtils.removeAccents('coração')).toBe('coracao');
+        expect(stringUtils.removeAccents('cafe')).toBe('cafe');
+        expect(stringUtils.removeAccents('acucar')).toBe('acucar');
+        expect(stringUtils.removeAccents('coracao')).toBe('coracao');
       });
     });
     
     describe('generateSlug', () => {
-      it('deve gerar slug válido', () => {
+      it('deve gerar slug valido', () => {
         expect(stringUtils.generateSlug('Hello World')).toBe('hello-world');
-        expect(stringUtils.generateSlug('Café com Açúcar')).toBe('cafe-com-acucar');
+        expect(stringUtils.generateSlug('Cafe com Acucar')).toBe('cafe-com-acucar');
         expect(stringUtils.generateSlug('Test!@#$%^&*()')).toBe('test');
       });
     });
@@ -830,12 +830,12 @@ describe('Testes Unitários de Utilitários', () => {
         const result = objectUtils.omit(obj, ['b', 'c']);
         
         expect(result).toEqual({ a: 1 });
-        expect(obj).toEqual({ a: 1, b: 2, c: 3 }); // Original não modificado
+        expect(obj).toEqual({ a: 1, b: 2, c: 3 }); // Original nao modificado
       });
     });
     
     describe('pick', () => {
-      it('deve pegar apenas propriedades específicas', () => {
+      it('deve pegar apenas propriedades especificas', () => {
         const obj = { a: 1, b: 2, c: 3 };
         const result = objectUtils.pick(obj, ['a', 'c']);
         
@@ -858,7 +858,7 @@ describe('Testes Unitários de Utilitários', () => {
         expect(retrieved).toEqual(data);
       });
       
-      it('deve retornar valor padrão para chave inexistente', () => {
+      it('deve retornar valor padrao para chave inexistente', () => {
         const defaultValue = { name: 'Default' };
         const result = storageUtils.get('nonexistent', defaultValue);
         
@@ -899,7 +899,7 @@ describe('Testes Unitários de Utilitários', () => {
     });
     
     describe('debounce', () => {
-      it('deve atrasar execução da função', () => {
+      it('deve atrasar execucao da funcao', () => {
         const mockFn = vi.fn();
         const debouncedFn = performanceUtils.debounce(mockFn, 100);
         
@@ -917,7 +917,7 @@ describe('Testes Unitários de Utilitários', () => {
     });
     
     describe('throttle', () => {
-      it('deve limitar execução da função', () => {
+      it('deve limitar execucao da funcao', () => {
         const mockFn = vi.fn();
         const throttledFn = performanceUtils.throttle(mockFn, 100);
         

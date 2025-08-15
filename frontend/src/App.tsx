@@ -1,4 +1,4 @@
-import { useState, useEffect, Profiler, Suspense, ProfilerOnRenderCallback } from 'react';
+﻿import { useState, useEffect, Profiler, Suspense, ProfilerOnRenderCallback } from 'react';
 import { Header } from './components/Header';
 import { NotificationSystem } from './components/NotificationSystem';
 import CacheNotification from './components/CacheNotification';
@@ -22,7 +22,7 @@ import { useCacheNotifications } from './hooks/useCacheNotifications';
 import { usePerformanceProfiler } from './utils/performanceMonitor';
 import { performanceMonitor } from './utils/performanceMonitor';
 import { TicketStatus, Theme } from './types';
-// import { clearAllCaches } from './services/api'; // Não utilizado
+// import { clearAllCaches } from './services/api'; // Nao utilizado
 
 function App() {
   const {
@@ -39,7 +39,7 @@ function App() {
     theme,
     dataIntegrityReport,
     loadData,
-    // forceRefresh, // Não utilizado
+    // forceRefresh, // Nao utilizado
     updateFilters,
     search,
     addNotification,
@@ -163,7 +163,7 @@ function App() {
         systemActive={true}
         searchQuery={searchQuery}
         searchResults={[]}
-        dateRange={filters?.dateRange || { startDate: '', endDate: '', label: 'Selecionar período' }}
+        dateRange={filters?.dateRange || { startDate: '', endDate: '', label: 'Selecionar periodo' }}
         onSearch={search}
         theme={theme as Theme}
         onThemeChange={(newTheme: Theme) => changeTheme(newTheme)}
@@ -198,7 +198,7 @@ function App() {
             />
           </Profiler>
         ) : (
-          // Fallback para quando não há dados
+          // Fallback para quando nao ha dados
           <div className="h-full bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center">
             <div className="text-center py-12">
               <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
@@ -207,10 +207,10 @@ function App() {
                 </svg>
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Nenhum dado disponível
+                Nenhum dado disponivel
               </h3>
               <p className="text-gray-600 mb-4">
-                Não foi possível carregar os dados do dashboard.
+                Nao foi possivel carregar os dados do dashboard.
               </p>
               <button 
                 onClick={() => loadData()} 

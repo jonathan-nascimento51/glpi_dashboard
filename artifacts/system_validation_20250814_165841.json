@@ -1,0 +1,155 @@
+{
+  "timestamp": "2025-08-14T16:58:29.285417",
+  "tests": {
+    "config_glpi_url": {
+      "status": "PASS",
+      "message": "Variável GLPI_URL configurada",
+      "details": "http://cau.ppiratini.intra.rs.gov.br/glpi/apirest.php",
+      "timestamp": "2025-08-14T16:58:29.285417"
+    },
+    "config_glpi_user_token": {
+      "status": "PASS",
+      "message": "Variável GLPI_USER_TOKEN configurada",
+      "details": "TQdSxqg2...tRnq",
+      "timestamp": "2025-08-14T16:58:29.285417"
+    },
+    "config_glpi_app_token": {
+      "status": "PASS",
+      "message": "Variável GLPI_APP_TOKEN configurada",
+      "details": "aY3f9F5a...ULid",
+      "timestamp": "2025-08-14T16:58:29.285417"
+    },
+    "glpi_url_reachable": {
+      "status": "PASS",
+      "message": "URL do GLPI acessível",
+      "details": "Status: 200",
+      "timestamp": "2025-08-14T16:58:29.372308"
+    },
+    "glpi_authentication": {
+      "status": "PASS",
+      "message": "Autenticação GLPI bem-sucedida",
+      "details": "Token: r3df6u8m...",
+      "timestamp": "2025-08-14T16:58:29.567917"
+    },
+    "field_discovery": {
+      "status": "PASS",
+      "message": "IDs de campos descobertos com sucesso",
+      "details": {
+        "GROUP": "8",
+        "STATUS": "12",
+        "DATE_CREATION": "15"
+      },
+      "timestamp": "2025-08-14T16:58:29.567917"
+    },
+    "general_metrics": {
+      "status": "PASS",
+      "message": "Métricas gerais obtidas - Total: 9812 tickets",
+      "details": {
+        "Novo": 5,
+        "Processando (atribuÃ­do)": 39,
+        "Processando (planejado)": 26,
+        "Pendente": 33,
+        "Solucionado": 3045,
+        "Fechado": 6664
+      },
+      "timestamp": "2025-08-14T16:58:30.368365"
+    },
+    "general_metrics_data": {
+      "status": "PASS",
+      "message": "Dados reais encontrados: 9812 tickets",
+      "details": null,
+      "timestamp": "2025-08-14T16:58:30.369388"
+    },
+    "level_metrics": {
+      "status": "PASS",
+      "message": "Métricas por nível obtidas",
+      "details": {
+        "N1": 0,
+        "N2": 0,
+        "N3": 1,
+        "N4": 1
+      },
+      "timestamp": "2025-08-14T16:58:32.860388"
+    },
+    "level_metrics_data": {
+      "status": "PASS",
+      "message": "Dados por nível encontrados: 2 tickets",
+      "details": null,
+      "timestamp": "2025-08-14T16:58:32.860388"
+    },
+    "dashboard_metrics": {
+      "status": "PASS",
+      "message": "Métricas do dashboard obtidas - Total: 9812 tickets",
+      "details": {
+        "novos": 5,
+        "progresso": 65,
+        "pendentes": 33,
+        "resolvidos": 9709,
+        "total": 9812
+      },
+      "timestamp": "2025-08-14T16:58:37.680495"
+    },
+    "dashboard_levels_structure": {
+      "status": "PASS",
+      "message": "Estrutura de níveis presente",
+      "details": [
+        "geral",
+        "n1",
+        "n2",
+        "n3",
+        "n4"
+      ],
+      "timestamp": "2025-08-14T16:58:37.680495"
+    },
+    "dashboard_data_validation": {
+      "status": "PASS",
+      "message": "Dashboard retornando dados válidos",
+      "details": null,
+      "timestamp": "2025-08-14T16:58:37.680495"
+    },
+    "backend_health": {
+      "status": "PASS",
+      "message": "Backend health check OK",
+      "details": {
+        "status": "healthy"
+      },
+      "timestamp": "2025-08-14T16:58:39.750385"
+    },
+    "backend_metrics_endpoint": {
+      "status": "PASS",
+      "message": "Endpoint de métricas funcionando",
+      "details": {
+        "success": true,
+        "data_keys": [
+          "niveis",
+          "novos",
+          "pendentes",
+          "progresso",
+          "resolvidos",
+          "tendencias",
+          "total"
+        ]
+      },
+      "timestamp": "2025-08-14T16:58:41.801698"
+    },
+    "backend_metrics_data": {
+      "status": "PASS",
+      "message": "API retornando dados válidos: 9812 tickets",
+      "details": null,
+      "timestamp": "2025-08-14T16:58:41.801698"
+    },
+    "frontend_accessibility": {
+      "status": "PASS",
+      "message": "Frontend acessível",
+      "details": "Status: 200",
+      "timestamp": "2025-08-14T16:58:41.814461"
+    }
+  },
+  "summary": {
+    "total_tests": 17,
+    "passed": 17,
+    "failed": 0,
+    "warnings": 0
+  },
+  "recommendations": []
+}

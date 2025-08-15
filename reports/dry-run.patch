@@ -1,0 +1,111 @@
+﻿# DRY-RUN PATCH - Fase 1 Limpeza Estrutural
+# Data: 2025-01-14
+# Branch: chore/structure-sweep-20250814
+
+## OPERAÇÕES SIMULADAS
+
+### 1. CRIAÇÃO DE DIRETÓRIOS
++ mkdir _attic/20250114/
++ mkdir docs/examples/
++ mkdir scripts/validation/
+
+### 2. MOVIMENTAÇÃO DE ARQUIVOS SUSPEITOS
+- app_backup.py
++ _attic/20250114/app_backup.py
+
+- app_mock.py
++ _attic/20250114/app_mock.py
+
+- app_mock_v2.py
++ _attic/20250114/app_mock_v2.py
+
+- app_temp.py
++ _attic/20250114/app_temp.py
+
+### 3. REORGANIZAÇÃO DE EXEMPLOS
+- example_ai_context.py
++ docs/examples/example_ai_context.py
+
+- example_monitoring.py
++ docs/examples/example_monitoring.py
+
+- example_safe_changes.py
++ docs/examples/example_safe_changes.py
+
+### 4. CONSOLIDAÇÃO DE SCRIPTS
+- enhanced_validation.py
++ scripts/validation/enhanced_validation.py
+
+- validate_simple.py
++ scripts/validation/validate_simple.py
+
+- validate_system.py
++ scripts/validation/validate_system.py
+
+- reorganize_structure.py
++ scripts/reorganize_structure.py
+
+### 5. IMPORTS E PATHS A AJUSTAR
+
+#### 5.1 Nenhum import detectado para arquivos suspeitos (seguro remover)
+
+#### 5.2 Verificar se algum script referencia examples:
+- README.md (possível referência a examples)
+- Documentação (possível referência a examples)
+
+#### 5.3 Após mover scripts para scripts/validation/:
+- Atualizar imports relativos se existirem
+- Verificar package.json scripts
+- Atualizar paths em CI/CD se aplicável
+
+### 6. ARQUIVOS MANTIDOS (NÃO MOVER)
+# Sistemas críticos do TRAE AI:
+= ai_context_system.py (sistema integrado)
+= config_ai_context.py (configuração TRAE)
+= monitoring_system.py (monitoramento)
+= safe_change_protocol.py (protocolo segurança)
+= trae_ai_integration_validator.py (validador principal)
+= trae_quick_check.py (verificação rápida)
+
+### 7. VALIDAÇÕES NECESSÁRIAS APÓS CADA OPERAÇÃO
+
+#### Após mover arquivos suspeitos:
+- python app.py (deve executar sem erro)
+- python trae_quick_check.py (deve passar)
+
+#### Após reorganizar examples:
+- Verificar se README.md precisa de atualização
+- Confirmar que nenhum script importa examples
+
+#### Após mover scripts:
+- Testar execução dos scripts movidos
+- Verificar se imports relativos funcionam
+- Atualizar documentação se necessário
+
+### 8. COMANDOS DE ROLLBACK
+
+#### Se algo quebrar:
+git checkout HEAD~1
+# ou restaurar manualmente:
+cp _attic/20250114/* ./
+rm -rf _attic/
+
+### 9. IMPACTO ESTIMADO
+
+- Arquivos removidos da raiz: 11
+- Arquivos reorganizados: 7
+- Diretórios criados: 3
+- Risco de quebra: BAIXO
+- Imports afetados: 0 (detectados)
+- Builds afetados: 0 (esperado)
+
+### 10. PRÓXIMOS PASSOS PÓS DRY-RUN
+
+1. Executar operações em ordem de risco (baixo -> médio)
+2. Testar após cada grupo de mudanças
+3. Commit atômico para cada fase
+4. Validar sistema TRAE AI após cada commit
+5. Documentar qualquer problema encontrado
+
+---
+END OF DRY-RUN PATCH

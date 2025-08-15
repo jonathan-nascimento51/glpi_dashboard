@@ -1,30 +1,30 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+﻿import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
-// Mock para simular mutações no código
+// Mock para simular mutacoes no codigo
 const createMutatedFunction = (originalFn: Function, mutationType: string) => {
   switch (mutationType) {
     case 'conditional_boundary':
       // Muta < para <= ou > para >=
       return (...args: any[]) => {
         const result = originalFn(...args);
-        return result; // Simulação da mutação
+        return result; // Simulacao da mutacao
       };
     
     case 'negate_conditionals':
       // Nega condicionais (== para !=, etc.)
       return (...args: any[]) => {
         const result = originalFn(...args);
-        return !result; // Simulação da mutação
+        return !result; // Simulacao da mutacao
       };
     
     case 'math_mutator':
-      // Muta operadores matemáticos (+ para -, * para /, etc.)
+      // Muta operadores matematicos (+ para -, * para /, etc.)
       return (...args: any[]) => {
         if (typeof args[0] === 'number' && typeof args[1] === 'number') {
-          return args[0] - args[1]; // Simula mudança de + para -
+          return args[0] - args[1]; // Simula mudanca de + para -
         }
         return originalFn(...args);
       };
@@ -43,9 +43,9 @@ const createMutatedFunction = (originalFn: Function, mutationType: string) => {
       };
     
     case 'void_method_calls':
-      // Remove chamadas de métodos void
+      // Remove chamadas de metodos void
       return (...args: any[]) => {
-        // Simula remoção da chamada do método
+        // Simula remocao da chamada do metodo
         return undefined;
       };
     
@@ -54,7 +54,7 @@ const createMutatedFunction = (originalFn: Function, mutationType: string) => {
   }
 };
 
-// Funções de utilidade para testar
+// Funcoes de utilidade para testar
 const mathUtils = {
   add: (a: number, b: number): number => a + b,
   subtract: (a: number, b: number): number => a - b,
@@ -100,10 +100,10 @@ const validationUtils = {
     const cleanCPF = cpf.replace(/\D/g, '');
     if (cleanCPF.length !== 11) return false;
     
-    // Verifica se todos os dígitos são iguais
+    // Verifica se todos os digitos sao iguais
     if (/^(\d)\1{10}$/.test(cleanCPF)) return false;
     
-    // Validação dos dígitos verificadores
+    // Validacao dos digitos verificadores
     let sum = 0;
     for (let i = 0; i < 9; i++) {
       sum += parseInt(cleanCPF.charAt(i)) * (10 - i);
@@ -173,35 +173,35 @@ const businessLogic = {
   }
 };
 
-describe('Testes de Mutação', () => {
-  describe('Mutação de Operadores Matemáticos', () => {
-    it('deve detectar mutação em adição', () => {
+describe('Testes de Mutacao', () => {
+  describe('Mutacao de Operadores Matematicos', () => {
+    it('deve detectar mutacao em adicao', () => {
       const originalAdd = mathUtils.add;
       const mutatedAdd = createMutatedFunction(originalAdd, 'math_mutator');
       
       // Teste original deve passar
       expect(originalAdd(2, 3)).toBe(5);
       
-      // Teste com mutação deve falhar
+      // Teste com mutacao deve falhar
       expect(mutatedAdd(2, 3)).not.toBe(5);
       expect(mutatedAdd(2, 3)).toBe(-1); // 2 - 3 = -1
     });
     
-    it('deve detectar mutação em comparação', () => {
+    it('deve detectar mutacao em comparacao', () => {
       const originalIsPositive = mathUtils.isPositive;
       const mutatedIsPositive = createMutatedFunction(originalIsPositive, 'conditional_boundary');
       
-      // Casos que devem detectar a mutação
+      // Casos que devem detectar a mutacao
       expect(originalIsPositive(0)).toBe(false);
       expect(originalIsPositive(1)).toBe(true);
       expect(originalIsPositive(-1)).toBe(false);
       
-      // Teste específico para detectar mutação de > para >=
+      // Teste especifico para detectar mutacao de > para >=
       expect(originalIsPositive(0)).toBe(false);
       // Se mutado para >= 0, retornaria true para 0
     });
     
-    it('deve detectar mutação em operador módulo', () => {
+    it('deve detectar mutacao em operador modulo', () => {
       const originalIsEven = mathUtils.isEven;
       
       expect(originalIsEven(2)).toBe(true);
@@ -209,14 +209,14 @@ describe('Testes de Mutação', () => {
       expect(originalIsEven(0)).toBe(true);
       expect(originalIsEven(1)).toBe(false);
       
-      // Casos edge para detectar mutações
+      // Casos edge para detectar mutacoes
       expect(originalIsEven(-2)).toBe(true);
       expect(originalIsEven(-1)).toBe(false);
     });
   });
   
-  describe('Mutação de Condicionais', () => {
-    it('deve detectar mutação em negação de condicionais', () => {
+  describe('Mutacao de Condicionais', () => {
+    it('deve detectar mutacao em negacao de condicionais', () => {
       const originalIsEmpty = stringUtils.isEmpty;
       const mutatedIsEmpty = createMutatedFunction(originalIsEmpty, 'negate_conditionals');
       
@@ -224,24 +224,24 @@ describe('Testes de Mutação', () => {
       expect(originalIsEmpty('')).toBe(true);
       expect(originalIsEmpty('test')).toBe(false);
       
-      // Teste com mutação (negação)
+      // Teste com mutacao (negacao)
       expect(mutatedIsEmpty('')).toBe(false);
       expect(mutatedIsEmpty('test')).toBe(true);
     });
     
-    it('deve detectar mutação em comparações de igualdade', () => {
+    it('deve detectar mutacao em comparacoes de igualdade', () => {
       const testFunction = (a: number, b: number) => a === b;
       
       expect(testFunction(1, 1)).toBe(true);
       expect(testFunction(1, 2)).toBe(false);
       
-      // Casos específicos para detectar mutação de === para !==
+      // Casos especificos para detectar mutacao de === para !==
       expect(testFunction(0, 0)).toBe(true);
       expect(testFunction(null as any, null as any)).toBe(true);
       expect(testFunction(undefined as any, undefined as any)).toBe(true);
     });
     
-    it('deve detectar mutação em operadores lógicos', () => {
+    it('deve detectar mutacao em operadores logicos', () => {
       const andFunction = (a: boolean, b: boolean) => a && b;
       const orFunction = (a: boolean, b: boolean) => a || b;
       
@@ -259,8 +259,8 @@ describe('Testes de Mutação', () => {
     });
   });
   
-  describe('Mutação de Valores de Retorno', () => {
-    it('deve detectar mutação em valores booleanos', () => {
+  describe('Mutacao de Valores de Retorno', () => {
+    it('deve detectar mutacao em valores booleanos', () => {
       const originalContains = stringUtils.contains;
       const mutatedContains = createMutatedFunction(originalContains, 'return_values');
       
@@ -268,12 +268,12 @@ describe('Testes de Mutação', () => {
       expect(originalContains('hello world', 'world')).toBe(true);
       expect(originalContains('hello world', 'xyz')).toBe(false);
       
-      // Teste com mutação
+      // Teste com mutacao
       expect(mutatedContains('hello world', 'world')).toBe(false);
       expect(mutatedContains('hello world', 'xyz')).toBe(true);
     });
     
-    it('deve detectar mutação em valores numéricos', () => {
+    it('deve detectar mutacao em valores numericos', () => {
       const sumFunction = (arr: number[]) => arr.reduce((sum, n) => sum + n, 0);
       const mutatedSum = createMutatedFunction(sumFunction, 'return_values');
       
@@ -281,115 +281,115 @@ describe('Testes de Mutação', () => {
       expect(sumFunction([1, 2, 3])).toBe(6);
       expect(sumFunction([])).toBe(0);
       
-      // Teste com mutação (valor + 1)
+      // Teste com mutacao (valor + 1)
       expect(mutatedSum([1, 2, 3])).toBe(7);
       expect(mutatedSum([])).toBe(1);
     });
     
-    it('deve detectar mutação em valores de string', () => {
+    it('deve detectar mutacao em valores de string', () => {
       const originalCapitalize = stringUtils.capitalize;
       const mutatedCapitalize = createMutatedFunction(originalCapitalize, 'return_values');
       
       // Teste original
       expect(originalCapitalize('hello')).toBe('Hello');
       
-      // Teste com mutação
+      // Teste com mutacao
       expect(mutatedCapitalize('hello')).toBe('Hello_mutated');
     });
   });
   
-  describe('Mutação de Limites de Condicionais', () => {
-    it('deve detectar mutação de < para <=' , () => {
+  describe('Mutacao de Limites de Condicionais', () => {
+    it('deve detectar mutacao de < para <=' , () => {
       const isLessThan = (a: number, b: number) => a < b;
       
-      // Casos que detectam mutação de < para <=
+      // Casos que detectam mutacao de < para <=
       expect(isLessThan(5, 5)).toBe(false); // Se mutado para <=, seria true
       expect(isLessThan(4, 5)).toBe(true);
       expect(isLessThan(6, 5)).toBe(false);
     });
     
-    it('deve detectar mutação de > para >=' , () => {
+    it('deve detectar mutacao de > para >=' , () => {
       const isGreaterThan = (a: number, b: number) => a > b;
       
-      // Casos que detectam mutação de > para >=
+      // Casos que detectam mutacao de > para >=
       expect(isGreaterThan(5, 5)).toBe(false); // Se mutado para >=, seria true
       expect(isGreaterThan(6, 5)).toBe(true);
       expect(isGreaterThan(4, 5)).toBe(false);
     });
     
-    it('deve detectar mutação de <= para <' , () => {
+    it('deve detectar mutacao de <= para <' , () => {
       const isLessOrEqual = (a: number, b: number) => a <= b;
       
-      // Casos que detectam mutação de <= para <
+      // Casos que detectam mutacao de <= para <
       expect(isLessOrEqual(5, 5)).toBe(true); // Se mutado para <, seria false
       expect(isLessOrEqual(4, 5)).toBe(true);
       expect(isLessOrEqual(6, 5)).toBe(false);
     });
     
-    it('deve detectar mutação de >= para >' , () => {
+    it('deve detectar mutacao de >= para >' , () => {
       const isGreaterOrEqual = (a: number, b: number) => a >= b;
       
-      // Casos que detectam mutação de >= para >
+      // Casos que detectam mutacao de >= para >
       expect(isGreaterOrEqual(5, 5)).toBe(true); // Se mutado para >, seria false
       expect(isGreaterOrEqual(6, 5)).toBe(true);
       expect(isGreaterOrEqual(4, 5)).toBe(false);
     });
   });
   
-  describe('Mutação de Validações Complexas', () => {
-    it('deve detectar mutação em validação de email', () => {
+  describe('Mutacao de Validacoes Complexas', () => {
+    it('deve detectar mutacao em validacao de email', () => {
       const { isEmail } = validationUtils;
       
-      // Casos válidos
+      // Casos validos
       expect(isEmail('test@example.com')).toBe(true);
       expect(isEmail('user.name@domain.co.uk')).toBe(true);
       
-      // Casos inválidos
+      // Casos invalidos
       expect(isEmail('invalid-email')).toBe(false);
       expect(isEmail('test@')).toBe(false);
       expect(isEmail('@domain.com')).toBe(false);
       expect(isEmail('test.domain.com')).toBe(false);
       expect(isEmail('')).toBe(false);
       
-      // Casos edge para detectar mutações
+      // Casos edge para detectar mutacoes
       expect(isEmail('test@domain')).toBe(false);
       expect(isEmail('test@domain.')).toBe(false);
     });
     
-    it('deve detectar mutação em validação de CPF', () => {
+    it('deve detectar mutacao em validacao de CPF', () => {
       const { isCPF } = validationUtils;
       
-      // CPFs válidos
+      // CPFs validos
       expect(isCPF('11144477735')).toBe(true);
       expect(isCPF('111.444.777-35')).toBe(true);
       
-      // CPFs inválidos
+      // CPFs invalidos
       expect(isCPF('11111111111')).toBe(false); // Todos iguais
       expect(isCPF('123456789')).toBe(false); // Muito curto
-      expect(isCPF('12345678901')).toBe(false); // Dígitos verificadores incorretos
+      expect(isCPF('12345678901')).toBe(false); // Digitos verificadores incorretos
       expect(isCPF('')).toBe(false);
       expect(isCPF('abc.def.ghi-jk')).toBe(false);
     });
     
-    it('deve detectar mutação em validação de senha forte', () => {
+    it('deve detectar mutacao em validacao de senha forte', () => {
       const { isStrongPassword } = validationUtils;
       
-      // Senhas válidas
+      // Senhas validas
       expect(isStrongPassword('Password123!')).toBe(true);
       expect(isStrongPassword('MyStr0ng@Pass')).toBe(true);
       
-      // Senhas inválidas
-      expect(isStrongPassword('password')).toBe(false); // Sem maiúscula, número e símbolo
-      expect(isStrongPassword('PASSWORD')).toBe(false); // Sem minúscula, número e símbolo
-      expect(isStrongPassword('Password')).toBe(false); // Sem número e símbolo
-      expect(isStrongPassword('Password123')).toBe(false); // Sem símbolo
+      // Senhas invalidas
+      expect(isStrongPassword('password')).toBe(false); // Sem maiuscula, numero e simbolo
+      expect(isStrongPassword('PASSWORD')).toBe(false); // Sem minuscula, numero e simbolo
+      expect(isStrongPassword('Password')).toBe(false); // Sem numero e simbolo
+      expect(isStrongPassword('Password123')).toBe(false); // Sem simbolo
       expect(isStrongPassword('Pass1!')).toBe(false); // Muito curta
       expect(isStrongPassword('')).toBe(false);
     });
   });
   
-  describe('Mutação de Lógica de Negócio', () => {
-    it('deve detectar mutação em cálculo de desconto', () => {
+  describe('Mutacao de Logica de Negocio', () => {
+    it('deve detectar mutacao em calculo de desconto', () => {
       const { calculateDiscount } = businessLogic;
       
       // Casos normais
@@ -403,12 +403,12 @@ describe('Testes de Mutação', () => {
       expect(calculateDiscount(100, -10)).toBe(100);
       expect(calculateDiscount(100, 101)).toBe(100);
       
-      // Casos específicos para detectar mutações
+      // Casos especificos para detectar mutacoes
       expect(calculateDiscount(100, 100)).toBe(0); // 100% desconto
       expect(calculateDiscount(1, 50)).toBe(0.5); // Teste com decimais
     });
     
-    it('deve detectar mutação em elegibilidade para desconto', () => {
+    it('deve detectar mutacao em elegibilidade para desconto', () => {
       const { isEligibleForDiscount } = businessLogic;
       
       // Casos que devem retornar true
@@ -423,12 +423,12 @@ describe('Testes de Mutação', () => {
       expect(isEligibleForDiscount('guest', 1000)).toBe(false);
       expect(isEligibleForDiscount('', 100)).toBe(false);
       
-      // Casos edge para detectar mutações de limites
+      // Casos edge para detectar mutacoes de limites
       expect(isEligibleForDiscount('premium', 100)).toBe(true); // Exatamente no limite
       expect(isEligibleForDiscount('regular', 500)).toBe(true); // Exatamente no limite
     });
     
-    it('deve detectar mutação em processamento de pedido', () => {
+    it('deve detectar mutacao em processamento de pedido', () => {
       const { processOrder } = businessLogic;
       
       const items = [
@@ -454,8 +454,8 @@ describe('Testes de Mutação', () => {
     });
   });
   
-  describe('Mutação de Métodos de Array', () => {
-    it('deve detectar mutação em verificação de array vazio', () => {
+  describe('Mutacao de Metodos de Array', () => {
+    it('deve detectar mutacao em verificacao de array vazio', () => {
       const { isEmpty, isNotEmpty } = arrayUtils;
       
       expect(isEmpty([])).toBe(true);
@@ -467,7 +467,7 @@ describe('Testes de Mutação', () => {
       expect(isNotEmpty([1, 2, 3])).toBe(true);
     });
     
-    it('deve detectar mutação em primeiro e último elemento', () => {
+    it('deve detectar mutacao em primeiro e ultimo elemento', () => {
       const { first, last } = arrayUtils;
       
       expect(first([1, 2, 3])).toBe(1);
@@ -478,12 +478,12 @@ describe('Testes de Mutação', () => {
       expect(last([])).toBe(undefined);
       expect(last(['a'])).toBe('a');
       
-      // Casos específicos para detectar mutações de índice
+      // Casos especificos para detectar mutacoes de indice
       expect(first([5, 10, 15])).toBe(5); // Se mutado para [1], seria 10
       expect(last([5, 10, 15])).toBe(15); // Se mutado para [length-2], seria 10
     });
     
-    it('deve detectar mutação em operações de agregação', () => {
+    it('deve detectar mutacao em operacoes de agregacao', () => {
       const { sum, max, min } = arrayUtils;
       
       expect(sum([1, 2, 3])).toBe(6);
@@ -500,8 +500,8 @@ describe('Testes de Mutação', () => {
     });
   });
   
-  describe('Mutação de Chamadas de Método Void', () => {
-    it('deve detectar remoção de efeitos colaterais', () => {
+  describe('Mutacao de Chamadas de Metodo Void', () => {
+    it('deve detectar remocao de efeitos colaterais', () => {
       let sideEffectCalled = false;
       
       const functionWithSideEffect = () => {
@@ -511,18 +511,18 @@ describe('Testes de Mutação', () => {
       
       const mutatedFunction = createMutatedFunction(functionWithSideEffect, 'void_method_calls');
       
-      // Função original deve ter efeito colateral
+      // Funcao original deve ter efeito colateral
       sideEffectCalled = false;
       functionWithSideEffect();
       expect(sideEffectCalled).toBe(true);
       
-      // Função mutada não deve ter efeito colateral
+      // Funcao mutada nao deve ter efeito colateral
       sideEffectCalled = false;
       mutatedFunction();
       expect(sideEffectCalled).toBe(false);
     });
     
-    it('deve detectar remoção de validações', () => {
+    it('deve detectar remocao de validacoes', () => {
       const errors: string[] = [];
       
       const validateAndProcess = (value: string) => {
@@ -537,7 +537,7 @@ describe('Testes de Mutação', () => {
         return true;
       };
       
-      // Teste com valor inválido
+      // Teste com valor invalido
       errors.length = 0;
       expect(validateAndProcess('')).toBe(false);
       expect(errors.length).toBe(1);
@@ -546,15 +546,15 @@ describe('Testes de Mutação', () => {
       expect(validateAndProcess('ab')).toBe(false);
       expect(errors.length).toBe(1);
       
-      // Teste com valor válido
+      // Teste com valor valido
       errors.length = 0;
       expect(validateAndProcess('abc')).toBe(true);
       expect(errors.length).toBe(0);
     });
   });
   
-  describe('Mutação de Incremento/Decremento', () => {
-    it('deve detectar mutação de ++ para --', () => {
+  describe('Mutacao de Incremento/Decremento', () => {
+    it('deve detectar mutacao de ++ para --', () => {
       let counter = 0;
       
       const increment = () => ++counter;
@@ -577,26 +577,26 @@ describe('Testes de Mutação', () => {
       expect(counter).toBe(3);
     });
     
-    it('deve detectar mutação de += para -=', () => {
+    it('deve detectar mutacao de += para -=', () => {
       let value = 10;
       
       const addValue = (amount: number) => value += amount;
       const subtractValue = (amount: number) => value -= amount;
       
-      // Teste de adição
+      // Teste de adicao
       value = 10;
       expect(addValue(5)).toBe(15);
       expect(value).toBe(15);
       
-      // Teste de subtração
+      // Teste de subtracao
       value = 10;
       expect(subtractValue(3)).toBe(7);
       expect(value).toBe(7);
     });
   });
   
-  describe('Cobertura de Mutação - Casos Edge', () => {
-    it('deve testar todos os caminhos de execução', () => {
+  describe('Cobertura de Mutacao - Casos Edge', () => {
+    it('deve testar todos os caminhos de execucao', () => {
       const complexFunction = (a: number, b: number, operation: string) => {
         if (a < 0 || b < 0) {
           return 0;
@@ -627,7 +627,7 @@ describe('Testes de Mutação', () => {
       expect(complexFunction(5, 3, 'unknown')).toBe(0);
     });
     
-    it('deve testar condições aninhadas', () => {
+    it('deve testar condicoes aninhadas', () => {
       const nestedConditions = (user: any) => {
         if (user && user.isActive) {
           if (user.role === 'admin') {
@@ -643,7 +643,7 @@ describe('Testes de Mutação', () => {
         return 'no-access';
       };
       
-      // Testar todas as combinações
+      // Testar todas as combinacoes
       expect(nestedConditions(null)).toBe('no-access');
       expect(nestedConditions({ isActive: false })).toBe('no-access');
       expect(nestedConditions({ isActive: true, role: 'guest' })).toBe('no-access');

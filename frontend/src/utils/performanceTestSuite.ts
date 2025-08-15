@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Suite de Testes Automatizados de Performance
  * Executa testes antes de cada release para garantir que as metas sejam atingidas
  */
@@ -14,7 +14,7 @@ export interface PerformanceTestCase {
   unit: 'ms' | 'score' | '%';
   category: 'homepage' | 'filters' | 'autoRefresh' | 'webVitals';
   testFunction: () => Promise<number>;
-  criticalThreshold?: number; // Se definido, falha crítica se exceder
+  criticalThreshold?: number; // Se definido, falha critica se exceder
 }
 
 export interface PerformanceTestResult {
@@ -54,13 +54,13 @@ class PerformanceTestSuite {
   }
 
   /**
-   * Inicializa os casos de teste padrão
+   * Inicializa os casos de teste padrao
    */
   private initializeTestCases(): void {
     // Testes da Homepage
     this.addTestCase({
       name: 'Homepage Load Time',
-      description: 'Tempo total de carregamento da página inicial',
+      description: 'Tempo total de carregamento da pagina inicial',
       target: 1000,
       unit: 'ms',
       category: 'homepage',
@@ -70,7 +70,7 @@ class PerformanceTestSuite {
 
     this.addTestCase({
       name: 'Homepage Initial Render',
-      description: 'Tempo de renderização inicial da homepage',
+      description: 'Tempo de renderizacao inicial da homepage',
       target: 300,
       unit: 'ms',
       category: 'homepage',
@@ -101,7 +101,7 @@ class PerformanceTestSuite {
 
     this.addTestCase({
       name: 'Filter Render Time',
-      description: 'Tempo de renderização após aplicar filtros',
+      description: 'Tempo de renderizacao apos aplicar filtros',
       target: 200,
       unit: 'ms',
       category: 'filters',
@@ -112,7 +112,7 @@ class PerformanceTestSuite {
     // Testes de Auto-refresh
     this.addTestCase({
       name: 'Auto-refresh Update Time',
-      description: 'Tempo total de atualização automática',
+      description: 'Tempo total de atualizacao automatica',
       target: 800,
       unit: 'ms',
       category: 'autoRefresh',
@@ -133,7 +133,7 @@ class PerformanceTestSuite {
     // Testes de Web Vitals
     this.addTestCase({
       name: 'Largest Contentful Paint (LCP)',
-      description: 'Tempo para renderizar o maior elemento de conteúdo',
+      description: 'Tempo para renderizar o maior elemento de conteudo',
       target: 2500,
       unit: 'ms',
       category: 'webVitals',
@@ -143,7 +143,7 @@ class PerformanceTestSuite {
 
     this.addTestCase({
       name: 'First Input Delay (FID)',
-      description: 'Atraso da primeira interação',
+      description: 'Atraso da primeira interacao',
       target: 100,
       unit: 'ms',
       category: 'webVitals',
@@ -153,7 +153,7 @@ class PerformanceTestSuite {
 
     this.addTestCase({
       name: 'Cumulative Layout Shift (CLS)',
-      description: 'Mudanças inesperadas de layout',
+      description: 'Mudancas inesperadas de layout',
       target: 0.1,
       unit: 'score',
       category: 'webVitals',
@@ -181,7 +181,7 @@ class PerformanceTestSuite {
    */
   async runTestSuite(): Promise<PerformanceTestSuiteResult> {
     if (this.isRunning) {
-      throw new Error('Suite de testes já está em execução');
+      throw new Error('Suite de testes ja esta em execucao');
     }
 
     this.isRunning = true;
@@ -198,7 +198,7 @@ class PerformanceTestSuite {
         
         // Log do resultado
         const status = result.passed ? '✅' : '❌';
-        const critical = result.criticalFailure ? ' (CRÍTICO)' : '';
+        const critical = result.criticalFailure ? ' (CRiTICO)' : '';
         console.log(`${status} ${testCase.name}: ${result.value}${testCase.unit} (target: ${testCase.target}${testCase.unit})${critical}`);
       }
     } finally {
@@ -293,16 +293,16 @@ class PerformanceTestSuite {
     };
   }
 
-  // Implementações dos testes específicos
+  // Implementacoes dos testes especificos
 
   private async testHomepageLoadTime(): Promise<number> {
     // Simular carregamento da homepage
     const startTime = performance.now();
     
-    // Aguardar um frame para simular renderização
+    // Aguardar um frame para simular renderizacao
     await new Promise(resolve => requestAnimationFrame(resolve));
     
-    // Obter métricas de navegação se disponíveis
+    // Obter metricas de navegacao se disponiveis
     const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
     if (navigation) {
       return navigation.loadEventEnd - navigation.loadEventStart;
@@ -312,29 +312,29 @@ class PerformanceTestSuite {
   }
 
   private async testHomepageRenderTime(): Promise<number> {
-    // Obter tempo de renderização dos componentes
+    // Obter tempo de renderizacao dos componentes
     const stats = performanceMonitor.getDetailedStats();
     return stats.averageFilterTime || 0;
   }
 
   private async testHomepageApiResponse(): Promise<number> {
-    // Obter tempo médio de API
+    // Obter tempo medio de API
     const stats = performanceMonitor.getDetailedStats();
     return stats.averageApiTime || 0;
   }
 
   private async testFilterResponseTime(): Promise<number> {
-    // Simular aplicação de filtro
+    // Simular aplicacao de filtro
     const startTime = performance.now();
     
-    // Simular operação de filtro
+    // Simular operacao de filtro
     await new Promise(resolve => setTimeout(resolve, 50));
     
     return performance.now() - startTime;
   }
 
   private async testFilterRenderTime(): Promise<number> {
-    // Obter tempo de renderização de filtros
+    // Obter tempo de renderizacao de filtros
     const stats = performanceMonitor.getDetailedStats();
     return stats.averageFilterTime || 0;
   }
@@ -343,7 +343,7 @@ class PerformanceTestSuite {
     // Simular auto-refresh
     const startTime = performance.now();
     
-    // Simular atualização
+    // Simular atualizacao
     await new Promise(resolve => setTimeout(resolve, 100));
     
     return performance.now() - startTime;
@@ -374,7 +374,7 @@ class PerformanceTestSuite {
   }
 
   /**
-   * Executa testes específicos por categoria
+   * Executa testes especificos por categoria
    */
   async runCategoryTests(category: PerformanceTestCase['category']): Promise<PerformanceTestResult[]> {
     const categoryTests = this.testCases.filter(tc => tc.category === category);
@@ -389,7 +389,7 @@ class PerformanceTestSuite {
   }
 
   /**
-   * Gera relatório de release
+   * Gera relatorio de release
    */
   async generateReleaseReport(): Promise<{
     suiteResult: PerformanceTestSuiteResult;
@@ -397,16 +397,16 @@ class PerformanceTestSuite {
     recommendations: string[];
     releaseApproved: boolean;
   }> {
-    console.log('📋 Gerando relatório de release...');
+    console.log('📋 Gerando relatorio de release...');
     
     const suiteResult = await this.runTestSuite();
     
-    // Comparar com linha de base se disponível
+    // Comparar com linha de base se disponivel
     const baseline = performanceBaseline.getBaseline();
     let baselineComparison = null;
     
     if (baseline) {
-      // Construir métricas atuais baseadas nos resultados dos testes
+      // Construir metricas atuais baseadas nos resultados dos testes
       const currentMetrics = {
         homepage: {
           loadTime: suiteResult.results.find(r => r.testCase === 'Homepage Load Time')?.value || 0,
@@ -426,10 +426,10 @@ class PerformanceTestSuite {
       baselineComparison = performanceBaseline.generateComparisonReport(currentMetrics);
     }
 
-    // Gerar recomendações
+    // Gerar recomendacoes
     const recommendations = this.generateReleaseRecommendations(suiteResult, baselineComparison);
     
-    // Determinar se o release é aprovado
+    // Determinar se o release e aprovado
     const releaseApproved = suiteResult.overallPassed && suiteResult.criticalFailures === 0;
 
     const report = {
@@ -439,17 +439,17 @@ class PerformanceTestSuite {
       releaseApproved
     };
 
-    console.log('📊 Relatório de Release:', {
+    console.log('📊 Relatorio de Release:', {
       testsPassados: `${suiteResult.passedTests}/${suiteResult.totalTests}`,
       falhasCriticas: suiteResult.criticalFailures,
-      aprovado: releaseApproved ? 'SIM' : 'NÃO'
+      aprovado: releaseApproved ? 'SIM' : 'NaO'
     });
 
     return report;
   }
 
   /**
-   * Gera recomendações para o release
+   * Gera recomendacoes para o release
    */
   private generateReleaseRecommendations(
     suiteResult: PerformanceTestSuiteResult,
@@ -457,9 +457,9 @@ class PerformanceTestSuite {
   ): string[] {
     const recommendations: string[] = [];
 
-    // Verificar falhas críticas
+    // Verificar falhas criticas
     if (suiteResult.criticalFailures > 0) {
-      recommendations.push('🚨 BLOQUEADOR: Falhas críticas detectadas - release não recomendado');
+      recommendations.push('🚨 BLOQUEADOR: Falhas criticas detectadas - release nao recomendado');
     }
 
     // Verificar testes falhados
@@ -468,7 +468,7 @@ class PerformanceTestSuite {
       recommendations.push(`⚠️ ${failedTests.length} teste(s) falharam: ${failedTests.map(t => t.testCase).join(', ')}`);
     }
 
-    // Verificar degradação em relação à linha de base
+    // Verificar degradacao em relacao a linha de base
     if (baselineComparison?.comparisons) {
       const degraded = baselineComparison.comparisons.filter((c: any) => c.status === 'degraded');
       if (degraded.length > 0) {
@@ -476,7 +476,7 @@ class PerformanceTestSuite {
       }
     }
 
-    // Recomendações por categoria
+    // Recomendacoes por categoria
     Object.entries(suiteResult.summary).forEach(([category, stats]) => {
       if (stats.passed < stats.total) {
         recommendations.push(`🔧 Otimizar categoria ${category}: ${stats.passed}/${stats.total} testes passaram`);
@@ -491,24 +491,24 @@ class PerformanceTestSuite {
   }
 
   /**
-   * Obtém lista de casos de teste
+   * Obtem lista de casos de teste
    */
   getTestCases(): PerformanceTestCase[] {
     return [...this.testCases];
   }
 
   /**
-   * Verifica se a suite está em execução
+   * Verifica se a suite esta em execucao
    */
   isTestSuiteRunning(): boolean {
     return this.isRunning;
   }
 }
 
-// Instância singleton
+// Instancia singleton
 export const performanceTestSuite = new PerformanceTestSuite();
 
-// Utilitários para debugging e CI/CD
+// Utilitarios para debugging e CI/CD
 export const debugTestSuite = {
   runTests: () => performanceTestSuite.runTestSuite(),
   runCategoryTests: (category: PerformanceTestCase['category']) => 
@@ -524,26 +524,26 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
   (window as any).performanceTestSuite = performanceTestSuite;
 }
 
-// Função para integração com CI/CD
+// Funcao para integracao com CI/CD
 export const runPreReleaseTests = async (): Promise<boolean> => {
   try {
     const report = await performanceTestSuite.generateReleaseReport();
     
     // Log para CI/CD
     console.log('='.repeat(50));
-    console.log('RELATÓRIO DE PERFORMANCE PRÉ-RELEASE');
+    console.log('RELAToRIO DE PERFORMANCE PRe-RELEASE');
     console.log('='.repeat(50));
     console.log(`Testes executados: ${report.suiteResult.totalTests}`);
     console.log(`Testes aprovados: ${report.suiteResult.passedTests}`);
-    console.log(`Falhas críticas: ${report.suiteResult.criticalFailures}`);
-    console.log(`Release aprovado: ${report.releaseApproved ? 'SIM' : 'NÃO'}`);
-    console.log('Recomendações:');
+    console.log(`Falhas criticas: ${report.suiteResult.criticalFailures}`);
+    console.log(`Release aprovado: ${report.releaseApproved ? 'SIM' : 'NaO'}`);
+    console.log('Recomendacoes:');
     report.recommendations.forEach(rec => console.log(`  - ${rec}`));
     console.log('='.repeat(50));
     
     return report.releaseApproved;
   } catch (error) {
-    console.error('Erro ao executar testes pré-release:', error);
+    console.error('Erro ao executar testes pre-release:', error);
     return false;
   }
 };

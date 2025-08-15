@@ -1,0 +1,55 @@
+{
+  "timestamp": "2025-08-14T21:40:15.344545",
+  "total_tickets": 9812,
+  "metrics_by_status": {
+    "Novo": 5,
+    "Processando (atribudo)": 39,
+    "Processando (planejado)": 26,
+    "Pendente": 33,
+    "Solucionado": 3045,
+    "Fechado": 6664
+  },
+  "metrics_by_level": {
+    "N1": {
+      "Novo": 0,
+      "Processando (atribudo)": 0,
+      "Processando (planejado)": 0,
+      "Pendente": 0,
+      "Solucionado": 0,
+      "Fechado": 0
+    },
+    "N2": {
+      "Novo": 0,
+      "Processando (atribudo)": 0,
+      "Processando (planejado)": 0,
+      "Pendente": 0,
+      "Solucionado": 0,
+      "Fechado": 0
+    },
+    "N3": {
+      "Novo": 1,
+      "Processando (atribudo)": 0,
+      "Processando (planejado)": 0,
+      "Pendente": 0,
+      "Solucionado": 0,
+      "Fechado": 0
+    },
+    "N4": {
+      "Novo": 0,
+      "Processando (atribudo)": 0,
+      "Processando (planejado)": 0,
+      "Pendente": 1,
+      "Solucionado": 0,
+      "Fechado": 0
+    }
+  },
+  "system_health": {
+    "backend_responsive": false,
+    "frontend_responsive": false,
+    "glpi_connection": true,
+    "response_times": {
+      "glpi": 0.16982197761535645
+    }
+  },
+  "data_hash": "cf22c60a7ef5165ae39c2275be3c0bd6"
+}

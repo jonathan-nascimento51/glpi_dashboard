@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import { MetricsData, TechnicianRanking, NewTicket } from '../types';
 import { DateRange } from '../types';
 import { apiService } from '../services/api';
@@ -76,9 +76,9 @@ const LevelSection = React.memo<LevelSectionProps>(({ level, data }) => {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-gray-900">Nível {level}</h3>
+        <h3 className="text-lg font-semibold text-gray-900">Nivel {level}</h3>
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-500">Taxa de Resolução:</span>
+          <span className="text-sm text-gray-500">Taxa de Resolucao:</span>
           <span className="text-sm font-semibold text-green-600">{resolvedPercentage}%</span>
         </div>
       </div>
@@ -105,7 +105,7 @@ const LevelSection = React.memo<LevelSectionProps>(({ level, data }) => {
       {/* Progress Bar */}
       <div className="mt-4">
         <div className="flex justify-between text-xs text-gray-500 mb-1">
-          <span>Progresso de Resolução</span>
+          <span>Progresso de Resolucao</span>
           <span>{resolvedPercentage}%</span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
@@ -174,12 +174,12 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
 
     throttledFetchNewTickets();
     
-    // CORREÇÃO: Aumentado para 5 minutos e adicionado controle de interação
+    // CORREcaO: Aumentado para 5 minutos e adicionado controle de interacao
     const interval = setInterval(() => {
-      // Verificar se auto-refresh está habilitado
+      // Verificar se auto-refresh esta habilitado
       const autoRefreshEnabled = localStorage.getItem('autoRefreshEnabled');
       if (autoRefreshEnabled === 'false') {
-        console.log('⏸️ Auto-refresh de tickets desabilitado pelo usuário');
+        console.log('⏸️ Auto-refresh de tickets desabilitado pelo usuario');
         return;
       }
 
@@ -187,12 +187,12 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
       const now = Date.now();
       const timeSinceInteraction = lastInteraction ? now - parseInt(lastInteraction) : Infinity;
       
-      // Só atualiza se não houver interação recente (últimos 2 minutos)
+      // So atualiza se nao houver interacao recente (ultimos 2 minutos)
       if (timeSinceInteraction > 120000) {
         console.log('🎫 Atualizando tickets novos no Professional Dashboard');
         throttledFetchNewTickets();
       } else {
-        console.log('⏸️ Atualização de tickets pausada no Professional Dashboard');
+        console.log('⏸️ Atualizacao de tickets pausada no Professional Dashboard');
       }
     }, 300000); // 5 minutos
     
@@ -216,7 +216,7 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
         <div className="text-center">
           <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <div className="text-gray-900 text-xl font-semibold mb-2">Erro ao Carregar Dados</div>
-          <div className="text-gray-600 mb-4">Não foi possível conectar ao sistema GLPI</div>
+          <div className="text-gray-600 mb-4">Nao foi possivel conectar ao sistema GLPI</div>
           <button 
             onClick={() => onRefresh()}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
@@ -245,7 +245,7 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
             <div className="flex items-center space-x-6">
               <div className="text-right">
                 <div className="text-sm font-medium text-gray-900">{currentTime}</div>
-                <div className="text-xs text-gray-500">Atualização Automática</div>
+                <div className="text-xs text-gray-500">Atualizacao Automatica</div>
               </div>
               <button
                 onClick={onRefresh}
@@ -281,14 +281,14 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
             trend={12}
           />
           <StatusCard
-            title="Taxa de Resolução"
+            title="Taxa de Resolucao"
             value={parseFloat(resolutionRate)}
             icon={BarChart3}
             color="text-slate-700 dark:text-slate-300"
             bgColor="figma-level-badge"
           />
           <StatusCard
-            title="Técnicos Ativos"
+            title="Tecnicos Ativos"
             value={technicianRanking.length}
             icon={Users}
             color="text-slate-700 dark:text-slate-300"
@@ -308,7 +308,7 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Technician Ranking */}
           <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6">Ranking de Técnicos</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-6">Ranking de Tecnicos</h3>
             <div className="space-y-4 max-h-96 overflow-y-auto">
               {technicianRanking.map((tech, index) => {
                 const rankBadgeColor = useMemo(() => {
@@ -328,7 +328,7 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
                       </div>
                       <div>
                         <div className="font-medium text-gray-900">{tech.nome || tech.name}</div>
-                        <div className="text-sm text-gray-500">Técnico de Suporte</div>
+                        <div className="text-sm text-gray-500">Tecnico de Suporte</div>
                       </div>
                     </div>
                     <div className="text-right">
@@ -393,7 +393,7 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
           <div className="flex items-center justify-between text-sm text-gray-500">
             <div>© 2024 Departamento de Tecnologia do Estado</div>
             <div className="flex items-center space-x-4">
-              <span>Última atualização: {currentTime}</span>
+              <span>ultima atualizacao: {currentTime}</span>
               <div className="flex items-center space-x-1">
                 <div className="w-2 h-2 bg-slate-500 rounded-full animate-pulse"></div>
                 <span>Sistema Online</span>

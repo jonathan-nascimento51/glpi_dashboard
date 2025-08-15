@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+﻿import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePerformanceReports, usePerformanceDebug } from "../hooks/usePerformanceMonitoring";
 
@@ -144,7 +144,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, 
       return (
         <div className="bg-white rounded-lg shadow-sm border p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Browser Metrics</h3>
-          <p className="text-gray-600">Métricas do navegador não disponíveis.</p>
+          <p className="text-gray-600">Metricas do navegador nao disponiveis.</p>
         </div>
       );
     }
@@ -169,12 +169,12 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, 
             <MetricCard
               title="First Byte"
               value={navigation.responseStart - navigation.requestStart}
-              description="Tempo até primeiro byte"
+              description="Tempo ate primeiro byte"
             />
             <MetricCard
               title="DNS Lookup"
               value={navigation.domainLookupEnd - navigation.domainLookupStart}
-              description="Tempo de resolução DNS"
+              description="Tempo de resolucao DNS"
             />
           </div>
         </div>
@@ -202,7 +202,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, 
               <MetricCard
                 title="Used JS Heap"
                 value={memory.usedJSHeapSize / 1024 / 1024}
-                description="MB de memória usada"
+                description="MB de memoria usada"
               />
               <MetricCard
                 title="Total JS Heap"
@@ -282,7 +282,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, 
           <div className="bg-white border-b px-6 py-4 flex items-center justify-between">
             <div>
               <h2 className="text-xl font-bold text-gray-800">Performance Dashboard</h2>
-              <p className="text-sm text-gray-600">Monitoramento em tempo real da aplicação</p>
+              <p className="text-sm text-gray-600">Monitoramento em tempo real da aplicacao</p>
             </div>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
@@ -346,7 +346,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, 
                     disabled={isGenerating}
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
                   >
-                    {isGenerating ? 'Gerando...' : 'Gerar Relatório'}
+                    {isGenerating ? 'Gerando...' : 'Gerar Relatorio'}
                   </button>
                   <button
                     onClick={logMetrics}
@@ -365,27 +365,27 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, 
 
                 {averageMetrics && (
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Métricas Médias</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Metricas Medias</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                       <MetricCard
                         title="Tempo de Filtro"
                         value={averageMetrics.filterChangeTime}
-                        description="Média de tempo para aplicar filtros"
+                        description="Media de tempo para aplicar filtros"
                       />
                       <MetricCard
                         title="Resposta da API"
                         value={averageMetrics.apiResponseTime}
-                        description="Tempo médio de resposta da API"
+                        description="Tempo medio de resposta da API"
                       />
                       <MetricCard
-                        title="Renderização"
+                        title="Renderizacao"
                         value={averageMetrics.renderTime}
-                        description="Tempo médio de renderização"
+                        description="Tempo medio de renderizacao"
                       />
                       <MetricCard
-                        title="Operação Total"
+                        title="Operacao Total"
                         value={averageMetrics.totalOperationTime}
-                        description="Tempo total médio das operações"
+                        description="Tempo total medio das operacoes"
                       />
                     </div>
                   </div>
@@ -393,27 +393,27 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, 
 
                 {latestReport && (
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Último Relatório</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">ultimo Relatorio</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                       <MetricCard
                         title="Filtros"
                         value={latestReport.summary.filterChangeTime}
-                        description="Último tempo de filtro"
+                        description="ultimo tempo de filtro"
                       />
                       <MetricCard
                         title="API"
                         value={latestReport.summary.apiResponseTime}
-                        description="Última resposta da API"
+                        description="ultima resposta da API"
                       />
                       <MetricCard
                         title="Render"
                         value={latestReport.summary.renderTime}
-                        description="Último tempo de render"
+                        description="ultimo tempo de render"
                       />
                       <MetricCard
                         title="Total"
                         value={latestReport.summary.totalOperationTime}
-                        description="Última operação total"
+                        description="ultima operacao total"
                       />
                     </div>
                   </div>
@@ -427,7 +427,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ isVisible, 
             {activeTab === 'api' && (
               <div className="bg-white rounded-lg shadow-sm border p-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">API Performance</h3>
-                <p className="text-gray-600">Métricas de chamadas de API serão exibidas aqui quando disponíveis.</p>
+                <p className="text-gray-600">Metricas de chamadas de API serao exibidas aqui quando disponiveis.</p>
               </div>
             )}
           </div>

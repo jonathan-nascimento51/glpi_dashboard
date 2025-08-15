@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 
 interface FooterProps {
   lastUpdated?: Date;
@@ -15,11 +15,11 @@ export const Footer: React.FC<FooterProps> = ({ lastUpdated, isOnline }) => {
             © 2025 Departamento de Tecnologia do Estado
           </div>
           
-          {/* Status + Última Atualização */}
+          {/* Status + ultima Atualizacao */}
           <div className="flex items-center space-x-4">
             {lastUpdated && (
               <span className="text-meta text-secondary">
-                Última atualização: {lastUpdated.toLocaleTimeString('pt-BR')}
+                ultima atualizacao: {lastUpdated.toLocaleTimeString('pt-BR')}
               </span>
             )}
             <div className="flex items-center space-x-2">

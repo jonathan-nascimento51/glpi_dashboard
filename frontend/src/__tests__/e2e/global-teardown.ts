@@ -1,4 +1,4 @@
-import { chromium, FullConfig } from '@playwright/test';
+﻿import { chromium, FullConfig } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 
@@ -9,16 +9,16 @@ async function globalTeardown(config: FullConfig) {
     // Limpar dados de teste
     await cleanupTestData();
     
-    // Gerar relatório de cobertura se disponível
+    // Gerar relatorio de cobertura se disponivel
     await generateCoverageReport();
     
-    // Limpar arquivos temporários
+    // Limpar arquivos temporarios
     await cleanupTempFiles();
     
     console.log('✅ E2E test teardown completed successfully!');
   } catch (error) {
     console.error('❌ E2E test teardown failed:', error);
-    // Não falhar o processo por causa do teardown
+    // Nao falhar o processo por causa do teardown
   }
 }
 
@@ -31,7 +31,7 @@ async function cleanupTestData() {
     
     // Limpar dados de teste do localStorage
     await page.evaluate(() => {
-      // Remover apenas dados de teste, manter configurações do usuário
+      // Remover apenas dados de teste, manter configuracoes do usuario
       const keysToRemove = [
         'test-mode',
         'test-user',
@@ -63,8 +63,8 @@ async function generateCoverageReport() {
     if (fs.existsSync(e2eCoverageDir)) {
       console.log('📈 E2E coverage data found');
       
-      // Aqui você pode adicionar lógica para processar dados de cobertura
-      // Por exemplo, mesclar com cobertura de testes unitários
+      // Aqui voce pode adicionar logica para processar dados de cobertura
+      // Por exemplo, mesclar com cobertura de testes unitarios
       
       const coverageFiles = fs.readdirSync(e2eCoverageDir);
       console.log(`📁 Found ${coverageFiles.length} coverage files`);

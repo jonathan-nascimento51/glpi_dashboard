@@ -1,11 +1,11 @@
-import { setupServer } from 'msw/node';
+﻿import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { handlers } from './handlers';
 
 // Configura o servidor MSW para testes Node.js
 export const server = setupServer(...handlers);
 
-// Handlers adicionais para cenários específicos de teste
+// Handlers adicionais para cenarios especificos de teste
 export const testHandlers = {
   // Handler para simular erro de rede
   networkError: rest.get('*', (req, res, ctx) => {
@@ -79,7 +79,7 @@ export const testHandlers = {
     );
   }),
   
-  // Handler para simular resposta com dados inválidos
+  // Handler para simular resposta com dados invalidos
   invalidData: rest.get('*', (req, res, ctx) => {
     return res(
       ctx.status(200),
@@ -88,9 +88,9 @@ export const testHandlers = {
   }),
 };
 
-// Utilitários para testes
+// Utilitarios para testes
 export const testUtils = {
-  // Usa um handler específico para o próximo request
+  // Usa um handler especifico para o proximo request
   useHandler: (handler: any) => {
     server.use(handler);
   },
@@ -100,37 +100,37 @@ export const testUtils = {
     server.resetHandlers();
   },
   
-  // Adiciona handlers temporários
+  // Adiciona handlers temporarios
   addHandlers: (...handlers: any[]) => {
     server.use(...handlers);
   },
   
-  // Simula erro de rede para todas as requisições
+  // Simula erro de rede para todas as requisicoes
   simulateNetworkError: () => {
     server.use(testHandlers.networkError);
   },
   
-  // Simula timeout para todas as requisições
+  // Simula timeout para todas as requisicoes
   simulateTimeout: () => {
     server.use(testHandlers.timeout);
   },
   
-  // Simula erro 500 para todas as requisições
+  // Simula erro 500 para todas as requisicoes
   simulateServerError: () => {
     server.use(testHandlers.serverError);
   },
   
-  // Simula erro 404 para todas as requisições
+  // Simula erro 404 para todas as requisicoes
   simulateNotFound: () => {
     server.use(testHandlers.notFound);
   },
   
-  // Simula erro 401 para todas as requisições
+  // Simula erro 401 para todas as requisicoes
   simulateUnauthorized: () => {
     server.use(testHandlers.unauthorized);
   },
   
-  // Simula erro 403 para todas as requisições
+  // Simula erro 403 para todas as requisicoes
   simulateForbidden: () => {
     server.use(testHandlers.forbidden);
   },
@@ -145,7 +145,7 @@ export const testUtils = {
     server.use(testHandlers.emptyResponse);
   },
   
-  // Simula dados inválidos
+  // Simula dados invalidos
   simulateInvalidData: () => {
     server.use(testHandlers.invalidData);
   },

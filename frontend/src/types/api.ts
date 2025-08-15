@@ -1,6 +1,6 @@
-// Tipos para a API do Dashboard GLPI
+﻿// Tipos para a API do Dashboard GLPI
 
-// Métricas por nível
+// Metricas por nivel
 export interface LevelMetrics {
   novos: number;
   pendentes: number;
@@ -19,7 +19,7 @@ export interface LevelMetrics {
   tendencia_atrasados?: number;
 }
 
-// Métricas de níveis
+// Metricas de niveis
 export interface NiveisMetrics {
   n1: LevelMetrics;
   n2: LevelMetrics;
@@ -28,7 +28,7 @@ export interface NiveisMetrics {
   geral: LevelMetrics;
 }
 
-// Tendências
+// Tendencias
 export interface TendenciasMetrics {
   novos: string;
   pendentes: string;
@@ -36,7 +36,7 @@ export interface TendenciasMetrics {
   resolvidos: string;
 }
 
-// Métricas do dashboard
+// Metricas do dashboard
 export interface DashboardMetrics {
   niveis: NiveisMetrics;
   tendencias?: TendenciasMetrics;
@@ -54,7 +54,7 @@ export interface SystemStatus {
   ultima_atualizacao: string;
 }
 
-// Ranking de técnicos
+// Ranking de tecnicos
 export interface TechnicianRanking {
   id: string;
   name: string;
@@ -68,7 +68,7 @@ export interface TechnicianRanking {
   averageResolutionTime?: number;
 }
 
-// Parâmetros de filtro
+// Parametros de filtro
 export interface FilterParams {
   period?: 'today' | 'week' | 'month';
   levels?: string[];
@@ -104,7 +104,7 @@ export interface ApiError {
   code?: string | number;
 }
 
-// Resultado da API (união de sucesso e erro)
+// Resultado da API (uniao de sucesso e erro)
 export type ApiResult<T = any> = ApiResponse<T> | ApiError;
 
 export interface LoadingState {
@@ -113,11 +113,11 @@ export interface LoadingState {
   lastUpdated: Date | null;
 }
 
-// Configuração de cache
+// Configuracao de cache
 export interface CacheConfig {
   enabled: boolean;
   ttl: number; // Time to live em milissegundos
-  maxSize: number; // Número máximo de entradas no cache
+  maxSize: number; // Numero maximo de entradas no cache
   strategy: string;
 }
 
@@ -128,7 +128,7 @@ export interface CacheEntry<T> {
   key: string;
 }
 
-// Métricas de performance
+// Metricas de performance
 export interface PerformanceMetrics {
   responseTime: number;
   cacheHit: boolean;
@@ -136,7 +136,7 @@ export interface PerformanceMetrics {
   endpoint: string;
 }
 
-// Configuração da aplicação
+// Configuracao da aplicacao
 export interface AppConfig {
   theme: string;
   language: string;
@@ -149,7 +149,7 @@ export interface AppConfig {
   timezone: string;
 }
 
-// Contexto do usuário
+// Contexto do usuario
 export interface UserContext {
   id?: string;
   name?: string;
@@ -157,7 +157,7 @@ export interface UserContext {
   permissions?: string[];
 }
 
-// Notificação
+// Notificacao
 export interface Notification {
   id: string;
   type: 'success' | 'error' | 'warning' | 'info';
@@ -168,7 +168,7 @@ export interface Notification {
   duration?: number;
 }
 
-// Tema da aplicação
+// Tema da aplicacao
 export interface Theme {
   name: string;
   displayName: string;
@@ -197,7 +197,7 @@ export interface Theme {
   };
 }
 
-// Preferências do usuário
+// Preferencias do usuario
 export interface UserPreferences {
   theme: 'light' | 'dark' | 'auto';
   language: 'pt-BR' | 'en-US';
@@ -222,14 +222,14 @@ export interface UserPreferences {
   };
 }
 
-// Validação de formulário
+// Validacao de formulario
 export interface ValidationResult<T = any> {
   isValid: boolean;
   errors: string[];
   data?: T;
 }
 
-// Opções de exportação
+// Opcoes de exportacao
 export interface ExportOptions {
   format: 'csv' | 'xlsx' | 'pdf' | 'json';
   includeFilters: boolean;
@@ -237,7 +237,7 @@ export interface ExportOptions {
   filename?: string;
 }
 
-// Histórico de ações
+// Historico de acoes
 export interface ActionHistory {
   id: string;
   action: string;
@@ -246,7 +246,7 @@ export interface ActionHistory {
   details?: Record<string, any>;
 }
 
-// Type guards para verificação de tipos em runtime
+// Type guards para verificacao de tipos em runtime
 export const isApiError = (response: ApiResult): response is ApiError => {
   return response.success === false;
 };
@@ -277,9 +277,9 @@ export const isValidNiveisMetrics = (data: any): data is NiveisMetrics => {
   );
 };
 
-// Utilitários de transformação
+// Utilitarios de transformacao
 export const transformLegacyData = (legacyData: any): DashboardMetrics => {
-  // Função para transformar dados legados em formato atual
+  // Funcao para transformar dados legados em formato atual
   const defaultLevel: LevelMetrics = {
     novos: 0,
     pendentes: 0,
@@ -288,7 +288,7 @@ export const transformLegacyData = (legacyData: any): DashboardMetrics => {
     total: 0
   };
 
-  // Se os dados já vêm na estrutura correta da API
+  // Se os dados ja vem na estrutura correta da API
   if (legacyData?.niveis) {
     return {
       niveis: {

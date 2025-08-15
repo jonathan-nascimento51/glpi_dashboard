@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+﻿import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Search, X, Clock, Calendar, ChevronDown } from 'lucide-react';
 import { Theme, SearchResult } from '../types';
 import { SimpleTechIcon } from './SimpleTechIcon';
@@ -26,10 +26,10 @@ const themes: { value: Theme; label: string; icon: string }[] = [
 // Predefined date ranges
 const dateRanges = [
   { label: 'Hoje', days: 0 },
-  { label: 'Últimos 7 dias', days: 7 },
-  { label: 'Últimos 15 dias', days: 15 },
-  { label: 'Últimos 30 dias', days: 30 },
-  { label: 'Últimos 90 dias', days: 90 },
+  { label: 'ultimos 7 dias', days: 7 },
+  { label: 'ultimos 15 dias', days: 15 },
+  { label: 'ultimos 30 dias', days: 30 },
+  { label: 'ultimos 90 dias', days: 90 },
 ];
 
 export const Header: React.FC<HeaderProps> = ({
@@ -69,9 +69,9 @@ export const Header: React.FC<HeaderProps> = ({
 
   // Get date range label - memoized
   const getDateRangeLabel = useMemo(() => {
-    // ✅ Verificação de segurança
+    // ✅ Verificacao de seguranca
     if (!dateRange || !dateRange.startDate || !dateRange.endDate) {
-      return 'Selecionar período';
+      return 'Selecionar periodo';
     }
     
     const start = new Date(dateRange.startDate);
@@ -98,11 +98,11 @@ export const Header: React.FC<HeaderProps> = ({
     onDateRangeChange?.({
       startDate: startStr,
       endDate: endStr,
-      label: range?.label || 'Período personalizado'
+      label: range?.label || 'Periodo personalizado'
     });
     setShowDatePicker(false);
     
-    onNotification('Período Atualizado', `Filtro alterado para: ${range?.label}`, 'info');
+    onNotification('Periodo Atualizado', `Filtro alterado para: ${range?.label}`, 'info');
   }, [onDateRangeChange, onNotification]);
 
   // Handle custom date range
@@ -111,10 +111,10 @@ export const Header: React.FC<HeaderProps> = ({
       onDateRangeChange({
         startDate: customStartDate,
         endDate: customEndDate,
-        label: 'Período personalizado'
+        label: 'Periodo personalizado'
       });
       setShowDatePicker(false);
-      onNotification('Período Personalizado', 'Período customizado aplicado', 'success');
+      onNotification('Periodo Personalizado', 'Periodo customizado aplicado', 'success');
     }
   }, [customStartDate, customEndDate, onDateRangeChange, onNotification]);
 
@@ -198,7 +198,7 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="w-full px-6 py-4">
         <div className="flex items-center justify-between w-full">
           
-          {/* ========== SEÇÃO ESQUERDA: LOGO + TÍTULO ========== */}
+          {/* ========== SEcaO ESQUERDA: LOGO + TiTULO ========== */}
           <div className="flex items-center space-x-4 min-w-0 flex-shrink-0">
             <div className="w-11 h-11 figma-glass-card rounded-xl flex items-center justify-center hover:scale-105 transition-all duration-200 group">
               <SimpleTechIcon size={24} className="group-hover:scale-110 transition-transform" />
@@ -213,7 +213,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
           
-          {/* ========== SEÇÃO CENTRO: BUSCA + FILTRO DE DATA ========== */}
+          {/* ========== SEcaO CENTRO: BUSCA + FILTRO DE DATA ========== */}
           <div className="flex items-center space-x-6 flex-1 justify-center max-w-2xl mx-8">
             
             {/* Search Bar */}
@@ -271,7 +271,7 @@ export const Header: React.FC<HeaderProps> = ({
               {showDatePicker && (
                 <div className="absolute top-full right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-200 py-3 min-w-80 z-50">
                   <div className="px-4 pb-3 border-b border-gray-100">
-                    <h3 className="text-sm font-semibold text-gray-900">Selecionar Período</h3>
+                    <h3 className="text-sm font-semibold text-gray-900">Selecionar Periodo</h3>
                   </div>
                   
                   {/* Predefined Ranges */}
@@ -289,7 +289,7 @@ export const Header: React.FC<HeaderProps> = ({
                   
                   {/* Custom Range */}
                   <div className="border-t border-gray-100 pt-3 px-4">
-                    <div className="text-xs font-medium text-gray-500 mb-2">Período Personalizado</div>
+                    <div className="text-xs font-medium text-gray-500 mb-2">Periodo Personalizado</div>
                     <div className="grid grid-cols-2 gap-2 mb-3">
                       <input
                         type="date"
@@ -311,7 +311,7 @@ export const Header: React.FC<HeaderProps> = ({
                       disabled={!customStartDate || !customEndDate}
                       className="w-full px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                      Aplicar Período
+                      Aplicar Periodo
                     </button>
                   </div>
                 </div>
@@ -319,7 +319,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
           
-          {/* ========== SEÇÃO DIREITA: CONTROLES + STATUS ========== */}
+          {/* ========== SEcaO DIREITA: CONTROLES + STATUS ========== */}
           <div className="flex items-center space-x-4 flex-shrink-0">
             
             {/* Performance Dashboard Button */}

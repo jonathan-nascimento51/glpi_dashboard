@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, Suspense } from 'react';
+﻿import React, { useEffect, useMemo, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { MetricsGrid } from './MetricsGrid';
 import { LevelMetricsGrid } from './LevelMetricsGrid';
@@ -28,7 +28,7 @@ interface ModernDashboardProps {
   className?: string
 }
 
-// Variantes de animação movidas para fora do componente
+// Variantes de animacao movidas para fora do componente
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -81,7 +81,7 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
   className
 }) {
   // Sistema funcionando corretamente
-    // console.log('✅ ModernDashboard carregado - correção dos níveis aplicada');
+    // console.log('✅ ModernDashboard carregado - correcao dos niveis aplicada');
 
 
   
@@ -101,17 +101,17 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
 
   // Memoizar dados do ranking processados
   const processedRankingData = useMemo(() => {
-    // console.log('📊 ModernDashboard - Processando ranking de', technicianRanking?.length || 0, 'técnicos')
+    // console.log('📊 ModernDashboard - Processando ranking de', technicianRanking?.length || 0, 'tecnicos')
     
     const result = technicianRanking.map((tech) => ({
       id: tech.id || String(tech.name),
-      name: tech.name || tech.nome || 'Técnico',
+      name: tech.name || tech.nome || 'Tecnico',
       level: tech.level || 'N1',
       total: tech.total || 0,
       rank: tech.rank || 0
     }))
     
-    // console.log('✅ ModernDashboard - Ranking processado:', result.length, 'técnicos')
+    // console.log('✅ ModernDashboard - Ranking processado:', result.length, 'tecnicos')
     return result
   }, [technicianRanking])
 
@@ -169,7 +169,7 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
     >
 
       
-      {/* Cards de métricas principais */}
+      {/* Cards de metricas principais */}
       <motion.div variants={itemVariants} className="dashboard-metrics-section">
         <MetricsGrid 
           metrics={metrics}
@@ -177,9 +177,9 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
         />
       </motion.div>
       
-      {/* Layout principal com métricas por nível e tickets novos */}
+      {/* Layout principal com metricas por nivel e tickets novos */}
       <div className="dashboard-main-grid">
-        {/* Métricas por nível de atendimento - ocupando 2 colunas */}
+        {/* Metricas por nivel de atendimento - ocupando 2 colunas */}
         <motion.div variants={itemVariants} className="dashboard-levels-section">
           <LevelMetricsGrid 
             metrics={{ niveis: levelMetrics }}
@@ -198,12 +198,12 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
         </motion.div>
       </div>
 
-      {/* Ranking de técnicos - ocupando toda a largura na parte inferior */}
+      {/* Ranking de tecnicos - ocupando toda a largura na parte inferior */}
       <motion.div variants={itemVariants} className="dashboard-ranking-section">
         <Suspense fallback={<TableSkeleton />}>
           <LazyRankingTable 
             data={processedRankingData}
-            title="Ranking de Técnicos"
+            title="Ranking de Tecnicos"
             className="w-full h-full"
           />
         </Suspense>

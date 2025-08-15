@@ -1,4 +1,4 @@
-import { clsx, type ClassValue } from "clsx"
+﻿import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { 
   TrendingUp, 
@@ -15,12 +15,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-// Formatação de números para padrão brasileiro
+// Formatacao de numeros para padrao brasileiro
 export function formatNumber(value: number): string {
   return new Intl.NumberFormat('pt-BR').format(value)
 }
 
-// Formatação de porcentagem
+// Formatacao de porcentagem
 export function formatPercentage(value: number): string {
   return new Intl.NumberFormat('pt-BR', {
     style: 'percent',
@@ -43,7 +43,7 @@ export function getStatusColor(status: string): string {
   return colors[status as keyof typeof colors] || "text-gray-600 bg-gray-50 border-gray-200"
 }
 
-// Ícones baseados no status
+// icones baseados no status
 export function getStatusIcon(status: string): LucideIcon {
   const icons = {
     new: AlertCircle,
@@ -57,7 +57,7 @@ export function getStatusIcon(status: string): LucideIcon {
   return icons[status as keyof typeof icons] || AlertCircle
 }
 
-// Ícones de tendência
+// icones de tendencia
 export function getTrendIcon(trend: string): LucideIcon {
   switch (trend) {
     case 'up':
@@ -71,7 +71,7 @@ export function getTrendIcon(trend: string): LucideIcon {
   }
 }
 
-// Cores de tendência
+// Cores de tendencia
 export function getTrendColor(trend: string): string {
   switch (trend) {
     case 'up':
@@ -85,14 +85,14 @@ export function getTrendColor(trend: string): string {
   }
 }
 
-// Formatação de data relativa
+// Formatacao de data relativa
 export function formatRelativeTime(date: string | Date): string {
   const now = new Date()
   const target = new Date(date)
   const diffInSeconds = Math.floor((now.getTime() - target.getTime()) / 1000)
   
   if (diffInSeconds < 60) return 'Agora mesmo'
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m atrás`
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h atrás`
-  return `${Math.floor(diffInSeconds / 86400)}d atrás`
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m atras`
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h atras`
+  return `${Math.floor(diffInSeconds / 86400)}d atras`
 }

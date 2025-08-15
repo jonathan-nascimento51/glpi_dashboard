@@ -1,7 +1,7 @@
-import { rest } from 'msw';
+﻿import { rest } from 'msw';
 import { mockData } from './mockData';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'http://localhost:5000';
 
 export const handlers = [
   // Dashboard metrics
@@ -22,7 +22,7 @@ export const handlers = [
     }
     
     return res(
-      ctx.delay(100), // Simula latência da rede
+      ctx.delay(100), // Simula latencia da rede
       ctx.status(200),
       ctx.json({
         success: true,
@@ -56,7 +56,7 @@ export const handlers = [
       );
     }
     
-    // Paginação
+    // Paginacao
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
     const paginatedTickets = tickets.slice(startIndex, endIndex);
@@ -378,7 +378,7 @@ export const handlers = [
     );
   }),
 
-  // Fallback handler para requisições não mapeadas
+  // Fallback handler para requisicoes nao mapeadas
   rest.all('*', (req, res, ctx) => {
     console.warn(`Unhandled ${req.method} request to ${req.url}`);
     return res(

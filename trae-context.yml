@@ -1,27 +1,166 @@
-# Configuração de Contexto para Trae AI
+﻿# Configuração de Contexto para Trae AI - Sistema Integrado
 project:
   name: "GLPI Dashboard"
   type: "React + Python Flask"
-  
+  integrated_systems:
+    - "AI Context System"
+    - "Monitoring System"
+    - "Safe Changes Protocol"
+
+# SISTEMAS OBRIGATÓRIOS - SEMPRE VERIFICAR ANTES DE OPERAR
+required_systems:
+  ai_context:
+    config_file: "config_ai_context.py"
+    example_file: "example_ai_context.py"
+    storage_dir: "ai_context_storage/"
+    validation_cmd: "python example_ai_context.py"
+    
+  monitoring:
+    config_file: "config_monitoring.py"
+    example_file: "example_monitoring.py"
+    logs_dir: "logs/"
+    validation_cmd: "python example_monitoring.py"
+    
+  safe_changes:
+    config_file: "config_safe_changes.py"
+    example_file: "example_safe_changes.py"
+    backup_dir: "backups/"
+    validation_cmd: "python example_safe_changes.py"
+
+# VALIDAÇÃO COMPLETA DO SISTEMA
+system_validation:
+  command: "python validate_system.py"
+  required_files:
+    - "ai_context_system.py"
+    - "config_ai_context.py"
+    - "example_ai_context.py"
+    - "README_AI_CONTEXT.md"
+    - "monitoring_system.py"
+    - "config_monitoring.py"
+    - "example_monitoring.py"
+    - "README_MONITORING.md"
+    - "safe_change_protocol.py"
+    - "config_safe_changes.py"
+    - "example_safe_changes.py"
+    - "README_SAFE_CHANGES.md"
+
+# FLUXO OBRIGATÓRIO PARA TRAE AI
+workflow:
+  before_any_operation:
+    - "Verificar sistemas ativos (AI Context, Monitoring, Safe Changes)"
+    - "Executar python validate_system.py"
+    - "Confirmar todos os 12 arquivos presentes"
+    - "Validar configurações dos MCPs"
+    
+  during_operation:
+    - "Registrar contexto no AI Context"
+    - "Monitorar métricas em tempo real"
+    - "Criar backup antes de mudanças"
+    - "Executar validações contínuas"
+    
+  after_operation:
+    - "Validar resultado final"
+    - "Atualizar documentação"
+    - "Registrar métricas de sucesso"
+    - "Confirmar integridade do sistema"
+
 common_issues:
   - name: "Dados Zerados"
-    check_files: 
+    check_files:
       - "frontend/src/hooks/useDashboard.ts"
       - "backend/api/routes.py"
     common_causes:
       - "Filtro de data automático"
       - "Variáveis não definidas"
       - "Problemas de API"
-      
+    validation_steps:
+      - "Verificar AI Context para padrões similares"
+      - "Consultar logs do Monitoring System"
+      - "Aplicar Safe Changes Protocol para correções"
+
   - name: "Erros de Referência"
     check_files:
       - "frontend/src/hooks/useDashboard.ts"
     search_patterns:
       - "currentDateRange"
       - "undefined variable"
-      
+    validation_steps:
+      - "Usar AI Context para análise semântica"
+      - "Verificar métricas de erro no Monitoring"
+      - "Aplicar correção com backup automático"
+
+  - name: "Sistema Não Integrado"
+    check_files:
+      - ".trae/rules/integrated_system_rules.md"
+    validation_steps:
+      - "Executar python validate_system.py"
+      - "Verificar todos os sistemas ativos"
+      - "Reconfigurar MCPs se necessário"
+      - "Restaurar do backup se falhar"
+
 debugging_priority:
-  1. "Verificar console do navegador primeiro"
-  2. "Buscar por variáveis não definidas"
-  3. "Verificar logs do backend"
-  4. "Analisar fluxo de dados completo"
+  1. "Verificar se sistemas integrados estão ativos"
+  2. "Executar validação completa do sistema"
+  3. "Verificar console do navegador"
+  4. "Buscar por variáveis não definidas"
+  5. "Verificar logs do backend"
+  6. "Analisar fluxo de dados completo"
+  7. "Consultar AI Context para padrões"
+  8. "Aplicar Safe Changes Protocol"
+
+# REGRAS DE SEGURANÇA
+security_rules:
+  never_do:
+    - "Modificar arquivos sem backup"
+    - "Desabilitar sistemas de monitoramento"
+    - "Pular validações obrigatórias"
+    - "Ignorar alertas do sistema"
+    - "Operar sem AI Context ativo"
+    
+  always_do:
+    - "Verificar sistemas antes de operar"
+    - "Criar backup antes de mudanças"
+    - "Registrar todas as ações"
+    - "Validar após cada operação"
+    - "Manter logs atualizados"
+
+# INTEGRAÇÃO COM CUSTOM INSTRUCTIONS
+custom_instructions_integration:
+  code_standards:
+    - "Python 3.11+ com type hints"
+    - "ruff, black, isort para formatação"
+    - "pytest para testes"
+    - "Docstrings estilo Google"
+    
+  git_workflow:
+    - "Branches para features/fixes"
+    - "Commits convencionais"
+    - "PRs pequenos e focados"
+    - "Checklist obrigatório"
+    
+  observability:
+    - "Logs estruturados (JSON)"
+    - "Métricas Prometheus"
+    - "Dashboards Grafana"
+    - "Alertas automáticos"
+
+# COMANDOS DE EMERGÊNCIA
+emergency_commands:
+  restore_system: "python safe_change_protocol.py --restore-latest"
+  full_validation: "python validate_system.py --full-check"
+  system_status: |
+    python -c "
+    from ai_context_system import AIContextSystem
+    from monitoring_system import MonitoringSystem
+    from safe_change_protocol import SafeChangeProtocol
+    print('=== STATUS DO SISTEMA ===')
+    print('AI Context:', AIContextSystem().is_active())
+    print('Monitoring:', MonitoringSystem().is_active())
+    print('Safe Changes:', SafeChangeProtocol().is_active())
+    "
+
+# IMPORTANTE: ESTE SISTEMA É 100% INTEGRADO E OBRIGATÓRIO
+integration_status: "COMPLETE"
+validation_required: true
+auto_backup: true
+continuous_monitoring: true

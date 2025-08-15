@@ -1,28 +1,28 @@
-import axios, { AxiosInstance, AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+﻿import axios, { AxiosInstance, AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 
-// Configuração da API usando variáveis de ambiente
+// Configuracao da API usando variaveis de ambiente
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api',
   TIMEOUT: parseInt(import.meta.env.VITE_API_TIMEOUT || '30000'),
   RETRY_ATTEMPTS: parseInt(import.meta.env.VITE_API_RETRY_ATTEMPTS || '3'),
   RETRY_DELAY: parseInt(import.meta.env.VITE_API_RETRY_DELAY || '1000'),
 };
 
-// Interface para configuração de autenticação
+// Interface para configuracao de autenticacao
 export interface AuthConfig {
   apiToken?: string;
   appToken?: string;
   userToken?: string;
 }
 
-// Configuração de autenticação (pode ser definida via variáveis de ambiente)
+// Configuracao de autenticacao (pode ser definida via variaveis de ambiente)
 export const authConfig: AuthConfig = {
   apiToken: import.meta.env.VITE_API_TOKEN,
   appToken: import.meta.env.VITE_APP_TOKEN,
   userToken: import.meta.env.VITE_USER_TOKEN,
 };
 
-// Função para atualizar tokens de autenticação
+// Funcao para atualizar tokens de autenticacao
 export const updateAuthTokens = (newAuthConfig: Partial<AuthConfig>) => {
   Object.assign(authConfig, newAuthConfig);
 };
@@ -37,10 +37,10 @@ export const httpClient: AxiosInstance = axios.create({
   }
 });
 
-// Interceptador de requisição para autenticação e logging
+// Interceptador de requisicao para autenticacao e logging
 httpClient.interceptors.request.use(
   (config: AxiosRequestConfig) => {
-    // Adicionar headers de autenticação se disponíveis
+    // Adicionar headers de autenticacao se disponiveis
     if (authConfig.apiToken) {
       config.headers = {
         ...config.headers,
@@ -62,7 +62,7 @@ httpClient.interceptors.request.use(
       };
     }
     
-    // Log da requisição
+    // Log da requisicao
     const logLevel = import.meta.env.VITE_LOG_LEVEL || 'info';
     const showApiCalls = import.meta.env.VITE_SHOW_API_CALLS === 'true';
     
@@ -109,7 +109,7 @@ httpClient.interceptors.response.use(
       data: error.response?.data
     };
     
-    // Tratamento específico por tipo de erro
+    // Tratamento especifico por tipo de erro
     if (error.code === 'ECONNABORTED') {
       console.warn('⏱️ Request timeout:', errorInfo.url);
     } else if (error.response?.status === 401) {
@@ -130,7 +130,7 @@ httpClient.interceptors.response.use(
       console.error('🔌 Network/Connection error:', errorInfo);
     }
     
-    // Implementar retry automático para erros temporários
+    // Implementar retry automatico para erros temporarios
     if (shouldRetry(error) && !error.config?.__retryCount) {
       return retryRequest(error);
     }
@@ -139,7 +139,7 @@ httpClient.interceptors.response.use(
   }
 );
 
-// Função para determinar se deve tentar novamente
+// Funcao para determinar se deve tentar novamente
 function shouldRetry(error: AxiosError): boolean {
   const retryableStatuses = [408, 429, 500, 502, 503, 504];
   const retryableCodes = ['ECONNABORTED', 'ENOTFOUND', 'ECONNRESET', 'ETIMEDOUT'];
@@ -150,7 +150,7 @@ function shouldRetry(error: AxiosError): boolean {
   );
 }
 
-// Função para retry com backoff exponencial
+// Funcao para retry com backoff exponencial
 async function retryRequest(error: AxiosError): Promise<AxiosResponse> {
   const config = error.config!;
   config.__retryCount = (config.__retryCount || 0) + 1;
@@ -168,7 +168,7 @@ async function retryRequest(error: AxiosError): Promise<AxiosResponse> {
   return httpClient.request(config);
 }
 
-// Função para disparar evento de erro de autenticação
+// Funcao para disparar evento de erro de autenticacao
 function dispatchAuthError() {
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent('auth-error', {
@@ -184,7 +184,7 @@ declare module 'axios' {
   }
 }
 
-// Funções utilitárias para requisições comuns
+// Funcoes utilitarias para requisicoes comuns
 export const apiUtils = {
   // GET request
   get: <T = any>(url: string, config?: AxiosRequestConfig) => 

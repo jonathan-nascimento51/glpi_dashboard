@@ -1,27 +1,27 @@
-import { chromium, FullConfig } from '@playwright/test';
+﻿import { chromium, FullConfig } from '@playwright/test';
 
 async function globalSetup(config: FullConfig) {
   console.log('🚀 Starting E2E test setup...');
   
-  // Verificar se o servidor de desenvolvimento está rodando
+  // Verificar se o servidor de desenvolvimento esta rodando
   const baseURL = config.projects[0].use.baseURL || 'http://localhost:5173';
   
   try {
     const browser = await chromium.launch();
     const page = await browser.newPage();
     
-    // Tentar acessar a aplicação
+    // Tentar acessar a aplicacao
     console.log(`📡 Checking if dev server is running at ${baseURL}...`);
     await page.goto(baseURL, { timeout: 30000 });
     
-    // Aguardar a aplicação carregar completamente
+    // Aguardar a aplicacao carregar completamente
     await page.waitForLoadState('networkidle');
     
-    // Verificar se a aplicação carregou corretamente
+    // Verificar se a aplicacao carregou corretamente
     const title = await page.title();
     console.log(`✅ Application loaded successfully. Title: ${title}`);
     
-    // Configurar dados de teste se necessário
+    // Configurar dados de teste se necessario
     await setupTestData(page);
     
     await browser.close();
@@ -43,13 +43,13 @@ async function setupTestData(page: any) {
       sessionStorage.clear();
     });
     
-    // Configurar dados de teste no localStorage se necessário
+    // Configurar dados de teste no localStorage se necessario
     await page.evaluate(() => {
-      // Configurações de teste
+      // Configuracoes de teste
       localStorage.setItem('test-mode', 'true');
-      localStorage.setItem('api-base-url', 'http://localhost:8000');
+      localStorage.setItem('api-base-url', 'http://localhost:5000');
       
-      // Dados de usuário de teste
+      // Dados de usuario de teste
       const testUser = {
         id: 999,
         name: 'Test User',
@@ -58,7 +58,7 @@ async function setupTestData(page: any) {
       };
       localStorage.setItem('test-user', JSON.stringify(testUser));
       
-      // Configurações de tema para testes
+      // Configuracoes de tema para testes
       localStorage.setItem('theme', 'light');
       localStorage.setItem('language', 'pt-BR');
     });

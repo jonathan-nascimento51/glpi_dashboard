@@ -1,4 +1,4 @@
-import { useEffect, memo, useCallback } from 'react';
+﻿import { useEffect, memo, useCallback } from 'react';
 
 interface CacheNotificationProps {
   message: string;
@@ -27,7 +27,7 @@ const CacheNotification = memo<CacheNotificationProps>(({ message, isVisible, on
 
   useEffect(() => {
     if (isVisible) {
-      const timer = setTimeout(handleClose, 5000); // Auto-close após 5 segundos
+      const timer = setTimeout(handleClose, 5000); // Auto-close apos 5 segundos
       
       return () => clearTimeout(timer);
     }

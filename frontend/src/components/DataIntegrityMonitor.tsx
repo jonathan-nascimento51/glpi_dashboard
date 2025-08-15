@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+﻿import React, { useState, useMemo, useCallback } from 'react';
 import { AlertTriangle, CheckCircle, Info, X, Eye, EyeOff } from 'lucide-react';
 import { DataIntegrityReport } from '../utils/dataValidation';
 
@@ -24,7 +24,7 @@ const getStatusIcon = (totalErrors: number, totalWarnings: number) => {
 const getStatusText = (totalErrors: number, totalWarnings: number) => {
   if (totalErrors > 0) return `${totalErrors} erro(s)`;
   if (totalWarnings > 0) return `${totalWarnings} aviso(s)`;
-  return 'Dados íntegros';
+  return 'Dados integros';
 };
 
 const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
@@ -120,7 +120,7 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
           <div className="p-4 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-gray-900 dark:text-white">
-                Relatório de Integridade
+                Relatorio de Integridade
               </h3>
               <button
                 onClick={handleCloseExpanded}
@@ -133,13 +133,13 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
             {/* Metrics Section */}
             <div className="space-y-2">
               <h4 className="font-medium text-sm text-gray-700 dark:text-gray-300">
-                📊 Métricas
+                📊 Metricas
               </h4>
               <div className="pl-4 space-y-1">
                 <div className={`text-xs ${
                   report.metrics.isValid ? 'text-green-600' : 'text-red-600'
                 }`}>
-                  Status: {report.metrics.isValid ? 'Válido' : 'Inválido'}
+                  Status: {report.metrics.isValid ? 'Valido' : 'Invalido'}
                 </div>
                 {report.metrics.errors.map((error, index) => (
                   <div key={`metrics-error-${index}`} className="text-xs text-red-600 flex items-start space-x-1">
@@ -165,7 +165,7 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
                 <div className={`text-xs ${
                   report.systemStatus.isValid ? 'text-green-600' : 'text-red-600'
                 }`}>
-                  Status: {report.systemStatus.isValid ? 'Válido' : 'Inválido'}
+                  Status: {report.systemStatus.isValid ? 'Valido' : 'Invalido'}
                 </div>
                 {report.systemStatus.errors.map((error, index) => (
                   <div key={`system-error-${index}`} className="text-xs text-red-600 flex items-start space-x-1">
@@ -185,16 +185,16 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
             {/* Technician Ranking Section */}
             <div className="space-y-2">
               <h4 className="font-medium text-sm text-gray-700 dark:text-gray-300">
-                👥 Ranking de Técnicos
+                👥 Ranking de Tecnicos
               </h4>
               <div className="pl-4 space-y-1">
                 <div className={`text-xs ${
                   report.technicianRanking.isValid ? 'text-green-600' : 'text-red-600'
                 }`}>
-                  Status: {report.technicianRanking.isValid ? 'Válido' : 'Inválido'}
+                  Status: {report.technicianRanking.isValid ? 'Valido' : 'Invalido'}
                 </div>
                 <div className="text-xs text-gray-600 dark:text-gray-400">
-                  Técnicos válidos: {report.technicianRanking.data.length}
+                  Tecnicos validos: {report.technicianRanking.data.length}
                 </div>
                 {report.technicianRanking.errors.map((error, index) => (
                   <div key={`ranking-error-${index}`} className="text-xs text-red-600 flex items-start space-x-1">
@@ -214,12 +214,12 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
             {/* Summary */}
             <div className="pt-2 border-t border-gray-200 dark:border-gray-600">
               <div className="text-xs text-gray-500 dark:text-gray-400">
-                Última verificação: {report.timestamp.toLocaleString('pt-BR')}
+                ultima verificacao: {report.timestamp.toLocaleString('pt-BR')}
               </div>
               <div className={`text-xs font-medium ${
                 report.overallValid ? 'text-green-600' : 'text-red-600'
               }`}>
-                Status Geral: {report.overallValid ? 'VÁLIDO' : 'REQUER ATENÇÃO'}
+                Status Geral: {report.overallValid ? 'VaLIDO' : 'REQUER ATENcaO'}
               </div>
             </div>
           </div>

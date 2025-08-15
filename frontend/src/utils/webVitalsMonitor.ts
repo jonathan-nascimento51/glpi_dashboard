@@ -1,6 +1,6 @@
-/**
- * Sistema de Monitoramento Contínuo com Web Vitals
- * Implementa coleta automática de métricas e alertas
+﻿/**
+ * Sistema de Monitoramento Continuo com Web Vitals
+ * Implementa coleta automatica de metricas e alertas
  */
 
 import { getCLS, getFID, getFCP, getLCP, getTTFB, onINP } from 'web-vitals';
@@ -70,7 +70,7 @@ class WebVitalsMonitor {
     getFID(this.handleMetric.bind(this));
     getLCP(this.handleMetric.bind(this));
     
-    // Outras métricas importantes
+    // Outras metricas importantes
     getFCP(this.handleMetric.bind(this));
     getTTFB(this.handleMetric.bind(this));
     
@@ -83,7 +83,7 @@ class WebVitalsMonitor {
   }
 
   /**
-   * Processa uma métrica recebida
+   * Processa uma metrica recebida
    */
   private handleMetric(metric: any): void {
     const webVitalMetric: WebVitalsMetric = {
@@ -97,7 +97,7 @@ class WebVitalsMonitor {
 
     this.metrics.push(webVitalMetric);
     
-    // Manter apenas as últimas 100 métricas
+    // Manter apenas as ultimas 100 metricas
     if (this.metrics.length > 100) {
       this.metrics = this.metrics.slice(-100);
     }
@@ -120,7 +120,7 @@ class WebVitalsMonitor {
   }
 
   /**
-   * Verifica se uma métrica deve gerar alerta
+   * Verifica se uma metrica deve gerar alerta
    */
   private checkForAlert(metric: WebVitalsMetric): void {
     if (!this.config.enableAlerts) return;
@@ -163,7 +163,7 @@ class WebVitalsMonitor {
 
       this.alerts.push(alert);
       
-      // Manter apenas os últimos 50 alertas
+      // Manter apenas os ultimos 50 alertas
       if (this.alerts.length > 50) {
         this.alerts = this.alerts.slice(-50);
       }
@@ -191,7 +191,7 @@ class WebVitalsMonitor {
   }
 
   /**
-   * Envia métrica para backend
+   * Envia metrica para backend
    */
   private async sendToBackend(metric: WebVitalsMetric): Promise<void> {
     if (!this.config.backendEndpoint) return;
@@ -210,12 +210,12 @@ class WebVitalsMonitor {
         })
       });
     } catch (error) {
-      console.error('Erro ao enviar métrica para backend:', error);
+      console.error('Erro ao enviar metrica para backend:', error);
     }
   }
 
   /**
-   * Log formatado da métrica
+   * Log formatado da metrica
    */
   private logMetric(metric: WebVitalsMetric): void {
     const unit = metric.name === 'CLS' ? '' : 'ms';
@@ -232,7 +232,7 @@ class WebVitalsMonitor {
   }
 
   /**
-   * Obtém emoji baseado no rating
+   * Obtem emoji baseado no rating
    */
   private getMetricEmoji(rating: string): string {
     switch (rating) {
@@ -249,7 +249,7 @@ class WebVitalsMonitor {
   onAlert(callback: (alert: WebVitalsAlert) => void): () => void {
     this.alertCallbacks.push(callback);
     
-    // Retorna função para remover o callback
+    // Retorna funcao para remover o callback
     return () => {
       const index = this.alertCallbacks.indexOf(callback);
       if (index > -1) {
@@ -259,12 +259,12 @@ class WebVitalsMonitor {
   }
 
   /**
-   * Registra callback para métricas
+   * Registra callback para metricas
    */
   onMetric(callback: (metric: WebVitalsMetric) => void): () => void {
     this.metricCallbacks.push(callback);
     
-    // Retorna função para remover o callback
+    // Retorna funcao para remover o callback
     return () => {
       const index = this.metricCallbacks.indexOf(callback);
       if (index > -1) {
@@ -274,21 +274,21 @@ class WebVitalsMonitor {
   }
 
   /**
-   * Obtém todas as métricas coletadas
+   * Obtem todas as metricas coletadas
    */
   getMetrics(): WebVitalsMetric[] {
     return [...this.metrics];
   }
 
   /**
-   * Obtém todos os alertas gerados
+   * Obtem todos os alertas gerados
    */
   getAlerts(): WebVitalsAlert[] {
     return [...this.alerts];
   }
 
   /**
-   * Obtém métricas resumidas
+   * Obtem metricas resumidas
    */
   getSummary(): {
     totalMetrics: number;
@@ -300,7 +300,7 @@ class WebVitalsMonitor {
     const averageValues: Record<string, number> = {};
     const latestMetrics: Record<string, WebVitalsMetric | undefined> = {};
     
-    // Calcular médias por tipo de métrica
+    // Calcular medias por tipo de metrica
     const metricTypes = ['CLS', 'FID', 'FCP', 'LCP', 'TTFB', 'INP'];
     
     metricTypes.forEach(type => {
@@ -321,18 +321,18 @@ class WebVitalsMonitor {
   }
 
   /**
-   * Atualiza configuração
+   * Atualiza configuracao
    */
   updateConfig(newConfig: Partial<WebVitalsConfig>): void {
     this.config = { ...this.config, ...newConfig };
     
     if (this.config.enableConsoleLogging) {
-      console.log('🔧 Web Vitals Monitor configuração atualizada:', this.config);
+      console.log('🔧 Web Vitals Monitor configuracao atualizada:', this.config);
     }
   }
 
   /**
-   * Limpa métricas e alertas
+   * Limpa metricas e alertas
    */
   clear(): void {
     this.metrics = [];
@@ -344,15 +344,15 @@ class WebVitalsMonitor {
   }
 
   /**
-   * Força coleta de métricas atuais
+   * Forca coleta de metricas atuais
    */
   forceCollection(): void {
-    // Re-inicializar coleta para capturar métricas atuais
+    // Re-inicializar coleta para capturar metricas atuais
     this.initializeWebVitals();
   }
 
   /**
-   * Exporta dados para análise
+   * Exporta dados para analise
    */
   exportData(): {
     metrics: WebVitalsMetric[];
@@ -371,7 +371,7 @@ class WebVitalsMonitor {
   }
 }
 
-// Instância singleton
+// Instancia singleton
 export const webVitalsMonitor = new WebVitalsMonitor();
 
 // Hook React para usar Web Vitals
@@ -381,7 +381,7 @@ export const useWebVitals = () => {
   const [summary, setSummary] = React.useState(webVitalsMonitor.getSummary());
 
   React.useEffect(() => {
-    // Atualizar estado quando novas métricas chegarem
+    // Atualizar estado quando novas metricas chegarem
     const unsubscribeMetric = webVitalsMonitor.onMetric(() => {
       setMetrics(webVitalsMonitor.getMetrics());
       setSummary(webVitalsMonitor.getSummary());
@@ -412,7 +412,7 @@ export const useWebVitals = () => {
   };
 };
 
-// Utilitários para debugging
+// Utilitarios para debugging
 export const debugWebVitals = {
   getMetrics: () => webVitalsMonitor.getMetrics(),
   getAlerts: () => webVitalsMonitor.getAlerts(),

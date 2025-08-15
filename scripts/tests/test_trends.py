@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Teste para validar o cálculo de tendências no dashboard GLPI
@@ -13,7 +13,7 @@ def test_api_trends():
     print("=== TESTE DE TENDÊNCIAS - API METRICS ===")
     
     try:
-        # Faz requisição para a API
+        # Faz requisiçáo para a API
         response = requests.get('http://localhost:5000/api/metrics')
         response.raise_for_status()
         
@@ -21,11 +21,11 @@ def test_api_trends():
         
         # Verifica se a estrutura está correta
         if 'data' not in data:
-            print("❌ ERRO: Campo 'data' não encontrado na resposta")
+            print("❌ ERRO: Campo 'data' náo encontrado na resposta")
             return False
             
         if 'tendencias' not in data['data']:
-            print("❌ ERRO: Campo 'tendencias' não encontrado")
+            print("❌ ERRO: Campo 'tendencias' náo encontrado")
             return False
             
         tendencias = data['data']['tendencias']
@@ -44,13 +44,13 @@ def test_api_trends():
         print(f"Progresso: {tendencias['progresso']}")
         print(f"Resolvidos: {tendencias['resolvidos']}")
         
-        # Verifica se as tendências não estão zeradas
+        # Verifica se as tendências náo estáo zeradas
         trends_not_zero = any(trend != "0%" and trend != "0" for trend in tendencias.values())
         
         if trends_not_zero:
-            print("\n✅ SUCESSO: Tendências estão sendo calculadas (não estão zeradas)")
+            print("\n✅ SUCESSO: Tendências estáo sendo calculadas (náo estáo zeradas)")
         else:
-            print("\n❌ PROBLEMA: Todas as tendências estão zeradas")
+            print("\n❌ PROBLEMA: Todas as tendências estáo zeradas")
             
         # Mostra a resposta completa para debug
         print("\n=== RESPOSTA COMPLETA (JSON) ===")
@@ -59,7 +59,7 @@ def test_api_trends():
         return trends_not_zero
         
     except requests.exceptions.ConnectionError:
-        print("❌ ERRO: Não foi possível conectar ao servidor backend")
+        print("❌ ERRO: Náo foi possível conectar ao servidor backend")
         print("Verifique se o servidor está rodando em http://localhost:5000")
         return False
     except Exception as e:
@@ -71,7 +71,7 @@ def test_frontend_data():
     print("\n=== TESTE DE DADOS DO FRONTEND ===")
     
     try:
-        # Simula uma requisição como o frontend faria
+        # Simula uma requisiçáo como o frontend faria
         headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
@@ -86,7 +86,7 @@ def test_frontend_data():
         required_fields = ['data']
         for field in required_fields:
             if field not in data:
-                print(f"❌ ERRO: Campo obrigatório '{field}' não encontrado")
+                print(f"❌ ERRO: Campo obrigatório '{field}' náo encontrado")
                 return False
                 
         # Verifica estrutura das tendências
@@ -95,7 +95,7 @@ def test_frontend_data():
         
         for field in required_trend_fields:
             if field not in tendencias:
-                print(f"❌ ERRO: Campo de tendência '{field}' não encontrado")
+                print(f"❌ ERRO: Campo de tendência '{field}' náo encontrado")
                 return False
                 
         print("✅ SUCESSO: Estrutura de dados compatível com o frontend")
@@ -106,7 +106,7 @@ def test_frontend_data():
         return False
 
 if __name__ == "__main__":
-    print("Iniciando testes de validação das tendências...\n")
+    print("Iniciando testes de validaçáo das tendências...\n")
     
     # Executa os testes
     api_test = test_api_trends()
@@ -118,7 +118,7 @@ if __name__ == "__main__":
     
     if api_test and frontend_test:
         print("\n🎉 TODOS OS TESTES PASSARAM!")
-        print("As tendências estão sendo calculadas e os dados estão corretos.")
+        print("As tendências estáo sendo calculadas e os dados estáo corretos.")
     else:
         print("\n⚠️  ALGUNS TESTES FALHARAM")
         print("Verifique os logs acima para identificar os problemas.")

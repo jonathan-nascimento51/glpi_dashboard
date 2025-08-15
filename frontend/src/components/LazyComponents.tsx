@@ -1,11 +1,11 @@
-/**
- * Componentes com carregamento preguiçoso (React.lazy)
- * Centraliza todos os componentes que não são críticos para a primeira renderização
+﻿/**
+ * Componentes com carregamento preguicoso (React.lazy)
+ * Centraliza todos os componentes que nao sao criticos para a primeira renderizacao
  */
 
 import { lazy } from 'react';
 
-// Componentes de dashboard secundários
+// Componentes de dashboard secundarios
 export const LazyPerformanceDashboard = lazy(() => 
   import('./PerformanceDashboard').then(module => ({ default: module.default }))
 );
@@ -26,7 +26,7 @@ export const LazyRankingTable = lazy(() =>
   import('./dashboard/RankingTable').then(module => ({ default: module.RankingTable }))
 );
 
-// Componentes de relatórios e análises
+// Componentes de relatorios e analises
 export const LazyProfessionalDashboard = lazy(() => 
   import('./ProfessionalDashboard').then(module => ({ default: module.ProfessionalDashboard }))
 );

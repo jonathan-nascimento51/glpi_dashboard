@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface TooltipProps {
@@ -53,7 +53,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
       let newPosition = position;
       let style: React.CSSProperties = {};
 
-      // Verificar se o tooltip sai da tela e ajustar posição
+      // Verificar se o tooltip sai da tela e ajustar posicao
       if (position === 'top' && triggerRect.top - 100 < 0) {
         newPosition = 'bottom';
       } else if (position === 'bottom' && triggerRect.bottom + 100 > viewport.height) {
@@ -64,7 +64,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
         newPosition = 'left';
       }
 
-      // Calcular posição baseada no elemento trigger
+      // Calcular posicao baseada no elemento trigger
       switch (newPosition) {
         case 'top':
           style = {
@@ -102,7 +102,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
 
     if (isVisible) {
       updatePosition();
-      // Atualizar posição quando a janela for redimensionada
+      // Atualizar posicao quando a janela for redimensionada
       window.addEventListener('resize', updatePosition);
       window.addEventListener('scroll', updatePosition);
       

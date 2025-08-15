@@ -1,0 +1,140 @@
+{
+  "timestamp": "2025-08-14T16:46:21.885619",
+  "tests": {
+    "config_glpi_url": {
+      "status": "PASS",
+      "message": "Variável GLPI_URL configurada",
+      "details": "http://cau.ppiratini.intra.rs.gov.br/glpi/apirest.php",
+      "timestamp": "2025-08-14T16:46:21.885619"
+    },
+    "config_glpi_user_token": {
+      "status": "PASS",
+      "message": "Variável GLPI_USER_TOKEN configurada",
+      "details": "TQdSxqg2...tRnq",
+      "timestamp": "2025-08-14T16:46:21.885619"
+    },
+    "config_glpi_app_token": {
+      "status": "PASS",
+      "message": "Variável GLPI_APP_TOKEN configurada",
+      "details": "aY3f9F5a...ULid",
+      "timestamp": "2025-08-14T16:46:21.886863"
+    },
+    "glpi_url_reachable": {
+      "status": "PASS",
+      "message": "URL do GLPI acessível",
+      "details": "Status: 200",
+      "timestamp": "2025-08-14T16:46:22.010532"
+    },
+    "glpi_authentication": {
+      "status": "PASS",
+      "message": "Autenticação GLPI bem-sucedida",
+      "details": "Token: jo12jmar...",
+      "timestamp": "2025-08-14T16:46:22.147756"
+    },
+    "field_discovery": {
+      "status": "PASS",
+      "message": "IDs de campos descobertos com sucesso",
+      "details": {
+        "GROUP": "8",
+        "STATUS": "12",
+        "DATE_CREATION": "15"
+      },
+      "timestamp": "2025-08-14T16:46:22.173446"
+    },
+    "general_metrics": {
+      "status": "PASS",
+      "message": "Métricas gerais obtidas - Total: 9811 tickets",
+      "details": {
+        "Novo": 4,
+        "Processando (atribuÃ­do)": 39,
+        "Processando (planejado)": 26,
+        "Pendente": 33,
+        "Solucionado": 3046,
+        "Fechado": 6663
+      },
+      "timestamp": "2025-08-14T16:46:23.659878"
+    },
+    "general_metrics_data": {
+      "status": "PASS",
+      "message": "Dados reais encontrados: 9811 tickets",
+      "details": null,
+      "timestamp": "2025-08-14T16:46:23.659878"
+    },
+    "level_metrics": {
+      "status": "PASS",
+      "message": "Métricas por nível obtidas",
+      "details": {
+        "N1": 0,
+        "N2": 0,
+        "N3": 0,
+        "N4": 1
+      },
+      "timestamp": "2025-08-14T16:46:26.028824"
+    },
+    "level_metrics_data": {
+      "status": "PASS",
+      "message": "Dados por nível encontrados: 1 tickets",
+      "details": null,
+      "timestamp": "2025-08-14T16:46:26.028824"
+    },
+    "dashboard_metrics": {
+      "status": "PASS",
+      "message": "Métricas do dashboard obtidas - Total: 9811 tickets",
+      "details": {
+        "novos": 4,
+        "progresso": 65,
+        "pendentes": 33,
+        "resolvidos": 9709,
+        "total": 9811
+      },
+      "timestamp": "2025-08-14T16:46:30.603732"
+    },
+    "dashboard_levels_structure": {
+      "status": "PASS",
+      "message": "Estrutura de níveis presente",
+      "details": [
+        "geral",
+        "n1",
+        "n2",
+        "n3",
+        "n4"
+      ],
+      "timestamp": "2025-08-14T16:46:30.603732"
+    },
+    "dashboard_data_validation": {
+      "status": "PASS",
+      "message": "Dashboard retornando dados válidos",
+      "details": null,
+      "timestamp": "2025-08-14T16:46:30.603732"
+    },
+    "backend_health": {
+      "status": "FAIL",
+      "message": "Erro ao acessar backend health check",
+      "details": "HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /health (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000019CE1E91A60>: Failed to establish a new connection: [WinError 10061] Nenhuma conexão pôde ser feita porque a máquina de destino as recusou ativamente'))",
+      "timestamp": "2025-08-14T16:46:34.661126"
+    },
+    "backend_metrics_endpoint": {
+      "status": "FAIL",
+      "message": "Erro ao acessar endpoint de métricas",
+      "details": "HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/metrics (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000019CE1E92480>: Failed to establish a new connection: [WinError 10061] Nenhuma conexão pôde ser feita porque a máquina de destino as recusou ativamente'))",
+      "timestamp": "2025-08-14T16:46:38.769384"
+    },
+    "frontend_accessibility": {
+      "status": "PASS",
+      "message": "Frontend acessível",
+      "details": "Status: 200",
+      "timestamp": "2025-08-14T16:46:38.774401"
+    }
+  },
+  "summary": {
+    "total_tests": 16,
+    "passed": 14,
+    "failed": 2,
+    "warnings": 0
+  },
+  "recommendations": [
+    "Verifique se o backend está rodando na porta 8000",
+    "Corrigir 2 testes que falharam: backend_health, backend_metrics_endpoint",
+    "Verificar se o backend está rodando e configurado corretamente"
+  ]
+}

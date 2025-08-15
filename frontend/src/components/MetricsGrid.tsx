@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+﻿import React, { useMemo } from 'react';
 import { MetricCard } from './MetricCard';
 import { MetricsData, TicketStatus } from '../types';
 
@@ -11,9 +11,9 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
   metrics,
   onFilterByStatus,
 }) {
-  // Verificação de segurança para evitar erros
+  // Verificacao de seguranca para evitar erros
   if (!metrics) {
-    return <div>Carregando métricas...</div>;
+    return <div>Carregando metricas...</div>;
   }
 
   // Memoizar o total calculado
@@ -21,7 +21,7 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
     return metrics.total || (metrics.novos || 0) + (metrics.pendentes || 0) + (metrics.progresso || 0) + (metrics.resolvidos || 0);
   }, [metrics.total, metrics.novos, metrics.pendentes, metrics.progresso, metrics.resolvidos]);
 
-  // Memoizar os cards de métricas
+  // Memoizar os cards de metricas
   const metricCards = useMemo(() => [
     {
       type: 'new' as TicketStatus,
@@ -45,7 +45,7 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
     },
   ], [metrics.novos, metrics.progresso, metrics.pendentes, metrics.resolvidos, metrics.tendencias]);
 
-  // Memoizar estatísticas calculadas
+  // Memoizar estatisticas calculadas
   const stats = useMemo(() => ({
     resolutionRate: total > 0 ? (((metrics.resolvidos || 0) / total) * 100).toFixed(1) : '0.0',
     inProgressRate: total > 0 ? ((((metrics.novos || 0) + (metrics.pendentes || 0) + (metrics.progresso || 0)) / total) * 100).toFixed(1) : '0.0',
@@ -102,7 +102,7 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
                 {stats.resolutionRate}%
               </div>
               <div className="text-xs text-blue-700 dark:text-blue-300 truncate">
-                Taxa de Resolução
+                Taxa de Resolucao
               </div>
             </div>
             <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 min-w-0">
@@ -119,7 +119,7 @@ export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
         {/* Progress Bar */}
         <div className="mt-6">
           <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400 mb-2">
-            <span>Distribuição de Status</span>
+            <span>Distribuicao de Status</span>
             <span>100%</span>
           </div>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">

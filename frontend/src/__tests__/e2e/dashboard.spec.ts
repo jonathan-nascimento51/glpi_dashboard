@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+﻿import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { setupTestEnvironment, cleanupTestEnvironment } from './global-setup';
 
 // Mock page object for E2E simulation
@@ -21,18 +21,18 @@ describe('Dashboard E2E Tests', () => {
   });
 
   it('should display dashboard with metrics', async () => {
-    // Simular navegação para o dashboard
+    // Simular navegacao para o dashboard
     const result = await mockPage.goto('/dashboard');
     expect(result.url).toBe('/dashboard');
     
-    // Simular verificação de elementos principais
+    // Simular verificacao de elementos principais
     const dashboardTitle = await mockPage.waitForSelector('[data-testid="dashboard-title"]');
     const metricsGrid = await mockPage.waitForSelector('[data-testid="metrics-grid"]');
     
     expect(dashboardTitle.selector).toBe('[data-testid="dashboard-title"]');
     expect(metricsGrid.selector).toBe('[data-testid="metrics-grid"]');
     
-    // Simular verificação das métricas principais
+    // Simular verificacao das metricas principais
     const totalTickets = await mockPage.waitForSelector('[data-testid="total-tickets"]');
     const openTickets = await mockPage.waitForSelector('[data-testid="open-tickets"]');
     const closedTickets = await mockPage.waitForSelector('[data-testid="closed-tickets"]');
@@ -45,11 +45,11 @@ describe('Dashboard E2E Tests', () => {
   });
 
   it('should load and display charts', async () => {
-    // Simular aguardar o carregamento dos gráficos
+    // Simular aguardar o carregamento dos graficos
     const chartsContainer = await mockPage.waitForSelector('[data-testid="charts-container"]');
     expect(chartsContainer.selector).toBe('[data-testid="charts-container"]');
     
-    // Simular verificação se os gráficos estão presentes
+    // Simular verificacao se os graficos estao presentes
     const priorityChart = await mockPage.waitForSelector('[data-testid="priority-chart"]');
     const statusChart = await mockPage.waitForSelector('[data-testid="status-chart"]');
     const trendsChart = await mockPage.waitForSelector('[data-testid="trends-chart"]');
@@ -58,7 +58,7 @@ describe('Dashboard E2E Tests', () => {
     expect(statusChart.selector).toBe('[data-testid="status-chart"]');
     expect(trendsChart.selector).toBe('[data-testid="trends-chart"]');
     
-    // Simular verificação se os gráficos têm conteúdo (canvas)
+    // Simular verificacao se os graficos tem conteudo (canvas)
     const priorityCanvas = await mockPage.waitForSelector('[data-testid="priority-chart"] canvas');
     const statusCanvas = await mockPage.waitForSelector('[data-testid="status-chart"] canvas');
     
@@ -71,11 +71,11 @@ describe('Dashboard E2E Tests', () => {
     const dateFilterClick = await mockPage.click('[data-testid="date-filter-button"]');
     expect(dateFilterClick.clicked).toBe('[data-testid="date-filter-button"]');
     
-    // Simular aguardar o calendário aparecer
+    // Simular aguardar o calendario aparecer
     const datePicker = await mockPage.waitForSelector('[data-testid="date-picker"]');
     expect(datePicker.selector).toBe('[data-testid="date-picker"]');
     
-    // Simular selecionar uma data de início
+    // Simular selecionar uma data de inicio
     const startDateClick = await mockPage.click('[data-testid="start-date-input"]');
     const startDateFill = await mockPage.fill('[data-testid="start-date-input"]', '2024-01-01');
     expect(startDateClick.clicked).toBe('[data-testid="start-date-input"]');
@@ -93,11 +93,11 @@ describe('Dashboard E2E Tests', () => {
     const applyFilterClick = await mockPage.click('[data-testid="apply-date-filter"]');
     expect(applyFilterClick.clicked).toBe('[data-testid="apply-date-filter"]');
     
-    // Simular verificação do indicador de filtro ativo
+    // Simular verificacao do indicador de filtro ativo
     const activeFilterIndicator = await mockPage.waitForSelector('[data-testid="active-filter-indicator"]');
     expect(activeFilterIndicator.selector).toBe('[data-testid="active-filter-indicator"]');
     
-    // Simular verificação se os dados foram atualizados
+    // Simular verificacao se os dados foram atualizados
     const metricsGrid = await mockPage.waitForSelector('[data-testid="metrics-grid"]');
     expect(metricsGrid.selector).toBe('[data-testid="metrics-grid"]');
   });
@@ -107,37 +107,37 @@ describe('Dashboard E2E Tests', () => {
     const metricsGrid = await mockPage.waitForSelector('[data-testid="metrics-grid"]');
     expect(metricsGrid.selector).toBe('[data-testid="metrics-grid"]');
     
-    // Simular capturar o valor inicial de uma métrica
+    // Simular capturar o valor inicial de uma metrica
     const initialValue = await mockPage.textContent('[data-testid="total-tickets"] .metric-value');
     expect(initialValue).toContain('Mock content');
     
-    // Simular clicar no botão de refresh
+    // Simular clicar no botao de refresh
     const refreshClick = await mockPage.click('[data-testid="refresh-button"]');
     expect(refreshClick.clicked).toBe('[data-testid="refresh-button"]');
     
-    // Simular verificação do indicador de carregamento
+    // Simular verificacao do indicador de carregamento
     const loadingIndicator = await mockPage.waitForSelector('[data-testid="loading-indicator"]');
     expect(loadingIndicator.selector).toBe('[data-testid="loading-indicator"]');
     
-    // Simular verificação se os dados ainda estão presentes
+    // Simular verificacao se os dados ainda estao presentes
     const totalTicketsValue = await mockPage.waitForSelector('[data-testid="total-tickets"] .metric-value');
     expect(totalTicketsValue.selector).toBe('[data-testid="total-tickets"] .metric-value');
   });
 
   it('should toggle between chart types', async () => {
-    // Simular aguardar o carregamento dos gráficos
+    // Simular aguardar o carregamento dos graficos
     const chartsContainer = await mockPage.waitForSelector('[data-testid="charts-container"]');
     expect(chartsContainer.selector).toBe('[data-testid="charts-container"]');
     
-    // Simular verificação se o toggle de tipo de gráfico está presente
+    // Simular verificacao se o toggle de tipo de grafico esta presente
     const chartTypeToggle = await mockPage.waitForSelector('[data-testid="chart-type-toggle"]');
     expect(chartTypeToggle.selector).toBe('[data-testid="chart-type-toggle"]');
     
-    // Simular clicar para alternar o tipo de gráfico
+    // Simular clicar para alternar o tipo de grafico
     const toggleClick = await mockPage.click('[data-testid="chart-type-toggle"]');
     expect(toggleClick.clicked).toBe('[data-testid="chart-type-toggle"]');
     
-    // Simular verificação se o gráfico ainda está visível após a mudança
+    // Simular verificacao se o grafico ainda esta visivel apos a mudanca
     const priorityChartCanvas = await mockPage.waitForSelector('[data-testid="priority-chart"] canvas');
     expect(priorityChartCanvas.selector).toBe('[data-testid="priority-chart"] canvas');
   });
@@ -150,33 +150,33 @@ describe('Dashboard E2E Tests', () => {
     const errorMessage = await mockPage.waitForSelector('[data-testid="error-message"]');
     expect(errorMessage.selector).toBe('[data-testid="error-message"]');
     
-    // Simular verificação da mensagem de erro
+    // Simular verificacao da mensagem de erro
     const errorText = await mockPage.textContent('[data-testid="error-message"]');
     expect(errorText).toContain('Mock content');
     
-    // Simular verificação se o botão de retry está presente
+    // Simular verificacao se o botao de retry esta presente
     const retryButton = await mockPage.waitForSelector('[data-testid="retry-button"]');
     expect(retryButton.selector).toBe('[data-testid="retry-button"]');
   });
 
   test('should export data', async ({ page }) => {
-    // Aguardar o carregamento da página
+    // Aguardar o carregamento da pagina
     await page.waitForSelector('[data-testid="metrics-grid"]');
     
-    // Clicar no botão de exportar
+    // Clicar no botao de exportar
     await page.click('[data-testid="export-button"]');
     
-    // Aguardar o menu de exportação aparecer
+    // Aguardar o menu de exportacao aparecer
     await page.waitForSelector('[data-testid="export-menu"]');
     
-    // Verificar se as opções de exportação estão disponíveis
+    // Verificar se as opcoes de exportacao estao disponiveis
     await expect(page.locator('[data-testid="export-csv"]')).toBeVisible();
     await expect(page.locator('[data-testid="export-json"]')).toBeVisible();
     
     // Configurar o listener para download
     const downloadPromise = page.waitForEvent('download');
     
-    // Clicar na opção de exportar CSV
+    // Clicar na opcao de exportar CSV
     await page.click('[data-testid="export-csv"]');
     
     // Aguardar o download
@@ -193,14 +193,14 @@ describe('Dashboard E2E Tests', () => {
     // Aguardar o carregamento
     await page.waitForSelector('[data-testid="dashboard-title"]');
     
-    // Verificar se o layout mobile está ativo
+    // Verificar se o layout mobile esta ativo
     await expect(page.locator('[data-testid="mobile-menu-button"]')).toBeVisible();
     
-    // Verificar se as métricas estão empilhadas verticalmente
+    // Verificar se as metricas estao empilhadas verticalmente
     const metricsGrid = page.locator('[data-testid="metrics-grid"]');
     await expect(metricsGrid).toHaveClass(/mobile-layout/);
     
-    // Verificar se os gráficos são responsivos
+    // Verificar se os graficos sao responsivos
     await expect(page.locator('[data-testid="charts-container"]')).toBeVisible();
     
     // Testar o menu mobile
@@ -218,7 +218,7 @@ describe('Dashboard E2E Tests', () => {
     // Aguardar o filtro ser aplicado
     await page.waitForLoadState('networkidle');
     
-    // Recarregar a página
+    // Recarregar a pagina
     await page.reload();
     
     // Aguardar o carregamento
@@ -227,7 +227,7 @@ describe('Dashboard E2E Tests', () => {
     // Verificar se o filtro foi persistido
     await expect(page.locator('[data-testid="active-filter-indicator"]')).toBeVisible();
     
-    // Verificar se as datas estão preenchidas
+    // Verificar se as datas estao preenchidas
     const startDate = await page.locator('[data-testid="start-date-input"]').inputValue();
     const endDate = await page.locator('[data-testid="end-date-input"]').inputValue();
     
@@ -239,9 +239,9 @@ describe('Dashboard E2E Tests', () => {
     // Aguardar o carregamento inicial
     await page.waitForSelector('[data-testid="metrics-grid"]');
     
-    // Simular uma atualização em tempo real
+    // Simular uma atualizacao em tempo real
     await page.evaluate(() => {
-      // Disparar um evento customizado que simula atualização em tempo real
+      // Disparar um evento customizado que simula atualizacao em tempo real
       window.dispatchEvent(new CustomEvent('realtime-update', {
         detail: {
           type: 'ticket_created',
@@ -250,10 +250,10 @@ describe('Dashboard E2E Tests', () => {
       }));
     });
     
-    // Aguardar a atualização ser processada
+    // Aguardar a atualizacao ser processada
     await page.waitForTimeout(1000);
     
-    // Verificar se a notificação de atualização aparece
+    // Verificar se a notificacao de atualizacao aparece
     await expect(page.locator('[data-testid="update-notification"]')).toBeVisible();
     
     // Verificar se os dados foram atualizados
@@ -264,10 +264,10 @@ describe('Dashboard E2E Tests', () => {
     // Aguardar o carregamento
     await page.waitForSelector('[data-testid="dashboard-title"]');
     
-    // Testar navegação por tab
+    // Testar navegacao por tab
     await page.keyboard.press('Tab');
     
-    // Verificar se o primeiro elemento focável está focado
+    // Verificar se o primeiro elemento focavel esta focado
     const focusedElement = await page.locator(':focus');
     await expect(focusedElement).toBeVisible();
     
@@ -279,7 +279,7 @@ describe('Dashboard E2E Tests', () => {
     await page.keyboard.press('Control+r'); // Refresh
     await page.waitForLoadState('networkidle');
     
-    // Verificar se a página foi atualizada
+    // Verificar se a pagina foi atualizada
     await expect(page.locator('[data-testid="metrics-grid"]')).toBeVisible();
   });
 
@@ -287,13 +287,13 @@ describe('Dashboard E2E Tests', () => {
     // Aguardar o carregamento
     await page.waitForSelector('[data-testid="metrics-grid"]');
     
-    // Fazer hover sobre uma métrica
+    // Fazer hover sobre uma metrica
     await page.hover('[data-testid="total-tickets"]');
     
     // Aguardar o tooltip aparecer
     await page.waitForSelector('[data-testid="tooltip"]');
     
-    // Verificar se o tooltip está visível e tem conteúdo
+    // Verificar se o tooltip esta visivel e tem conteudo
     await expect(page.locator('[data-testid="tooltip"]')).toBeVisible();
     await expect(page.locator('[data-testid="tooltip"]')).toContainText('Total de tickets');
     

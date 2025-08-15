@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Script para executar facilmente os scripts auxiliares do projeto.
 Uso: python run_scripts.py <categoria> <script>
@@ -53,12 +53,12 @@ def list_available_scripts():
 def run_script(category: str, script_name: str):
     """Executa um script específico."""
     if category not in SCRIPTS:
-        print(f"❌ Categoria '{category}' não encontrada.")
+        print(f"❌ Categoria '{category}' náo encontrada.")
         print(f"Categorias disponíveis: {', '.join(SCRIPTS.keys())}")
         return False
     
     if script_name not in SCRIPTS[category]:
-        print(f"❌ Script '{script_name}' não encontrado na categoria '{category}'.")
+        print(f"❌ Script '{script_name}' náo encontrado na categoria '{category}'.")
         print(f"Scripts disponíveis em '{category}': {', '.join(SCRIPTS[category].keys())}")
         return False
     
@@ -66,7 +66,7 @@ def run_script(category: str, script_name: str):
     
     # Verifica se o arquivo existe
     if not Path(script_path).exists():
-        print(f"❌ Arquivo não encontrado: {script_path}")
+        print(f"❌ Arquivo náo encontrado: {script_path}")
         return False
     
     print(f"🚀 Executando: {script_path}")
@@ -90,7 +90,7 @@ def run_script(category: str, script_name: str):
         return False
 
 def main():
-    """Função principal."""
+    """Funçáo principal."""
     if len(sys.argv) == 1:
         list_available_scripts()
         return

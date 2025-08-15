@@ -1,10 +1,10 @@
-import React from 'react';
+﻿import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 import '@testing-library/jest-dom';
 
-// Mock dos componentes que serão testados
+// Mock dos componentes que serao testados
 const Button = ({ children, onClick, disabled, variant = 'primary', size = 'medium', ...props }: any) => (
   <button
     onClick={onClick}
@@ -142,17 +142,17 @@ const Pagination = ({ currentPage, totalPages, onPageChange, pageSize, onPageSiz
     >
       Anterior
     </button>
-    <span>Página {currentPage} de {totalPages}</span>
+    <span>Pagina {currentPage} de {totalPages}</span>
     <button
       disabled={currentPage >= totalPages}
       onClick={() => onPageChange(currentPage + 1)}
     >
-      Próxima
+      Proxima
     </button>
     <select value={pageSize} onChange={(e) => onPageSizeChange(Number(e.target.value))}>
-      <option value={10}>10 por página</option>
-      <option value={25}>25 por página</option>
-      <option value={50}>50 por página</option>
+      <option value={10}>10 por pagina</option>
+      <option value={25}>25 por pagina</option>
+      <option value={50}>50 por pagina</option>
     </select>
   </div>
 );
@@ -471,9 +471,9 @@ describe('Pagination Component', () => {
       />
     );
     
-    expect(screen.getByText('Página 2 de 5')).toBeInTheDocument();
+    expect(screen.getByText('Pagina 2 de 5')).toBeInTheDocument();
     expect(screen.getByText('Anterior')).toBeInTheDocument();
-    expect(screen.getByText('Próxima')).toBeInTheDocument();
+    expect(screen.getByText('Proxima')).toBeInTheDocument();
   });
 
   test('disables previous button on first page', () => {
@@ -501,7 +501,7 @@ describe('Pagination Component', () => {
       />
     );
     
-    expect(screen.getByText('Próxima')).toBeDisabled();
+    expect(screen.getByText('Proxima')).toBeDisabled();
   });
 
   test('handles page changes', async () => {
@@ -516,7 +516,7 @@ describe('Pagination Component', () => {
       />
     );
     
-    await userEvent.click(screen.getByText('Próxima'));
+    await userEvent.click(screen.getByText('Proxima'));
     expect(handlePageChange).toHaveBeenCalledWith(3);
   });
 });

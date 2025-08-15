@@ -1,6 +1,6 @@
-/**
+﻿/**
  * Sistema de Linha de Base de Performance para GLPI Dashboard
- * Implementa comparação de métricas com valores de referência
+ * Implementa comparacao de metricas com valores de referencia
  */
 
 export interface PerformanceBaseline {
@@ -83,7 +83,7 @@ class PerformanceBaselineManager {
   }
 
   /**
-   * Obtém a linha de base atual
+   * Obtem a linha de base atual
    */
   getBaseline(): PerformanceBaseline | null {
     try {
@@ -96,7 +96,7 @@ class PerformanceBaselineManager {
   }
 
   /**
-   * Compara métricas atuais com a linha de base
+   * Compara metricas atuais com a linha de base
    */
   compareWithBaseline(currentMetrics: Omit<PerformanceBaseline, 'timestamp' | 'version'>): PerformanceComparison[] {
     const baseline = this.getBaseline();
@@ -108,7 +108,7 @@ class PerformanceBaselineManager {
 
     const comparisons: PerformanceComparison[] = [];
 
-    // Comparar métricas da homepage
+    // Comparar metricas da homepage
     comparisons.push(
       this.createComparison(
         'Homepage Load Time',
@@ -130,7 +130,7 @@ class PerformanceBaselineManager {
       )
     );
 
-    // Comparar métricas de filtros
+    // Comparar metricas de filtros
     comparisons.push(
       this.createComparison(
         'Filter Response Time',
@@ -146,7 +146,7 @@ class PerformanceBaselineManager {
       )
     );
 
-    // Comparar métricas de auto-refresh
+    // Comparar metricas de auto-refresh
     comparisons.push(
       this.createComparison(
         'Auto-refresh Update Time',
@@ -166,7 +166,7 @@ class PerformanceBaselineManager {
   }
 
   /**
-   * Cria uma comparação individual
+   * Cria uma comparacao individual
    */
   private createComparison(
     metric: string,
@@ -228,7 +228,7 @@ class PerformanceBaselineManager {
   }
 
   /**
-   * Gera relatório de comparação detalhado
+   * Gera relatorio de comparacao detalhado
    */
   generateComparisonReport(currentMetrics: Omit<PerformanceBaseline, 'timestamp' | 'version'>): {
     comparisons: PerformanceComparison[];
@@ -257,7 +257,7 @@ class PerformanceBaselineManager {
   }
 
   /**
-   * Gera recomendações baseadas nas comparações
+   * Gera recomendacoes baseadas nas comparacoes
    */
   private generateRecommendations(
     comparisons: PerformanceComparison[],
@@ -265,22 +265,22 @@ class PerformanceBaselineManager {
   ): string[] {
     const recommendations: string[] = [];
 
-    // Verificar métricas degradadas
+    // Verificar metricas degradadas
     const degraded = comparisons.filter(c => c.status === 'degraded');
     if (degraded.length > 0) {
       recommendations.push(
-        `⚠️ ${degraded.length} métrica(s) degradaram: ${degraded.map(d => d.metric).join(', ')}`
+        `⚠️ ${degraded.length} metrica(s) degradaram: ${degraded.map(d => d.metric).join(', ')}`
       );
     }
 
-    // Verificar metas não atingidas
+    // Verificar metas nao atingidas
     if (!targetCheck.allTargetsMet) {
       recommendations.push(
-        `🎯 ${targetCheck.failedTargets.length} meta(s) não atingida(s): ${targetCheck.failedTargets.join(', ')}`
+        `🎯 ${targetCheck.failedTargets.length} meta(s) nao atingida(s): ${targetCheck.failedTargets.join(', ')}`
       );
     }
 
-    // Recomendações específicas
+    // Recomendacoes especificas
     const slowFilters = comparisons.find(c => c.metric.includes('Filter') && !c.meetsTarget);
     if (slowFilters) {
       recommendations.push('🔍 Considere implementar debounce nos filtros ou otimizar queries');
@@ -297,14 +297,14 @@ class PerformanceBaselineManager {
     }
 
     if (recommendations.length === 0) {
-      recommendations.push('✅ Todas as métricas estão dentro dos targets!');
+      recommendations.push('✅ Todas as metricas estao dentro dos targets!');
     }
 
     return recommendations;
   }
 
   /**
-   * Log formatado da comparação com linha de base
+   * Log formatado da comparacao com linha de base
    */
   private logBaselineComparison(baseline: PerformanceBaseline): void {
     console.group('📊 Performance Baseline vs Targets');
@@ -334,17 +334,17 @@ class PerformanceBaselineManager {
   }
 
   /**
-   * Obtém os targets de performance
+   * Obtem os targets de performance
    */
   getTargets(): PerformanceTargets {
     return this.TARGETS;
   }
 }
 
-// Instância singleton
+// Instancia singleton
 export const performanceBaseline = new PerformanceBaselineManager();
 
-// Utilitários para debugging
+// Utilitarios para debugging
 export const debugBaseline = {
   setBaseline: (metrics: Omit<PerformanceBaseline, 'timestamp' | 'version'>) => {
     performanceBaseline.setBaseline(metrics);

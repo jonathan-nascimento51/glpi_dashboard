@@ -1,14 +1,14 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+﻿import { useState, useEffect, useCallback, useRef } from 'react';
 
 /**
- * Opções para configurar o comportamento do hook useApi
+ * Opcoes para configurar o comportamento do hook useApi
  */
 export interface UseApiOptions {
   /** Se deve executar automaticamente ao montar o componente */
   autoExecute?: boolean;
-  /** Dependências que, quando alteradas, reexecutam a função */
+  /** Dependencias que, quando alteradas, reexecutam a funcao */
   dependencies?: any[];
-  /** Callback executado quando a requisição é bem-sucedida */
+  /** Callback executado quando a requisicao e bem-sucedida */
   onSuccess?: (data: any) => void;
   /** Callback executado quando ocorre um erro */
   onError?: (error: string) => void;
@@ -20,22 +20,22 @@ export interface UseApiOptions {
 export interface UseApiState<T> {
   /** Dados retornados pela API */
   data: T | null;
-  /** Indica se há uma requisição em andamento */
+  /** Indica se ha uma requisicao em andamento */
   loading: boolean;
   /** Mensagem de erro, se houver */
   error: string | null;
-  /** Função para executar a requisição manualmente */
+  /** Funcao para executar a requisicao manualmente */
   execute: (...args: any[]) => Promise<void>;
-  /** Função para resetar o estado */
+  /** Funcao para resetar o estado */
   reset: () => void;
 }
 
 /**
  * Hook personalizado para gerenciar chamadas de API
  * 
- * @param apiFunction - Função da API a ser executada
- * @param options - Opções de configuração
- * @returns Estado e funções para gerenciar a API
+ * @param apiFunction - Funcao da API a ser executada
+ * @param options - Opcoes de configuracao
+ * @returns Estado e funcoes para gerenciar a API
  * 
  * @example
  * ```tsx
@@ -46,7 +46,7 @@ export interface UseApiState<T> {
  *   execute({ startDate: '2024-01-01', endDate: '2024-01-31' });
  * };
  * 
- * // Auto-executar com dependências
+ * // Auto-executar com dependencias
  * const { data } = useApi(apiService.getMetrics, {
  *   autoExecute: true,
  *   dependencies: [dateRange]
@@ -68,15 +68,15 @@ export function useApi<T = any>(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  // Ref para controlar cancelamento de requisições
+  // Ref para controlar cancelamento de requisicoes
   const cancelRef = useRef<boolean>(false);
   const executionCountRef = useRef(0);
 
   /**
-   * Executa a função da API
+   * Executa a funcao da API
    */
   const execute = useCallback(async (...args: any[]) => {
-    // Incrementar contador de execução para cancelar requisições anteriores
+    // Incrementar contador de execucao para cancelar requisicoes anteriores
     const currentExecution = ++executionCountRef.current;
     cancelRef.current = false;
 
@@ -86,20 +86,20 @@ export function useApi<T = any>(
     try {
       const result = await apiFunction(...args);
       
-      // Verificar se esta execução ainda é válida
+      // Verificar se esta execucao ainda e valida
       if (currentExecution === executionCountRef.current && !cancelRef.current) {
         setData(result);
         onSuccess?.(result);
       }
     } catch (err) {
-      // Verificar se esta execução ainda é válida
+      // Verificar se esta execucao ainda e valida
       if (currentExecution === executionCountRef.current && !cancelRef.current) {
         const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
         setError(errorMessage);
         onError?.(errorMessage);
       }
     } finally {
-      // Verificar se esta execução ainda é válida
+      // Verificar se esta execucao ainda e valida
       if (currentExecution === executionCountRef.current && !cancelRef.current) {
         setLoading(false);
       }
@@ -116,7 +116,7 @@ export function useApi<T = any>(
     setError(null);
   }, []);
 
-  // Auto-executar quando as dependências mudarem
+  // Auto-executar quando as dependencias mudarem
   useEffect(() => {
     if (autoExecute) {
       execute();
@@ -124,7 +124,7 @@ export function useApi<T = any>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoExecute, ...dependencies]);
 
-  // Cancelar requisições pendentes quando o componente for desmontado
+  // Cancelar requisicoes pendentes quando o componente for desmontado
   useEffect(() => {
     return () => {
       cancelRef.current = true;
@@ -141,10 +141,10 @@ export function useApi<T = any>(
 }
 
 /**
- * Hook especializado para métricas do dashboard
+ * Hook especializado para metricas do dashboard
  */
 export function useMetrics(options?: UseApiOptions) {
-  // Importação dinâmica para evitar problemas de dependência circular
+  // Importacao dinamica para evitar problemas de dependencia circular
   const apiFunction = async (...args: any[]) => {
     const { apiService } = await import('../services/api');
     return apiService.getMetrics(...args);
@@ -164,7 +164,7 @@ export function useSystemStatus(options?: UseApiOptions) {
 }
 
 /**
- * Hook especializado para ranking de técnicos
+ * Hook especializado para ranking de tecnicos
  */
 export function useTechnicianRanking(options?: UseApiOptions) {
   const apiFunction = async (...args: any[]) => {

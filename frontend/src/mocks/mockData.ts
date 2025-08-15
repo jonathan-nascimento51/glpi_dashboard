@@ -1,4 +1,4 @@
-export const mockData = {
+﻿export const mockData = {
   dashboardMetrics: {
     total_tickets: 1250,
     open_tickets: 320,
@@ -46,13 +46,13 @@ export const mockData = {
     {
       id: 1,
       title: 'Problema de conectividade de rede',
-      description: 'Usuário relatando problemas intermitentes de conexão com a internet no setor administrativo.',
+      description: 'Usuario relatando problemas intermitentes de conexao com a internet no setor administrativo.',
       status: 'open',
       priority: 'high',
       category: 'network',
       assigned_to: {
         id: 1,
-        name: 'João Silva',
+        name: 'Joao Silva',
         email: 'joao.silva@empresa.com',
         avatar: null
       },
@@ -72,8 +72,8 @@ export const mockData = {
     },
     {
       id: 2,
-      title: 'Instalação de software',
-      description: 'Solicitação para instalação do Adobe Photoshop na máquina do designer.',
+      title: 'Instalacao de software',
+      description: 'Solicitacao para instalacao do Adobe Photoshop na maquina do designer.',
       status: 'assigned',
       priority: 'normal',
       category: 'software',
@@ -91,7 +91,7 @@ export const mockData = {
       created_at: '2024-01-14T11:15:00Z',
       updated_at: '2024-01-15T08:45:00Z',
       due_date: '2024-01-18T17:00:00Z',
-      tags: ['software', 'instalação'],
+      tags: ['software', 'instalacao'],
       comments_count: 2,
       attachments_count: 0,
       time_spent: 1.0,
@@ -99,14 +99,14 @@ export const mockData = {
     },
     {
       id: 3,
-      title: 'Computador não liga',
-      description: 'Equipamento da recepção apresentou falha e não está ligando. LED de energia não acende.',
+      title: 'Computador nao liga',
+      description: 'Equipamento da recepcao apresentou falha e nao esta ligando. LED de energia nao acende.',
       status: 'pending',
       priority: 'urgent',
       category: 'hardware',
       assigned_to: {
         id: 1,
-        name: 'João Silva',
+        name: 'Joao Silva',
         email: 'joao.silva@empresa.com',
         avatar: null
       },
@@ -118,7 +118,7 @@ export const mockData = {
       created_at: '2024-01-15T16:20:00Z',
       updated_at: '2024-01-15T16:45:00Z',
       due_date: '2024-01-16T12:00:00Z',
-      tags: ['hardware', 'crítico', 'recepção'],
+      tags: ['hardware', 'critico', 'recepcao'],
       comments_count: 1,
       attachments_count: 2,
       time_spent: 0.5,
@@ -127,7 +127,7 @@ export const mockData = {
     {
       id: 4,
       title: 'Acesso ao sistema ERP',
-      description: 'Novo funcionário precisa de acesso ao sistema ERP com perfil de vendas.',
+      description: 'Novo funcionario precisa de acesso ao sistema ERP com perfil de vendas.',
       status: 'solved',
       priority: 'normal',
       category: 'access',
@@ -145,7 +145,7 @@ export const mockData = {
       created_at: '2024-01-12T10:00:00Z',
       updated_at: '2024-01-13T15:30:00Z',
       due_date: '2024-01-15T17:00:00Z',
-      tags: ['acesso', 'novo-funcionário', 'erp'],
+      tags: ['acesso', 'novo-funcionario', 'erp'],
       comments_count: 4,
       attachments_count: 0,
       time_spent: 1.5,
@@ -154,7 +154,7 @@ export const mockData = {
     {
       id: 5,
       title: 'Impressora com defeito',
-      description: 'Impressora do setor financeiro está apresentando listras nas impressões.',
+      description: 'Impressora do setor financeiro esta apresentando listras nas impressoes.',
       status: 'closed',
       priority: 'low',
       category: 'hardware',
@@ -183,7 +183,7 @@ export const mockData = {
   users: [
     {
       id: 1,
-      name: 'João Silva',
+      name: 'Joao Silva',
       email: 'joao.silva@empresa.com',
       role: 'technician',
       department: 'TI',
@@ -230,7 +230,7 @@ export const mockData = {
       name: 'Carlos Ferreira',
       email: 'carlos.ferreira@empresa.com',
       role: 'user',
-      department: 'Recepção',
+      department: 'Recepcao',
       active: true,
       avatar: null,
       phone: '(11) 99999-5555',
@@ -258,7 +258,7 @@ export const mockData = {
       sla_compliance: 94.2,
       customer_satisfaction: 4.3,
       technician_workload: {
-        'João Silva': 12,
+        'Joao Silva': 12,
         'Pedro Costa': 15,
         'Lucia Mendes': 8
       }
@@ -271,7 +271,7 @@ export const mockData = {
       sla_compliance: 91.8,
       customer_satisfaction: 4.1,
       technician_workload: {
-        'João Silva': 58,
+        'Joao Silva': 58,
         'Pedro Costa': 62,
         'Lucia Mendes': 35
       }
@@ -284,7 +284,7 @@ export const mockData = {
       sla_compliance: 89.5,
       customer_satisfaction: 4.0,
       technician_workload: {
-        'João Silva': 170,
+        'Joao Silva': 170,
         'Pedro Costa': 185,
         'Lucia Mendes': 95
       }
@@ -348,8 +348,8 @@ export const mockData = {
   notifications: [
     {
       id: 1,
-      title: 'Novo ticket atribuído',
-      message: 'Você foi atribuído ao ticket #1250 - Problema de conectividade',
+      title: 'Novo ticket atribuido',
+      message: 'Voce foi atribuido ao ticket #1250 - Problema de conectividade',
       type: 'assignment',
       read: false,
       created_at: '2024-01-15T16:30:00Z',
@@ -357,7 +357,7 @@ export const mockData = {
     },
     {
       id: 2,
-      title: 'Ticket próximo ao vencimento',
+      title: 'Ticket proximo ao vencimento',
       message: 'O ticket #1248 vence em 2 horas',
       type: 'warning',
       read: false,
@@ -375,8 +375,8 @@ export const mockData = {
     },
     {
       id: 4,
-      title: 'Comentário adicionado',
-      message: 'Novo comentário no ticket #1247',
+      title: 'Comentario adicionado',
+      message: 'Novo comentario no ticket #1247',
       type: 'info',
       read: true,
       created_at: '2024-01-15T13:45:00Z',

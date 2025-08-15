@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+﻿import React, { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, Filter } from 'lucide-react';
 // import { Button } from "@/components/ui/button";
@@ -16,17 +16,17 @@ import { DateRange } from '../types';
 import { useThrottledCallback } from '../hooks/useDebounce';
 
 interface DateRangeFilterProps {
-  // Props da versão antiga
+  // Props da versao antiga
   selectedRange?: DateRange;
   onRangeChange?: (range: DateRange) => void;
   isLoading?: boolean;
   
-  // Props da versão nova
+  // Props da versao nova
   value?: DateRange;
   onChange?: (range: DateRange) => void;
   className?: string;
   
-  // Configuração de tema
+  // Configuracao de tema
   variant?: 'modern' | 'classic';
 }
 
@@ -61,21 +61,21 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
       endDate: new Date().toISOString().split('T')[0],
       start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
       end: new Date(),
-      label: 'Últimos 7 dias'
+      label: 'ultimos 7 dias'
     },
     {
       startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       endDate: new Date().toISOString().split('T')[0],
       start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
       end: new Date(),
-      label: 'Últimos 30 dias'
+      label: 'ultimos 30 dias'
     },
     {
       startDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       endDate: new Date().toISOString().split('T')[0],
       start: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000),
       end: new Date(),
-      label: 'Últimos 90 dias'
+      label: 'ultimos 90 dias'
     }
   ], []);
 
@@ -106,7 +106,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   }, [customStartDate, customEndDate, throttledRangeChange]);
 
   const formatDateForDisplay = useCallback((range: DateRange) => {
-    if (!range) return 'Selecionar período';
+    if (!range) return 'Selecionar periodo';
     
     if (range.label !== "Personalizado") {
       return range.label;
@@ -131,7 +131,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
     return range.label;
   }, []);
 
-  // Renderização moderna (para ModernDashboard)
+  // Renderizacao moderna (para ModernDashboard)
   if (variant === 'modern') {
     const filterVariants = {
       hidden: { opacity: 0, y: -10 },
@@ -157,7 +157,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <Calendar className="h-4 w-4" />
-                <span className="font-medium">Período:</span>
+                <span className="font-medium">Periodo:</span>
               </div>
               
               <Select 
@@ -170,7 +170,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                 }}
               >
                 <SelectTrigger className="w-48 border-gray-200 bg-white/80 hover:bg-white transition-colors">
-                  <SelectValue placeholder={formatDateForDisplay(currentRange || { label: 'Selecionar período', startDate: '', endDate: '' })} />
+                  <SelectValue placeholder={formatDateForDisplay(currentRange || { label: 'Selecionar periodo', startDate: '', endDate: '' })} />
                 </SelectTrigger>
                 <SelectContent>
                   {predefinedRanges.map((preset) => (
@@ -187,7 +187,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                 variant="outline" 
                 className="text-xs bg-blue-50 text-blue-700 border-blue-200"
               >
-                {formatDateForDisplay(currentRange || { label: 'Selecionar período', startDate: '', endDate: '' })}
+                {formatDateForDisplay(currentRange || { label: 'Selecionar periodo', startDate: '', endDate: '' })}
               </Badge>
             </div>
           </CardContent>
@@ -196,7 +196,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
     );
   }
 
-  // Renderização clássica
+  // Renderizacao classica
   return (
     <div className="relative">
       {/* Filter Button */}
@@ -207,7 +207,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
       >
         <Calendar className="w-4 h-4" />
         <span className="text-sm font-medium">
-          {currentRange?.label || 'Selecionar período'}
+          {currentRange?.label || 'Selecionar periodo'}
         </span>
         <Filter className="w-4 h-4" />
         {isLoading && (
@@ -223,7 +223,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-semibold text-slate-200 flex items-center space-x-2">
                 <Clock className="w-4 h-4" />
-                <span>Filtro por Período</span>
+                <span>Filtro por Periodo</span>
               </h3>
               <button
                 onClick={() => setIsOpen(false)}
@@ -235,7 +235,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
 
             {/* Predefined Ranges */}
             <div className="space-y-2 mb-4">
-              <h4 className="text-xs font-medium text-slate-300 uppercase tracking-wide">Períodos Rápidos</h4>
+              <h4 className="text-xs font-medium text-slate-300 uppercase tracking-wide">Periodos Rapidos</h4>
               {predefinedRanges.map((range, index) => (
                 <button
                   key={`date-range-${index}`}
@@ -256,7 +256,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
 
             {/* Custom Range */}
             <div className="border-t border-slate-600/50 pt-4">
-              <h4 className="text-xs font-medium text-slate-300 uppercase tracking-wide mb-3">Período Personalizado</h4>
+              <h4 className="text-xs font-medium text-slate-300 uppercase tracking-wide mb-3">Periodo Personalizado</h4>
               <div className="space-y-3">
                 <div>
                   <label className="block text-xs text-slate-400 mb-1">Data Inicial</label>
@@ -281,7 +281,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                   disabled={!customStartDate || !customEndDate}
                   className="w-full bg-blue-600/80 hover:bg-blue-600 disabled:bg-slate-600/50 disabled:cursor-not-allowed text-white text-sm font-medium py-2 rounded-md transition-all duration-200"
                 >
-                  Aplicar Período
+                  Aplicar Periodo
                 </button>
               </div>
             </div>
@@ -292,6 +292,6 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   );
 };
 
-// Corrigir a exportação para named export
+// Corrigir a exportacao para named export
 export { DateRangeFilter };
 export default DateRangeFilter;

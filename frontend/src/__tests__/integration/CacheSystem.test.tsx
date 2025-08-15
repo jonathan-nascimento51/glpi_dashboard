@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { useApi } from '../../hooks/useApi';
@@ -54,7 +54,7 @@ const TestComponent: React.FC<{
     }
   }, [apiData, error, setCachedValue]);
 
-  // Carrega dados da API se cache expirou ou está vazio
+  // Carrega dados da API se cache expirou ou esta vazio
   React.useEffect(() => {
     if (isExpired || (!cachedValue && !loading)) {
       execute();
@@ -103,7 +103,7 @@ describe('Cache System Integration', () => {
     vi.useRealTimers();
   });
 
-  it('deve carregar dados da API quando cache está vazio', async () => {
+  it('deve carregar dados da API quando cache esta vazio', async () => {
     const mockApiData = { id: 1, name: 'Test Data' };
     (httpClient.get as any).mockResolvedValueOnce(mockApiData);
 
@@ -119,7 +119,7 @@ describe('Cache System Integration', () => {
     expect(screen.getByTestId('loading')).toHaveTextContent('Loading...');
     expect(screen.getByTestId('cached-value')).toHaveTextContent('No Cached Value');
 
-    // Aguarda a requisição da API
+    // Aguarda a requisicao da API
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('Not Loading');
     });
@@ -130,7 +130,7 @@ describe('Cache System Integration', () => {
     expect(localStorageMock.setItem).toHaveBeenCalled();
   });
 
-  it('deve usar dados do cache quando disponíveis e válidos', async () => {
+  it('deve usar dados do cache quando disponiveis e validos', async () => {
     const cachedData = { id: 2, name: 'Cached Data' };
     const cacheEntry = {
       value: cachedData,
@@ -152,7 +152,7 @@ describe('Cache System Integration', () => {
     expect(screen.getByTestId('is-expired')).toHaveTextContent('Not Expired');
     expect(screen.getByTestId('loading')).toHaveTextContent('Not Loading');
     
-    // Não deve fazer requisição à API
+    // Nao deve fazer requisicao a API
     expect(httpClient.get).not.toHaveBeenCalled();
   });
 
@@ -162,7 +162,7 @@ describe('Cache System Integration', () => {
     
     const expiredCacheEntry = {
       value: expiredData,
-      timestamp: Date.now() - 10000, // 10 segundos atrás
+      timestamp: Date.now() - 10000, // 10 segundos atras
       ttl: 5000 // TTL de 5 segundos
     };
     
@@ -181,7 +181,7 @@ describe('Cache System Integration', () => {
     expect(screen.getByTestId('is-expired')).toHaveTextContent('Expired');
     expect(screen.getByTestId('loading')).toHaveTextContent('Loading...');
 
-    // Aguarda nova requisição
+    // Aguarda nova requisicao
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('Not Loading');
     });
@@ -216,7 +216,7 @@ describe('Cache System Integration', () => {
     expect(screen.getByTestId('cached-value')).toHaveTextContent(JSON.stringify(cachedData));
     expect(httpClient.get).not.toHaveBeenCalled();
 
-    // Clica no botão de refresh
+    // Clica no botao de refresh
     const refreshBtn = screen.getByTestId('refresh-btn');
     act(() => {
       refreshBtn.click();
@@ -225,7 +225,7 @@ describe('Cache System Integration', () => {
     // Deve mostrar loading
     expect(screen.getByTestId('loading')).toHaveTextContent('Loading...');
 
-    // Aguarda nova requisição
+    // Aguarda nova requisicao
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('Not Loading');
     });
@@ -257,13 +257,13 @@ describe('Cache System Integration', () => {
     // Inicialmente usa cache
     expect(screen.getByTestId('cached-value')).toHaveTextContent(JSON.stringify(cachedData));
 
-    // Clica no botão de limpar cache
+    // Clica no botao de limpar cache
     const clearCacheBtn = screen.getByTestId('clear-cache-btn');
     act(() => {
       clearCacheBtn.click();
     });
 
-    // Deve voltar ao valor padrão
+    // Deve voltar ao valor padrao
     expect(screen.getByTestId('cached-value')).toHaveTextContent('"Default Value"');
     expect(localStorageMock.removeItem).toHaveBeenCalledWith('test-cache');
   });
@@ -300,7 +300,7 @@ describe('Cache System Integration', () => {
     expect(screen.getByTestId('is-expired')).toHaveTextContent('Expired');
   });
 
-  it('deve funcionar com múltiplas instâncias usando chaves diferentes', async () => {
+  it('deve funcionar com multiplas instancias usando chaves diferentes', async () => {
     const data1 = { id: 9, name: 'Data 1' };
     const data2 = { id: 10, name: 'Data 2' };
     
@@ -325,7 +325,7 @@ describe('Cache System Integration', () => {
       </div>
     );
 
-    // Aguarda ambas as requisições
+    // Aguarda ambas as requisicoes
     await waitFor(() => {
       const component1 = container.querySelector('[data-testid="component-1"]');
       const component2 = container.querySelector('[data-testid="component-2"]');
@@ -336,7 +336,7 @@ describe('Cache System Integration', () => {
         .toHaveTextContent('Not Loading');
     });
 
-    // Verifica se cada componente tem seus próprios dados
+    // Verifica se cada componente tem seus proprios dados
     const component1 = container.querySelector('[data-testid="component-1"]');
     const component2 = container.querySelector('[data-testid="component-2"]');
     
@@ -345,7 +345,7 @@ describe('Cache System Integration', () => {
     expect(component2?.querySelector('[data-testid="cached-value"]'))
       .toHaveTextContent(JSON.stringify(data2));
 
-    // Verifica se foram feitas requisições separadas
+    // Verifica se foram feitas requisicoes separadas
     expect(httpClient.get).toHaveBeenCalledWith('/api/data1');
     expect(httpClient.get).toHaveBeenCalledWith('/api/data2');
     expect(httpClient.get).toHaveBeenCalledTimes(2);
@@ -387,7 +387,7 @@ describe('Cache System Integration', () => {
     expect(componentB?.querySelector('[data-testid="cached-value"]'))
       .toHaveTextContent(JSON.stringify(sharedData));
 
-    // Não deve fazer requisições desnecessárias
+    // Nao deve fazer requisicoes desnecessarias
     expect(httpClient.get).not.toHaveBeenCalled();
   });
 
@@ -397,7 +397,7 @@ describe('Cache System Integration', () => {
     
     const shortTtlEntry = {
       value: shortTtlData,
-      timestamp: Date.now() - 1500, // 1.5 segundos atrás
+      timestamp: Date.now() - 1500, // 1.5 segundos atras
       ttl: 1000 // TTL de 1 segundo
     };
     
@@ -416,7 +416,7 @@ describe('Cache System Integration', () => {
     expect(screen.getByTestId('is-expired')).toHaveTextContent('Expired');
     expect(screen.getByTestId('loading')).toHaveTextContent('Loading...');
 
-    // Aguarda nova requisição
+    // Aguarda nova requisicao
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('Not Loading');
     });
@@ -430,7 +430,7 @@ describe('Cache System Integration', () => {
     const permanentData = { id: 14, name: 'Permanent Data' };
     const permanentEntry = {
       value: permanentData,
-      timestamp: Date.now() - 100000, // Muito tempo atrás
+      timestamp: Date.now() - 100000, // Muito tempo atras
       ttl: 0 // Cache permanente
     };
     
@@ -449,7 +449,7 @@ describe('Cache System Integration', () => {
     expect(screen.getByTestId('cached-value')).toHaveTextContent(JSON.stringify(permanentData));
     expect(screen.getByTestId('loading')).toHaveTextContent('Not Loading');
     
-    // Não deve fazer requisição
+    // Nao deve fazer requisicao
     expect(httpClient.get).not.toHaveBeenCalled();
   });
 });

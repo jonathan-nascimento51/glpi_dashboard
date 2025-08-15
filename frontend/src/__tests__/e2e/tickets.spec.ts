@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+﻿import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import { setupTestEnvironment, cleanupTestEnvironment } from './global-setup';
 
 // Mock page object for E2E simulation
@@ -38,25 +38,25 @@ describe('Tickets E2E Tests', () => {
   });
 
   beforeEach(async () => {
-    // Navegar para a página de tickets
+    // Navegar para a pagina de tickets
     await mockPage.goto('/tickets');
     
-    // Aguardar o carregamento da página
+    // Aguardar o carregamento da pagina
     await mockPage.waitForLoadState('networkidle');
   });
 
   it('should display tickets list', async () => {
-    // Verificar se o título da página está correto
+    // Verificar se o titulo da pagina esta correto
     expect(mockPage.url()).toContain('/tickets');
     
-    // Verificar se os elementos principais estão visíveis
+    // Verificar se os elementos principais estao visiveis
     expect(await mockPage.locator('[data-testid="tickets-header"]').isVisible()).toBe(true);
     expect(await mockPage.locator('[data-testid="tickets-list"]').isVisible()).toBe(true);
     
-    // Verificar se pelo menos um ticket está sendo exibido
+    // Verificar se pelo menos um ticket esta sendo exibido
     expect(await mockPage.locator('[data-testid="ticket-card"]').first().toBeVisible()).toBe(true);
     
-    // Verificar se os controles de filtro estão presentes
+    // Verificar se os controles de filtro estao presentes
     expect(await mockPage.locator('[data-testid="status-filter"]').isVisible()).toBe(true);
     expect(await mockPage.locator('[data-testid="priority-filter"]').isVisible()).toBe(true);
     expect(await mockPage.locator('[data-testid="search-input"]').isVisible()).toBe(true);
@@ -66,7 +66,7 @@ describe('Tickets E2E Tests', () => {
     // Aguardar a lista de tickets carregar
     await mockPage.waitForSelector('[data-testid="ticket-card"]');
     
-    // Contar o número inicial de tickets
+    // Contar o numero inicial de tickets
     const initialCount = await mockPage.locator('[data-testid="ticket-card"]').count();
     
     // Aplicar filtro de status
@@ -76,13 +76,13 @@ describe('Tickets E2E Tests', () => {
     // Aguardar a filtragem
     await mockPage.waitForLoadState('networkidle');
     
-    // Verificar se apenas tickets com status "open" estão visíveis
+    // Verificar se apenas tickets com status "open" estao visiveis
     const openTickets = mockPage.locator('[data-testid="ticket-card"][data-status="open"]');
     const ticketCount = await openTickets.count();
     
     expect(ticketCount).toBeGreaterThan(0);
     
-    // Verificar se todos os tickets visíveis têm status "open"
+    // Verificar se todos os tickets visiveis tem status "open"
     for (let i = 0; i < ticketCount; i++) {
       const ticket = openTickets.nth(i);
       expect(ticket.locator('[data-testid="ticket-status"]').toContainText('Aberto')).toBe(true);
@@ -100,13 +100,13 @@ describe('Tickets E2E Tests', () => {
     // Aguardar a filtragem
     await mockPage.waitForLoadState('networkidle');
     
-    // Verificar se apenas tickets com prioridade "high" estão visíveis
+    // Verificar se apenas tickets com prioridade "high" estao visiveis
     const highPriorityTickets = mockPage.locator('[data-testid="ticket-card"][data-priority="high"]');
     const ticketCount = await highPriorityTickets.count();
     
     expect(ticketCount).toBeGreaterThan(0);
     
-    // Verificar se todos os tickets visíveis têm prioridade "high"
+    // Verificar se todos os tickets visiveis tem prioridade "high"
     for (let i = 0; i < ticketCount; i++) {
       const ticket = highPriorityTickets.nth(i);
       expect(ticket.locator('[data-testid="ticket-priority"]').toContainText('Alta')).toBe(true);
@@ -124,12 +124,12 @@ describe('Tickets E2E Tests', () => {
     // Aguardar os resultados da busca
     await mockPage.waitForLoadState('networkidle');
     
-    // Verificar se os resultados contêm o termo buscado
+    // Verificar se os resultados contem o termo buscado
     const searchResults = mockPage.locator('[data-testid="ticket-card"]');
     const resultCount = await searchResults.count();
     
     if (resultCount > 0) {
-      // Verificar se pelo menos um resultado contém o termo "rede"
+      // Verificar se pelo menos um resultado contem o termo "rede"
       const firstResult = searchResults.first();
       const title = await firstResult.textContent();
       const description = await firstResult.textContent();
@@ -149,13 +149,13 @@ describe('Tickets E2E Tests', () => {
     // Clicar no primeiro ticket
     await mockPage.click('[data-testid="ticket-card"]');
     
-    // Aguardar a página de detalhes carregar
+    // Aguardar a pagina de detalhes carregar
     await mockPage.waitForLoadState('networkidle');
     
-    // Verificar se estamos na página de detalhes
+    // Verificar se estamos na pagina de detalhes
     expect(mockPage.url()).toMatch(/\/tickets\/\d+/);
     
-    // Verificar se os elementos de detalhes estão visíveis
+    // Verificar se os elementos de detalhes estao visiveis
     expect(await mockPage.locator('[data-testid="ticket-details-header"]').isVisible()).toBe(true);
     expect(await mockPage.locator('[data-testid="ticket-title"]').isVisible()).toBe(true);
     expect(await mockPage.locator('[data-testid="ticket-description"]').isVisible()).toBe(true);
@@ -163,15 +163,15 @@ describe('Tickets E2E Tests', () => {
   });
 
   it('should create new ticket', async () => {
-    // Clicar no botão de criar novo ticket
+    // Clicar no botao de criar novo ticket
     await mockPage.click('[data-testid="new-ticket-button"]');
     
-    // Aguardar o modal/formulário aparecer
+    // Aguardar o modal/formulario aparecer
     await mockPage.waitForSelector('[data-testid="ticket-form"]');
     
-    // Preencher o formulário
+    // Preencher o formulario
     await mockPage.fill('[data-testid="ticket-title-input"]', 'Teste E2E - Novo Ticket');
-    await mockPage.fill('[data-testid="ticket-description-input"]', 'Descrição do ticket criado via teste E2E');
+    await mockPage.fill('[data-testid="ticket-description-input"]', 'Descricao do ticket criado via teste E2E');
     
     // Selecionar prioridade
     await mockPage.click('[data-testid="priority-select"]');
@@ -181,17 +181,17 @@ describe('Tickets E2E Tests', () => {
     await mockPage.click('[data-testid="category-select"]');
     await mockPage.click('[data-testid="category-option-software"]');
     
-    // Submeter o formulário
+    // Submeter o formulario
     await mockPage.click('[data-testid="submit-ticket-button"]');
     
-    // Aguardar a criação e redirecionamento
+    // Aguardar a criacao e redirecionamento
     await mockPage.waitForLoadState('networkidle');
     
     // Verificar se foi redirecionado para a lista ou detalhes
     const currentUrl = mockPage.url();
     expect(currentUrl).toMatch(/\/tickets/);
     
-    // Verificar se há uma mensagem de sucesso
+    // Verificar se ha uma mensagem de sucesso
     expect(await mockPage.locator('[data-testid="success-message"]').isVisible()).toBe(true);
   });
 
@@ -202,10 +202,10 @@ describe('Tickets E2E Tests', () => {
     // Clicar no primeiro ticket para abrir detalhes
     await mockPage.click('[data-testid="ticket-card"]');
     
-    // Aguardar a página de detalhes carregar
+    // Aguardar a pagina de detalhes carregar
     await mockPage.waitForLoadState('networkidle');
     
-    // Clicar no botão de editar status
+    // Clicar no botao de editar status
     await mockPage.click('[data-testid="edit-status-button"]');
     
     // Aguardar o dropdown de status aparecer
@@ -214,16 +214,16 @@ describe('Tickets E2E Tests', () => {
     // Selecionar novo status
     await mockPage.click('[data-testid="status-option-assigned"]');
     
-    // Confirmar a mudança
+    // Confirmar a mudanca
     await mockPage.click('[data-testid="confirm-status-change"]');
     
-    // Aguardar a atualização
+    // Aguardar a atualizacao
     await mockPage.waitForLoadState('networkidle');
     
     // Verificar se o status foi atualizado
-    expect(mockPage.locator('[data-testid="ticket-status"]').toContainText('Atribuído')).toBe(true);
+    expect(mockPage.locator('[data-testid="ticket-status"]').toContainText('Atribuido')).toBe(true);
     
-    // Verificar se há uma mensagem de sucesso
+    // Verificar se ha uma mensagem de sucesso
     expect(await mockPage.locator('[data-testid="success-message"]').isVisible()).toBe(true);
   });
 
@@ -234,62 +234,62 @@ describe('Tickets E2E Tests', () => {
     // Clicar no primeiro ticket para abrir detalhes
     await mockPage.click('[data-testid="ticket-card"]');
     
-    // Aguardar a página de detalhes carregar
+    // Aguardar a pagina de detalhes carregar
     await mockPage.waitForLoadState('networkidle');
     
-    // Rolar até a seção de comentários
+    // Rolar ate a secao de comentarios
     await mockPage.locator('[data-testid="comments-section"]').scrollIntoViewIfNeeded();
     
-    // Contar comentários existentes
+    // Contar comentarios existentes
     const initialCommentCount = await mockPage.locator('[data-testid="comment-item"]').count();
     
-    // Adicionar novo comentário
-    await mockPage.fill('[data-testid="comment-input"]', 'Comentário adicionado via teste E2E');
+    // Adicionar novo comentario
+    await mockPage.fill('[data-testid="comment-input"]', 'Comentario adicionado via teste E2E');
     await mockPage.click('[data-testid="add-comment-button"]');
     
-    // Aguardar o comentário ser adicionado
+    // Aguardar o comentario ser adicionado
     await mockPage.waitForLoadState('networkidle');
     
-    // Verificar se o número de comentários aumentou
+    // Verificar se o numero de comentarios aumentou
     const newCommentCount = await mockPage.locator('[data-testid="comment-item"]').count();
     expect(newCommentCount).toBe(initialCommentCount + 1);
     
-    // Verificar se o novo comentário está visível
+    // Verificar se o novo comentario esta visivel
     const lastComment = mockPage.locator('[data-testid="comment-item"]').last();
-    expect(lastComment.toContainText('Comentário adicionado via teste E2E')).toBe(true);
+    expect(lastComment.toContainText('Comentario adicionado via teste E2E')).toBe(true);
   });
 
   it('should handle pagination', async () => {
     // Aguardar a lista de tickets carregar
     await mockPage.waitForSelector('[data-testid="ticket-card"]');
     
-    // Verificar se a paginação está presente (se houver muitos tickets)
+    // Verificar se a paginacao esta presente (se houver muitos tickets)
     const paginationExists = await mockPage.locator('[data-testid="pagination"]').isVisible();
     
     if (paginationExists) {
-      // Contar tickets na primeira página
+      // Contar tickets na primeira pagina
       const firstPageTickets = await mockPage.locator('[data-testid="ticket-card"]').count();
       
-      // Ir para a próxima página
+      // Ir para a proxima pagina
       await mockPage.click('[data-testid="next-page-button"]');
       
       // Aguardar o carregamento
       await mockPage.waitForLoadState('networkidle');
       
-      // Verificar se estamos na página 2
+      // Verificar se estamos na pagina 2
       expect(mockPage.locator('[data-testid="current-page"]').toContainText('2')).toBe(true);
       
-      // Verificar se há tickets na segunda página
+      // Verificar se ha tickets na segunda pagina
       const secondPageTickets = await mockPage.locator('[data-testid="ticket-card"]').count();
       expect(secondPageTickets).toBeGreaterThan(0);
       
-      // Voltar para a primeira página
+      // Voltar para a primeira pagina
       await mockPage.click('[data-testid="prev-page-button"]');
       
       // Aguardar o carregamento
       await mockPage.waitForLoadState('networkidle');
       
-      // Verificar se voltamos para a página 1
+      // Verificar se voltamos para a pagina 1
       expect(mockPage.locator('[data-testid="current-page"]').toContainText('1')).toBe(true);
     }
   });
@@ -298,27 +298,27 @@ describe('Tickets E2E Tests', () => {
     // Aguardar a lista de tickets carregar
     await mockPage.waitForSelector('[data-testid="ticket-card"]');
     
-    // Selecionar múltiplos tickets
+    // Selecionar multiplos tickets
     await mockPage.click('[data-testid="ticket-checkbox"]', { nth: 0 });
     await mockPage.click('[data-testid="ticket-checkbox"]', { nth: 1 });
     
-    // Verificar se a barra de ações em lote apareceu
+    // Verificar se a barra de acoes em lote apareceu
     expect(await mockPage.locator('[data-testid="bulk-actions-bar"]').isVisible()).toBe(true);
     
-    // Verificar se o contador de selecionados está correto
+    // Verificar se o contador de selecionados esta correto
     expect(mockPage.locator('[data-testid="selected-count"]').toContainText('2')).toBe(true);
     
-    // Testar ação em lote (ex: mudar status)
+    // Testar acao em lote (ex: mudar status)
     await mockPage.click('[data-testid="bulk-status-change"]');
     await mockPage.click('[data-testid="bulk-status-option-assigned"]');
     
-    // Confirmar a ação
+    // Confirmar a acao
     await mockPage.click('[data-testid="confirm-bulk-action"]');
     
-    // Aguardar a atualização
+    // Aguardar a atualizacao
     await mockPage.waitForLoadState('networkidle');
     
-    // Verificar se há uma mensagem de sucesso
+    // Verificar se ha uma mensagem de sucesso
     expect(await mockPage.locator('[data-testid="success-message"]').isVisible()).toBe(true);
   });
 
@@ -326,16 +326,16 @@ describe('Tickets E2E Tests', () => {
     // Aguardar a lista de tickets carregar
     await mockPage.waitForSelector('[data-testid="ticket-card"]');
     
-    // Clicar no botão de exportar
+    // Clicar no botao de exportar
     await mockPage.click('[data-testid="export-tickets-button"]');
     
-    // Aguardar o menu de exportação aparecer
+    // Aguardar o menu de exportacao aparecer
     await mockPage.waitForSelector('[data-testid="export-menu"]');
     
     // Configurar o listener para download
     const downloadPromise = mockPage.waitForEvent('download');
     
-    // Clicar na opção de exportar CSV
+    // Clicar na opcao de exportar CSV
     await mockPage.click('[data-testid="export-csv"]');
     
     // Aguardar o download
@@ -350,9 +350,9 @@ describe('Tickets E2E Tests', () => {
     // Aguardar a lista de tickets carregar
     await mockPage.waitForSelector('[data-testid="ticket-card"]');
     
-    // Simular uma atualização em tempo real
+    // Simular uma atualizacao em tempo real
     await mockPage.evaluate(() => {
-      // Disparar um evento customizado que simula atualização de ticket
+      // Disparar um evento customizado que simula atualizacao de ticket
       window.dispatchEvent(new CustomEvent('ticket-updated', {
         detail: {
           ticketId: 1,
@@ -362,10 +362,10 @@ describe('Tickets E2E Tests', () => {
       }));
     });
     
-    // Aguardar a atualização ser processada
+    // Aguardar a atualizacao ser processada
     await mockPage.waitForTimeout(1000);
     
-    // Verificar se a notificação de atualização aparece
+    // Verificar se a notificacao de atualizacao aparece
     expect(await mockPage.locator('[data-testid="realtime-notification"]').isVisible()).toBe(true);
   });
 
@@ -376,10 +376,10 @@ describe('Tickets E2E Tests', () => {
     // Aguardar o carregamento
     await mockPage.waitForSelector('[data-testid="tickets-list"]');
     
-    // Verificar se o layout mobile está ativo
+    // Verificar se o layout mobile esta ativo
     expect(await mockPage.locator('[data-testid="mobile-filters-button"]').isVisible()).toBe(true);
     
-    // Verificar se os tickets estão em layout de lista vertical
+    // Verificar se os tickets estao em layout de lista vertical
     const ticketCards = mockPage.locator('[data-testid="ticket-card"]');
     expect(await ticketCards.first().toBeVisible()).toBe(true);
     
@@ -395,19 +395,19 @@ describe('Tickets E2E Tests', () => {
     // Testar atalho para criar novo ticket (Ctrl+N)
     await mockPage.keyboard.press('Control+n');
     
-    // Verificar se o formulário de novo ticket aparece
+    // Verificar se o formulario de novo ticket aparece
     expect(await mockPage.locator('[data-testid="ticket-form"]').isVisible()).toBe(true);
     
-    // Fechar o formulário (Escape)
+    // Fechar o formulario (Escape)
     await mockPage.keyboard.press('Escape');
     
-    // Verificar se o formulário foi fechado
+    // Verificar se o formulario foi fechado
     expect(await mockPage.locator('[data-testid="ticket-form"]').isVisible()).toBe(false);
     
     // Testar atalho para busca (Ctrl+F)
     await mockPage.keyboard.press('Control+f');
     
-    // Verificar se o campo de busca está focado
+    // Verificar se o campo de busca esta focado
     const searchInput = mockPage.locator('[data-testid="search-input"]');
     expect(await searchInput.isVisible()).toBe(true);
   });

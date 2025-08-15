@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+﻿import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useDashboard } from '../hooks/useDashboard';
 import { useThrottledCallback } from '../hooks/useDebounce';
 import type {
@@ -90,7 +90,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
 
   const renderLevelMetrics = useCallback((levelMetrics: any) => {
     if (!isValidLevelMetrics(levelMetrics)) {
-      return <div className="text-red-500">Dados de nível inválidos</div>;
+      return <div className="text-red-500">Dados de nivel invalidos</div>;
     }
 
     return (
@@ -105,12 +105,12 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
 
   const renderNiveisMetrics = useCallback((niveisMetrics: any) => {
     if (!isValidNiveisMetrics(niveisMetrics)) {
-      return <div className="text-red-500">Dados de níveis inválidos</div>;
+      return <div className="text-red-500">Dados de niveis invalidos</div>;
     }
 
     return (
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Métricas por Nível</h2>
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">Metricas por Nivel</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {Object.entries(niveisMetrics).map(([nivel, metrics]) => {
             if (typeof metrics === 'object' && metrics !== null) {
@@ -135,7 +135,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
       <h3 className="text-lg font-semibold text-gray-700 mb-4">Filtros</h3>
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Data Início</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Data Inicio</label>
           <input
             type="date"
             value={filters.startDate || ''}
@@ -174,13 +174,13 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
           >
             <option value="">Todas</option>
             <option value="baixa">Baixa</option>
-            <option value="media">Média</option>
+            <option value="media">Media</option>
             <option value="alta">Alta</option>
-            <option value="critica">Crítica</option>
+            <option value="critica">Critica</option>
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nível</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Nivel</label>
           <select
             value={filters.level || ''}
             onChange={(e) => handleFilterChange({ level: e.target.value })}
@@ -239,7 +239,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
       <div className="flex items-center justify-center min-h-64">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando métricas do dashboard...</p>
+          <p className="text-gray-600">Carregando metricas do dashboard...</p>
         </div>
       </div>
     );
@@ -248,7 +248,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
   if (!data) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Nenhum dado disponível</p>
+        <p className="text-gray-500">Nenhum dado disponivel</p>
         <button
           onClick={() => refreshData()}
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -287,7 +287,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
       {/* Trends */}
       {data.tendencias && (
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Tendências</h2>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Tendencias</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {renderMetricsCard('Novos Tickets', parseInt(data.tendencias.novos) || 0)}
             {renderMetricsCard('Tickets Resolvidos', parseInt(data.tendencias.resolvidos) || 0)}
