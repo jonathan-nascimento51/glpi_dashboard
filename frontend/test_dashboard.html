@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Dashboard GLPI</title>
+</head>
+<body>
+    <h1>Teste de Conectividade Dashboard GLPI</h1>
+    <div id="status">Testando...</div>
+    <div id="metrics"></div>
+    
+    <script>
+        async function testAPI() {
+            const statusDiv = document.getElementById('status');
+            const metricsDiv = document.getElementById('metrics');
+            
+            try {
+                statusDiv.innerHTML = 'Conectando com a API...';
+                
+                const response = await fetch('http://localhost:5000/api/metrics');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                statusDiv.innerHTML = ' API funcionando!';
+                metricsDiv.innerHTML = `
+                    <h2>Métricas obtidas:</h2>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                statusDiv.innerHTML = ` Erro: ${error.message}`;
+                console.error('Erro ao testar API:', error);
+            }
+        }
+        
+        window.onload = testAPI;
+    </script>
+</body>
+</html>

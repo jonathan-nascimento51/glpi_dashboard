@@ -1,4 +1,4 @@
-﻿from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request
 from ..services.api_service import APIService
 from ..services.glpi_service import GLPIService
 from ..core.config import active_config
@@ -494,3 +494,4 @@ def get_status():
             "success": False,
             "error": f"Erro interno do servidor: {str(e)}"
         }), 500
+

@@ -1,4 +1,5 @@
-﻿from flask import Flask, jsonify
+# -*- coding: utf-8 -*-
+from flask import Flask, jsonify
 from flask_cors import CORS
 import logging
 import time
@@ -7,16 +8,16 @@ from backend.app.core.cache_config import configure_cache
 from backend.app.api.routes import api_bp
 
 def create_app(config=None):
-    """Cria e configura a aplicaçáo Flask com cache inteligente"""
+    """Cria e configura a aplica??o Flask com cache inteligente"""
     app = Flask(__name__)
     
-    # Carrega configurações
+    # Carrega configura??es
     if config is None:
         app.config.from_object(active_config)
     else:
         app.config.from_object(config)
     
-    # Configura cache inteligente com fallback automático
+    # Configura cache inteligente com fallback autom?tico
     cache_manager = configure_cache(app)
     
     # Configura CORS
@@ -30,19 +31,19 @@ def create_app(config=None):
     )
     logger = logging.getLogger('app')
     
-    # Middleware para logar todas as requisições
+    # Middleware para logar todas as requisi??es
     @app.before_request
     def log_request_info():
         from flask import request
         import sys
-        print(f"\n=== REQUISIÇáO RECEBIDA ===", flush=True)
-        print(f"Método: {request.method}", flush=True)
+        print(f"\n=== REQUISI??O RECEBIDA ===", flush=True)
+        print(f"M?todo: {request.method}", flush=True)
         print(f"Path: {request.path}", flush=True)
         print(f"URL completa: {request.url}", flush=True)
         print(f"Headers: {dict(request.headers)}", flush=True)
         print(f"================================\n", flush=True)
         sys.stdout.flush()
-        logger.info(f"REQUISIÇáO RECEBIDA: {request.method} {request.path}")
+        logger.info(f"REQUISI??O RECEBIDA: {request.method} {request.path}")
         
     @app.after_request
     def log_response_info(response):
@@ -74,7 +75,7 @@ def create_app(config=None):
     # Health check endpoint
     @app.route('/health')
     def health_check():
-        """Endpoint de health check com informações detalhadas"""
+        """Endpoint de health check com informa??es detalhadas"""
         try:
             cache_info = cache_manager.get_cache_info()
             
@@ -105,7 +106,7 @@ def create_app(config=None):
     # Cache info endpoint
     @app.route('/cache/info')
     def cache_info():
-        """Endpoint com informações detalhadas do cache"""
+        """Endpoint com informa??es detalhadas do cache"""
         try:
             info = cache_manager.get_cache_info()
             return jsonify(info), 200
@@ -116,14 +117,14 @@ def create_app(config=None):
     # Registra blueprints
     app.register_blueprint(api_bp, url_prefix='/api')
     
-    logger.info(f"Aplicaçáo configurada com ambiente: {app.config.get('ENV', 'development')}")
+    logger.info(f"Aplica??o configurada com ambiente: {app.config.get('ENV', 'development')}")
     return app
 
-# Cria a aplicaçáo
+# Cria a aplica??o
 app = create_app()
 
 if __name__ == '__main__':
-    port = app.config.get('PORT', 5000)
+    port = app.config.get('PORT', 5000)  # Usa PORT do .env ou 5000 como padr�o
     host = app.config.get('HOST', '0.0.0.0')
     debug = app.config.get('DEBUG', False)
     
@@ -131,4 +132,5 @@ if __name__ == '__main__':
     logger.info(f"Iniciando servidor Flask em {host}:{port} (Debug: {debug})")
     
     app.run(host=host, port=port, debug=debug)
+
 

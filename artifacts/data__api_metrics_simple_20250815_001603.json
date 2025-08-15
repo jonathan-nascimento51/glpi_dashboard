@@ -1,0 +1,42 @@
+{
+  "data": {
+    "niveis": {
+      "n1": {
+        "novos": 5,
+        "pendentes": 2,
+        "progresso": 3,
+        "resolvidos": 10
+      },
+      "n2": {
+        "novos": 4,
+        "pendentes": 3,
+        "progresso": 4,
+        "resolvidos": 15
+      },
+      "n3": {
+        "novos": 3,
+        "pendentes": 2,
+        "progresso": 3,
+        "resolvidos": 12
+      },
+      "n4": {
+        "novos": 3,
+        "pendentes": 1,
+        "progresso": 2,
+        "resolvidos": 8
+      }
+    },
+    "novos": 15,
+    "pendentes": 8,
+    "progresso": 12,
+    "resolvidos": 45,
+    "tendencias": {
+      "novos": "+5%",
+      "pendentes": "-2%",
+      "progresso": "+3%",
+      "resolvidos": "+8%"
+    },
+    "total": 80
+  },
+  "success": true
+}

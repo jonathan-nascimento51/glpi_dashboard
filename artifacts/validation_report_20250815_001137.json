@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-08-15 00:11:37",
+  "services": {
+    "backend": true,
+    "frontend": true
+  },
+  "data_availability": {
+    "/api/tickets/summary": false,
+    "/api/tickets/by-status": false,
+    "/api/tickets/by-priority": false,
+    "/api/tickets/by-category": false
+  },
+  "issues": [
+    "Dados de summary nao disponiveis",
+    "Dados por status nao disponiveis"
+  ],
+  "status": "FAIL"
+}

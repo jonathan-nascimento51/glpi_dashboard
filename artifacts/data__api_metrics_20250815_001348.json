@@ -1,0 +1,51 @@
+{
+  "data": {
+    "niveis": {
+      "geral": {
+        "novos": 5,
+        "pendentes": 33,
+        "progresso": 65,
+        "resolvidos": 9709,
+        "total": 9812
+      },
+      "n1": {
+        "novos": 0,
+        "pendentes": 0,
+        "progresso": 0,
+        "resolvidos": 0
+      },
+      "n2": {
+        "novos": 0,
+        "pendentes": 0,
+        "progresso": 0,
+        "resolvidos": 0
+      },
+      "n3": {
+        "novos": 1,
+        "pendentes": 0,
+        "progresso": 0,
+        "resolvidos": 0
+      },
+      "n4": {
+        "novos": 0,
+        "pendentes": 1,
+        "progresso": 0,
+        "resolvidos": 0
+      }
+    },
+    "novos": 5,
+    "pendentes": 33,
+    "progresso": 65,
+    "resolvidos": 9709,
+    "tendencias": {
+      "novos": "+150.0%",
+      "pendentes": "+266.7%",
+      "progresso": "+828.6%",
+      "resolvidos": "+10228.7%"
+    },
+    "total": 9812
+  },
+  "success": true,
+  "tempo_execucao": 5766.418933868408,
+  "timestamp": "2025-08-15T03:13:39Z"
+}

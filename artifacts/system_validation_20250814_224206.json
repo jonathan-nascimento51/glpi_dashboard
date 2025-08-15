@@ -1,0 +1,142 @@
+{
+  "timestamp": "2025-08-14T22:41:49.640033",
+  "tests": {
+    "config_glpi_url": {
+      "status": "PASS",
+      "message": "Variável GLPI_URL configurada",
+      "details": "http://cau.ppiratini.intra.rs.gov.br/glpi/apirest.php",
+      "timestamp": "2025-08-14T22:41:49.640033"
+    },
+    "config_glpi_user_token": {
+      "status": "PASS",
+      "message": "Variável GLPI_USER_TOKEN configurada",
+      "details": "TQdSxqg2...tRnq",
+      "timestamp": "2025-08-14T22:41:49.640033"
+    },
+    "config_glpi_app_token": {
+      "status": "PASS",
+      "message": "Variável GLPI_APP_TOKEN configurada",
+      "details": "aY3f9F5a...ULid",
+      "timestamp": "2025-08-14T22:41:49.640033"
+    },
+    "glpi_url_reachable": {
+      "status": "PASS",
+      "message": "URL do GLPI acessível",
+      "details": "Status: 200",
+      "timestamp": "2025-08-14T22:41:49.757837"
+    },
+    "glpi_authentication": {
+      "status": "PASS",
+      "message": "Autenticaçáo GLPI bem-sucedida",
+      "details": "Token: 1dkr7975...",
+      "timestamp": "2025-08-14T22:41:49.919986"
+    },
+    "field_discovery": {
+      "status": "PASS",
+      "message": "IDs de campos descobertos com sucesso",
+      "details": {
+        "GROUP": "8",
+        "STATUS": "12",
+        "DATE_CREATION": "15"
+      },
+      "timestamp": "2025-08-14T22:41:49.919986"
+    },
+    "general_metrics": {
+      "status": "PASS",
+      "message": "Métricas gerais obtidas - Total: 9812 tickets",
+      "details": {
+        "Novo": 5,
+        "Processando (atribudo)": 39,
+        "Processando (planejado)": 26,
+        "Pendente": 33,
+        "Solucionado": 3045,
+        "Fechado": 6664
+      },
+      "timestamp": "2025-08-14T22:41:50.910647"
+    },
+    "general_metrics_data": {
+      "status": "PASS",
+      "message": "Dados reais encontrados: 9812 tickets",
+      "details": null,
+      "timestamp": "2025-08-14T22:41:50.910647"
+    },
+    "level_metrics": {
+      "status": "PASS",
+      "message": "Métricas por nível obtidas",
+      "details": {
+        "N1": 0,
+        "N2": 0,
+        "N3": 1,
+        "N4": 1
+      },
+      "timestamp": "2025-08-14T22:41:53.935445"
+    },
+    "level_metrics_data": {
+      "status": "PASS",
+      "message": "Dados por nível encontrados: 2 tickets",
+      "details": null,
+      "timestamp": "2025-08-14T22:41:53.935445"
+    },
+    "dashboard_metrics": {
+      "status": "PASS",
+      "message": "Métricas do dashboard obtidas - Total: 9812 tickets",
+      "details": {
+        "novos": 5,
+        "progresso": 65,
+        "pendentes": 33,
+        "resolvidos": 9709,
+        "total": 9812
+      },
+      "timestamp": "2025-08-14T22:41:58.657717"
+    },
+    "dashboard_levels_structure": {
+      "status": "PASS",
+      "message": "Estrutura de níveis presente",
+      "details": [
+        "geral",
+        "n1",
+        "n2",
+        "n3",
+        "n4"
+      ],
+      "timestamp": "2025-08-14T22:41:58.657717"
+    },
+    "dashboard_data_validation": {
+      "status": "PASS",
+      "message": "Dashboard retornando dados válidos",
+      "details": null,
+      "timestamp": "2025-08-14T22:41:58.657717"
+    },
+    "backend_health": {
+      "status": "PASS",
+      "message": "Backend health check OK",
+      "details": {
+        "status": "healthy"
+      },
+      "timestamp": "2025-08-14T22:42:00.681624"
+    },
+    "backend_metrics_endpoint": {
+      "status": "FAIL",
+      "message": "Endpoint de métricas falhou: 404",
+      "details": null,
+      "timestamp": "2025-08-14T22:42:02.704333"
+    },
+    "frontend_accessibility": {
+      "status": "FAIL",
+      "message": "Erro ao acessar frontend",
+      "details": "HTTPConnectionPool(host='localhost', port=3002): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001595AFE2F90>: Failed to establish a new connection: [WinError 10061] Nenhuma conexão pôde ser feita porque a máquina de destino as recusou ativamente'))",
+      "timestamp": "2025-08-14T22:42:06.753754"
+    }
+  },
+  "summary": {
+    "total_tests": 16,
+    "passed": 14,
+    "failed": 2,
+    "warnings": 0
+  },
+  "recommendations": [
+    "Verifique se o frontend está rodando na porta 3002",
+    "Corrigir 2 testes que falharam: backend_metrics_endpoint, frontend_accessibility",
+    "Verificar se o backend está rodando e configurado corretamente"
+  ]
+}

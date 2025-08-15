@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-08-15 00:13:02",
+  "services": {
+    "backend": true,
+    "frontend": true
+  },
+  "data_availability": {
+    "/api/metrics": true,
+    "/api/metrics/simple": true,
+    "/api/technicians/ranking": true,
+    "/api/alerts": true
+  },
+  "issues": [
+    "Total de tickets e zero",
+    "Dados por status nao disponiveis"
+  ],
+  "status": "FAIL"
+}

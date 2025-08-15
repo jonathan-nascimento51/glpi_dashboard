@@ -1,0 +1,14 @@
+{
+  "data": [
+    {
+      "acknowledged": false,
+      "id": "system_001",
+      "message": "Dashboard funcionando normalmente",
+      "severity": "low",
+      "timestamp": "2024-01-15T10:30:00Z",
+      "title": "Sistema Operacional",
+      "type": "info"
+    }
+  ],
+  "success": true
+}
