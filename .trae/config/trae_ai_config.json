@@ -1,0 +1,166 @@
+{
+  "project_info": {
+    "name": "GLPI Dashboard",
+    "type": "Full-stack Web Application",
+    "backend": "Flask (Python)",
+    "frontend": "React + TypeScript + Vite",
+    "integration": "GLPI API REST",
+    "status": "RECOVERY_MODE",
+    "priority": "STABILITY_FIRST"
+  },
+  "critical_rules": [
+    "SEMPRE validar funcionalidade existente antes de mudanças",
+    "NUNCA fazer múltiplas alterações simultâneas",
+    "SEMPRE testar cada mudança imediatamente",
+    "NUNCA assumir que mudanças não afetarão outras partes",
+    "SEMPRE fazer backup antes de refatorações",
+    "NUNCA ignorar erros no console ou logs",
+    "SEMPRE reverter se algo quebrar",
+    "NUNCA continuar desenvolvimento com erros críticos"
+  ],
+  "development_phases": {
+    "recovery": {
+      "description": "Recuperar estado funcional anterior",
+      "priority": "CRITICAL",
+      "actions": [
+        "Verificar branch backup-pre-refactoring",
+        "Restaurar funcionalidade completa",
+        "Validar todos os componentes",
+        "Documentar estado atual"
+      ],
+      "success_criteria": [
+        "Dashboard carrega sem erros",
+        "Dados são exibidos",
+        "Estilos estão aplicados",
+        "Navegação funciona"
+      ]
+    },
+    "stabilization": {
+      "description": "Estabilizar sistema atual",
+      "priority": "HIGH",
+      "actions": [
+        "Corrigir apenas problemas críticos",
+        "Melhorar tratamento de erros",
+        "Otimizar performance básica",
+        "Documentar funcionalidades"
+      ],
+      "success_criteria": [
+        "Zero erros críticos",
+        "Performance aceitável",
+        "Código documentado",
+        "Testes básicos passando"
+      ]
+    },
+    "improvement": {
+      "description": "Melhorias incrementais",
+      "priority": "MEDIUM",
+      "actions": [
+        "Corrigir 'Total de Status por Nível'",
+        "Adicionar funcionalidades menores",
+        "Refatorar código gradualmente",
+        "Melhorar UX/UI"
+      ],
+      "success_criteria": [
+        "Funcionalidade específica corrigida",
+        "Sem regressões",
+        "Código mais limpo",
+        "Melhor experiência do usuário"
+      ]
+    }
+  },
+  "file_criticality": {
+    "app.py": "CRITICAL",
+    "frontend/src/App.tsx": "CRITICAL",
+    "frontend/src/main.tsx": "CRITICAL",
+    "frontend/package.json": "CRITICAL",
+    "pyproject.toml": "CRITICAL",
+    ".env": "CRITICAL",
+    "frontend/.env": "CRITICAL",
+    "backend/api/routes.py": "HIGH",
+    "backend/services/glpi_service.py": "HIGH",
+    "frontend/src/config/constants.ts": "HIGH",
+    "frontend/src/services/httpClient.ts": "HIGH",
+    "frontend/vite.config.ts": "HIGH",
+    "backend/config/settings.py": "MEDIUM",
+    "frontend/src/components/": "MEDIUM",
+    "frontend/src/hooks/": "MEDIUM",
+    "README.md": "LOW",
+    "docs/": "LOW",
+    "scripts/": "LOW"
+  },
+  "error_patterns": {
+    "url_not_defined": {
+      "pattern": "url is not defined",
+      "severity": "CRITICAL",
+      "location": "Frontend",
+      "solution": "Verificar configuração de API_BASE_URL",
+      "files_to_check": [
+        "frontend/.env",
+        "frontend/src/config/constants.ts",
+        "frontend/src/services/httpClient.ts"
+      ]
+    },
+    "white_screen": {
+      "pattern": "Tela branca no frontend",
+      "severity": "CRITICAL",
+      "location": "Frontend",
+      "solution": "Verificar erros no console e imports",
+      "files_to_check": [
+        "frontend/src/App.tsx",
+        "frontend/src/main.tsx"
+      ]
+    },
+    "backend_500": {
+      "pattern": "500 Internal Server Error",
+      "severity": "CRITICAL",
+      "location": "Backend",
+      "solution": "Verificar logs do Flask e configurações",
+      "files_to_check": [
+        "app.py",
+        "backend/api/routes.py",
+        ".env"
+      ]
+    },
+    "glpi_auth_warning": {
+      "pattern": "Falha na autenticação com GLPI",
+      "severity": "WARNING",
+      "location": "Backend",
+      "solution": "Verificar tokens GLPI, sistema funciona com cache",
+      "files_to_check": [
+        ".env",
+        "backend/services/glpi_service.py"
+      ]
+    }
+  },
+  "validation_checklist": {
+    "pre_development": [
+      "Verificar branch atual",
+      "Confirmar serviços rodando",
+      "Testar funcionalidade baseline",
+      "Verificar logs de erro",
+      "Documentar estado atual"
+    ],
+    "during_development": [
+      "Fazer mudanças incrementais",
+      "Testar após cada alteração",
+      "Verificar console de erros",
+      "Validar funcionalidade afetada",
+      "Monitorar performance"
+    ],
+    "post_development": [
+      "Testar todas as funcionalidades",
+      "Verificar consistência visual",
+      "Validar dados carregando",
+      "Confirmar navegação funcionando",
+      "Documentar mudanças"
+    ],
+    "emergency_recovery": [
+      "Parar desenvolvimento imediatamente",
+      "Reverter última mudança",
+      "Verificar estado funcional",
+      "Analisar logs de erro",
+      "Planejar abordagem alternativa"
+    ]
+  },
+  "current_phase": "recovery"
+}
