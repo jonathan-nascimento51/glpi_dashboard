@@ -69,9 +69,10 @@ const ErrorTestComponent: React.FC<{ errorType: string }> = ({ errorType }) => {
         throw new Error('Authentication failed');
       case 'server':
         throw new Error('Internal server error');
-      default:
+      default: {
         const response = await httpClient.get('/test');
         return response.data;
+      }
     }
   };
 

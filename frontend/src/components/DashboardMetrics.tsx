@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useDashboard } from '../hooks/useDashboard';
 import { useThrottledCallback } from '../hooks/useDebounce';
-import type { DashboardMetrics, FilterParams } from '../types/api';
+import type { DashboardMetrics as DashboardMetricsType, FilterParams } from '../types/api';
 import { isValidLevelMetrics, isValidNiveisMetrics } from '../types/api';
 
 interface DashboardMetricsProps {

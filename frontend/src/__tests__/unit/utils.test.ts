@@ -20,7 +20,7 @@ export const formatters = {
           month: 'long',
           day: 'numeric',
         });
-      case 'relative':
+      case 'relative': {
         const now = new Date();
         const diffMs = now.getTime() - dateObj.getTime();
         const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
@@ -31,6 +31,7 @@ export const formatters = {
         if (diffDays < 30) return `${Math.floor(diffDays / 7)} semanas atrás`;
         if (diffDays < 365) return `${Math.floor(diffDays / 30)} meses atrás`;
         return `${Math.floor(diffDays / 365)} anos atrás`;
+      }
       default:
         return dateObj.toLocaleDateString('pt-BR');
     }
@@ -298,7 +299,7 @@ export const objectUtils = {
 
     const cloned = {} as T;
     for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
         cloned[key] = objectUtils.deepClone(obj[key]);
       }
     }

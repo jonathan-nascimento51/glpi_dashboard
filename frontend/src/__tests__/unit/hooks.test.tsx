@@ -3,11 +3,11 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 // Hook para gerenciar estado local com localStorage
-export const useLocalStorage = <T>(
+export const useLocalStorage = function<T>(
   key: string,
   initialValue: T
-): [T, (value: T | ((prev: T) => T)) => void] => {
-  const [storedValue, setStoredValue] = useState<T>(() => {
+): [T, (value: T | ((prev: T) => T)) => void] {
+  const [storedValue, setStoredValue] = useState<T>(() => { // eslint-disable-line @typescript-eslint/no-unnecessary-type-constraint
     try {
       const item = window.localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
@@ -34,7 +34,7 @@ export const useLocalStorage = <T>(
 };
 
 // Hook para debounce
-export const useDebounce = <T>(value: T, delay: number): T => {
+export const useDebounce = function<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export const useDebounce = <T>(value: T, delay: number): T => {
 };
 
 // Hook para fazer requisições HTTP
-export const useFetch = <T>(
+export const useFetch = function<T>(
   url: string,
   options?: RequestInit
 ): {
@@ -59,7 +59,7 @@ export const useFetch = <T>(
   loading: boolean;
   error: string | null;
   refetch: () => void;
-} => {
+} {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);

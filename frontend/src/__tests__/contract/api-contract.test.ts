@@ -593,16 +593,18 @@ describe('Testes de Contrato da API', () => {
           case 'GET':
             response = await httpClient.get(url);
             break;
-          case 'POST':
+          case 'POST': {
             const postData = contract.requestSchema
               ? generateValidData(contract.requestSchema)
               : {};
             response = await httpClient.post(url, postData);
             break;
-          case 'PUT':
+          }
+          case 'PUT': {
             const putData = contract.requestSchema ? generateValidData(contract.requestSchema) : {};
             response = await httpClient.put(url, putData);
             break;
+          }
           case 'DELETE':
             response = await httpClient.delete(url);
             break;
