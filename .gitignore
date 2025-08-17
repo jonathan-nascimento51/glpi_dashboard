@@ -60,3 +60,30 @@ Thumbs.db
 # Arquivos de teste locais (não os da pasta scripts/tests)
 test_local_*
 debug_local_*
+
+# Trae AI IDE
+.trae/
+
+# Artifacts e relatórios
+artifacts/
+reports/
+
+# Node modules na raiz (se existir)
+node_modules/
+
+# Docker
+docker-compose.override.yml
+
+# Relatórios de monitoramento
+monitoring_report_*.json
+
+# Playwright reports
+playwright-report/
+test-results/
+
+# Coverage reports
+coverage/
+frontend/coverage/
+
+# Nginx configs locais
+nginx/
