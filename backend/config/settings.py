@@ -67,11 +67,7 @@ class Config:
     # Redis Cache
     REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
     CACHE_TYPE = os.environ.get('CACHE_TYPE', 'RedisCache')
-    
-    @property
-    def CACHE_REDIS_URL(self) -> str:
-        """URL do Redis com fallback"""
-        return os.environ.get('CACHE_REDIS_URL', self.REDIS_URL)
+    CACHE_REDIS_URL = os.environ.get('CACHE_REDIS_URL', os.environ.get('REDIS_URL', 'redis://localhost:6379/0'))
     
     @property
     def CACHE_DEFAULT_TIMEOUT(self) -> int:
@@ -212,7 +208,9 @@ class TestingConfig(Config):
 # Dicionário de configurações
 config_by_name = {
     'dev': DevelopmentConfig,
+    'development': DevelopmentConfig,
     'prod': ProductionConfig,
+    'production': ProductionConfig,
     'test': TestingConfig
 }
 

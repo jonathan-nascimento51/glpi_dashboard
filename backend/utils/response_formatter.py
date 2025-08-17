@@ -126,7 +126,7 @@ class ResponseFormatter:
                         'variacao_pendentes': 0
                     }
                 },
-                'timestamp': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+                'timestamp': datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
             }
             
             if execution_time is not None:
@@ -159,7 +159,7 @@ class ResponseFormatter:
                 'success': False,
                 'message': message,
                 'errors': errors or [],
-                'timestamp': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+                'timestamp': datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
             }
         except Exception as e:
             # Fallback em caso de erro na formatação
@@ -193,3 +193,13 @@ class ResponseFormatter:
                 'message': "Erro na formatação da resposta",
                 'timestamp': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
             }
+    
+    @staticmethod
+    def success(data: Any, message: str = "Operação realizada com sucesso") -> Dict[str, Any]:
+        """Método de conveniência para resposta de sucesso"""
+        return ResponseFormatter.format_success_response(data, message)
+    
+    @staticmethod
+    def error(message: str, errors: Optional[List] = None) -> Dict[str, Any]:
+        """Método de conveniência para resposta de erro"""
+        return ResponseFormatter.format_error_response(message, errors)

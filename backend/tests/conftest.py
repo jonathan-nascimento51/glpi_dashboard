@@ -9,7 +9,7 @@ from unittest.mock import Mock, patch
 # Adicionar o diretório backend ao path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from services.glpi_service import GLPIService
+from backend.services.glpi_service import GLPIService
 
 
 @pytest.fixture(autouse=True)
@@ -176,7 +176,7 @@ def sample_metrics_data():
 @pytest.fixture
 def glpi_service(mock_glpi_config):
     """Fixture para instanciar GLPIService com configuração mockada"""
-    with patch('services.glpi_service.active_config', mock_glpi_config):
+    with patch('backend.services.glpi_service.active_config', mock_glpi_config):
         service = GLPIService()
         return service
 

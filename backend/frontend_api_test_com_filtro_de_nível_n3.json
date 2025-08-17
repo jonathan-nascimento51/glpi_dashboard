@@ -1,0 +1,54 @@
+{
+  "data": [
+    {
+      "id": "davi-freitas",
+      "level": "N3",
+      "name": "Técnico davi-freitas",
+      "rank": 1,
+      "total": 0
+    },
+    {
+      "id": "lucas-sergio-t1",
+      "level": "N3",
+      "name": "Técnico lucas-sergio-t1",
+      "rank": 2,
+      "total": 0
+    },
+    {
+      "id": "anderson-morim",
+      "level": "N3",
+      "name": "Técnico anderson-morim",
+      "rank": 3,
+      "total": 0
+    },
+    {
+      "id": "jorge-swift",
+      "level": "N3",
+      "name": "Técnico jorge-swift",
+      "rank": 4,
+      "total": 0
+    },
+    {
+      "id": "gabriel-machado",
+      "level": "N3",
+      "name": "Técnico gabriel-machado",
+      "rank": 5,
+      "total": 0
+    },
+    {
+      "id": "luciano-marcelino",
+      "level": "N3",
+      "name": "Técnico luciano-marcelino",
+      "rank": 6,
+      "total": 0
+    }
+  ],
+  "filters_applied": {
+    "end_date": null,
+    "level": "N3",
+    "limit": 100,
+    "start_date": null
+  },
+  "response_time_ms": 2745.46,
+  "success": true
+}

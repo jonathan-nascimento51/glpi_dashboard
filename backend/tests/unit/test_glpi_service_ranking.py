@@ -22,34 +22,22 @@ class TestGLPIServiceRanking:
         return {
             'data': [
                 {
-                    'id': '1',
-                    'users_id': '10',
-                    'User': {
-                        'id': '10',
-                        'name': 'João Silva',
-                        'realname': 'João',
-                        'firstname': 'Silva'
-                    }
+                    '2': '1',  # ID do Profile_User
+                    '5': '10',  # users_id (ID do usuário)
+                    '4': '6',   # Perfil (técnico)
+                    '80': '1'   # Entidade
                 },
                 {
-                    'id': '2',
-                    'users_id': '20',
-                    'User': {
-                        'id': '20',
-                        'name': 'Maria Santos',
-                        'realname': 'Maria',
-                        'firstname': 'Santos'
-                    }
+                    '2': '2',
+                    '5': '20',
+                    '4': '6',
+                    '80': '1'
                 },
                 {
-                    'id': '3',
-                    'users_id': '30',
-                    'User': {
-                        'id': '30',
-                        'name': 'Pedro Costa',
-                        'realname': 'Pedro',
-                        'firstname': 'Costa'
-                    }
+                    '2': '3',
+                    '5': '30',
+                    '4': '6',
+                    '80': '1'
                 }
             ]
         }
@@ -69,19 +57,56 @@ class TestGLPIServiceRanking:
         }
 
     @patch('backend.services.glpi_service.GLPIService._authenticate_with_retry')
-    @patch('backend.services.glpi_service.requests.get')
-    def test_get_technician_ranking_with_filters_success(self, mock_get, mock_auth, glpi_service, mock_technicians_response, mock_tickets_response):
+    @patch('backend.services.glpi_service.GLPIService._ensure_authenticated')
+    @patch('backend.services.glpi_service.GLPIService._make_authenticated_request')
+    def test_get_technician_ranking_with_filters_success(self, mock_request, mock_ensure_auth, mock_auth, glpi_service, mock_technicians_response, mock_tickets_response):
         """Testa o ranking de técnicos com filtros aplicados com sucesso"""
         # Mock da autenticação
         mock_auth.return_value = True
+        mock_ensure_auth.return_value = True
         
-        # Mock das respostas da API
-        mock_get.side_effect = [
-            Mock(status_code=200, json=lambda: mock_technicians_response),  # Busca de técnicos
-            Mock(status_code=200, json=lambda: mock_tickets_response),      # Tickets do João
-            Mock(status_code=200, json=lambda: {'data': [mock_tickets_response['data'][2]]}),  # Tickets da Maria
-            Mock(status_code=200, json=lambda: {'data': mock_tickets_response['data'][3:6]})   # Tickets do Pedro
-        ]
+        # Mock das requisições - retorna dados válidos para todas as chamadas
+        def mock_request_side_effect(*args, **kwargs):
+            url = args[1] if len(args) > 1 else kwargs.get('url', '')
+            
+            # Busca de técnicos
+            if 'search/Profile_User' in url:
+                return Mock(ok=True, json=lambda: mock_technicians_response, headers={})
+            
+            # Dados dos usuários
+            elif '/User/' in url:
+                user_id = url.split('/User/')[-1]
+                if user_id == '10':
+                    return Mock(ok=True, json=lambda: {'name': 'joao', 'realname': 'João', 'firstname': 'João', 'lastname': 'Silva'}, headers={})
+                elif user_id == '20':
+                    return Mock(ok=True, json=lambda: {'name': 'maria', 'realname': 'Maria', 'firstname': 'Maria', 'lastname': 'Santos'}, headers={})
+                elif user_id == '30':
+                    return Mock(ok=True, json=lambda: {'name': 'pedro', 'realname': 'Pedro', 'firstname': 'Pedro', 'lastname': 'Costa'}, headers={})
+            
+            # Busca de grupos
+            elif 'search/Group_User' in url:
+                return Mock(ok=True, json=lambda: {'data': []}, headers={})
+            
+            # Busca de tickets
+            elif 'search/Ticket' in url:
+                params = kwargs.get('params', {})
+                user_id = None
+                for key, value in params.items():
+                    if 'value' in key and value in ['10', '20', '30']:
+                        user_id = value
+                        break
+                
+                if user_id == '10':
+                    return Mock(ok=True, json=lambda: mock_tickets_response, headers={'Content-Range': 'items 0-4/5'})
+                elif user_id == '20':
+                    return Mock(ok=True, json=lambda: {'data': [mock_tickets_response['data'][2]]}, headers={'Content-Range': 'items 0-0/1'})
+                elif user_id == '30':
+                    return Mock(ok=True, json=lambda: {'data': mock_tickets_response['data'][3:6]}, headers={'Content-Range': 'items 0-2/3'})
+            
+            # Default
+            return Mock(ok=True, json=lambda: {'data': []}, headers={})
+        
+        mock_request.side_effect = mock_request_side_effect
 
         # Mock do token de sessão
         glpi_service.session_token = 'mock_token'
@@ -99,16 +124,16 @@ class TestGLPIServiceRanking:
         assert len(result) == 3
         
         # Verifica ordenação por número de tickets (decrescente)
-        assert result[0]['name'] == 'Pedro Costa'
-        assert result[0]['tickets_count'] == 3
+        assert result[0]['name'] == 'João'
+        assert result[0]['total'] == 5
         assert result[0]['rank'] == 1
         
-        assert result[1]['name'] == 'João Silva'
-        assert result[1]['tickets_count'] == 2
+        assert result[1]['name'] == 'Pedro'
+        assert result[1]['total'] == 3
         assert result[1]['rank'] == 2
         
-        assert result[2]['name'] == 'Maria Santos'
-        assert result[2]['tickets_count'] == 1
+        assert result[2]['name'] == 'Maria'
+        assert result[2]['total'] == 1
         assert result[2]['rank'] == 3
 
     @patch('backend.services.glpi_service.GLPIService._authenticate_with_retry')
@@ -117,6 +142,7 @@ class TestGLPIServiceRanking:
         """Testa o ranking quando não há técnicos encontrados"""
         # Mock da autenticação
         mock_auth.return_value = True
+        glpi_service._ensure_authenticated = Mock(return_value=True)
         
         # Mock de resposta vazia
         mock_get.return_value = Mock(status_code=200, json=lambda: {'data': []})
@@ -135,6 +161,7 @@ class TestGLPIServiceRanking:
         """Testa o ranking quando há erro na API"""
         # Mock da autenticação
         mock_auth.return_value = True
+        glpi_service._ensure_authenticated = Mock(return_value=True)
         
         # Mock de erro na API
         mock_get.return_value = Mock(status_code=500)
@@ -153,6 +180,7 @@ class TestGLPIServiceRanking:
         """Testa o ranking com filtro de nível aplicado"""
         # Mock da autenticação
         mock_auth.return_value = True
+        glpi_service._ensure_authenticated = Mock(return_value=True)
         
         # Mock das respostas da API
         mock_get.side_effect = [
@@ -182,6 +210,7 @@ class TestGLPIServiceRanking:
         """Testa o ranking com limite aplicado"""
         # Mock da autenticação
         mock_auth.return_value = True
+        glpi_service._ensure_authenticated = Mock(return_value=True)
         
         # Mock das respostas da API
         mock_get.side_effect = [
@@ -204,6 +233,7 @@ class TestGLPIServiceRanking:
 
     def test_get_technician_ranking_with_filters_no_session_token(self, glpi_service):
         """Testa o ranking sem token de sessão"""
+        glpi_service._ensure_authenticated = Mock(return_value=False)
         glpi_service.session_token = None
 
         result = glpi_service.get_technician_ranking_with_filters(
@@ -219,6 +249,7 @@ class TestGLPIServiceRanking:
         """Testa o ranking com datas inválidas"""
         # Mock da autenticação
         mock_auth.return_value = True
+        glpi_service._ensure_authenticated = Mock(return_value=True)
         
         glpi_service.session_token = 'mock_token'
 
@@ -237,6 +268,7 @@ class TestGLPIServiceRanking:
         """Testa o tratamento de exceções no ranking"""
         # Mock da autenticação
         mock_auth.return_value = True
+        glpi_service._ensure_authenticated = Mock(return_value=True)
         
         # Mock que gera exceção
         mock_get.side_effect = Exception("Erro de conexão")

@@ -62,8 +62,9 @@ class TestGetTicketCount:
         mock_response.ok = True
         mock_requests.get.return_value = mock_response
         
-        # Mock do método _make_authenticated_request
+        # Mock dos métodos necessários
         mock_authenticated_service._make_authenticated_request = Mock(return_value=mock_response)
+        mock_authenticated_service._ensure_authenticated = Mock(return_value=True)
         mock_authenticated_service.field_ids = {"GROUP": "8", "STATUS": "12"}
         
         result = mock_authenticated_service.get_ticket_count(89, 1)
@@ -79,8 +80,9 @@ class TestGetTicketCount:
         mock_response.ok = True
         mock_requests.get.return_value = mock_response
         
-        # Mock do método _make_authenticated_request
+        # Mock dos métodos necessários
         mock_authenticated_service._make_authenticated_request = Mock(return_value=mock_response)
+        mock_authenticated_service._ensure_authenticated = Mock(return_value=True)
         mock_authenticated_service.field_ids = {"GROUP": "8", "STATUS": "12"}
         
         result = mock_authenticated_service.get_ticket_count(
@@ -97,6 +99,7 @@ class TestGetTicketCount:
         # Simula field_ids vazios e falha na descoberta
         mock_authenticated_service.field_ids = {}
         mock_authenticated_service.discover_field_ids = Mock(return_value=False)
+        mock_authenticated_service._ensure_authenticated = Mock(return_value=True)
         
         result = mock_authenticated_service.get_ticket_count(group_id=89, status_id=1)
         
@@ -107,6 +110,7 @@ class TestGetTicketCount:
         """Testa falha na requisição"""
         # Mock falha na requisição
         mock_authenticated_service._make_authenticated_request = Mock(return_value=None)
+        mock_authenticated_service._ensure_authenticated = Mock(return_value=True)
         mock_authenticated_service.field_ids = {"GROUP": "8", "STATUS": "12"}
         
         result = mock_authenticated_service.get_ticket_count(group_id=89, status_id=1)
@@ -117,6 +121,7 @@ class TestGetTicketCount:
         """Testa falha de autenticação"""
         # Mock falha de autenticação
         mock_authenticated_service._make_authenticated_request = Mock(side_effect=Exception("Authentication failed"))
+        mock_authenticated_service._ensure_authenticated = Mock(return_value=True)
         mock_authenticated_service.field_ids = {"GROUP": "8", "STATUS": "12"}
         
         result = mock_authenticated_service.get_ticket_count(group_id=89, status_id=1)
@@ -132,6 +137,7 @@ class TestGetTicketCount:
         mock_response.ok = True
         
         mock_authenticated_service._make_authenticated_request = Mock(return_value=mock_response)
+        mock_authenticated_service._ensure_authenticated = Mock(return_value=True)
         mock_authenticated_service.field_ids = {"GROUP": "8", "STATUS": "12"}
         
         result = mock_authenticated_service.get_ticket_count(group_id=89, status_id=1)
@@ -146,6 +152,23 @@ class TestGetMetricsByLevelInternal:
         """Testa obtenção de métricas por nível com sucesso"""
         # Arrange
         service = mock_authenticated_service
+        service._ensure_authenticated = Mock(return_value=True)
+        
+        # Mock dos atributos necessários
+        service.service_levels = {
+            "N1": 89,
+            "N2": 90,
+            "N3": 91,
+            "N4": 92
+        }
+        service.status_map = {
+            "Novo": 1,
+            "Processando (atribuído)": 2,
+            "Processando (planejado)": 3,
+            "Pendente": 4,
+            "Solucionado": 5,
+            "Fechado": 6
+        }
         
         # Mock do get_ticket_count para retornar valores diferentes para cada combinação
         def mock_get_ticket_count(group_id, status_id, start_date=None, end_date=None):
@@ -202,6 +225,24 @@ class TestGetMetricsByLevelInternal:
         """Testa obtenção de métricas por nível com filtro de data"""
         # Arrange
         service = mock_authenticated_service
+        service._ensure_authenticated = Mock(return_value=True)
+        
+        # Mock dos atributos necessários
+        service.service_levels = {
+            "N1": 89,
+            "N2": 90,
+            "N3": 91,
+            "N4": 92
+        }
+        service.status_map = {
+            "Novo": 1,
+            "Processando (atribuído)": 2,
+            "Processando (planejado)": 3,
+            "Pendente": 4,
+            "Solucionado": 5,
+            "Fechado": 6
+        }
+        
         start_date = "2024-01-01"
         end_date = "2024-01-31"
         
@@ -223,6 +264,23 @@ class TestGetMetricsByLevelInternal:
         """Testa comportamento quando get_ticket_count falha"""
         # Arrange
         service = mock_authenticated_service
+        service._ensure_authenticated = Mock(return_value=True)
+        
+        # Mock dos atributos necessários
+        service.service_levels = {
+            "N1": 89,
+            "N2": 90,
+            "N3": 91,
+            "N4": 92
+        }
+        service.status_map = {
+            "Novo": 1,
+            "Processando (atribuído)": 2,
+            "Processando (planejado)": 3,
+            "Pendente": 4,
+            "Solucionado": 5,
+            "Fechado": 6
+        }
         
         with patch.object(service, 'get_ticket_count', return_value=None):
             # Act
@@ -239,6 +297,23 @@ class TestGetMetricsByLevelInternal:
         """Testa comportamento com falhas parciais"""
         # Arrange
         service = mock_authenticated_service
+        service._ensure_authenticated = Mock(return_value=True)
+        
+        # Mock dos atributos necessários
+        service.service_levels = {
+            "N1": 89,
+            "N2": 90,
+            "N3": 91,
+            "N4": 92
+        }
+        service.status_map = {
+            "Novo": 1,
+            "Processando (atribuído)": 2,
+            "Processando (planejado)": 3,
+            "Pendente": 4,
+            "Solucionado": 5,
+            "Fechado": 6
+        }
         
         def mock_get_ticket_count(group_id, status_id, start_date=None, end_date=None):
             # Simula falha apenas para N2
@@ -510,7 +585,7 @@ class TestErrorHandling:
             # Assert
             assert result is False
             mock_logger.assert_called_with(
-                "Tokens de autenticação do GLPI (GLPI_APP_TOKEN, GLPI_USER_TOKEN) não estão configurados."
+                "GLPI_APP_TOKEN não está configurado ou é inválido"
             )
     
     def test_network_timeout_handling(self, glpi_service):

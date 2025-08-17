@@ -1,0 +1,1 @@
+"""Queries module for application layer."""

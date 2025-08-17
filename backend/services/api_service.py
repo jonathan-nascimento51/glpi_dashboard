@@ -1,8 +1,10 @@
 import requests
 import logging
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 from datetime import datetime
 from backend.config.settings import active_config
+from services.glpi_service import GLPIService
+from utils.response_formatter import ResponseFormatter
 
 class APIService:
     """Service to handle external API communications"""
@@ -13,6 +15,9 @@ class APIService:
         self.api_key = config_obj.API_KEY
         self.timeout = config_obj.API_TIMEOUT
         self.logger = logging.getLogger('services')
+        
+        # Initialize GLPI service
+        self.glpi_service = GLPIService()
         
         # Default headers for API requests
         self.headers = {
@@ -120,3 +125,78 @@ class APIService:
                 'message': str(e),
                 'alerts': []
             }
+    
+    def get_dashboard_metrics(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Dict:
+        """Get dashboard metrics from GLPI service"""
+        try:
+            if start_date and end_date:
+                level_metrics = self.glpi_service.get_metrics_by_level(start_date, end_date)
+                general_metrics = self.glpi_service.get_general_metrics(start_date, end_date)
+            else:
+                level_metrics = self.glpi_service.get_metrics_by_level()
+                general_metrics = self.glpi_service.get_general_metrics()
+            
+            return {
+                'level_metrics': level_metrics,
+                'general_metrics': general_metrics
+            }
+        except Exception as e:
+            self.logger.error(f"Error getting dashboard metrics: {str(e)}")
+            return None
+    
+    def format_response(self, data: Any) -> Dict:
+        """Format successful response"""
+        return ResponseFormatter.success(data)
+    
+    def format_error_response(self, message: str) -> Dict:
+        """Format error response"""
+        return ResponseFormatter.error(message)
+    
+    def validate_date_format(self, date_str: str) -> bool:
+        """Validate date format (YYYY-MM-DD)"""
+        try:
+            datetime.strptime(date_str, '%Y-%m-%d')
+            return True
+        except ValueError:
+            return False
+    
+    def validate_date_range(self, start_date: str, end_date: str) -> bool:
+        """Validate date range (start_date <= end_date)"""
+        try:
+            if not self.validate_date_format(start_date) or not self.validate_date_format(end_date):
+                return False
+            
+            start = datetime.strptime(start_date, '%Y-%m-%d')
+            end = datetime.strptime(end_date, '%Y-%m-%d')
+            return start <= end
+        except ValueError:
+            return False
+    
+    def get_trends_data(self, start_date: str, end_date: str) -> List[Dict]:
+        """Get trends data from GLPI service"""
+        try:
+            return self.glpi_service.get_historical_metrics(start_date, end_date)
+        except Exception as e:
+            self.logger.error(f"Error getting trends data: {str(e)}")
+            return []
+    
+    def get_performance_metrics(self) -> Dict:
+        """Get performance metrics"""
+        import time
+        try:
+            response_time = self._calculate_response_time()
+            return {
+                'response_time': response_time,
+                'timestamp': time.time()
+            }
+        except Exception as e:
+            self.logger.error(f"Error getting performance metrics: {str(e)}")
+            return {'response_time': 0, 'timestamp': time.time()}
+    
+    def _calculate_response_time(self) -> float:
+        """Calculate response time for performance metrics"""
+        import time
+        start_time = time.time()
+        # Simulate some processing
+        time.sleep(0.001)
+        return (time.time() - start_time) * 1000  # Return in milliseconds

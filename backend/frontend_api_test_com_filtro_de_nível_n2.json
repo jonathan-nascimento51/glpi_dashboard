@@ -1,0 +1,40 @@
+{
+  "data": [
+    {
+      "id": "luan-medeiros",
+      "level": "N2",
+      "name": "Técnico luan-medeiros",
+      "rank": 1,
+      "total": 0
+    },
+    {
+      "id": "alice-dutra",
+      "level": "N2",
+      "name": "Técnico alice-dutra",
+      "rank": 2,
+      "total": 0
+    },
+    {
+      "id": "luciano-araujo",
+      "level": "N2",
+      "name": "Técnico luciano-araujo",
+      "rank": 3,
+      "total": 0
+    },
+    {
+      "id": "gabriel-conceicao",
+      "level": "N2",
+      "name": "Técnico gabriel-conceicao",
+      "rank": 4,
+      "total": 0
+    }
+  ],
+  "filters_applied": {
+    "end_date": null,
+    "level": "N2",
+    "limit": 100,
+    "start_date": null
+  },
+  "response_time_ms": 2864.8,
+  "success": true
+}

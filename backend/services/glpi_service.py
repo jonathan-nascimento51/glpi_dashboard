@@ -57,13 +57,13 @@ class GLPIService:
             "Fechado": 6,
         }
         
-        # Níveis de atendimento (grupos técnicos)
-        # Usando grupo 17 (CC-SE-SUBADM-DTIC) que sabemos que existe e tem tickets
+        # Níveis de atendimento (grupos técnicos específicos)
+        # Cada nível tem seu próprio grupo no GLPI
         self.service_levels = {
-            "N1": 17,  # CC-SE-SUBADM-DTIC
-            "N2": 17,  # CC-SE-SUBADM-DTIC
-            "N3": 17,  # CC-SE-SUBADM-DTIC
-            "N4": 17,  # CC-SE-SUBADM-DTIC
+            "N1": 89,  # CC-SE-SUBADM-DTIC > N1
+            "N2": 90,  # CC-SE-SUBADM-DTIC > N2
+            "N3": 91,  # CC-SE-SUBADM-DTIC > N3
+            "N4": 92,  # CC-SE-SUBADM-DTIC > N4
         }
         
         self.field_ids = {}
@@ -888,6 +888,154 @@ class GLPIService:
             self.logger.error(f"Erro crítico no método _get_technician_name para {tech_id}: {e}")
             return f'Técnico {tech_id if tech_id else "Desconhecido"}'
     
+    def get_ticket_count_by_hierarchy(self, level: str, status_id: int, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Optional[int]:
+        """Busca o total de tickets para um nível hierárquico e status específicos usando campo 8"""
+        import datetime
+        
+        try:
+            # Validações de entrada
+            if not isinstance(level, str) or not level.strip():
+                self.logger.error(f"[{datetime.datetime.now().isoformat()}] level inválido: {level}")
+                return 0
+                
+            if not isinstance(status_id, (int, str)) or (isinstance(status_id, str) and not status_id.strip()):
+                self.logger.error(f"[{datetime.datetime.now().isoformat()}] status_id inválido: {status_id}")
+                return 0
+                
+            # Converter status_id para int se necessário
+            try:
+                status_id = int(status_id)
+            except (ValueError, TypeError) as e:
+                self.logger.error(f"[{datetime.datetime.now().isoformat()}] Erro ao converter status_id para int: {e}")
+                return 0
+                
+            # Validar datas se fornecidas
+            if start_date and not isinstance(start_date, str):
+                self.logger.error(f"[{datetime.datetime.now().isoformat()}] start_date deve ser string: {type(start_date)}")
+                return 0
+                
+            if end_date and not isinstance(end_date, str):
+                self.logger.error(f"[{datetime.datetime.now().isoformat()}] end_date deve ser string: {type(end_date)}")
+                return 0
+                
+            # Verificar configuração básica
+            if not hasattr(self, 'glpi_url') or not self.glpi_url:
+                self.logger.error(f"[{datetime.datetime.now().isoformat()}] GLPI URL não configurada")
+                return 0
+                
+            # Garantir autenticação
+            if not self._ensure_authenticated():
+                self.logger.error(f"[{datetime.datetime.now().isoformat()}] Falha na autenticação")
+                return 0
+        
+            if not self.field_ids:
+                if not self.discover_field_ids():
+                    timestamp = datetime.datetime.now().isoformat()
+                    self.logger.error(
+                        f"[{timestamp}] Falha ao descobrir field_ids - "
+                        f"level: {level}, status_id: {status_id}, "
+                        f"start_date: {start_date}, end_date: {end_date}"
+                    )
+                    return 0
+                    
+            # Verificar se field_ids necessários estão disponíveis
+            if not self.field_ids.get("STATUS"):
+                self.logger.error(f"[{datetime.datetime.now().isoformat()}] Field ID STATUS não encontrado: {self.field_ids.get('STATUS')}")
+                return 0
+            
+            # Usar campo 8 para estrutura hierárquica em vez do campo GROUP (71)
+            search_params = {
+                "is_deleted": 0,
+                "range": "0-0",
+                "criteria[0][field]": "8",  # Campo 8 contém a estrutura hierárquica
+                "criteria[0][searchtype]": "contains",
+                "criteria[0][value]": level,  # Ex: "N1", "N2", "N3", "N4"
+                "criteria[1][link]": "AND",
+                "criteria[1][field]": self.field_ids["STATUS"],
+                "criteria[1][searchtype]": "equals",
+                "criteria[1][value]": status_id,
+            }
+            
+            # Adicionar filtros de data se fornecidos
+            criteria_index = 2
+            if start_date:
+                search_params[f"criteria[{criteria_index}][link]"] = "AND"
+                search_params[f"criteria[{criteria_index}][field]"] = self.field_ids.get("DATE_CREATION", "15")
+                search_params[f"criteria[{criteria_index}][searchtype]"] = "morethan"
+                search_params[f"criteria[{criteria_index}][value]"] = start_date
+                criteria_index += 1
+                
+            if end_date:
+                search_params[f"criteria[{criteria_index}][link]"] = "AND"
+                search_params[f"criteria[{criteria_index}][field]"] = self.field_ids.get("DATE_CREATION", "15")
+                search_params[f"criteria[{criteria_index}][searchtype]"] = "lessthan"
+                search_params[f"criteria[{criteria_index}][value]"] = end_date
+                
+            headers = self.get_api_headers()
+            url = f"{self.glpi_url}/search/Ticket"
+            
+            self.logger.info(f"[{datetime.datetime.now().isoformat()}] Buscando tickets por hierarquia - level: {level}, status: {status_id}")
+            
+            response = requests.get(url, params=search_params, headers=headers, timeout=30)
+            
+            if response.status_code in [200, 206]:
+                # Tentar extrair contagem do cabeçalho Content-Range
+                content_range = response.headers.get('Content-Range')
+                if content_range:
+                    try:
+                        total_count = int(content_range.split('/')[-1])
+                        self.logger.info(f"[{datetime.datetime.now().isoformat()}] Contagem extraída do Content-Range: {total_count}")
+                        return total_count
+                    except (ValueError, IndexError) as e:
+                        self.logger.warning(f"[{datetime.datetime.now().isoformat()}] Erro ao extrair contagem do Content-Range: {e}")
+                 
+                # Tentar extrair do corpo da resposta
+                try:
+                    data = response.json()
+                    if isinstance(data, dict):
+                        # Verificar campo 'content-range'
+                        if 'content-range' in data:
+                            try:
+                                total_count = int(data['content-range'].split('/')[-1])
+                                self.logger.info(f"[{datetime.datetime.now().isoformat()}] Contagem extraída do content-range no JSON: {total_count}")
+                                return total_count
+                            except (ValueError, IndexError) as e:
+                                self.logger.warning(f"[{datetime.datetime.now().isoformat()}] Erro ao extrair contagem do content-range JSON: {e}")
+                        
+                        # Verificar campo 'totalcount'
+                        if 'totalcount' in data:
+                            total_count = int(data['totalcount'])
+                            self.logger.info(f"[{datetime.datetime.now().isoformat()}] Contagem extraída do totalcount: {total_count}")
+                            return total_count
+                            
+                        # Se data é uma lista, retornar o comprimento
+                        if 'data' in data and isinstance(data['data'], list):
+                            count = len(data['data'])
+                            self.logger.info(f"[{datetime.datetime.now().isoformat()}] Contagem baseada no tamanho da lista de dados: {count}")
+                            return count
+                    
+                    # Se a resposta é uma lista diretamente
+                    elif isinstance(data, list):
+                        count = len(data)
+                        self.logger.info(f"[{datetime.datetime.now().isoformat()}] Contagem baseada no tamanho da lista: {count}")
+                        return count
+                        
+                except ValueError as e:
+                    self.logger.error(f"[{datetime.datetime.now().isoformat()}] Erro ao decodificar JSON: {e}")
+                    
+                self.logger.warning(f"[{datetime.datetime.now().isoformat()}] Resposta sem Content-Range ou totalcount válidos")
+                return 0
+            else:
+                self.logger.error(f"[{datetime.datetime.now().isoformat()}] Erro na requisição: {response.status_code} - {response.text}")
+                return 0
+                
+        except requests.exceptions.RequestException as e:
+            self.logger.error(f"[{datetime.datetime.now().isoformat()}] Erro de requisição: {e}")
+            return 0
+        except Exception as e:
+            self.logger.error(f"[{datetime.datetime.now().isoformat()}] Erro inesperado: {e}")
+            return 0
+
     def get_ticket_count(self, group_id: int, status_id: int, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Optional[int]:
         """Busca o total de tickets para um grupo e status específicos, com filtro de data opcional"""
         import datetime
@@ -1021,14 +1169,40 @@ class GLPIService:
                             return 0
                             
                         total = int(total_str)
-                        self.logger.debug(f"[{datetime.datetime.now().isoformat()}] Contagem de tickets encontrada: {total}")
+                        self.logger.debug(f"[{datetime.datetime.now().isoformat()}] Contagem de tickets encontrada no cabeçalho: {total}")
                         return total
                     except (ValueError, IndexError) as e:
                         self.logger.error(f"[{datetime.datetime.now().isoformat()}] Erro ao processar Content-Range '{response.headers.get('Content-Range', '')}': {e}")
                         return 0
                 
+                # Verificar se há content-range no corpo da resposta JSON
+                try:
+                    response_data = response.json()
+                    if isinstance(response_data, dict) and "content-range" in response_data:
+                        content_range = response_data["content-range"]
+                        if content_range and "/" in content_range:
+                            total_str = content_range.split("/")[-1]
+                            if total_str.isdigit():
+                                total = int(total_str)
+                                self.logger.debug(f"[{datetime.datetime.now().isoformat()}] Contagem de tickets encontrada no JSON: {total}")
+                                return total
+                            else:
+                                self.logger.warning(f"[{datetime.datetime.now().isoformat()}] Total não numérico no content-range JSON: {total_str}")
+                        else:
+                            self.logger.warning(f"[{datetime.datetime.now().isoformat()}] content-range JSON inválido: {content_range}")
+                    
+                    # Verificar se há totalcount no JSON (alternativa)
+                    if isinstance(response_data, dict) and "totalcount" in response_data:
+                        total = response_data["totalcount"]
+                        if isinstance(total, int):
+                            self.logger.debug(f"[{datetime.datetime.now().isoformat()}] Contagem de tickets encontrada via totalcount: {total}")
+                            return total
+                        
+                except (ValueError, KeyError) as e:
+                    self.logger.warning(f"[{datetime.datetime.now().isoformat()}] Erro ao processar JSON da resposta: {e}")
+                
                 # Se chegou até aqui com status 200 mas sem Content-Range, retornar 0
-                self.logger.warning(f"[{datetime.datetime.now().isoformat()}] Resposta sem Content-Range - assumindo 0 tickets")
+                self.logger.warning(f"[{datetime.datetime.now().isoformat()}] Resposta sem Content-Range válido - assumindo 0 tickets")
                 return 0
                     
             except requests.exceptions.Timeout as e:
@@ -1053,7 +1227,7 @@ class GLPIService:
             self.logger.error(f"[{datetime.datetime.now().isoformat()}] Erro geral no get_ticket_count: {e}")
             return 0
     
-    def get_metrics_by_level(self) -> Dict[str, Dict[str, int]]:
+    def get_metrics_by_level(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Dict[str, Dict[str, int]]:
         """Retorna métricas de tickets agrupadas por nível de atendimento"""
         import datetime
         
@@ -1081,7 +1255,7 @@ class GLPIService:
                 self.logger.error(f"[{datetime.datetime.now().isoformat()}] Falha ao descobrir field_ids")
                 return {}
             
-            return self._get_metrics_by_level_internal()
+            return self._get_metrics_by_level_internal_hierarchy(start_date, end_date)
             
         except Exception as e:
             self.logger.error(f"[{datetime.datetime.now().isoformat()}] Erro geral no get_metrics_by_level: {e}")
@@ -1176,6 +1350,83 @@ class GLPIService:
             
         except Exception as e:
             self.logger.error(f"[{datetime.datetime.now().isoformat()}] Erro geral no _get_metrics_by_level_internal: {e}")
+            return {}
+    
+    def _get_metrics_by_level_internal_hierarchy(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Dict[str, Dict[str, int]]:
+        """Método interno para obter métricas por nível usando estrutura hierárquica (campo 8)"""
+        import datetime
+        
+        try:
+            # Validações de entrada
+            if start_date and not isinstance(start_date, str):
+                self.logger.error(f"[{datetime.datetime.now().isoformat()}] start_date deve ser string: {type(start_date)}")
+                return {}
+                
+            if end_date and not isinstance(end_date, str):
+                self.logger.error(f"[{datetime.datetime.now().isoformat()}] end_date deve ser string: {type(end_date)}")
+                return {}
+                
+            # Validar formato das datas se fornecidas
+            if start_date and start_date.strip():
+                try:
+                    datetime.datetime.strptime(start_date.strip(), '%Y-%m-%d')
+                except ValueError as e:
+                    self.logger.error(f"[{datetime.datetime.now().isoformat()}] Formato de start_date inválido '{start_date}': {e}")
+                    return {}
+                    
+            if end_date and end_date.strip():
+                try:
+                    datetime.datetime.strptime(end_date.strip(), '%Y-%m-%d')
+                except ValueError as e:
+                    self.logger.error(f"[{datetime.datetime.now().isoformat()}] Formato de end_date inválido '{end_date}': {e}")
+                    return {}
+                    
+            # Verificar se as configurações necessárias estão disponíveis
+            if not hasattr(self, 'status_map') or not isinstance(self.status_map, dict):
+                self.logger.error(f"[{datetime.datetime.now().isoformat()}] status_map inválido: {getattr(self, 'status_map', None)}")
+                return {}
+                
+            if not self.status_map:
+                self.logger.warning(f"[{datetime.datetime.now().isoformat()}] status_map está vazio")
+                return {}
+        
+            # Definir níveis hierárquicos diretamente
+            hierarchy_levels = ['N1', 'N2', 'N3', 'N4']
+            metrics = {}
+            
+            for level in hierarchy_levels:
+                try:
+                    level_metrics = {}
+                    
+                    for status_name, status_id in self.status_map.items():
+                        try:
+                            # Validar status_name e status_id
+                            if not status_name or not isinstance(status_name, str):
+                                self.logger.warning(f"[{datetime.datetime.now().isoformat()}] status_name inválido: {status_name}")
+                                continue
+                                
+                            if not isinstance(status_id, (int, str)) or (isinstance(status_id, str) and not status_id.strip()):
+                                self.logger.warning(f"[{datetime.datetime.now().isoformat()}] status_id inválido para {status_name}: {status_id}")
+                                continue
+                                
+                            # Usar o novo método baseado em hierarquia
+                            count = self.get_ticket_count_by_hierarchy(level, status_id, start_date, end_date)
+                            level_metrics[status_name] = count if count is not None else 0
+                            
+                        except Exception as e:
+                            self.logger.error(f"[{datetime.datetime.now().isoformat()}] Erro ao obter contagem para {level}/{status_name}: {e}")
+                            level_metrics[status_name] = 0
+                    
+                    metrics[level] = level_metrics
+                    
+                except Exception as e:
+                    self.logger.error(f"[{datetime.datetime.now().isoformat()}] Erro ao processar nível {level}: {e}")
+                    metrics[level] = {}
+            
+            return metrics
+            
+        except Exception as e:
+            self.logger.error(f"[{datetime.datetime.now().isoformat()}] Erro geral no _get_metrics_by_level_internal_hierarchy: {e}")
             return {}
     
     def get_general_metrics(self) -> Dict[str, int]:
@@ -1469,7 +1720,7 @@ class GLPIService:
             
             # Obter métricas por nível (grupos N1-N4)
             try:
-                raw_metrics = self._get_metrics_by_level_internal()
+                raw_metrics = self._get_metrics_by_level_internal_hierarchy()
                 if not isinstance(raw_metrics, dict):
                     self.logger.error(f"[{datetime.datetime.now().isoformat()}] raw_metrics inválido: {type(raw_metrics)}")
                     return ResponseFormatter.format_error_response("Erro ao obter métricas por nível", ["Dados inválidos retornados"])
@@ -1575,7 +1826,7 @@ class GLPIService:
                         },
                         "tendencias": self._calculate_trends(general_novos, general_pendentes, general_progresso, general_resolvidos)
                     },
-                    "timestamp": datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
+                    "timestamp": datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                     "tempo_execucao": (time.time() - start_time) * 1000
                 }
                 
@@ -1759,7 +2010,7 @@ class GLPIService:
         Retorna um dicionário com as métricas ou None em caso de falha.
         """
         start_time = time.time()
-        self.logger.info(f"[{datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}] Iniciando get_dashboard_metrics_with_date_filter com start_date={start_date}, end_date={end_date}")
+        self.logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Iniciando get_dashboard_metrics_with_date_filter com start_date={start_date}, end_date={end_date}")
         
         try:
             # Validar formato das datas se fornecidas
@@ -1835,7 +2086,7 @@ class GLPIService:
             
             # Obter métricas por nível (grupos N1-N4) com filtro de data
             try:
-                raw_metrics = self._get_metrics_by_level_internal(start_date, end_date)
+                raw_metrics = self._get_metrics_by_level_internal_hierarchy(start_date, end_date)
                 if not isinstance(raw_metrics, dict):
                     self.logger.error(f"raw_metrics deve ser dict, recebido: {type(raw_metrics)}")
                     return None
@@ -2015,7 +2266,7 @@ class GLPIService:
                             "data_fim": end_date
                         }
                     },
-                    "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
+                    "timestamp": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                     "tempo_execucao": round(time.time() - start_time, 2)
                 }
                 
@@ -2041,7 +2292,7 @@ class GLPIService:
             
         except Exception as e:
             execution_time = time.time() - start_time
-            self.logger.error(f"[{datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}] Erro geral em get_dashboard_metrics_with_date_filter após {execution_time:.2f}s: {e}")
+            self.logger.error(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Erro geral em get_dashboard_metrics_with_date_filter após {execution_time:.2f}s: {e}")
             import traceback
             self.logger.error(f"Stack trace: {traceback.format_exc()}")
             return None
@@ -2880,37 +3131,56 @@ class GLPIService:
     def _get_technician_level_by_name(self, tech_name: str) -> str:
         """Determina o nível do técnico baseado apenas no nome (fallback)"""
         try:
-            # Mapeamento manual de nomes para níveis (incluindo IDs e nomes reais)
-            n4_names = {
-                "Anderson Oliveira", "Silvio Godinho", "Edson Joel", "Paulo Pedro", 
-                "Pablo Hebling", "Leonardo Riela", "Alessandro Carbonera", 
-                "Miguel Angelo", "José Barros", "Nicolas Nunez", "Wagner Mengue", "Silvio Valim",
-                # Mapeamento por IDs
-                "anderson-oliveira", "silvio-godinho", "edson-joel", "paulo-pedo", "pablo-hebling",
-                "leonardo-rielaantigo", "alessandro-carbonera", "miguelangelo-old",
-                "jose-barros", "nicolas-nunez", "wagner-mengue", "silvio-valim"
+            # Mapeamento completo atualizado de técnicos por nível
+            # Gerado automaticamente em 2025-08-16 23:27:01
+            n1_names = {
+                'gabriel andrade da conceicao',
+                'nicolas fernando muniz nunez',
+                # Mapeamento legado mantido para compatibilidade
+                "Jonathan Moletta", "Thales Lemos", "Leonardo Riela",
+                "Luciano Silva", "Thales Leite",
+                "jonathan-moletta", "thales-leite", "leonardo-riela",
+                "luciano-silva"
+            }
+            
+            n2_names = {
+                'alessandro carbonera vieira',
+                'edson joel dos santos silva',
+                'jonathan nascimento moletta',
+                'leonardo trojan repiso riela',
+                'luciano marcelino da silva',
+                'thales vinicius paz leite',
+                # Mapeamento legado mantido para compatibilidade
+                "Gabriel Conceição", "Luciano Araújo", "Alice Dutra", "Luan Medeiros",
+                "gabriel-conceicao", "luciano-araujo", "alice-dutra", "luan-medeiros"
             }
             
             n3_names = {
+                'anderson da silva morim de oliveira',
+                'jorge antonio vicente júnior',
+                'miguelangelo ferreira',
+                'pablo hebling guimaraes',
+                'silvio godinho valim',
+                # Mapeamento legado mantido para compatibilidade
                 "Gabriel Machado", "Luciano Marcelino", "Jorge Swift",
                 "Anderson Morim", "Davi Freitas", "Lucas Sergio",
-                # Mapeamento por IDs
                 "gabriel-machado", "luciano-marcelino", "jorge-swift",
                 "anderson-morim", "davi-freitas", "lucas-sergio-t1"
             }
             
-            n2_names = {
-                "Gabriel Conceição", "Luciano Araújo", "Alice Dutra", "Luan Medeiros",
-                # Mapeamento por IDs
-                "gabriel-conceicao", "luciano-araujo", "alice-dutra", "luan-medeiros"
-            }
-            
-            n1_names = {
-                "Jonathan Moletta", "Thales Lemos", "Leonardo Riela",
-                "Luciano Silva", "Thales Leite",
-                # Mapeamento por IDs
-                "jonathan-moletta", "thales-leite", "leonardo-riela",
-                "luciano-silva"
+            n4_names = {
+                'alexandre rovinski almoarqueg',
+                'gabriel silva machado',
+                'luciano de araujo silva',
+                'paulo césar pedó nunes',
+                'wagner mengue',
+                # Mapeamento legado mantido para compatibilidade
+                "Anderson Oliveira", "Silvio Godinho", "Edson Joel", "Paulo Pedro", 
+                "Pablo Hebling", "Leonardo Riela", "Alessandro Carbonera", 
+                "Miguel Angelo", "José Barros", "Nicolas Nunez", "Wagner Mengue", "Silvio Valim",
+                "anderson-oliveira", "silvio-godinho", "edson-joel", "paulo-pedo", "pablo-hebling",
+                "leonardo-rielaantigo", "alessandro-carbonera", "miguelangelo-old",
+                "jose-barros", "nicolas-nunez", "wagner-mengue", "silvio-valim"
             }
             
             # Limpar o nome se vier no formato "Técnico nome-id"
@@ -3558,7 +3828,7 @@ class GLPIService:
                 return ResponseFormatter.format_error_response("Falha ao descobrir IDs dos campos", ["Erro ao obter configuração"])
             
             # Combinar métricas por nível e gerais com filtros
-            level_metrics = self._get_metrics_by_level_internal(start_date, end_date)
+            level_metrics = self._get_metrics_by_level_internal_hierarchy(start_date, end_date)
             general_metrics = self._get_general_metrics_internal(start_date, end_date)
             
             # Aplicar filtros adicionais se especificados

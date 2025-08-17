@@ -6,13 +6,12 @@ import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from unittest.mock import Mock, patch
 import requests
-from fastapi.testclient import TestClient
 import psutil
 import os
 
-from src.main import app
-from src.services.glpi_service import GLPIService
-from tests.conftest import mock_glpi_service, sample_metrics_data
+from backend.test_app import app
+from backend.services.glpi_service import GLPIService
+# Fixtures são importadas automaticamente pelo pytest
 
 
 class TestLoadTesting:
@@ -20,7 +19,8 @@ class TestLoadTesting:
     
     def setup_method(self):
         """Setup para cada teste."""
-        self.client = TestClient(app)
+        app.config['TESTING'] = True
+        self.client = app.test_client()
         self.base_url = "/api"
         self.process = psutil.Process(os.getpid())
     

@@ -1,0 +1,64 @@
+{
+  "timestamp": "2025-08-16 23:27:01.001702",
+  "total_technicians": 0,
+  "mapped_technicians": 0,
+  "unmapped_technicians": 0,
+  "current_mapping": {
+    "N1": [
+      "gabriel andrade da conceicao",
+      "nicolas fernando muniz nunez"
+    ],
+    "N2": [
+      "alessandro carbonera vieira",
+      "jonathan nascimento moletta",
+      "thales vinicius paz leite",
+      "leonardo trojan repiso riela",
+      "edson joel dos santos silva",
+      "luciano marcelino da silva"
+    ],
+    "N3": [
+      "anderson da silva morim de oliveira",
+      "silvio godinho valim",
+      "jorge antonio vicente júnior",
+      "pablo hebling guimaraes",
+      "miguelangelo ferreira"
+    ],
+    "N4": [
+      "gabriel silva machado",
+      "luciano de araujo silva",
+      "wagner mengue",
+      "paulo césar pedó nunes",
+      "alexandre rovinski almoarqueg"
+    ]
+  },
+  "proposed_mapping": {
+    "N1": [
+      "gabriel andrade da conceicao",
+      "nicolas fernando muniz nunez"
+    ],
+    "N2": [
+      "alessandro carbonera vieira",
+      "jonathan nascimento moletta",
+      "thales vinicius paz leite",
+      "leonardo trojan repiso riela",
+      "edson joel dos santos silva",
+      "luciano marcelino da silva"
+    ],
+    "N3": [
+      "anderson da silva morim de oliveira",
+      "silvio godinho valim",
+      "jorge antonio vicente júnior",
+      "pablo hebling guimaraes",
+      "miguelangelo ferreira"
+    ],
+    "N4": [
+      "gabriel silva machado",
+      "luciano de araujo silva",
+      "wagner mengue",
+      "paulo césar pedó nunes",
+      "alexandre rovinski almoarqueg"
+    ]
+  },
+  "all_technicians": [],
+  "unmapped_list": []
+}

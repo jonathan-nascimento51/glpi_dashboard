@@ -292,14 +292,14 @@ def get_technician_ranking():
         start_date = filters.get('start_date')
         end_date = filters.get('end_date')
         level = filters.get('level')
-        limit = filters.get('limit', 10)
+        limit = filters.get('limit', 100)  # Aumentado para 100 por padrão
         
         # Validar limite
         try:
             limit = int(limit)
-            limit = max(1, min(limit, 50))  # Entre 1 e 50
+            limit = max(1, min(limit, 200))  # Entre 1 e 200 (aumentado o máximo)
         except (ValueError, TypeError):
-            limit = 10
+            limit = 100  # Padrão aumentado para 100
         
         # Validar formato das datas se fornecidas
         if start_date:

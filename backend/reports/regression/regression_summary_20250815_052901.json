@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-08-15 05:29:01",
+  "success": false,
+  "status": "❌ FALHOU",
+  "reports": {
+    "html_report": "C:\\Users\\jonathan-moletta.PPIRATINI\\projects\\glpi_dashboard\\backend\\reports\\regression\\regression_report_20250815_052859.html",
+    "coverage_report": "C:\\Users\\jonathan-moletta.PPIRATINI\\projects\\glpi_dashboard\\backend\\reports\\coverage\\regression_coverage_20250815_052859\\index.html"
+  },
+  "recommendations": [
+    "❌ Corrigir falhas nos testes antes de prosseguir",
+    "🔍 Analisar logs detalhados nos relatórios",
+    "🛠️ Verificar configuração do ambiente de teste",
+    "📞 Consultar equipe se problemas persistirem"
+  ]
+}
