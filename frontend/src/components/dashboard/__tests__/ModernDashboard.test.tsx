@@ -5,14 +5,12 @@ import { MetricsData, TechnicianRanking } from '@/types';
 // Mock do RankingTable para verificar se os props são passados corretamente
 jest.mock('../RankingTable', () => ({
   RankingTable: ({ data, title, filters }: any) => (
-    <div data-testid="ranking-table">
+    <div data-testid='ranking-table'>
       <h2>{title}</h2>
-      <div data-testid="ranking-data">{JSON.stringify(data)}</div>
-      {filters && (
-        <div data-testid="ranking-filters">{JSON.stringify(filters)}</div>
-      )}
+      <div data-testid='ranking-data'>{JSON.stringify(data)}</div>
+      {filters && <div data-testid='ranking-filters'>{JSON.stringify(filters)}</div>}
     </div>
-  )
+  ),
 }));
 
 // Mock data para testes
@@ -25,8 +23,8 @@ const mockMetrics: MetricsData = {
   tendencias: {
     total_tickets: { valor: 5, tipo: 'aumento' },
     open_tickets: { valor: 2, tipo: 'aumento' },
-    closed_tickets: { valor: 3, tipo: 'aumento' }
-  }
+    closed_tickets: { valor: 3, tipo: 'aumento' },
+  },
 };
 
 const mockTechnicianRanking: TechnicianRanking[] = [
@@ -35,69 +33,54 @@ const mockTechnicianRanking: TechnicianRanking[] = [
     name: 'João Silva',
     level: 'Sênior',
     tickets_count: 25,
-    rank: 1
+    rank: 1,
   },
   {
     id: 2,
     name: 'Maria Santos',
     level: 'Pleno',
     tickets_count: 20,
-    rank: 2
-  }
+    rank: 2,
+  },
 ];
 
 const mockFilters = {
   start_date: '2025-01-01',
   end_date: '2025-12-31',
   level: 'Sênior',
-  limit: 10
+  limit: 10,
 };
 
 describe('ModernDashboard', () => {
   it('deve renderizar sem erros', () => {
-    render(
-      <ModernDashboard 
-        metrics={mockMetrics}
-        technicianRanking={mockTechnicianRanking}
-      />
-    );
-    
+    render(<ModernDashboard metrics={mockMetrics} technicianRanking={mockTechnicianRanking} />);
+
     expect(screen.getByTestId('ranking-table')).toBeInTheDocument();
   });
 
   it('deve passar filtros para o RankingTable quando fornecidos', () => {
     render(
-      <ModernDashboard 
+      <ModernDashboard
         metrics={mockMetrics}
         technicianRanking={mockTechnicianRanking}
         filters={mockFilters}
       />
     );
-    
+
     const filtersElement = screen.getByTestId('ranking-filters');
     expect(filtersElement).toBeInTheDocument();
     expect(filtersElement).toHaveTextContent(JSON.stringify(mockFilters));
   });
 
   it('não deve passar filtros quando não fornecidos', () => {
-    render(
-      <ModernDashboard 
-        metrics={mockMetrics}
-        technicianRanking={mockTechnicianRanking}
-      />
-    );
-    
+    render(<ModernDashboard metrics={mockMetrics} technicianRanking={mockTechnicianRanking} />);
+
     expect(screen.queryByTestId('ranking-filters')).not.toBeInTheDocument();
   });
 
   it('deve passar dados de ranking corretamente', () => {
-    render(
-      <ModernDashboard 
-        metrics={mockMetrics}
-        technicianRanking={mockTechnicianRanking}
-      />
-    );
-    
+    render(<ModernDashboard metrics={mockMetrics} technicianRanking={mockTechnicianRanking} />);
+
     const dataElement = screen.getByTestId('ranking-data');
     expect(dataElement).toBeInTheDocument();
     // Verifica se os dados foram processados e passados
@@ -106,13 +89,8 @@ describe('ModernDashboard', () => {
   });
 
   it('deve lidar com dados vazios de ranking', () => {
-    render(
-      <ModernDashboard 
-        metrics={mockMetrics}
-        technicianRanking={[]}
-      />
-    );
-    
+    render(<ModernDashboard metrics={mockMetrics} technicianRanking={[]} />);
+
     const dataElement = screen.getByTestId('ranking-data');
     expect(dataElement).toBeInTheDocument();
     expect(dataElement.textContent).toBe('[]');
@@ -120,25 +98,25 @@ describe('ModernDashboard', () => {
 
   it('deve aplicar className personalizada', () => {
     const { container } = render(
-      <ModernDashboard 
+      <ModernDashboard
         metrics={mockMetrics}
         technicianRanking={mockTechnicianRanking}
-        className="custom-dashboard-class"
+        className='custom-dashboard-class'
       />
     );
-    
+
     expect(container.firstChild).toHaveClass('custom-dashboard-class');
   });
 
   it('deve mostrar estado de loading quando isLoading é true', () => {
     render(
-      <ModernDashboard 
+      <ModernDashboard
         metrics={mockMetrics}
         technicianRanking={mockTechnicianRanking}
         isLoading={true}
       />
     );
-    
+
     // Verifica se há indicadores de loading
     expect(document.querySelector('.animate-pulse')).toBeInTheDocument();
   });
@@ -150,31 +128,26 @@ describe('ModernDashboard', () => {
         name: 'João Silva',
         level: 'Sênior',
         tickets_count: 25,
-        rank: 1
+        rank: 1,
       },
       {
         id: 2,
         name: 'Maria Santos',
         level: 'Pleno',
         tickets_count: 20,
-        rank: 2
+        rank: 2,
       },
       {
         id: 3,
         name: 'Pedro Costa',
         level: 'Júnior',
         tickets_count: 15,
-        rank: 3
-      }
+        rank: 3,
+      },
     ];
 
-    render(
-      <ModernDashboard 
-        metrics={mockMetrics}
-        technicianRanking={rankingWithLevels}
-      />
-    );
-    
+    render(<ModernDashboard metrics={mockMetrics} technicianRanking={rankingWithLevels} />);
+
     const dataElement = screen.getByTestId('ranking-data');
     expect(dataElement.textContent).toContain('Sênior');
     expect(dataElement.textContent).toContain('Pleno');

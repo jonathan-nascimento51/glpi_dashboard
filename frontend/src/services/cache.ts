@@ -1,6 +1,6 @@
 /**
  * Sistema de Cache Local para API
- * 
+ *
  * Implementa um cache em memória com tempo de expiração para otimizar
  * chamadas da API baseadas em combinações de filtros.
  */
@@ -32,7 +32,7 @@ class LocalCache<T> {
     misses: 0,
     sets: 0,
     deletes: 0,
-    clears: 0
+    clears: 0,
   };
   private requestTimes = new Map<string, number[]>(); // Armazena tempos de resposta por chave
   private requestCounts = new Map<string, number>(); // Conta requisições por chave
@@ -44,7 +44,7 @@ class LocalCache<T> {
       maxSize: config.maxSize || 100, // Máximo 100 entradas
       autoActivate: config.autoActivate !== undefined ? config.autoActivate : true,
       performanceThreshold: config.performanceThreshold || 500, // 500ms
-      usageThreshold: config.usageThreshold || 3 // 3 chamadas repetidas
+      usageThreshold: config.usageThreshold || 3, // 3 chamadas repetidas
     };
     this.isActive = !this.config.autoActivate; // Se não é auto, fica sempre ativo
 
@@ -91,7 +91,7 @@ class LocalCache<T> {
     }
     const times = this.requestTimes.get(key)!;
     times.push(responseTime);
-    
+
     // Mantém apenas os últimos 10 tempos
     if (times.length > 10) {
       times.shift();
@@ -109,15 +109,15 @@ class LocalCache<T> {
     if (this.isActive) return;
 
     const { performanceThreshold, usageThreshold } = this.config;
-    
+
     // Ativa se a resposta for lenta OU se houver muitas requisições repetidas
-    const shouldActivate = 
-      responseTime >= performanceThreshold! || 
-      requestCount >= usageThreshold!;
+    const shouldActivate = responseTime >= performanceThreshold! || requestCount >= usageThreshold!;
 
     if (shouldActivate) {
       this.isActive = true;
-      console.log(`🚀 Cache ativado automaticamente para padrão detectado: ${responseTime}ms, ${requestCount} requisições`);
+      console.log(
+        `🚀 Cache ativado automaticamente para padrão detectado: ${responseTime}ms, ${requestCount} requisições`
+      );
     }
   }
 
@@ -142,16 +142,16 @@ class LocalCache<T> {
       console.log(`📦 Cache: Não armazenado - cache inativo`);
       return; // Não armazena se cache não estiver ativo
     }
-    
+
     const key = this.generateKey(params);
     const now = Date.now();
-    
+
     this.evictOldest();
-    
+
     this.cache.set(key, {
       data,
       timestamp: now,
-      expiresAt: now + this.config.ttl
+      expiresAt: now + this.config.ttl,
     });
 
     this.stats.sets++;
@@ -163,7 +163,7 @@ class LocalCache<T> {
    */
   get(params: Record<string, any>): T | null {
     if (!this.isActive) return null; // Não recupera se cache não estiver ativo
-    
+
     const key = this.generateKey(params);
     const entry = this.cache.get(key);
 
@@ -237,7 +237,7 @@ class LocalCache<T> {
     const entries = Array.from(this.cache.entries()).map(([key, entry]) => ({
       key,
       timestamp: entry.timestamp,
-      expiresAt: entry.expiresAt
+      expiresAt: entry.expiresAt,
     }));
 
     return {
@@ -249,7 +249,7 @@ class LocalCache<T> {
       hitRate: this.stats.hits / (this.stats.hits + this.stats.misses) || 0,
       isActive: this.isActive,
       totalRequests: Array.from(this.requestCounts.values()).reduce((sum, count) => sum + count, 0),
-      avgResponseTime: this.getAverageResponseTime()
+      avgResponseTime: this.getAverageResponseTime(),
     };
   }
 
@@ -280,13 +280,13 @@ class LocalCache<T> {
   refresh(params: Record<string, any>): boolean {
     const key = this.generateKey(params);
     const entry = this.cache.get(key);
-    
+
     if (entry && !this.isExpired(entry)) {
       entry.expiresAt = Date.now() + this.config.ttl;
       console.log(`📦 Cache: TTL renovado para chave: ${key}`);
       return true;
     }
-    
+
     return false;
   }
 }
@@ -294,22 +294,22 @@ class LocalCache<T> {
 // Instâncias de cache para diferentes tipos de dados
 export const metricsCache = new LocalCache<any>({
   ttl: 5 * 60 * 1000, // 5 minutos
-  maxSize: 50
+  maxSize: 50,
 });
 
 export const systemStatusCache = new LocalCache<any>({
   ttl: 2 * 60 * 1000, // 2 minutos
-  maxSize: 10
+  maxSize: 10,
 });
 
 export const technicianRankingCache = new LocalCache<any[]>({
   ttl: 10 * 60 * 1000, // 10 minutos
-  maxSize: 20
+  maxSize: 20,
 });
 
 export const newTicketsCache = new LocalCache<any[]>({
   ttl: 1 * 60 * 1000, // 1 minuto
-  maxSize: 30
+  maxSize: 30,
 });
 
 // Utilitário para limpar todos os caches
@@ -327,7 +327,7 @@ export const getAllCacheStats = () => {
     metrics: metricsCache.getStats(),
     systemStatus: systemStatusCache.getStats(),
     technicianRanking: technicianRankingCache.getStats(),
-    newTickets: newTicketsCache.getStats()
+    newTickets: newTicketsCache.getStats(),
   };
 };
 

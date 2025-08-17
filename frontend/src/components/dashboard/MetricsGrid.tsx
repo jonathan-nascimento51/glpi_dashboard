@@ -1,30 +1,30 @@
-import React, { useEffect, useCallback, useMemo } from "react"
-import { motion } from "framer-motion"
-import { StatusCard } from "./StatusCard"
-import { MetricsData, TicketStatus } from "@/types"
-import { Ticket, Clock, AlertTriangle, CheckCircle } from "lucide-react"
-import { usePerformanceMonitoring, useRenderTracker } from "../../hooks/usePerformanceMonitoring"
-import { performanceMonitor } from "../../utils/performanceMonitor"
-import { useThrottledCallback } from "../../hooks/useDebounce"
+import React, { useEffect, useCallback, useMemo } from 'react';
+import { motion } from 'framer-motion';
+import { StatusCard } from './StatusCard';
+import { MetricsData, TicketStatus } from '@/types';
+import { Ticket, Clock, AlertTriangle, CheckCircle } from 'lucide-react';
+import { usePerformanceMonitoring, useRenderTracker } from '../../hooks/usePerformanceMonitoring';
+import { performanceMonitor } from '../../utils/performanceMonitor';
+import { useThrottledCallback } from '../../hooks/useDebounce';
 
 interface MetricsGridProps {
-  metrics: MetricsData
-  onFilterByStatus?: (status: TicketStatus) => void
-  className?: string
+  metrics: MetricsData;
+  onFilterByStatus?: (status: TicketStatus) => void;
+  className?: string;
 }
 
 // Funções auxiliares movidas para fora do componente
 function getTrendDirection(trend?: string): 'up' | 'down' | 'stable' {
-  if (!trend) return 'stable'
-  const value = parseFloat(trend.replace('%', '').replace('+', ''))
-  if (value > 0) return 'up'
-  if (value < 0) return 'down'
-  return 'stable'
+  if (!trend) return 'stable';
+  const value = parseFloat(trend.replace('%', '').replace('+', ''));
+  if (value > 0) return 'up';
+  if (value < 0) return 'down';
+  return 'stable';
 }
 
 function parseTrendValue(trend?: string): number {
-  if (!trend) return 0
-  return Math.abs(parseFloat(trend.replace('%', '').replace('+', '')))
+  if (!trend) return 0;
+  return Math.abs(parseFloat(trend.replace('%', '').replace('+', '')));
 }
 
 // Variantes de animação movidas para fora do componente
@@ -34,10 +34,10 @@ const containerVariants = {
     opacity: 1,
     transition: {
       staggerChildren: 0.02,
-      delayChildren: 0
-    }
-  }
-}
+      delayChildren: 0,
+    },
+  },
+};
 
 const itemVariants = {
   hidden: { opacity: 0 },
@@ -45,157 +45,154 @@ const itemVariants = {
     opacity: 1,
     transition: {
       duration: 0.1,
-      ease: "easeOut" as const
-    }
-  }
-} as const
+      ease: 'easeOut' as const,
+    },
+  },
+} as const;
 
 export const MetricsGrid = React.memo<MetricsGridProps>(function MetricsGrid({
   metrics,
   onFilterByStatus,
-  className
+  className,
 }) {
   // Performance monitoring hooks
-  const { measureRender } = usePerformanceMonitoring('MetricsGrid')
-  const { trackRender } = useRenderTracker('MetricsGrid')
-  
+  const { measureRender } = usePerformanceMonitoring('MetricsGrid');
+  const { trackRender } = useRenderTracker('MetricsGrid');
+
   // Track component renders
   useEffect(() => {
     // Performance tracking
     trackRender();
-    
+
     measureRender(() => {
       performanceMonitor.markComponentRender('MetricsGrid', {
         hasMetrics: !!metrics,
-        metricsKeys: metrics ? Object.keys(metrics).length : 0
-      })
-    })
-  }, [metrics, trackRender, measureRender, onFilterByStatus])
-  
+        metricsKeys: metrics ? Object.keys(metrics).length : 0,
+      });
+    });
+  }, [metrics, trackRender, measureRender, onFilterByStatus]);
+
   // Componente renderizado com métricas válidas
 
   // Verificação de segurança
   if (!metrics) {
     // console.log('⚠️ MetricsGrid - Metrics é null/undefined, mostrando skeleton')
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-32 figma-glass-card animate-pulse rounded-lg" />
+          <div key={i} className='h-32 figma-glass-card animate-pulse rounded-lg' />
         ))}
       </div>
-    )
+    );
   }
 
   // Callbacks memoizados para os cliques com throttle
   const handleNewClickImmediate = useCallback(() => {
-    performanceMonitor.startMeasure('filter-click-new')
-    onFilterByStatus?.("new")
-    performanceMonitor.endMeasure('filter-click-new')
-  }, [onFilterByStatus])
+    performanceMonitor.startMeasure('filter-click-new');
+    onFilterByStatus?.('new');
+    performanceMonitor.endMeasure('filter-click-new');
+  }, [onFilterByStatus]);
 
   const handleProgressClickImmediate = useCallback(() => {
-    performanceMonitor.startMeasure('filter-click-progress')
-    onFilterByStatus?.("progress")
-    performanceMonitor.endMeasure('filter-click-progress')
-  }, [onFilterByStatus])
+    performanceMonitor.startMeasure('filter-click-progress');
+    onFilterByStatus?.('progress');
+    performanceMonitor.endMeasure('filter-click-progress');
+  }, [onFilterByStatus]);
 
   const handlePendingClickImmediate = useCallback(() => {
-    performanceMonitor.startMeasure('filter-click-pending')
-    onFilterByStatus?.("pending")
-    performanceMonitor.endMeasure('filter-click-pending')
-  }, [onFilterByStatus])
+    performanceMonitor.startMeasure('filter-click-pending');
+    onFilterByStatus?.('pending');
+    performanceMonitor.endMeasure('filter-click-pending');
+  }, [onFilterByStatus]);
 
   const handleResolvedClickImmediate = useCallback(() => {
-    performanceMonitor.startMeasure('filter-click-resolved')
-    onFilterByStatus?.("resolved")
-    performanceMonitor.endMeasure('filter-click-resolved')
-  }, [onFilterByStatus])
+    performanceMonitor.startMeasure('filter-click-resolved');
+    onFilterByStatus?.('resolved');
+    performanceMonitor.endMeasure('filter-click-resolved');
+  }, [onFilterByStatus]);
 
   // Throttled versions to prevent rapid clicks
-  const handleNewClick = useThrottledCallback(handleNewClickImmediate, 500)
-  const handleProgressClick = useThrottledCallback(handleProgressClickImmediate, 500)
-  const handlePendingClick = useThrottledCallback(handlePendingClickImmediate, 500)
-  const handleResolvedClick = useThrottledCallback(handleResolvedClickImmediate, 500)
+  const handleNewClick = useThrottledCallback(handleNewClickImmediate, 500);
+  const handleProgressClick = useThrottledCallback(handleProgressClickImmediate, 500);
+  const handlePendingClick = useThrottledCallback(handlePendingClickImmediate, 500);
+  const handleResolvedClick = useThrottledCallback(handleResolvedClickImmediate, 500);
 
   // Configuração dos cards de métricas memoizada
   const metricCards = useMemo(() => {
     const cards = [
       {
-        title: "Novos",
+        title: 'Novos',
         value: metrics.novos || 0,
-        status: "new" as const,
+        status: 'new' as const,
         icon: Ticket,
         trend: {
           direction: getTrendDirection(metrics.tendencias?.novos),
           value: parseTrendValue(metrics.tendencias?.novos),
-          label: "vs. período anterior"
+          label: 'vs. período anterior',
         },
-        onClick: handleNewClick
+        onClick: handleNewClick,
       },
       {
-        title: "Em Progresso",
+        title: 'Em Progresso',
         value: metrics.progresso || 0,
-        status: "progress" as const,
+        status: 'progress' as const,
         icon: Clock,
         trend: {
           direction: getTrendDirection(metrics.tendencias?.progresso),
           value: parseTrendValue(metrics.tendencias?.progresso),
-          label: "vs. período anterior"
+          label: 'vs. período anterior',
         },
-        onClick: handleProgressClick
+        onClick: handleProgressClick,
       },
       {
-        title: "Pendentes",
+        title: 'Pendentes',
         value: metrics.pendentes || 0,
-        status: "pending" as const,
+        status: 'pending' as const,
         icon: AlertTriangle,
         trend: {
           direction: getTrendDirection(metrics.tendencias?.pendentes),
           value: parseTrendValue(metrics.tendencias?.pendentes),
-          label: "vs. período anterior"
+          label: 'vs. período anterior',
         },
-        onClick: handlePendingClick
+        onClick: handlePendingClick,
       },
       {
-        title: "Resolvidos",
+        title: 'Resolvidos',
         value: metrics.resolvidos || 0,
-        status: "resolved" as const,
+        status: 'resolved' as const,
         icon: CheckCircle,
         trend: {
           direction: getTrendDirection(metrics.tendencias?.resolvidos),
           value: parseTrendValue(metrics.tendencias?.resolvidos),
-          label: "vs. período anterior"
+          label: 'vs. período anterior',
         },
-        onClick: handleResolvedClick
-      }
-    ]
-    
-    return cards
-  }, [metrics, handleNewClick, handleProgressClick, handlePendingClick, handleResolvedClick])
+        onClick: handleResolvedClick,
+      },
+    ];
+
+    return cards;
+  }, [metrics, handleNewClick, handleProgressClick, handlePendingClick, handleResolvedClick]);
 
   return (
     <motion.div
       variants={containerVariants}
-      initial="hidden"
-      animate="visible"
+      initial='hidden'
+      animate='visible'
       className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 ${className || ''}`}
     >
-      {metricCards.map((card) => (
-        <motion.div
-          key={`metrics-${card.status}`}
-          variants={itemVariants}
-        >
+      {metricCards.map(card => (
+        <motion.div key={`metrics-${card.status}`} variants={itemVariants}>
           <StatusCard
             title={card.title}
             value={card.value}
             status={card.status}
             icon={card.icon}
             trend={card.trend}
-            className="h-full cursor-pointer"
+            className='h-full cursor-pointer'
             onClick={card.onClick}
           />
         </motion.div>
       ))}
     </motion.div>
-  )
-})
+  );
+});

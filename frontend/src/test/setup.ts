@@ -18,9 +18,9 @@ Object.defineProperty(import.meta, 'env', {
     MODE: 'test',
     DEV: false,
     PROD: false,
-    SSR: false
+    SSR: false,
   },
-  writable: true
+  writable: true,
 });
 
 // Mock do console para evitar logs desnecessários durante os testes
@@ -41,7 +41,7 @@ const localStorageMock = {
   clear: vi.fn(),
 };
 Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock
+  value: localStorageMock,
 });
 
 // Mock do sessionStorage
@@ -52,7 +52,7 @@ const sessionStorageMock = {
   clear: vi.fn(),
 };
 Object.defineProperty(window, 'sessionStorage', {
-  value: sessionStorageMock
+  value: sessionStorageMock,
 });
 
 // Mock do fetch para testes
@@ -66,7 +66,7 @@ Object.defineProperty(window, 'performance', {
     measure: vi.fn(),
     getEntriesByName: vi.fn(() => []),
     getEntriesByType: vi.fn(() => []),
-  }
+  },
 });
 
 // Limpar todos os mocks antes de cada teste

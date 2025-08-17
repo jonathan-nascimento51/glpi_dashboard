@@ -19,11 +19,11 @@ vi.mock('framer-motion', () => ({
 
 // Mock dos ícones
 vi.mock('lucide-react', () => ({
-  Users: () => <div data-testid="users-icon" />,
-  Clock: () => <div data-testid="clock-icon" />,
-  AlertCircle: () => <div data-testid="alert-circle-icon" />,
-  CheckCircle: () => <div data-testid="check-circle-icon" />,
-  TrendingUp: () => <div data-testid="trending-up-icon" />,
+  Users: () => <div data-testid='users-icon' />,
+  Clock: () => <div data-testid='clock-icon' />,
+  AlertCircle: () => <div data-testid='alert-circle-icon' />,
+  CheckCircle: () => <div data-testid='check-circle-icon' />,
+  TrendingUp: () => <div data-testid='trending-up-icon' />,
 }));
 
 const mockMetrics: MetricsData = {
@@ -33,42 +33,42 @@ const mockMetrics: MetricsData = {
       pendentes: 5,
       progresso: 8,
       resolvidos: 25,
-      total: 48
+      total: 48,
     },
     n2: {
       novos: 8,
       pendentes: 3,
       progresso: 6,
       resolvidos: 20,
-      total: 37
+      total: 37,
     },
     n3: {
       novos: 5,
       pendentes: 2,
       progresso: 4,
       resolvidos: 15,
-      total: 26
+      total: 26,
     },
     n4: {
       novos: 2,
       pendentes: 1,
       progresso: 2,
       resolvidos: 8,
-      total: 13
+      total: 13,
     },
     geral: {
       novos: 25,
       pendentes: 11,
       progresso: 20,
       resolvidos: 68,
-      total: 124
-    }
+      total: 124,
+    },
   },
   tendencias: {
     novos: 12,
     pendentes: -5,
     progresso: 8,
-    resolvidos: 15
+    resolvidos: 15,
   },
   filtros_aplicados: [],
   tempo_execucao: 150,
@@ -80,8 +80,8 @@ const mockMetrics: MetricsData = {
     cacheHitRate: 85,
     activeConnections: 12,
     memoryUsage: 65,
-    cpuUsage: 45
-  }
+    cpuUsage: 45,
+  },
 };
 
 const defaultProps = {
@@ -136,7 +136,7 @@ describe('LevelMetricsGrid Component', () => {
     it('deve mostrar estado de carregamento quando niveis é undefined', () => {
       const metricsWithoutNiveis = {
         ...mockMetrics,
-        niveis: undefined as any
+        niveis: undefined as any,
       };
 
       render(<LevelMetricsGrid metrics={metricsWithoutNiveis} />);
@@ -154,9 +154,9 @@ describe('LevelMetricsGrid Component', () => {
       // N1: 10 + 5 + 8 + 25 = 48
       const badges = document.querySelectorAll('.border-0');
       expect(badges.length).toBeGreaterThan(0);
-      
+
       // Verificar se existem valores numéricos nos badges
-      const hasNumericValues = Array.from(badges).some(badge => 
+      const hasNumericValues = Array.from(badges).some(badge =>
         /\d+/.test(badge.textContent || '')
       );
       expect(hasNumericValues).toBe(true);
@@ -172,9 +172,9 @@ describe('LevelMetricsGrid Component', () => {
             pendentes: 0,
             progresso: 0,
             resolvidos: 0,
-            total: 0
-          }
-        }
+            total: 0,
+          },
+        },
       };
 
       render(<LevelMetricsGrid metrics={metricsWithZeros} />);
@@ -193,9 +193,9 @@ describe('LevelMetricsGrid Component', () => {
             pendentes: undefined as any,
             progresso: undefined as any,
             resolvidos: undefined as any,
-            total: undefined as any
-          }
-        }
+            total: undefined as any,
+          },
+        },
       };
 
       expect(() => {
@@ -260,7 +260,7 @@ describe('LevelMetricsGrid Component', () => {
     it('deve aplicar className customizada', () => {
       const propsWithClass = {
         ...defaultProps,
-        className: 'custom-level-grid'
+        className: 'custom-level-grid',
       };
 
       render(<LevelMetricsGrid {...propsWithClass} />);
@@ -290,9 +290,9 @@ describe('LevelMetricsGrid Component', () => {
           ...mockMetrics.niveis,
           n1: {
             ...mockMetrics.niveis.n1,
-            novos: 15 // Valor alterado
-          }
-        }
+            novos: 15, // Valor alterado
+          },
+        },
       };
 
       rerender(<LevelMetricsGrid metrics={updatedMetrics} />);
@@ -311,9 +311,9 @@ describe('LevelMetricsGrid Component', () => {
             pendentes: null as any,
             progresso: undefined as any,
             resolvidos: 25,
-            total: NaN as any
-          }
-        }
+            total: NaN as any,
+          },
+        },
       } as any;
 
       expect(() => {
@@ -327,7 +327,7 @@ describe('LevelMetricsGrid Component', () => {
         niveis: {
           n1: mockMetrics.niveis.n1,
           // n2, n3, n4 ausentes
-        }
+        },
       } as any;
 
       expect(() => {

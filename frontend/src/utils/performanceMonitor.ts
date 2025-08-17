@@ -54,11 +54,11 @@ class PerformanceMonitor {
 
     const markName = `${name}-start`;
     performance.mark(markName);
-    
+
     this.metrics.set(name, {
       name,
       startTime: performance.now(),
-      metadata
+      metadata,
     });
 
     console.log(`🚀 Performance: Iniciando medição '${name}'`, metadata);
@@ -78,11 +78,11 @@ class PerformanceMonitor {
 
     const endTime = performance.now();
     const duration = endTime - metric.startTime;
-    
+
     const markStartName = `${name}-start`;
     const markEndName = `${name}-end`;
     const measureName = `${name}-duration`;
-    
+
     performance.mark(markEndName);
     performance.measure(measureName, markStartName, markEndName);
 
@@ -95,7 +95,7 @@ class PerformanceMonitor {
 
     console.log(`✅ Performance: '${name}' concluído em ${duration.toFixed(2)}ms`, {
       duration,
-      metadata: metric.metadata
+      metadata: metric.metadata,
     });
 
     return duration;
@@ -105,8 +105,8 @@ class PerformanceMonitor {
    * Mede o tempo de uma operação assíncrona
    */
   async measureAsync<T>(
-    name: string, 
-    operation: () => Promise<T>, 
+    name: string,
+    operation: () => Promise<T>,
     metadata?: Record<string, any>
   ): Promise<T> {
     this.startMeasure(name, metadata);
@@ -115,7 +115,10 @@ class PerformanceMonitor {
       this.endMeasure(name, { success: true });
       return result;
     } catch (error) {
-      this.endMeasure(name, { success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+      this.endMeasure(name, {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
       throw error;
     }
   }
@@ -123,11 +126,7 @@ class PerformanceMonitor {
   /**
    * Registra métricas de componente React
    */
-  recordComponentRender(
-    componentName: string, 
-    renderTime: number, 
-    props?: any
-  ): void {
+  recordComponentRender(componentName: string, renderTime: number, props?: any): void {
     if (!this.isEnabled) return;
 
     const existing = this.componentMetrics.get(componentName);
@@ -144,7 +143,7 @@ class PerformanceMonitor {
         totalRenderTime: renderTime,
         averageRenderTime: renderTime,
         lastRenderTime: renderTime,
-        props
+        props,
       });
     }
 
@@ -154,12 +153,9 @@ class PerformanceMonitor {
   /**
    * Marca renderização de componente (alias para recordComponentRender)
    */
-  markComponentRender(
-    componentName: string,
-    metadata?: Record<string, any>
-  ): void {
+  markComponentRender(componentName: string, metadata?: Record<string, any>): void {
     if (!this.isEnabled) return;
-    
+
     const renderTime = performance.now();
     this.recordComponentRender(componentName, renderTime, metadata);
   }
@@ -167,10 +163,7 @@ class PerformanceMonitor {
   /**
    * Mede tempo de resposta da API
    */
-  async measureApiCall<T>(
-    endpoint: string,
-    apiCall: () => Promise<T>
-  ): Promise<T> {
+  async measureApiCall<T>(endpoint: string, apiCall: () => Promise<T>): Promise<T> {
     const measureName = `api-${endpoint}`;
     return this.measureAsync(measureName, apiCall, { endpoint, type: 'api-call' });
   }
@@ -178,10 +171,7 @@ class PerformanceMonitor {
   /**
    * Mede operação completa de filtro
    */
-  async measureFilterOperation<T>(
-    filterType: string,
-    operation: () => Promise<T>
-  ): Promise<T> {
+  async measureFilterOperation<T>(filterType: string, operation: () => Promise<T>): Promise<T> {
     const measureName = `filter-${filterType}`;
     return this.measureAsync(measureName, operation, { filterType, type: 'filter-operation' });
   }
@@ -203,18 +193,18 @@ class PerformanceMonitor {
       filterChangeTime: this.calculateAverage(filterMetrics.map(m => m.duration || 0)),
       apiResponseTime: this.calculateAverage(apiMetrics.map(m => m.duration || 0)),
       renderTime: this.calculateAverage(renderMetrics.map(m => m.duration || 0)),
-      totalOperationTime: this.calculateAverage(metrics.map(m => m.duration || 0))
+      totalOperationTime: this.calculateAverage(metrics.map(m => m.duration || 0)),
     };
 
     const report: PerformanceReport = {
       timestamp,
       metrics,
       summary,
-      componentMetrics
+      componentMetrics,
     };
 
     this.reports.push(report);
-    
+
     // Manter apenas os últimos 10 relatórios
     if (this.reports.length > 10) {
       this.reports = this.reports.slice(-10);
@@ -228,11 +218,11 @@ class PerformanceMonitor {
    */
   getBrowserMetrics(): PerformanceEntry[] {
     if (typeof performance === 'undefined') return [];
-    
+
     return [
       ...performance.getEntriesByType('mark'),
       ...performance.getEntriesByType('measure'),
-      ...performance.getEntriesByType('navigation')
+      ...performance.getEntriesByType('navigation'),
     ];
   }
 
@@ -241,7 +231,7 @@ class PerformanceMonitor {
    */
   calculateP95(values: number[]): number {
     if (values.length === 0) return 0;
-    
+
     const sorted = [...values].sort((a, b) => a - b);
     const index = Math.ceil(sorted.length * 0.95) - 1;
     return sorted[Math.max(0, index)];
@@ -287,20 +277,22 @@ class PerformanceMonitor {
     const apiTimes = metrics
       .filter(m => m.name.startsWith('api-') && m.duration)
       .map(m => m.duration!);
-    
+
     const topSlowComponents = Array.from(this.componentMetrics.values())
       .sort((a, b) => b.averageRenderTime - a.averageRenderTime)
       .slice(0, 5);
 
     return {
       totalMeasurements: metrics.length,
-      componentRenders: Array.from(this.componentMetrics.values())
-        .reduce((sum, c) => sum + c.renderCount, 0),
+      componentRenders: Array.from(this.componentMetrics.values()).reduce(
+        (sum, c) => sum + c.renderCount,
+        0
+      ),
       averageFilterTime: this.calculateAverage(filterTimes),
       averageApiTime: this.calculateAverage(apiTimes),
       p95FilterTime: this.calculateP95(filterTimes),
       p95ApiTime: this.calculateP95(apiTimes),
-      topSlowComponents
+      topSlowComponents,
     };
   }
 
@@ -317,13 +309,13 @@ class PerformanceMonitor {
    */
   exportToAnalytics(): void {
     if (process.env.NODE_ENV !== 'production') return;
-    
+
     const report = this.generateReport();
-    
+
     // Em produção, enviar para serviço de analytics
     // Exemplo: Google Analytics, DataDog, etc.
     console.log('📊 Enviando métricas para analytics:', report.summary);
-    
+
     // Implementar integração com serviço de analytics aqui
     // gtag('event', 'performance_metric', {
     //   filter_time: report.summary.filterChangeTime,
@@ -347,17 +339,13 @@ export const usePerformanceProfiler = () => {
     commitTime: number,
     interactions: Set<any>
   ) => {
-    performanceMonitor.recordComponentRender(
-      id,
-      actualDuration,
-      {
-        phase,
-        baseDuration,
-        startTime,
-        commitTime,
-        interactions: interactions ? interactions.size : 0
-      }
-    );
+    performanceMonitor.recordComponentRender(id, actualDuration, {
+      phase,
+      baseDuration,
+      startTime,
+      commitTime,
+      interactions: interactions ? interactions.size : 0,
+    });
   };
 
   return { onRenderCallback };
@@ -369,19 +357,19 @@ export const debugPerformance = {
     const stats = performanceMonitor.getDetailedStats();
     console.table(stats);
   },
-  
+
   logComponentMetrics: () => {
     const components = Array.from(performanceMonitor['componentMetrics'].values());
     console.table(components);
   },
-  
+
   generateReport: () => {
     return performanceMonitor.generateReport();
   },
-  
+
   clear: () => {
     performanceMonitor.clear();
-  }
+  },
 };
 
 // Expor no window para debugging em desenvolvimento

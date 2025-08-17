@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import { 
-  clearAllCaches, 
-  getAllCacheStats, 
-  metricsCache, 
-  systemStatusCache, 
-  technicianRankingCache, 
-  newTicketsCache 
+import {
+  clearAllCaches,
+  getAllCacheStats,
+  metricsCache,
+  systemStatusCache,
+  technicianRankingCache,
+  newTicketsCache,
 } from '../services/cache';
 
 export interface CacheStats {
@@ -48,29 +48,29 @@ export const useCache = () => {
         size: allStats.metrics.size,
         hitRate: allStats.metrics.hitRate,
         missRate: 1 - allStats.metrics.hitRate,
-        totalRequests: allStats.metrics.totalRequests
+        totalRequests: allStats.metrics.totalRequests,
       },
       systemStatus: {
         size: allStats.systemStatus.size,
         hitRate: allStats.systemStatus.hitRate,
         missRate: 1 - allStats.systemStatus.hitRate,
-        totalRequests: allStats.systemStatus.totalRequests
+        totalRequests: allStats.systemStatus.totalRequests,
       },
       technicianRanking: {
         size: allStats.technicianRanking.size,
         hitRate: allStats.technicianRanking.hitRate,
         missRate: 1 - allStats.technicianRanking.hitRate,
-        totalRequests: allStats.technicianRanking.totalRequests
+        totalRequests: allStats.technicianRanking.totalRequests,
       },
       newTickets: {
         size: allStats.newTickets.size,
         hitRate: allStats.newTickets.hitRate,
         missRate: 1 - allStats.newTickets.hitRate,
-        totalRequests: allStats.newTickets.totalRequests
-      }
+        totalRequests: allStats.newTickets.totalRequests,
+      },
     };
-     setStats(transformedStats);
-   }, []);
+    setStats(transformedStats);
+  }, []);
 
   // Função para limpar todos os caches
   const clearAll = useCallback(async () => {
@@ -87,76 +87,85 @@ export const useCache = () => {
   }, [updateStats]);
 
   // Função para limpar cache específico
-  const clearSpecificCache = useCallback((cacheType: 'metrics' | 'systemStatus' | 'technicianRanking' | 'newTickets') => {
-    try {
-      switch (cacheType) {
-        case 'metrics':
-          metricsCache.clear();
-          break;
-        case 'systemStatus':
-          systemStatusCache.clear();
-          break;
-        case 'technicianRanking':
-          technicianRankingCache.clear();
-          break;
-        case 'newTickets':
-          newTicketsCache.clear();
-          break;
+  const clearSpecificCache = useCallback(
+    (cacheType: 'metrics' | 'systemStatus' | 'technicianRanking' | 'newTickets') => {
+      try {
+        switch (cacheType) {
+          case 'metrics':
+            metricsCache.clear();
+            break;
+          case 'systemStatus':
+            systemStatusCache.clear();
+            break;
+          case 'technicianRanking':
+            technicianRankingCache.clear();
+            break;
+          case 'newTickets':
+            newTicketsCache.clear();
+            break;
+        }
+        updateStats();
+        console.log(`🗑️ Cache ${cacheType} foi limpo`);
+      } catch (error) {
+        console.error(`Erro ao limpar cache ${cacheType}:`, error);
       }
-      updateStats();
-      console.log(`🗑️ Cache ${cacheType} foi limpo`);
-    } catch (error) {
-      console.error(`Erro ao limpar cache ${cacheType}:`, error);
-    }
-  }, [updateStats]);
+    },
+    [updateStats]
+  );
 
   // Função para forçar refresh de um cache específico
-  const refreshCache = useCallback(async (cacheType: 'metrics' | 'systemStatus' | 'technicianRanking' | 'newTickets') => {
-    try {
-      switch (cacheType) {
-        case 'metrics':
-          await metricsCache.refresh({});
-          break;
-        case 'systemStatus':
-          await systemStatusCache.refresh({});
-          break;
-        case 'technicianRanking':
-          await technicianRankingCache.refresh({});
-          break;
-        case 'newTickets':
-          await newTicketsCache.refresh({});
-          break;
+  const refreshCache = useCallback(
+    async (cacheType: 'metrics' | 'systemStatus' | 'technicianRanking' | 'newTickets') => {
+      try {
+        switch (cacheType) {
+          case 'metrics':
+            await metricsCache.refresh({});
+            break;
+          case 'systemStatus':
+            await systemStatusCache.refresh({});
+            break;
+          case 'technicianRanking':
+            await technicianRankingCache.refresh({});
+            break;
+          case 'newTickets':
+            await newTicketsCache.refresh({});
+            break;
+        }
+        updateStats();
+        console.log(`🔄 Cache ${cacheType} foi atualizado`);
+      } catch (error) {
+        console.error(`Erro ao atualizar cache ${cacheType}:`, error);
       }
-      updateStats();
-      console.log(`🔄 Cache ${cacheType} foi atualizado`);
-    } catch (error) {
-      console.error(`Erro ao atualizar cache ${cacheType}:`, error);
-    }
-  }, [updateStats]);
+    },
+    [updateStats]
+  );
 
   // Função para obter informações detalhadas de um cache
-  const getCacheInfo = useCallback((cacheType: 'metrics' | 'systemStatus' | 'technicianRanking' | 'newTickets') => {
-    switch (cacheType) {
-      case 'metrics':
-        return metricsCache.getStats();
-      case 'systemStatus':
-        return systemStatusCache.getStats();
-      case 'technicianRanking':
-        return technicianRankingCache.getStats();
-      case 'newTickets':
-        return newTicketsCache.getStats();
-      default:
-        return null;
-    }
-  }, []);
+  const getCacheInfo = useCallback(
+    (cacheType: 'metrics' | 'systemStatus' | 'technicianRanking' | 'newTickets') => {
+      switch (cacheType) {
+        case 'metrics':
+          return metricsCache.getStats();
+        case 'systemStatus':
+          return systemStatusCache.getStats();
+        case 'technicianRanking':
+          return technicianRankingCache.getStats();
+        case 'newTickets':
+          return newTicketsCache.getStats();
+        default:
+          return null;
+      }
+    },
+    []
+  );
 
   // Atualizar estatísticas automaticamente
   useEffect(() => {
     updateStats();
-    
+
     // Atualizar estatísticas a cada 30 segundos
     const interval = setInterval(updateStats, 30000);
-    
+
     return () => clearInterval(interval);
   }, [updateStats]);
 
@@ -167,7 +176,7 @@ export const useCache = () => {
     clearAll,
     clearSpecificCache,
     refreshCache,
-    getCacheInfo
+    getCacheInfo,
   };
 };
 

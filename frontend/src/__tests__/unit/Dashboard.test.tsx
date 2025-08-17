@@ -17,19 +17,13 @@ vi.mock('../../services/httpClient', () => ({
 // Mock do Chart.js
 vi.mock('react-chartjs-2', () => ({
   Bar: ({ data, options }: any) => (
-    <div data-testid="bar-chart">
-      {JSON.stringify({ data, options })}
-    </div>
+    <div data-testid='bar-chart'>{JSON.stringify({ data, options })}</div>
   ),
   Line: ({ data, options }: any) => (
-    <div data-testid="line-chart">
-      {JSON.stringify({ data, options })}
-    </div>
+    <div data-testid='line-chart'>{JSON.stringify({ data, options })}</div>
   ),
   Doughnut: ({ data, options }: any) => (
-    <div data-testid="doughnut-chart">
-      {JSON.stringify({ data, options })}
-    </div>
+    <div data-testid='doughnut-chart'>{JSON.stringify({ data, options })}</div>
   ),
 }));
 
@@ -46,45 +40,45 @@ vi.mock('framer-motion', () => ({
 const mockMetricsData = {
   level_metrics: {
     N1: {
-      'Novo': 10,
+      Novo: 10,
       'Processando (atribuído)': 5,
       'Processando (planejado)': 3,
-      'Pendente': 2,
-      'Solucionado': 8,
-      'Fechado': 12,
+      Pendente: 2,
+      Solucionado: 8,
+      Fechado: 12,
     },
     N2: {
-      'Novo': 15,
+      Novo: 15,
       'Processando (atribuído)': 7,
       'Processando (planejado)': 4,
-      'Pendente': 3,
-      'Solucionado': 6,
-      'Fechado': 9,
+      Pendente: 3,
+      Solucionado: 6,
+      Fechado: 9,
     },
     N3: {
-      'Novo': 8,
+      Novo: 8,
       'Processando (atribuído)': 4,
       'Processando (planejado)': 2,
-      'Pendente': 1,
-      'Solucionado': 5,
-      'Fechado': 7,
+      Pendente: 1,
+      Solucionado: 5,
+      Fechado: 7,
     },
     N4: {
-      'Novo': 12,
+      Novo: 12,
       'Processando (atribuído)': 6,
       'Processando (planejado)': 3,
-      'Pendente': 2,
-      'Solucionado': 4,
-      'Fechado': 8,
+      Pendente: 2,
+      Solucionado: 4,
+      Fechado: 8,
     },
   },
   general_metrics: {
-    'Novo': 45,
+    Novo: 45,
     'Processando (atribuído)': 22,
     'Processando (planejado)': 12,
-    'Pendente': 8,
-    'Solucionado': 23,
-    'Fechado': 36,
+    Pendente: 8,
+    Solucionado: 23,
+    Fechado: 36,
   },
 };
 
@@ -295,7 +289,7 @@ describe('Dashboard Component', () => {
     const mockDownload = vi.fn();
     global.URL.createObjectURL = vi.fn();
     global.URL.revokeObjectURL = vi.fn();
-    
+
     render(<Dashboard />);
 
     await waitFor(() => {
@@ -350,11 +344,11 @@ describe('Dashboard Component', () => {
 
   it('deve lidar com dados vazios graciosamente', async () => {
     const mockGet = vi.mocked(httpClient.get);
-    mockGet.mockResolvedValue({ 
+    mockGet.mockResolvedValue({
       data: {
         level_metrics: {},
-        general_metrics: {}
-      }
+        general_metrics: {},
+      },
     });
 
     render(<Dashboard />);

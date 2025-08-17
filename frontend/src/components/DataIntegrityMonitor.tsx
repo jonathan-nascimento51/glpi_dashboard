@@ -16,9 +16,9 @@ const getStatusColor = (totalErrors: number, totalWarnings: number) => {
 };
 
 const getStatusIcon = (totalErrors: number, totalWarnings: number) => {
-  if (totalErrors > 0) return <AlertTriangle className="w-4 h-4" />;
-  if (totalWarnings > 0) return <Info className="w-4 h-4" />;
-  return <CheckCircle className="w-4 h-4" />;
+  if (totalErrors > 0) return <AlertTriangle className='w-4 h-4' />;
+  if (totalWarnings > 0) return <Info className='w-4 h-4' />;
+  return <CheckCircle className='w-4 h-4' />;
 };
 
 const getStatusText = (totalErrors: number, totalWarnings: number) => {
@@ -37,22 +37,33 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
   // Memoize calculations to prevent unnecessary re-computations
   const { totalErrors, totalWarnings } = useMemo(() => {
     if (!report) return { totalErrors: 0, totalWarnings: 0 };
-    
-    const errors = report.metrics.errors.length + 
-                   report.systemStatus.errors.length + 
-                   report.technicianRanking.errors.length;
-    
-    const warnings = report.metrics.warnings.length + 
-                     report.systemStatus.warnings.length + 
-                     report.technicianRanking.warnings.length;
-    
+
+    const errors =
+      report.metrics.errors.length +
+      report.systemStatus.errors.length +
+      report.technicianRanking.errors.length;
+
+    const warnings =
+      report.metrics.warnings.length +
+      report.systemStatus.warnings.length +
+      report.technicianRanking.warnings.length;
+
     return { totalErrors: errors, totalWarnings: warnings };
   }, [report]);
 
   // Memoize status values
-  const statusColor = useMemo(() => getStatusColor(totalErrors, totalWarnings), [totalErrors, totalWarnings]);
-  const statusIcon = useMemo(() => getStatusIcon(totalErrors, totalWarnings), [totalErrors, totalWarnings]);
-  const statusText = useMemo(() => getStatusText(totalErrors, totalWarnings), [totalErrors, totalWarnings]);
+  const statusColor = useMemo(
+    () => getStatusColor(totalErrors, totalWarnings),
+    [totalErrors, totalWarnings]
+  );
+  const statusIcon = useMemo(
+    () => getStatusIcon(totalErrors, totalWarnings),
+    [totalErrors, totalWarnings]
+  );
+  const statusText = useMemo(
+    () => getStatusText(totalErrors, totalWarnings),
+    [totalErrors, totalWarnings]
+  );
 
   // Memoize event handlers
   const handleToggleExpanded = useCallback(() => {
@@ -63,10 +74,13 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
     setIsExpanded(false);
   }, []);
 
-  const handleHideMonitor = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    onToggleVisibility();
-  }, [onToggleVisibility]);
+  const handleHideMonitor = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      onToggleVisibility();
+    },
+    [onToggleVisibility]
+  );
 
   if (!report) {
     return null;
@@ -76,80 +90,85 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
     return (
       <button
         onClick={onToggleVisibility}
-        className="fixed bottom-4 right-4 z-50 p-2 bg-gray-800 text-white rounded-full shadow-lg hover:bg-gray-700 transition-colors"
-        title="Mostrar monitor de integridade"
+        className='fixed bottom-4 right-4 z-50 p-2 bg-gray-800 text-white rounded-full shadow-lg hover:bg-gray-700 transition-colors'
+        title='Mostrar monitor de integridade'
       >
-        <Eye className="w-5 h-5" />
+        <Eye className='w-5 h-5' />
       </button>
     );
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 max-w-md">
+    <div className='fixed bottom-4 right-4 z-50 max-w-md'>
       {/* Compact Status Bar */}
-      <div className={`
+      <div
+        className={`
         flex items-center justify-between p-3 rounded-lg border shadow-lg cursor-pointer
         ${statusColor}
         transition-all duration-200 hover:shadow-xl
       `}
-      onClick={handleToggleExpanded}
+        onClick={handleToggleExpanded}
       >
-        <div className="flex items-center space-x-2">
+        <div className='flex items-center space-x-2'>
           {statusIcon}
-          <span className="font-medium text-sm">
-            Integridade: {statusText}
-          </span>
+          <span className='font-medium text-sm'>Integridade: {statusText}</span>
         </div>
-        <div className="flex items-center space-x-1">
-          <span className="text-xs opacity-75">
+        <div className='flex items-center space-x-1'>
+          <span className='text-xs opacity-75'>
             {new Date(report.timestamp).toLocaleTimeString('pt-BR')}
           </span>
           <button
             onClick={handleHideMonitor}
-            className="p-1 hover:bg-black/10 rounded"
-            title="Ocultar monitor"
+            className='p-1 hover:bg-black/10 rounded'
+            title='Ocultar monitor'
           >
-            <EyeOff className="w-4 h-4" />
+            <EyeOff className='w-4 h-4' />
           </button>
         </div>
       </div>
 
       {/* Expanded Details */}
       {isExpanded && (
-        <div className="mt-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-xl max-h-96 overflow-y-auto">
-          <div className="p-4 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-gray-900 dark:text-white">
+        <div className='mt-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-xl max-h-96 overflow-y-auto'>
+          <div className='p-4 space-y-4'>
+            <div className='flex items-center justify-between'>
+              <h3 className='font-semibold text-gray-900 dark:text-white'>
                 Relatório de Integridade
               </h3>
               <button
                 onClick={handleCloseExpanded}
-                className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                className='p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded'
               >
-                <X className="w-4 h-4" />
+                <X className='w-4 h-4' />
               </button>
             </div>
 
             {/* Metrics Section */}
-            <div className="space-y-2">
-              <h4 className="font-medium text-sm text-gray-700 dark:text-gray-300">
-                📊 Métricas
-              </h4>
-              <div className="pl-4 space-y-1">
-                <div className={`text-xs ${
-                  report.metrics.isValid ? 'text-green-600' : 'text-red-600'
-                }`}>
+            <div className='space-y-2'>
+              <h4 className='font-medium text-sm text-gray-700 dark:text-gray-300'>📊 Métricas</h4>
+              <div className='pl-4 space-y-1'>
+                <div
+                  className={`text-xs ${
+                    report.metrics.isValid ? 'text-green-600' : 'text-red-600'
+                  }`}
+                >
                   Status: {report.metrics.isValid ? 'Válido' : 'Inválido'}
                 </div>
                 {report.metrics.errors.map((error, index) => (
-                  <div key={`metrics-error-${index}`} className="text-xs text-red-600 flex items-start space-x-1">
-                    <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                  <div
+                    key={`metrics-error-${index}`}
+                    className='text-xs text-red-600 flex items-start space-x-1'
+                  >
+                    <AlertTriangle className='w-3 h-3 mt-0.5 flex-shrink-0' />
                     <span>{error}</span>
                   </div>
                 ))}
                 {report.metrics.warnings.map((warning, index) => (
-                  <div key={`metrics-warning-${index}`} className="text-xs text-yellow-600 flex items-start space-x-1">
-                    <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                  <div
+                    key={`metrics-warning-${index}`}
+                    className='text-xs text-yellow-600 flex items-start space-x-1'
+                  >
+                    <Info className='w-3 h-3 mt-0.5 flex-shrink-0' />
                     <span>{warning}</span>
                   </div>
                 ))}
@@ -157,25 +176,33 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
             </div>
 
             {/* System Status Section */}
-            <div className="space-y-2">
-              <h4 className="font-medium text-sm text-gray-700 dark:text-gray-300">
+            <div className='space-y-2'>
+              <h4 className='font-medium text-sm text-gray-700 dark:text-gray-300'>
                 🔧 Status do Sistema
               </h4>
-              <div className="pl-4 space-y-1">
-                <div className={`text-xs ${
-                  report.systemStatus.isValid ? 'text-green-600' : 'text-red-600'
-                }`}>
+              <div className='pl-4 space-y-1'>
+                <div
+                  className={`text-xs ${
+                    report.systemStatus.isValid ? 'text-green-600' : 'text-red-600'
+                  }`}
+                >
                   Status: {report.systemStatus.isValid ? 'Válido' : 'Inválido'}
                 </div>
                 {report.systemStatus.errors.map((error, index) => (
-                  <div key={`system-error-${index}`} className="text-xs text-red-600 flex items-start space-x-1">
-                    <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                  <div
+                    key={`system-error-${index}`}
+                    className='text-xs text-red-600 flex items-start space-x-1'
+                  >
+                    <AlertTriangle className='w-3 h-3 mt-0.5 flex-shrink-0' />
                     <span>{error}</span>
                   </div>
                 ))}
                 {report.systemStatus.warnings.map((warning, index) => (
-                  <div key={`system-warning-${index}`} className="text-xs text-yellow-600 flex items-start space-x-1">
-                    <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                  <div
+                    key={`system-warning-${index}`}
+                    className='text-xs text-yellow-600 flex items-start space-x-1'
+                  >
+                    <Info className='w-3 h-3 mt-0.5 flex-shrink-0' />
                     <span>{warning}</span>
                   </div>
                 ))}
@@ -183,28 +210,36 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
             </div>
 
             {/* Technician Ranking Section */}
-            <div className="space-y-2">
-              <h4 className="font-medium text-sm text-gray-700 dark:text-gray-300">
+            <div className='space-y-2'>
+              <h4 className='font-medium text-sm text-gray-700 dark:text-gray-300'>
                 👥 Ranking de Técnicos
               </h4>
-              <div className="pl-4 space-y-1">
-                <div className={`text-xs ${
-                  report.technicianRanking.isValid ? 'text-green-600' : 'text-red-600'
-                }`}>
+              <div className='pl-4 space-y-1'>
+                <div
+                  className={`text-xs ${
+                    report.technicianRanking.isValid ? 'text-green-600' : 'text-red-600'
+                  }`}
+                >
                   Status: {report.technicianRanking.isValid ? 'Válido' : 'Inválido'}
                 </div>
-                <div className="text-xs text-gray-600 dark:text-gray-400">
+                <div className='text-xs text-gray-600 dark:text-gray-400'>
                   Técnicos válidos: {report.technicianRanking.data.length}
                 </div>
                 {report.technicianRanking.errors.map((error, index) => (
-                  <div key={`ranking-error-${index}`} className="text-xs text-red-600 flex items-start space-x-1">
-                    <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                  <div
+                    key={`ranking-error-${index}`}
+                    className='text-xs text-red-600 flex items-start space-x-1'
+                  >
+                    <AlertTriangle className='w-3 h-3 mt-0.5 flex-shrink-0' />
                     <span>{error}</span>
                   </div>
                 ))}
                 {report.technicianRanking.warnings.map((warning, index) => (
-                  <div key={`ranking-warning-${index}`} className="text-xs text-yellow-600 flex items-start space-x-1">
-                    <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                  <div
+                    key={`ranking-warning-${index}`}
+                    className='text-xs text-yellow-600 flex items-start space-x-1'
+                  >
+                    <Info className='w-3 h-3 mt-0.5 flex-shrink-0' />
                     <span>{warning}</span>
                   </div>
                 ))}
@@ -212,13 +247,15 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
             </div>
 
             {/* Summary */}
-            <div className="pt-2 border-t border-gray-200 dark:border-gray-600">
-              <div className="text-xs text-gray-500 dark:text-gray-400">
+            <div className='pt-2 border-t border-gray-200 dark:border-gray-600'>
+              <div className='text-xs text-gray-500 dark:text-gray-400'>
                 Última verificação: {report.timestamp.toLocaleString('pt-BR')}
               </div>
-              <div className={`text-xs font-medium ${
-                report.overallValid ? 'text-green-600' : 'text-red-600'
-              }`}>
+              <div
+                className={`text-xs font-medium ${
+                  report.overallValid ? 'text-green-600' : 'text-red-600'
+                }`}
+              >
                 Status Geral: {report.overallValid ? 'VÁLIDO' : 'REQUER ATENÇÃO'}
               </div>
             </div>

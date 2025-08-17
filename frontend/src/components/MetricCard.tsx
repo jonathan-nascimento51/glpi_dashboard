@@ -65,7 +65,7 @@ const parseChange = (change: string) => {
   const isPositive = change.startsWith('+');
   const isNegative = change.startsWith('-');
   const numericValue = parseFloat(change.replace(/[+%-]/g, ''));
-  
+
   return {
     isPositive,
     isNegative,
@@ -83,17 +83,17 @@ const cardVariants = {
     scale: 1,
     transition: {
       duration: 0.5,
-      ease: "easeOut" as const
-    }
+      ease: 'easeOut' as const,
+    },
   },
   hover: {
     y: -8,
     scale: 1.03,
     transition: {
       duration: 0.3,
-      ease: "easeInOut" as const
-    }
-  }
+      ease: 'easeInOut' as const,
+    },
+  },
 } as const;
 
 const iconVariants = {
@@ -102,9 +102,9 @@ const iconVariants = {
     rotate: 10,
     transition: {
       duration: 0.3,
-      ease: "easeInOut" as const
-    }
-  }
+      ease: 'easeInOut' as const,
+    },
+  },
 } as const;
 
 const numberVariants = {
@@ -113,10 +113,10 @@ const numberVariants = {
     scale: 1,
     transition: {
       duration: 0.6,
-      ease: "easeOut" as const,
-      delay: 0.2
-    }
-  }
+      ease: 'easeOut' as const,
+      delay: 0.2,
+    },
+  },
 } as const;
 
 export const MetricCard = React.memo<MetricCardProps>(function MetricCard({
@@ -127,129 +127,132 @@ export const MetricCard = React.memo<MetricCardProps>(function MetricCard({
 }) {
   // Memoizar configuração do tipo
   const config = useMemo(() => getMetricConfig(type), [type]);
-  
+
   // Memoizar dados de mudança
   const changeData = useMemo(() => parseChange(change), [change]);
-  
+
   // Memoizar ícones
   const Icon = useMemo(() => config.icon, [config.icon]);
-  const TrendIcon = useMemo(() => 
-    changeData.isPositive ? TrendingUp : TrendingDown, 
+  const TrendIcon = useMemo(
+    () => (changeData.isPositive ? TrendingUp : TrendingDown),
     [changeData.isPositive]
   );
-  
+
   // Memoizar valor formatado
-  const formattedValue = useMemo(() => 
-    value.toLocaleString('pt-BR'), 
-    [value]
-  );
-  
+  const formattedValue = useMemo(() => value.toLocaleString('pt-BR'), [value]);
+
   // Memoizar estilo da barra de progresso
-  const progressBarStyle = useMemo(() => ({
-    width: `${Math.min(Math.abs(changeData.value), 100)}%`
-  }), [changeData.value]);
-  
+  const progressBarStyle = useMemo(
+    () => ({
+      width: `${Math.min(Math.abs(changeData.value), 100)}%`,
+    }),
+    [changeData.value]
+  );
+
   // Memoizar callback de teclado
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      onClick?.();
-    }
-  }, [onClick]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        onClick?.();
+      }
+    },
+    [onClick]
+  );
 
   return (
     <motion.div
       variants={cardVariants}
-      initial="hidden"
-      animate="visible"
-      whileHover="hover"
+      initial='hidden'
+      animate='visible'
+      whileHover='hover'
       className={`
         metric-card cursor-pointer group relative overflow-hidden
         ${config.bgColor} ${config.borderColor}
         figma-glass-card rounded-2xl
       `}
       onClick={onClick}
-      role="button"
+      role='button'
       tabIndex={0}
       onKeyDown={handleKeyDown}
     >
-      <div className="flex items-center justify-between mb-4 relative z-10">
-        <motion.div 
+      <div className='flex items-center justify-between mb-4 relative z-10'>
+        <motion.div
           variants={iconVariants}
           className={`p-3 rounded-lg ${config.bgColor} shadow-lg`}
         >
           <Icon className={`w-6 h-6 ${config.iconColor}`} />
         </motion.div>
-        <motion.div 
-          className="flex items-center space-x-1 min-w-0"
+        <motion.div
+          className='flex items-center space-x-1 min-w-0'
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.2 }}
         >
-          <TrendIcon 
+          <TrendIcon
             className={`w-4 h-4 flex-shrink-0 ${
-              changeData.isPositive 
-                ? 'text-green-500' 
-                : changeData.isNegative 
-                ? 'text-red-500' 
-                : 'text-gray-500'
-            }`} 
+              changeData.isPositive
+                ? 'text-green-500'
+                : changeData.isNegative
+                  ? 'text-red-500'
+                  : 'text-gray-500'
+            }`}
           />
-          <span 
+          <span
             className={`text-xs lg:text-sm font-medium truncate ${
-              changeData.isPositive 
-                ? 'text-green-600 dark:text-green-400' 
-                : changeData.isNegative 
-                ? 'text-red-600 dark:text-red-400' 
-                : 'text-gray-600 dark:text-gray-400'
+              changeData.isPositive
+                ? 'text-green-600 dark:text-green-400'
+                : changeData.isNegative
+                  ? 'text-red-600 dark:text-red-400'
+                  : 'text-gray-600 dark:text-gray-400'
             }`}
           >
             {changeData.display}
           </span>
         </motion.div>
       </div>
-      
-      <div className="space-y-2 relative z-10">
-        <h3 className={`text-sm font-medium ${config.textColor} truncate`}>
-          {config.title}
-        </h3>
-        <div className="flex items-baseline space-x-2 min-w-0">
-          <motion.span 
+
+      <div className='space-y-2 relative z-10'>
+        <h3 className={`text-sm font-medium ${config.textColor} truncate`}>{config.title}</h3>
+        <div className='flex items-baseline space-x-2 min-w-0'>
+          <motion.span
             variants={numberVariants}
             className={`text-2xl lg:text-3xl font-bold ${config.textColor} truncate flex-shrink-0`}
           >
             {formattedValue}
           </motion.span>
-          <span className="text-xs lg:text-sm text-gray-500 dark:text-gray-400 truncate flex-shrink">
+          <span className='text-xs lg:text-sm text-gray-500 dark:text-gray-400 truncate flex-shrink'>
             chamados
           </span>
         </div>
       </div>
-      
+
       {/* Progress bar based on change */}
-      <div className="mt-4">
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
-          <div 
+      <div className='mt-4'>
+        <div className='w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5'>
+          <div
             className={`h-1.5 rounded-full transition-all duration-500 ${
-              changeData.isPositive 
-                ? 'bg-green-500' 
-                : changeData.isNegative 
-                ? 'bg-red-500' 
-                : 'bg-gray-400'
+              changeData.isPositive
+                ? 'bg-green-500'
+                : changeData.isNegative
+                  ? 'bg-red-500'
+                  : 'bg-gray-400'
             }`}
             style={progressBarStyle}
           />
         </div>
       </div>
-      
+
       {/* Gradient Background */}
-      <div className={`absolute inset-0 bg-gradient-to-br opacity-5 rounded-2xl ${config.bgColor}`} />
-      
+      <div
+        className={`absolute inset-0 bg-gradient-to-br opacity-5 rounded-2xl ${config.bgColor}`}
+      />
+
       {/* Shine Effect */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 opacity-0"
+        className='absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 opacity-0'
         whileHover={{
           opacity: [0, 1, 0],
-          x: [-100, 300]
+          x: [-100, 300],
         }}
         transition={{ duration: 0.6 }}
       />

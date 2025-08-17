@@ -38,7 +38,7 @@ describe('httpClient Service', () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          Accept: 'application/json',
         },
       });
       expect(result).toEqual(mockData);
@@ -53,7 +53,7 @@ describe('httpClient Service', () => {
       });
 
       await httpClient.get('/api/test', {
-        params: { page: 1, limit: 10, filter: 'active' }
+        params: { page: 1, limit: 10, filter: 'active' },
       });
 
       expect(mockFetch).toHaveBeenCalledWith(
@@ -71,7 +71,7 @@ describe('httpClient Service', () => {
       });
 
       await httpClient.get('/api/test', {
-        params: { empty: '', undefined: undefined, null: null }
+        params: { empty: '', undefined: undefined, null: null },
       });
 
       expect(mockFetch).toHaveBeenCalledWith('/api/test', expect.any(Object));
@@ -87,17 +87,17 @@ describe('httpClient Service', () => {
 
       await httpClient.get('/api/test', {
         headers: {
-          'Authorization': 'Bearer token123',
-          'X-Custom-Header': 'custom-value'
-        }
+          Authorization: 'Bearer token123',
+          'X-Custom-Header': 'custom-value',
+        },
       });
 
       expect(mockFetch).toHaveBeenCalledWith('/api/test', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer token123',
+          Accept: 'application/json',
+          Authorization: 'Bearer token123',
           'X-Custom-Header': 'custom-value',
         },
       });
@@ -108,7 +108,7 @@ describe('httpClient Service', () => {
     it('deve fazer requisição POST com dados JSON', async () => {
       const requestData = { name: 'Test', value: 123 };
       const responseData = { id: 1, ...requestData };
-      
+
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 201,
@@ -122,7 +122,7 @@ describe('httpClient Service', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          Accept: 'application/json',
         },
         body: JSON.stringify(requestData),
       });
@@ -133,7 +133,7 @@ describe('httpClient Service', () => {
       const formData = new FormData();
       formData.append('file', new Blob(['test'], { type: 'text/plain' }));
       formData.append('name', 'test-file');
-      
+
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 201,
@@ -146,7 +146,7 @@ describe('httpClient Service', () => {
       expect(mockFetch).toHaveBeenCalledWith('/api/upload', {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
         },
         body: formData,
       });
@@ -156,7 +156,7 @@ describe('httpClient Service', () => {
   describe('PUT requests', () => {
     it('deve fazer requisição PUT com dados', async () => {
       const requestData = { id: 1, name: 'Updated Test' };
-      
+
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -170,7 +170,7 @@ describe('httpClient Service', () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          Accept: 'application/json',
         },
         body: JSON.stringify(requestData),
       });
@@ -193,7 +193,7 @@ describe('httpClient Service', () => {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          Accept: 'application/json',
         },
       });
     });
@@ -209,29 +209,22 @@ describe('httpClient Service', () => {
         headers: new Headers({ 'content-type': 'application/json' }),
       });
 
-      await expect(httpClient.get('/api/nonexistent'))
-        .rejects
-        .toThrow('HTTP 404: Not Found');
+      await expect(httpClient.get('/api/nonexistent')).rejects.toThrow('HTTP 404: Not Found');
     });
 
     it('deve lidar com erro de rede', async () => {
       mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
-      await expect(httpClient.get('/api/test'))
-        .rejects
-        .toThrow('Network error');
+      await expect(httpClient.get('/api/test')).rejects.toThrow('Network error');
     });
 
     it('deve lidar com timeout', async () => {
       mockFetch.mockImplementationOnce(
-        () => new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Request timeout')), 100)
-        )
+        () =>
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), 100))
       );
 
-      await expect(httpClient.get('/api/test', { timeout: 50 }))
-        .rejects
-        .toThrow();
+      await expect(httpClient.get('/api/test', { timeout: 50 })).rejects.toThrow();
     });
 
     it('deve lidar com resposta JSON inválida', async () => {
@@ -243,9 +236,7 @@ describe('httpClient Service', () => {
         headers: new Headers({ 'content-type': 'application/json' }),
       });
 
-      await expect(httpClient.get('/api/test'))
-        .rejects
-        .toThrow('Invalid JSON');
+      await expect(httpClient.get('/api/test')).rejects.toThrow('Invalid JSON');
     });
 
     it('deve retornar texto para resposta não-JSON', async () => {
@@ -265,12 +256,12 @@ describe('httpClient Service', () => {
 
   describe('Request interceptors', () => {
     it('deve aplicar interceptor de request', async () => {
-      const interceptor = vi.fn((config) => ({
+      const interceptor = vi.fn(config => ({
         ...config,
         headers: {
           ...config.headers,
-          'X-Intercepted': 'true'
-        }
+          'X-Intercepted': 'true',
+        },
       }));
 
       httpClient.addRequestInterceptor(interceptor);
@@ -285,11 +276,12 @@ describe('httpClient Service', () => {
       await httpClient.get('/api/test');
 
       expect(interceptor).toHaveBeenCalled();
-      expect(mockFetch).toHaveBeenCalledWith('/api/test', 
+      expect(mockFetch).toHaveBeenCalledWith(
+        '/api/test',
         expect.objectContaining({
           headers: expect.objectContaining({
-            'X-Intercepted': 'true'
-          })
+            'X-Intercepted': 'true',
+          }),
         })
       );
 
@@ -299,9 +291,9 @@ describe('httpClient Service', () => {
 
   describe('Response interceptors', () => {
     it('deve aplicar interceptor de response', async () => {
-      const interceptor = vi.fn((response) => ({
+      const interceptor = vi.fn(response => ({
         ...response,
-        intercepted: true
+        intercepted: true,
       }));
 
       httpClient.addResponseInterceptor(interceptor);
@@ -344,9 +336,7 @@ describe('httpClient Service', () => {
     it('deve falhar após esgotar tentativas', async () => {
       mockFetch.mockRejectedValue(new Error('Persistent error'));
 
-      await expect(httpClient.get('/api/test', { retry: 2 }))
-        .rejects
-        .toThrow('Persistent error');
+      await expect(httpClient.get('/api/test', { retry: 2 })).rejects.toThrow('Persistent error');
 
       expect(mockFetch).toHaveBeenCalledTimes(3); // 1 inicial + 2 retries
     });
@@ -364,7 +354,7 @@ describe('httpClient Service', () => {
 
       // Primeira requisição
       const result1 = await httpClient.get('/api/test', { cache: true });
-      
+
       // Segunda requisição (deve usar cache)
       const result2 = await httpClient.get('/api/test', { cache: true });
 
@@ -392,17 +382,18 @@ describe('httpClient Service', () => {
   describe('AbortController', () => {
     it('deve cancelar requisição quando abortada', async () => {
       const controller = new AbortController();
-      
-      mockFetch.mockImplementationOnce(() => 
-        new Promise((_, reject) => {
-          controller.signal.addEventListener('abort', () => {
-            reject(new Error('Request aborted'));
-          });
-        })
+
+      mockFetch.mockImplementationOnce(
+        () =>
+          new Promise((_, reject) => {
+            controller.signal.addEventListener('abort', () => {
+              reject(new Error('Request aborted'));
+            });
+          })
       );
 
       const requestPromise = httpClient.get('/api/test', {
-        signal: controller.signal
+        signal: controller.signal,
       });
 
       controller.abort();
@@ -414,7 +405,7 @@ describe('httpClient Service', () => {
   describe('Base URL configuration', () => {
     it('deve usar base URL configurada', async () => {
       httpClient.setBaseURL('https://api.example.com');
-      
+
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -424,17 +415,14 @@ describe('httpClient Service', () => {
 
       await httpClient.get('/test');
 
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://api.example.com/test',
-        expect.any(Object)
-      );
+      expect(mockFetch).toHaveBeenCalledWith('https://api.example.com/test', expect.any(Object));
 
       httpClient.setBaseURL(''); // Reset
     });
 
     it('deve lidar com URLs absolutas ignorando base URL', async () => {
       httpClient.setBaseURL('https://api.example.com');
-      
+
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -444,10 +432,7 @@ describe('httpClient Service', () => {
 
       await httpClient.get('https://other-api.com/test');
 
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://other-api.com/test',
-        expect.any(Object)
-      );
+      expect(mockFetch).toHaveBeenCalledWith('https://other-api.com/test', expect.any(Object));
 
       httpClient.setBaseURL(''); // Reset
     });
@@ -457,7 +442,7 @@ describe('httpClient Service', () => {
     it('deve detectar e preservar Content-Type para FormData', async () => {
       const formData = new FormData();
       formData.append('test', 'value');
-      
+
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,

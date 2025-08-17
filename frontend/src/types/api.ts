@@ -286,7 +286,7 @@ export const transformLegacyData = (legacyData: any): DashboardMetrics => {
     pendentes: 0,
     progresso: 0,
     resolvidos: 0,
-    total: 0
+    total: 0,
   };
 
   // Se os dados já vêm na estrutura correta da API
@@ -297,14 +297,14 @@ export const transformLegacyData = (legacyData: any): DashboardMetrics => {
         n2: legacyData.niveis.n2 || defaultLevel,
         n3: legacyData.niveis.n3 || defaultLevel,
         n4: legacyData.niveis.n4 || defaultLevel,
-        geral: legacyData.niveis.geral || defaultLevel
+        geral: legacyData.niveis.geral || defaultLevel,
       },
       tendencias: legacyData?.tendencias,
       filtros_aplicados: legacyData?.filtros_aplicados,
       tempo_execucao: legacyData?.tempo_execucao,
       timestamp: legacyData?.timestamp,
       systemStatus: legacyData?.systemStatus,
-      technicianRanking: legacyData?.technicianRanking
+      technicianRanking: legacyData?.technicianRanking,
     };
   }
 
@@ -315,13 +315,13 @@ export const transformLegacyData = (legacyData: any): DashboardMetrics => {
       n2: legacyData?.n2 || defaultLevel,
       n3: legacyData?.n3 || defaultLevel,
       n4: legacyData?.n4 || defaultLevel,
-      geral: legacyData?.geral || defaultLevel
+      geral: legacyData?.geral || defaultLevel,
     },
     tendencias: legacyData?.tendencias,
     filtros_aplicados: legacyData?.filtros_aplicados,
     tempo_execucao: legacyData?.tempo_execucao,
     timestamp: legacyData?.timestamp,
     systemStatus: legacyData?.systemStatus,
-    technicianRanking: legacyData?.technicianRanking
+    technicianRanking: legacyData?.technicianRanking,
   };
 };

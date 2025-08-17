@@ -12,22 +12,22 @@ const mockRankingData: TechnicianRanking[] = [
     name: 'João Silva',
     level: 'Sênior',
     tickets_count: 25,
-    rank: 1
+    rank: 1,
   },
   {
     id: 2,
     name: 'Maria Santos',
     level: 'Pleno',
     tickets_count: 20,
-    rank: 2
+    rank: 2,
   },
   {
     id: 3,
     name: 'Pedro Costa',
     level: 'Júnior',
     tickets_count: 15,
-    rank: 3
-  }
+    rank: 3,
+  },
 ];
 
 const mockFilteredRankingData: TechnicianRanking[] = [
@@ -36,8 +36,8 @@ const mockFilteredRankingData: TechnicianRanking[] = [
     name: 'João Silva',
     level: 'Sênior',
     tickets_count: 25,
-    rank: 1
-  }
+    rank: 1,
+  },
 ];
 
 // Configuração do MSW (Mock Service Worker)
@@ -53,14 +53,14 @@ const server = setupServer(
             open_tickets: 25,
             closed_tickets: 75,
             pending_tickets: 10,
-            in_progress_tickets: 15
+            in_progress_tickets: 15,
           },
           tendencias: {
             total_tickets: { valor: 5, tipo: 'aumento' },
             open_tickets: { valor: 2, tipo: 'aumento' },
-            closed_tickets: { valor: 3, tipo: 'aumento' }
-          }
-        }
+            closed_tickets: { valor: 3, tipo: 'aumento' },
+          },
+        },
       })
     );
   }),
@@ -75,11 +75,11 @@ const server = setupServer(
     // Se há filtros, retorna dados filtrados
     if (startDate || endDate || level || limit) {
       let filteredData = [...mockRankingData];
-      
+
       if (level === 'Sênior') {
         filteredData = mockFilteredRankingData;
       }
-      
+
       if (limit) {
         filteredData = filteredData.slice(0, parseInt(limit));
       }
@@ -88,7 +88,7 @@ const server = setupServer(
         ctx.json({
           success: true,
           data: filteredData,
-          message: `Ranking obtido com filtros aplicados`
+          message: `Ranking obtido com filtros aplicados`,
         })
       );
     }
@@ -98,7 +98,7 @@ const server = setupServer(
       ctx.json({
         success: true,
         data: mockRankingData,
-        message: 'Ranking obtido com sucesso'
+        message: 'Ranking obtido com sucesso',
       })
     );
   }),
@@ -108,7 +108,7 @@ const server = setupServer(
     return res(
       ctx.json({
         success: true,
-        data: { status: 'healthy' }
+        data: { status: 'healthy' },
       })
     );
   }),
@@ -117,7 +117,7 @@ const server = setupServer(
     return res(
       ctx.json({
         success: true,
-        data: []
+        data: [],
       })
     );
   })
@@ -132,17 +132,17 @@ afterAll(() => server.close());
 jest.mock('../../hooks/usePerformanceMonitoring', () => ({
   usePerformanceMonitoring: () => ({
     measureRender: jest.fn(),
-    measureApiCall: jest.fn()
-  })
+    measureApiCall: jest.fn(),
+  }),
 }));
 
 // Mock do monitor de performance
 jest.mock('../../utils/performanceMonitor', () => ({
   performanceMonitor: {
     markComponentRender: jest.fn(),
-    markApiCall: jest.fn()
+    markApiCall: jest.fn(),
   },
-  usePerformanceProfiler: () => jest.fn()
+  usePerformanceProfiler: () => jest.fn(),
 }));
 
 describe('Technician Ranking Filters E2E', () => {
@@ -180,14 +180,16 @@ describe('Technician Ranking Filters E2E', () => {
     });
 
     // Procura pelos campos de filtro de data
-    const startDateInput = screen.getByLabelText(/data de início/i) || screen.getByPlaceholderText(/início/i);
-    const endDateInput = screen.getByLabelText(/data de fim/i) || screen.getByPlaceholderText(/fim/i);
+    const startDateInput =
+      screen.getByLabelText(/data de início/i) || screen.getByPlaceholderText(/início/i);
+    const endDateInput =
+      screen.getByLabelText(/data de fim/i) || screen.getByPlaceholderText(/fim/i);
 
     if (startDateInput && endDateInput) {
       // Aplica filtros de data
       await user.clear(startDateInput);
       await user.type(startDateInput, '2025-01-01');
-      
+
       await user.clear(endDateInput);
       await user.type(endDateInput, '2025-12-31');
 
@@ -261,7 +263,8 @@ describe('Technician Ranking Filters E2E', () => {
     });
 
     // Aplica alguns filtros primeiro
-    const startDateInput = screen.getByLabelText(/data de início/i) || screen.getByPlaceholderText(/início/i);
+    const startDateInput =
+      screen.getByLabelText(/data de início/i) || screen.getByPlaceholderText(/início/i);
     if (startDateInput) {
       await user.type(startDateInput, '2025-01-01');
     }
@@ -291,7 +294,8 @@ describe('Technician Ranking Filters E2E', () => {
     });
 
     // Aplica filtros
-    const startDateInput = screen.getByLabelText(/data de início/i) || screen.getByPlaceholderText(/início/i);
+    const startDateInput =
+      screen.getByLabelText(/data de início/i) || screen.getByPlaceholderText(/início/i);
     if (startDateInput) {
       await user.type(startDateInput, '2025-01-01');
 
@@ -322,7 +326,7 @@ describe('Technician Ranking Filters E2E', () => {
           ctx.json({
             success: true,
             data: [],
-            message: 'Nenhum técnico encontrado com os filtros aplicados'
+            message: 'Nenhum técnico encontrado com os filtros aplicados',
           })
         );
       })
@@ -337,7 +341,8 @@ describe('Technician Ranking Filters E2E', () => {
     });
 
     // Aplica filtros que não retornam resultados
-    const startDateInput = screen.getByLabelText(/data de início/i) || screen.getByPlaceholderText(/início/i);
+    const startDateInput =
+      screen.getByLabelText(/data de início/i) || screen.getByPlaceholderText(/início/i);
     if (startDateInput) {
       await user.type(startDateInput, '2025-01-01');
 

@@ -12,26 +12,26 @@ export const useCacheNotifications = () => {
   useEffect(() => {
     // Intercepta logs do console para detectar ativações de cache
     const originalLog = console.log;
-    
+
     console.log = (...args: any[]) => {
       const message = args.join(' ');
-      
+
       // Detecta mensagens de ativação de cache
       if (message.includes('🚀 Cache ativado automaticamente')) {
         const notification: CacheNotification = {
           id: Date.now().toString(),
           message: message.replace('🚀 Cache ativado automaticamente para padrão detectado: ', ''),
-          timestamp: Date.now()
+          timestamp: Date.now(),
         };
-        
+
         setNotifications(prev => [...prev, notification]);
-        
+
         // Remove notificação após 10 segundos
         setTimeout(() => {
           setNotifications(prev => prev.filter(n => n.id !== notification.id));
         }, 10000);
       }
-      
+
       // Chama o log original
       originalLog.apply(console, args);
     };
@@ -53,6 +53,6 @@ export const useCacheNotifications = () => {
   return {
     notifications,
     removeNotification,
-    clearAllNotifications
+    clearAllNotifications,
   };
 };

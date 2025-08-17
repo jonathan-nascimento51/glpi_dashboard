@@ -5,7 +5,14 @@ import { vi } from 'vitest';
 import '@testing-library/jest-dom';
 
 // Mock dos componentes que serão testados
-const Button = ({ children, onClick, disabled, variant = 'primary', size = 'medium', ...props }: any) => (
+const Button = ({
+  children,
+  onClick,
+  disabled,
+  variant = 'primary',
+  size = 'medium',
+  ...props
+}: any) => (
   <button
     onClick={onClick}
     disabled={disabled}
@@ -17,7 +24,7 @@ const Button = ({ children, onClick, disabled, variant = 'primary', size = 'medi
 );
 
 const Input = ({ label, error, value, onChange, type = 'text', placeholder, ...props }: any) => (
-  <div className="input-group">
+  <div className='input-group'>
     {label && <label>{label}</label>}
     <input
       type={type}
@@ -27,45 +34,52 @@ const Input = ({ label, error, value, onChange, type = 'text', placeholder, ...p
       className={error ? 'input-error' : 'input'}
       {...props}
     />
-    {error && <span className="error-message">{error}</span>}
+    {error && <span className='error-message'>{error}</span>}
   </div>
 );
 
 const Select = ({ label, options, value, onChange, error, placeholder, ...props }: any) => (
-  <div className="select-group">
+  <div className='select-group'>
     {label && <label>{label}</label>}
-    <select value={value} onChange={onChange} className={error ? 'select-error' : 'select'} {...props}>
-      {placeholder && <option value="">{placeholder}</option>}
+    <select
+      value={value}
+      onChange={onChange}
+      className={error ? 'select-error' : 'select'}
+      {...props}
+    >
+      {placeholder && <option value=''>{placeholder}</option>}
       {options?.map((option: any) => (
         <option key={option.value} value={option.value}>
           {option.label}
         </option>
       ))}
     </select>
-    {error && <span className="error-message">{error}</span>}
+    {error && <span className='error-message'>{error}</span>}
   </div>
 );
 
 const Card = ({ title, children, footer, className, ...props }: any) => (
   <div className={`card ${className || ''}`} {...props}>
-    {title && <div className="card-header">{title}</div>}
-    <div className="card-body">{children}</div>
-    {footer && <div className="card-footer">{footer}</div>}
+    {title && <div className='card-header'>{title}</div>}
+    <div className='card-body'>{children}</div>
+    {footer && <div className='card-footer'>{footer}</div>}
   </div>
 );
 
 const Modal = ({ isOpen, onClose, title, children, footer }: any) => {
   if (!isOpen) return null;
-  
+
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
+    <div className='modal-overlay' onClick={onClose}>
+      <div className='modal-content' onClick={e => e.stopPropagation()}>
+        <div className='modal-header'>
           <h2>{title}</h2>
-          <button className="modal-close" onClick={onClose}>×</button>
+          <button className='modal-close' onClick={onClose}>
+            ×
+          </button>
         </div>
-        <div className="modal-body">{children}</div>
-        {footer && <div className="modal-footer">{footer}</div>}
+        <div className='modal-body'>{children}</div>
+        {footer && <div className='modal-footer'>{footer}</div>}
       </div>
     </div>
   );
@@ -73,22 +87,26 @@ const Modal = ({ isOpen, onClose, title, children, footer }: any) => {
 
 const Alert = ({ type = 'info', title, children, onClose }: any) => (
   <div className={`alert alert-${type}`}>
-    {onClose && <button className="alert-close" onClick={onClose}>×</button>}
-    {title && <div className="alert-title">{title}</div>}
-    <div className="alert-content">{children}</div>
+    {onClose && (
+      <button className='alert-close' onClick={onClose}>
+        ×
+      </button>
+    )}
+    {title && <div className='alert-title'>{title}</div>}
+    <div className='alert-content'>{children}</div>
   </div>
 );
 
 const Table = ({ columns, data, onRowClick, selectable, selectedRows, onSelectionChange }: any) => (
-  <table className="table">
+  <table className='table'>
     <thead>
       <tr>
         {selectable && (
           <th>
             <input
-              type="checkbox"
+              type='checkbox'
               checked={selectedRows?.length === data?.length}
-              onChange={(e) => {
+              onChange={e => {
                 if (e.target.checked) {
                   onSelectionChange?.(data?.map((_: any, index: number) => index) || []);
                 } else {
@@ -113,9 +131,9 @@ const Table = ({ columns, data, onRowClick, selectable, selectedRows, onSelectio
           {selectable && (
             <td>
               <input
-                type="checkbox"
+                type='checkbox'
                 checked={selectedRows?.includes(index)}
-                onChange={(e) => {
+                onChange={e => {
                   if (e.target.checked) {
                     onSelectionChange?.([...selectedRows, index]);
                   } else {
@@ -135,21 +153,17 @@ const Table = ({ columns, data, onRowClick, selectable, selectedRows, onSelectio
 );
 
 const Pagination = ({ currentPage, totalPages, onPageChange, pageSize, onPageSizeChange }: any) => (
-  <div className="pagination">
-    <button
-      disabled={currentPage <= 1}
-      onClick={() => onPageChange(currentPage - 1)}
-    >
+  <div className='pagination'>
+    <button disabled={currentPage <= 1} onClick={() => onPageChange(currentPage - 1)}>
       Anterior
     </button>
-    <span>Página {currentPage} de {totalPages}</span>
-    <button
-      disabled={currentPage >= totalPages}
-      onClick={() => onPageChange(currentPage + 1)}
-    >
+    <span>
+      Página {currentPage} de {totalPages}
+    </span>
+    <button disabled={currentPage >= totalPages} onClick={() => onPageChange(currentPage + 1)}>
       Próxima
     </button>
-    <select value={pageSize} onChange={(e) => onPageSizeChange(Number(e.target.value))}>
+    <select value={pageSize} onChange={e => onPageSizeChange(Number(e.target.value))}>
       <option value={10}>10 por página</option>
       <option value={25}>25 por página</option>
       <option value={50}>50 por página</option>
@@ -158,8 +172,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange, pageSize, onPageSiz
 );
 
 const Tabs = ({ tabs, activeTab, onTabChange }: any) => (
-  <div className="tabs">
-    <div className="tab-list">
+  <div className='tabs'>
+    <div className='tab-list'>
       {tabs?.map((tab: any) => (
         <button
           key={tab.key}
@@ -170,55 +184,43 @@ const Tabs = ({ tabs, activeTab, onTabChange }: any) => (
         </button>
       ))}
     </div>
-    <div className="tab-content">
-      {tabs?.find((tab: any) => tab.key === activeTab)?.content}
-    </div>
+    <div className='tab-content'>{tabs?.find((tab: any) => tab.key === activeTab)?.content}</div>
   </div>
 );
 
 const Badge = ({ children, variant = 'default', size = 'medium' }: any) => (
-  <span className={`badge badge-${variant} badge-${size}`}>
-    {children}
-  </span>
+  <span className={`badge badge-${variant} badge-${size}`}>{children}</span>
 );
 
 const Tooltip = ({ children, content, position = 'top' }: any) => (
-  <div className="tooltip-container">
+  <div className='tooltip-container'>
     {children}
-    <div className={`tooltip tooltip-${position}`}>
-      {content}
-    </div>
+    <div className={`tooltip tooltip-${position}`}>{content}</div>
   </div>
 );
 
 const ProgressBar = ({ value, max = 100, label, showPercentage = true }: any) => (
-  <div className="progress-bar">
-    {label && <div className="progress-label">{label}</div>}
-    <div className="progress-track">
-      <div
-        className="progress-fill"
-        style={{ width: `${(value / max) * 100}%` }}
-      />
+  <div className='progress-bar'>
+    {label && <div className='progress-label'>{label}</div>}
+    <div className='progress-track'>
+      <div className='progress-fill' style={{ width: `${(value / max) * 100}%` }} />
     </div>
     {showPercentage && (
-      <div className="progress-percentage">{Math.round((value / max) * 100)}%</div>
+      <div className='progress-percentage'>{Math.round((value / max) * 100)}%</div>
     )}
   </div>
 );
 
 const Skeleton = ({ width, height, className }: any) => (
-  <div
-    className={`skeleton ${className || ''}`}
-    style={{ width, height }}
-  />
+  <div className={`skeleton ${className || ''}`} style={{ width, height }} />
 );
 
 const EmptyState = ({ icon, title, description, action }: any) => (
-  <div className="empty-state">
-    {icon && <div className="empty-icon">{icon}</div>}
-    <h3 className="empty-title">{title}</h3>
-    {description && <p className="empty-description">{description}</p>}
-    {action && <div className="empty-action">{action}</div>}
+  <div className='empty-state'>
+    {icon && <div className='empty-icon'>{icon}</div>}
+    <h3 className='empty-title'>{title}</h3>
+    {description && <p className='empty-description'>{description}</p>}
+    {action && <div className='empty-action'>{action}</div>}
   </div>
 );
 
@@ -231,7 +233,7 @@ describe('Button Component', () => {
   test('handles click events', async () => {
     const handleClick = vi.fn();
     render(<Button onClick={handleClick}>Click me</Button>);
-    
+
     await userEvent.click(screen.getByRole('button'));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
@@ -242,42 +244,42 @@ describe('Button Component', () => {
   });
 
   test('applies correct variant classes', () => {
-    render(<Button variant="secondary">Secondary</Button>);
+    render(<Button variant='secondary'>Secondary</Button>);
     expect(screen.getByRole('button')).toHaveClass('btn-secondary');
   });
 
   test('applies correct size classes', () => {
-    render(<Button size="large">Large</Button>);
+    render(<Button size='large'>Large</Button>);
     expect(screen.getByRole('button')).toHaveClass('btn-large');
   });
 });
 
 describe('Input Component', () => {
   test('renders input with label', () => {
-    render(<Input label="Username" />);
+    render(<Input label='Username' />);
     expect(screen.getByLabelText('Username')).toBeInTheDocument();
   });
 
   test('handles value changes', async () => {
     const handleChange = vi.fn();
-    render(<Input value="" onChange={handleChange} />);
-    
+    render(<Input value='' onChange={handleChange} />);
+
     await userEvent.type(screen.getByRole('textbox'), 'test');
     expect(handleChange).toHaveBeenCalled();
   });
 
   test('displays error message', () => {
-    render(<Input error="This field is required" />);
+    render(<Input error='This field is required' />);
     expect(screen.getByText('This field is required')).toBeInTheDocument();
   });
 
   test('applies error class when error exists', () => {
-    render(<Input error="Error" />);
+    render(<Input error='Error' />);
     expect(screen.getByRole('textbox')).toHaveClass('input-error');
   });
 
   test('renders different input types', () => {
-    render(<Input type="password" />);
+    render(<Input type='password' />);
     expect(screen.getByRole('textbox')).toHaveAttribute('type', 'password');
   });
 });
@@ -285,7 +287,7 @@ describe('Input Component', () => {
 describe('Select Component', () => {
   const options = [
     { value: 'option1', label: 'Option 1' },
-    { value: 'option2', label: 'Option 2' }
+    { value: 'option2', label: 'Option 2' },
   ];
 
   test('renders select with options', () => {
@@ -298,18 +300,18 @@ describe('Select Component', () => {
   test('handles selection changes', async () => {
     const handleChange = vi.fn();
     render(<Select options={options} onChange={handleChange} />);
-    
+
     await userEvent.selectOptions(screen.getByRole('combobox'), 'option1');
     expect(handleChange).toHaveBeenCalled();
   });
 
   test('displays placeholder', () => {
-    render(<Select options={options} placeholder="Select an option" />);
+    render(<Select options={options} placeholder='Select an option' />);
     expect(screen.getByText('Select an option')).toBeInTheDocument();
   });
 
   test('displays error message', () => {
-    render(<Select options={options} error="Please select an option" />);
+    render(<Select options={options} error='Please select an option' />);
     expect(screen.getByText('Please select an option')).toBeInTheDocument();
   });
 });
@@ -317,27 +319,23 @@ describe('Select Component', () => {
 describe('Card Component', () => {
   test('renders card with title and content', () => {
     render(
-      <Card title="Card Title">
+      <Card title='Card Title'>
         <p>Card content</p>
       </Card>
     );
-    
+
     expect(screen.getByText('Card Title')).toBeInTheDocument();
     expect(screen.getByText('Card content')).toBeInTheDocument();
   });
 
   test('renders card with footer', () => {
-    render(
-      <Card footer={<button>Action</button>}>
-        Content
-      </Card>
-    );
-    
+    render(<Card footer={<button>Action</button>}>Content</Card>);
+
     expect(screen.getByRole('button', { name: 'Action' })).toBeInTheDocument();
   });
 
   test('applies custom className', () => {
-    render(<Card className="custom-card">Content</Card>);
+    render(<Card className='custom-card'>Content</Card>);
     expect(screen.getByText('Content').closest('.card')).toHaveClass('custom-card');
   });
 });
@@ -345,33 +343,33 @@ describe('Card Component', () => {
 describe('Modal Component', () => {
   test('renders modal when open', () => {
     render(
-      <Modal isOpen={true} title="Modal Title">
+      <Modal isOpen={true} title='Modal Title'>
         Modal content
       </Modal>
     );
-    
+
     expect(screen.getByText('Modal Title')).toBeInTheDocument();
     expect(screen.getByText('Modal content')).toBeInTheDocument();
   });
 
   test('does not render when closed', () => {
     render(
-      <Modal isOpen={false} title="Modal Title">
+      <Modal isOpen={false} title='Modal Title'>
         Modal content
       </Modal>
     );
-    
+
     expect(screen.queryByText('Modal Title')).not.toBeInTheDocument();
   });
 
   test('calls onClose when close button is clicked', async () => {
     const handleClose = vi.fn();
     render(
-      <Modal isOpen={true} onClose={handleClose} title="Modal">
+      <Modal isOpen={true} onClose={handleClose} title='Modal'>
         Content
       </Modal>
     );
-    
+
     await userEvent.click(screen.getByText('×'));
     expect(handleClose).toHaveBeenCalledTimes(1);
   });
@@ -379,11 +377,11 @@ describe('Modal Component', () => {
   test('calls onClose when overlay is clicked', async () => {
     const handleClose = vi.fn();
     render(
-      <Modal isOpen={true} onClose={handleClose} title="Modal">
+      <Modal isOpen={true} onClose={handleClose} title='Modal'>
         Content
       </Modal>
     );
-    
+
     await userEvent.click(document.querySelector('.modal-overlay')!);
     expect(handleClose).toHaveBeenCalledTimes(1);
   });
@@ -391,22 +389,22 @@ describe('Modal Component', () => {
 
 describe('Alert Component', () => {
   test('renders alert with different types', () => {
-    const { rerender } = render(<Alert type="success">Success message</Alert>);
+    const { rerender } = render(<Alert type='success'>Success message</Alert>);
     expect(screen.getByText('Success message').closest('.alert')).toHaveClass('alert-success');
-    
-    rerender(<Alert type="error">Error message</Alert>);
+
+    rerender(<Alert type='error'>Error message</Alert>);
     expect(screen.getByText('Error message').closest('.alert')).toHaveClass('alert-error');
   });
 
   test('renders alert with title', () => {
-    render(<Alert title="Alert Title">Alert content</Alert>);
+    render(<Alert title='Alert Title'>Alert content</Alert>);
     expect(screen.getByText('Alert Title')).toBeInTheDocument();
   });
 
   test('calls onClose when close button is clicked', async () => {
     const handleClose = vi.fn();
     render(<Alert onClose={handleClose}>Closable alert</Alert>);
-    
+
     await userEvent.click(screen.getByText('×'));
     expect(handleClose).toHaveBeenCalledTimes(1);
   });
@@ -415,17 +413,17 @@ describe('Alert Component', () => {
 describe('Table Component', () => {
   const columns = [
     { key: 'name', title: 'Name' },
-    { key: 'email', title: 'Email' }
+    { key: 'email', title: 'Email' },
   ];
-  
+
   const data = [
     { name: 'John Doe', email: 'john@example.com' },
-    { name: 'Jane Smith', email: 'jane@example.com' }
+    { name: 'Jane Smith', email: 'jane@example.com' },
   ];
 
   test('renders table with data', () => {
     render(<Table columns={columns} data={data} />);
-    
+
     expect(screen.getByText('Name')).toBeInTheDocument();
     expect(screen.getByText('Email')).toBeInTheDocument();
     expect(screen.getByText('John Doe')).toBeInTheDocument();
@@ -435,7 +433,7 @@ describe('Table Component', () => {
   test('handles row clicks', async () => {
     const handleRowClick = vi.fn();
     render(<Table columns={columns} data={data} onRowClick={handleRowClick} />);
-    
+
     await userEvent.click(screen.getByText('John Doe'));
     expect(handleRowClick).toHaveBeenCalledWith(data[0], 0);
   });
@@ -451,10 +449,10 @@ describe('Table Component', () => {
         onSelectionChange={handleSelectionChange}
       />
     );
-    
+
     const checkboxes = screen.getAllByRole('checkbox');
     await userEvent.click(checkboxes[1]); // First data row checkbox
-    
+
     expect(handleSelectionChange).toHaveBeenCalledWith([0]);
   });
 });
@@ -470,7 +468,7 @@ describe('Pagination Component', () => {
         onPageSizeChange={vi.fn()}
       />
     );
-    
+
     expect(screen.getByText('Página 2 de 5')).toBeInTheDocument();
     expect(screen.getByText('Anterior')).toBeInTheDocument();
     expect(screen.getByText('Próxima')).toBeInTheDocument();
@@ -486,7 +484,7 @@ describe('Pagination Component', () => {
         onPageSizeChange={vi.fn()}
       />
     );
-    
+
     expect(screen.getByText('Anterior')).toBeDisabled();
   });
 
@@ -500,7 +498,7 @@ describe('Pagination Component', () => {
         onPageSizeChange={vi.fn()}
       />
     );
-    
+
     expect(screen.getByText('Próxima')).toBeDisabled();
   });
 
@@ -515,7 +513,7 @@ describe('Pagination Component', () => {
         onPageSizeChange={vi.fn()}
       />
     );
-    
+
     await userEvent.click(screen.getByText('Próxima'));
     expect(handlePageChange).toHaveBeenCalledWith(3);
   });
@@ -524,12 +522,12 @@ describe('Pagination Component', () => {
 describe('Tabs Component', () => {
   const tabs = [
     { key: 'tab1', title: 'Tab 1', content: <div>Content 1</div> },
-    { key: 'tab2', title: 'Tab 2', content: <div>Content 2</div> }
+    { key: 'tab2', title: 'Tab 2', content: <div>Content 2</div> },
   ];
 
   test('renders tabs with content', () => {
-    render(<Tabs tabs={tabs} activeTab="tab1" onTabChange={vi.fn()} />);
-    
+    render(<Tabs tabs={tabs} activeTab='tab1' onTabChange={vi.fn()} />);
+
     expect(screen.getByText('Tab 1')).toBeInTheDocument();
     expect(screen.getByText('Tab 2')).toBeInTheDocument();
     expect(screen.getByText('Content 1')).toBeInTheDocument();
@@ -537,15 +535,15 @@ describe('Tabs Component', () => {
 
   test('handles tab changes', async () => {
     const handleTabChange = vi.fn();
-    render(<Tabs tabs={tabs} activeTab="tab1" onTabChange={handleTabChange} />);
-    
+    render(<Tabs tabs={tabs} activeTab='tab1' onTabChange={handleTabChange} />);
+
     await userEvent.click(screen.getByText('Tab 2'));
     expect(handleTabChange).toHaveBeenCalledWith('tab2');
   });
 
   test('applies active class to current tab', () => {
-    render(<Tabs tabs={tabs} activeTab="tab1" onTabChange={vi.fn()} />);
-    
+    render(<Tabs tabs={tabs} activeTab='tab1' onTabChange={vi.fn()} />);
+
     expect(screen.getByText('Tab 1')).toHaveClass('active');
     expect(screen.getByText('Tab 2')).not.toHaveClass('active');
   });
@@ -558,12 +556,12 @@ describe('Badge Component', () => {
   });
 
   test('applies variant classes', () => {
-    render(<Badge variant="success">Success</Badge>);
+    render(<Badge variant='success'>Success</Badge>);
     expect(screen.getByText('Success')).toHaveClass('badge-success');
   });
 
   test('applies size classes', () => {
-    render(<Badge size="large">Large</Badge>);
+    render(<Badge size='large'>Large</Badge>);
     expect(screen.getByText('Large')).toHaveClass('badge-large');
   });
 });
@@ -571,22 +569,22 @@ describe('Badge Component', () => {
 describe('Tooltip Component', () => {
   test('renders tooltip with content', () => {
     render(
-      <Tooltip content="Tooltip text">
+      <Tooltip content='Tooltip text'>
         <button>Hover me</button>
       </Tooltip>
     );
-    
+
     expect(screen.getByText('Hover me')).toBeInTheDocument();
     expect(screen.getByText('Tooltip text')).toBeInTheDocument();
   });
 
   test('applies position classes', () => {
     render(
-      <Tooltip content="Tooltip" position="bottom">
+      <Tooltip content='Tooltip' position='bottom'>
         <span>Target</span>
       </Tooltip>
     );
-    
+
     expect(screen.getByText('Tooltip')).toHaveClass('tooltip-bottom');
   });
 });
@@ -594,7 +592,7 @@ describe('Tooltip Component', () => {
 describe('ProgressBar Component', () => {
   test('renders progress bar with value', () => {
     render(<ProgressBar value={50} max={100} />);
-    
+
     const progressFill = document.querySelector('.progress-fill');
     expect(progressFill).toHaveStyle('width: 50%');
   });
@@ -605,7 +603,7 @@ describe('ProgressBar Component', () => {
   });
 
   test('displays label', () => {
-    render(<ProgressBar value={30} label="Loading..." />);
+    render(<ProgressBar value={30} label='Loading...' />);
     expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
@@ -617,55 +615,40 @@ describe('ProgressBar Component', () => {
 
 describe('Skeleton Component', () => {
   test('renders skeleton with dimensions', () => {
-    render(<Skeleton width="200px" height="20px" />);
-    
+    render(<Skeleton width='200px' height='20px' />);
+
     const skeleton = document.querySelector('.skeleton');
     expect(skeleton).toHaveStyle('width: 200px');
     expect(skeleton).toHaveStyle('height: 20px');
   });
 
   test('applies custom className', () => {
-    render(<Skeleton className="custom-skeleton" />);
+    render(<Skeleton className='custom-skeleton' />);
     expect(document.querySelector('.skeleton')).toHaveClass('custom-skeleton');
   });
 });
 
 describe('EmptyState Component', () => {
   test('renders empty state with title', () => {
-    render(<EmptyState title="No data found" />);
+    render(<EmptyState title='No data found' />);
     expect(screen.getByText('No data found')).toBeInTheDocument();
   });
 
   test('renders with description', () => {
-    render(
-      <EmptyState
-        title="No results"
-        description="Try adjusting your search criteria"
-      />
-    );
-    
+    render(<EmptyState title='No results' description='Try adjusting your search criteria' />);
+
     expect(screen.getByText('Try adjusting your search criteria')).toBeInTheDocument();
   });
 
   test('renders with action button', () => {
-    render(
-      <EmptyState
-        title="No data"
-        action={<button>Add new item</button>}
-      />
-    );
-    
+    render(<EmptyState title='No data' action={<button>Add new item</button>} />);
+
     expect(screen.getByRole('button', { name: 'Add new item' })).toBeInTheDocument();
   });
 
   test('renders with icon', () => {
-    render(
-      <EmptyState
-        title="Empty"
-        icon={<span data-testid="empty-icon">📭</span>}
-      />
-    );
-    
+    render(<EmptyState title='Empty' icon={<span data-testid='empty-icon'>📭</span>} />);
+
     expect(screen.getByTestId('empty-icon')).toBeInTheDocument();
   });
 });

@@ -28,7 +28,7 @@ export interface DataIntegrityReport {
 export function validateMetrics(data: any): ValidationResult<DashboardMetrics> {
   const errors: string[] = [];
   const warnings: string[] = [];
-  
+
   // Estrutura padrão para fallback
   const defaultMetrics: DashboardMetrics = {
     niveis: {
@@ -36,14 +36,14 @@ export function validateMetrics(data: any): ValidationResult<DashboardMetrics> {
       n1: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
       n2: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
       n3: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
-      n4: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 }
+      n4: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 0, total: 0 },
     },
     tendencias: {
       novos: '0',
       pendentes: '0',
       progresso: '0',
-      resolvidos: '0'
-    }
+      resolvidos: '0',
+    },
   };
 
   // Verificar se data existe
@@ -53,7 +53,7 @@ export function validateMetrics(data: any): ValidationResult<DashboardMetrics> {
       isValid: false,
       data: defaultMetrics,
       errors,
-      warnings
+      warnings,
     };
   }
 
@@ -65,7 +65,7 @@ export function validateMetrics(data: any): ValidationResult<DashboardMetrics> {
     tempo_execucao: data.tempo_execucao,
     timestamp: data.timestamp,
     systemStatus: data.systemStatus,
-    technicianRanking: data.technicianRanking
+    technicianRanking: data.technicianRanking,
   };
 
   // Validar consistência dos níveis internamente
@@ -74,7 +74,7 @@ export function validateMetrics(data: any): ValidationResult<DashboardMetrics> {
     novos: 0,
     pendentes: 0,
     progresso: 0,
-    resolvidos: 0
+    resolvidos: 0,
   };
 
   Object.values(specificLevels).forEach(level => {
@@ -86,14 +86,16 @@ export function validateMetrics(data: any): ValidationResult<DashboardMetrics> {
 
   // Verificar se o geral está consistente com a soma dos níveis específicos
   if (geral.novos !== levelTotals.novos) {
-    warnings.push(`Total geral de 'novos' (${geral.novos}) não corresponde à soma dos níveis (${levelTotals.novos})`);
+    warnings.push(
+      `Total geral de 'novos' (${geral.novos}) não corresponde à soma dos níveis (${levelTotals.novos})`
+    );
   }
 
   return {
     isValid: errors.length === 0,
     data: sanitizedData,
     errors,
-    warnings
+    warnings,
   };
 }
 
@@ -103,11 +105,11 @@ export function validateMetrics(data: any): ValidationResult<DashboardMetrics> {
 export function validateSystemStatus(data: any): ValidationResult<SystemStatus> {
   const errors: string[] = [];
   const warnings: string[] = [];
-  
+
   const defaultStatus: SystemStatus = {
     status: 'offline',
     sistema_ativo: false,
-    ultima_atualizacao: ''
+    ultima_atualizacao: '',
   };
 
   if (!data) {
@@ -116,13 +118,13 @@ export function validateSystemStatus(data: any): ValidationResult<SystemStatus> 
       isValid: false,
       data: defaultStatus,
       errors,
-      warnings
+      warnings,
     };
   }
 
   const validStatuses = ['online', 'offline', 'maintenance'];
   const status = validStatuses.includes(data.status) ? data.status : 'offline';
-  
+
   if (data.status && !validStatuses.includes(data.status)) {
     warnings.push(`Status inválido '${data.status}', usando 'offline'`);
   }
@@ -130,14 +132,14 @@ export function validateSystemStatus(data: any): ValidationResult<SystemStatus> 
   const sanitizedData: SystemStatus = {
     status: status as 'online' | 'offline' | 'maintenance',
     sistema_ativo: Boolean(data.sistema_ativo),
-    ultima_atualizacao: String(data.ultima_atualizacao || '')
+    ultima_atualizacao: String(data.ultima_atualizacao || ''),
   };
 
   return {
     isValid: errors.length === 0,
     data: sanitizedData,
     errors,
-    warnings
+    warnings,
   };
 }
 
@@ -147,14 +149,14 @@ export function validateSystemStatus(data: any): ValidationResult<SystemStatus> 
 export function validateTechnicianRanking(data: any): ValidationResult<TechnicianRanking[]> {
   const errors: string[] = [];
   const warnings: string[] = [];
-  
+
   if (!Array.isArray(data)) {
     errors.push('Dados de ranking devem ser um array');
     return {
       isValid: false,
       data: [],
       errors,
-      warnings
+      warnings,
     };
   }
 
@@ -169,11 +171,36 @@ export function validateTechnicianRanking(data: any): ValidationResult<Technicia
         id: String(tech.id || `unknown-${index}`),
         name: String(tech.name || tech.nome || 'Nome não informado'),
         level: String(tech.level || 'N1'),
-        score: validateNumber(tech.score || tech.total, `score do técnico ${tech.name}`, [], warnings),
-        total: validateNumber(tech.total || tech.score, `total do técnico ${tech.name}`, [], warnings),
-        ticketsResolved: validateNumber(tech.ticketsResolved || tech.total || tech.score, `tickets resolvidos do técnico ${tech.name}`, [], warnings),
-        ticketsInProgress: validateNumber(tech.ticketsInProgress, `tickets em progresso do técnico ${tech.name}`, [], warnings),
-        averageResolutionTime: validateNumber(tech.averageResolutionTime, `tempo médio do técnico ${tech.name}`, [], warnings)
+        score: validateNumber(
+          tech.score || tech.total,
+          `score do técnico ${tech.name}`,
+          [],
+          warnings
+        ),
+        total: validateNumber(
+          tech.total || tech.score,
+          `total do técnico ${tech.name}`,
+          [],
+          warnings
+        ),
+        ticketsResolved: validateNumber(
+          tech.ticketsResolved || tech.total || tech.score,
+          `tickets resolvidos do técnico ${tech.name}`,
+          [],
+          warnings
+        ),
+        ticketsInProgress: validateNumber(
+          tech.ticketsInProgress,
+          `tickets em progresso do técnico ${tech.name}`,
+          [],
+          warnings
+        ),
+        averageResolutionTime: validateNumber(
+          tech.averageResolutionTime,
+          `tempo médio do técnico ${tech.name}`,
+          [],
+          warnings
+        ),
       };
     })
     .filter(tech => tech !== null) as TechnicianRanking[];
@@ -182,43 +209,52 @@ export function validateTechnicianRanking(data: any): ValidationResult<Technicia
     isValid: errors.length === 0,
     data: sanitizedData,
     errors,
-    warnings
+    warnings,
   };
 }
 
 /**
  * Valida um número, retornando 0 se inválido
  */
-function validateNumber(value: any, fieldName: string, _errors: string[], warnings: string[]): number {
+function validateNumber(
+  value: any,
+  fieldName: string,
+  _errors: string[],
+  warnings: string[]
+): number {
   if (value === null || value === undefined) {
     warnings.push(`Campo '${fieldName}' é null/undefined, usando 0`);
     return 0;
   }
-  
+
   const num = Number(value);
   if (isNaN(num)) {
     warnings.push(`Campo '${fieldName}' não é um número válido (${value}), usando 0`);
     return 0;
   }
-  
+
   if (num < 0) {
     warnings.push(`Campo '${fieldName}' é negativo (${num}), usando 0`);
     return 0;
   }
-  
+
   return Math.floor(num); // Garantir que seja inteiro
 }
 
 /**
  * Valida dados de um nível específico para API
  */
-function validateLevel(data: any, levelName: string, warnings: string[]): import('../types/api').LevelMetrics {
+function validateLevel(
+  data: any,
+  levelName: string,
+  warnings: string[]
+): import('../types/api').LevelMetrics {
   const defaultLevel: import('../types/api').LevelMetrics = {
     novos: 0,
     pendentes: 0,
     progresso: 0,
     resolvidos: 0,
-    total: 0
+    total: 0,
   };
 
   if (!data || typeof data !== 'object') {
@@ -237,7 +273,7 @@ function validateLevel(data: any, levelName: string, warnings: string[]): import
     pendentes,
     progresso,
     resolvidos,
-    total
+    total,
   };
 }
 
@@ -250,7 +286,7 @@ function validateNiveisMetrics(data: any, _errors: string[], warnings: string[])
     pendentes: 0,
     progresso: 0,
     resolvidos: 0,
-    total: 0
+    total: 0,
   };
 
   const defaultNiveis: NiveisMetrics = {
@@ -258,7 +294,7 @@ function validateNiveisMetrics(data: any, _errors: string[], warnings: string[])
     n1: { ...defaultLevel },
     n2: { ...defaultLevel },
     n3: { ...defaultLevel },
-    n4: { ...defaultLevel }
+    n4: { ...defaultLevel },
   };
 
   if (!data || typeof data !== 'object') {
@@ -271,19 +307,23 @@ function validateNiveisMetrics(data: any, _errors: string[], warnings: string[])
     n1: validateLevel(data.n1, 'n1', warnings),
     n2: validateLevel(data.n2, 'n2', warnings),
     n3: validateLevel(data.n3, 'n3', warnings),
-    n4: validateLevel(data.n4, 'n4', warnings)
+    n4: validateLevel(data.n4, 'n4', warnings),
   };
 }
 
 /**
  * Valida dados de tendências
  */
-function validateTrends(data: any, _errors: string[], warnings: string[]): DashboardMetrics['tendencias'] {
+function validateTrends(
+  data: any,
+  _errors: string[],
+  warnings: string[]
+): DashboardMetrics['tendencias'] {
   const defaultTrends = {
     novos: '0',
     pendentes: '0',
     progresso: '0',
-    resolvidos: '0'
+    resolvidos: '0',
   };
 
   if (!data || typeof data !== 'object') {
@@ -295,7 +335,7 @@ function validateTrends(data: any, _errors: string[], warnings: string[]): Dashb
     novos: String(data.novos || '0'),
     pendentes: String(data.pendentes || '0'),
     progresso: String(data.progresso || '0'),
-    resolvidos: String(data.resolvidos || '0')
+    resolvidos: String(data.resolvidos || '0'),
   };
 }
 
@@ -311,16 +351,17 @@ export function validateAllData(
   const systemStatusValidation = validateSystemStatus(systemStatus);
   const technicianRankingValidation = validateTechnicianRanking(technicianRanking);
 
-  const overallValid = metricsValidation.isValid && 
-                      systemStatusValidation.isValid && 
-                      technicianRankingValidation.isValid;
+  const overallValid =
+    metricsValidation.isValid &&
+    systemStatusValidation.isValid &&
+    technicianRankingValidation.isValid;
 
   return {
     metrics: metricsValidation,
     systemStatus: systemStatusValidation,
     technicianRanking: technicianRankingValidation,
     overallValid,
-    timestamp: new Date()
+    timestamp: new Date(),
   };
 }
 
@@ -329,12 +370,12 @@ export function validateAllData(
  */
 export function generateIntegrityReport(report: DataIntegrityReport): string {
   const lines: string[] = [];
-  
+
   lines.push(`=== RELATÓRIO DE INTEGRIDADE DOS DADOS ===`);
   lines.push(`Timestamp: ${report.timestamp.toISOString()}`);
   lines.push(`Status Geral: ${report.overallValid ? 'VÁLIDO' : 'INVÁLIDO'}`);
   lines.push('');
-  
+
   // Métricas
   lines.push(`MÉTRICAS:`);
   lines.push(`  Status: ${report.metrics.isValid ? 'VÁLIDO' : 'INVÁLIDO'}`);
@@ -345,7 +386,7 @@ export function generateIntegrityReport(report: DataIntegrityReport): string {
     lines.push(`  Avisos: ${report.metrics.warnings.join(', ')}`);
   }
   lines.push('');
-  
+
   // Status do Sistema
   lines.push(`STATUS DO SISTEMA:`);
   lines.push(`  Status: ${report.systemStatus.isValid ? 'VÁLIDO' : 'INVÁLIDO'}`);
@@ -356,7 +397,7 @@ export function generateIntegrityReport(report: DataIntegrityReport): string {
     lines.push(`  Avisos: ${report.systemStatus.warnings.join(', ')}`);
   }
   lines.push('');
-  
+
   // Ranking de Técnicos
   lines.push(`RANKING DE TÉCNICOS:`);
   lines.push(`  Status: ${report.technicianRanking.isValid ? 'VÁLIDO' : 'INVÁLIDO'}`);
@@ -367,6 +408,6 @@ export function generateIntegrityReport(report: DataIntegrityReport): string {
   if (report.technicianRanking.warnings.length > 0) {
     lines.push(`  Avisos: ${report.technicianRanking.warnings.join(', ')}`);
   }
-  
+
   return lines.join('\n');
 }

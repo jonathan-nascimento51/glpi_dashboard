@@ -35,7 +35,7 @@ describe('useApi Hook', () => {
   it('deve executar função da API com sucesso', async () => {
     const mockData = { id: 1, name: 'Test' };
     const apiFunction = vi.fn().mockResolvedValue(mockData);
-    
+
     const { result } = renderHook(() => useApi(apiFunction));
 
     act(() => {
@@ -59,7 +59,7 @@ describe('useApi Hook', () => {
   it('deve lidar com erros da API', async () => {
     const errorMessage = 'API Error';
     const apiFunction = vi.fn().mockRejectedValue(new Error(errorMessage));
-    
+
     const { result } = renderHook(() => useApi(apiFunction));
 
     act(() => {
@@ -77,10 +77,8 @@ describe('useApi Hook', () => {
   it('deve executar automaticamente quando autoExecute é true', async () => {
     const mockData = { test: 'data' };
     const apiFunction = vi.fn().mockResolvedValue(mockData);
-    
-    const { result } = renderHook(() => 
-      useApi(apiFunction, { autoExecute: true })
-    );
+
+    const { result } = renderHook(() => useApi(apiFunction, { autoExecute: true }));
 
     // Deve começar em loading
     expect(result.current.loading).toBe(true);
@@ -97,7 +95,7 @@ describe('useApi Hook', () => {
     const mockData = { result: 'success' };
     const apiFunction = vi.fn().mockResolvedValue(mockData);
     const params = { id: 123, filter: 'active' };
-    
+
     const { result } = renderHook(() => useApi(apiFunction));
 
     act(() => {
@@ -112,10 +110,10 @@ describe('useApi Hook', () => {
   });
 
   it('deve cancelar requisições pendentes ao desmontar', async () => {
-    const apiFunction = vi.fn().mockImplementation(
-      () => new Promise((resolve) => setTimeout(resolve, 1000))
-    );
-    
+    const apiFunction = vi
+      .fn()
+      .mockImplementation(() => new Promise(resolve => setTimeout(resolve, 1000)));
+
     const { result, unmount } = renderHook(() => useApi(apiFunction));
 
     act(() => {
@@ -129,15 +127,16 @@ describe('useApi Hook', () => {
 
     // Aguarda um pouco para verificar se não há vazamentos
     await new Promise(resolve => setTimeout(resolve, 100));
-    
+
     // Não deve haver erros ou warnings sobre state updates
   });
 
   it('deve limpar erro ao executar nova requisição', async () => {
-    const apiFunction = vi.fn()
+    const apiFunction = vi
+      .fn()
       .mockRejectedValueOnce(new Error('First error'))
       .mockResolvedValueOnce({ success: true });
-    
+
     const { result } = renderHook(() => useApi(apiFunction));
 
     // Primeira execução com erro
@@ -170,10 +169,21 @@ describe('useApi Hook', () => {
     let resolveFirst: (value: any) => void;
     let resolveSecond: (value: any) => void;
 
-    const apiFunction = vi.fn()
-      .mockImplementationOnce(() => new Promise(resolve => { resolveFirst = resolve; }))
-      .mockImplementationOnce(() => new Promise(resolve => { resolveSecond = resolve; }));
-    
+    const apiFunction = vi
+      .fn()
+      .mockImplementationOnce(
+        () =>
+          new Promise(resolve => {
+            resolveFirst = resolve;
+          })
+      )
+      .mockImplementationOnce(
+        () =>
+          new Promise(resolve => {
+            resolveSecond = resolve;
+          })
+      );
+
     const { result } = renderHook(() => useApi(apiFunction));
 
     // Primeira execução
@@ -247,31 +257,36 @@ describe('useApi Hook', () => {
   });
 
   it('deve lidar com timeout de requisições', async () => {
-    const apiFunction = vi.fn().mockImplementation(
-      () => new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Request timeout')), 100)
-      )
-    );
-    
+    const apiFunction = vi
+      .fn()
+      .mockImplementation(
+        () =>
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), 100))
+      );
+
     const { result } = renderHook(() => useApi(apiFunction));
 
     act(() => {
       result.current.execute();
     });
 
-    await waitFor(() => {
-      expect(result.current.error).toBe('Request timeout');
-    }, { timeout: 200 });
+    await waitFor(
+      () => {
+        expect(result.current.error).toBe('Request timeout');
+      },
+      { timeout: 200 }
+    );
 
     expect(result.current.loading).toBe(false);
     expect(result.current.data).toBeNull();
   });
 
   it('deve permitir retry manual após erro', async () => {
-    const apiFunction = vi.fn()
+    const apiFunction = vi
+      .fn()
       .mockRejectedValueOnce(new Error('Network error'))
       .mockResolvedValueOnce({ success: true });
-    
+
     const { result } = renderHook(() => useApi(apiFunction));
 
     // Primeira tentativa (falha)
@@ -301,18 +316,18 @@ describe('useApi Hook', () => {
     const complexApiFunction = async (params: any) => {
       // Simula operações complexas
       await new Promise(resolve => setTimeout(resolve, 10));
-      
+
       if (params?.shouldFail) {
         throw new Error('Complex operation failed');
       }
-      
+
       return {
         processed: true,
         timestamp: Date.now(),
-        params
+        params,
       };
     };
-    
+
     const { result } = renderHook(() => useApi(complexApiFunction));
 
     // Teste com sucesso
@@ -326,7 +341,7 @@ describe('useApi Hook', () => {
 
     expect(result.current.data).toMatchObject({
       processed: true,
-      params: { data: 'test' }
+      params: { data: 'test' },
     });
 
     // Teste com falha

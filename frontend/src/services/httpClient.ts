@@ -33,8 +33,8 @@ export const httpClient: AxiosInstance = axios.create({
   timeout: API_CONFIG.TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json'
-  }
+    Accept: 'application/json',
+  },
 });
 
 // Interceptador de requisição para autenticação e logging
@@ -44,36 +44,36 @@ httpClient.interceptors.request.use(
     if (authConfig.apiToken) {
       config.headers = {
         ...config.headers,
-        'Authorization': `Bearer ${authConfig.apiToken}`
+        Authorization: `Bearer ${authConfig.apiToken}`,
       };
     }
-    
+
     if (authConfig.appToken) {
       config.headers = {
         ...config.headers,
-        'App-Token': authConfig.appToken
+        'App-Token': authConfig.appToken,
       };
     }
-    
+
     if (authConfig.userToken) {
       config.headers = {
         ...config.headers,
-        'Session-Token': authConfig.userToken
+        'Session-Token': authConfig.userToken,
       };
     }
-    
+
     // Log da requisição
     const logLevel = import.meta.env.VITE_LOG_LEVEL || 'info';
     const showApiCalls = import.meta.env.VITE_SHOW_API_CALLS === 'true';
-    
+
     if (showApiCalls || logLevel === 'debug') {
       console.log(`🚀 ${config.method?.toUpperCase()} ${config.url}`, {
         headers: config.headers,
         params: config.params,
-        data: config.data
+        data: config.data,
       });
     }
-    
+
     return config;
   },
   (error: AxiosError) => {
@@ -87,15 +87,18 @@ httpClient.interceptors.response.use(
   (response: AxiosResponse) => {
     const logLevel = import.meta.env.VITE_LOG_LEVEL || 'info';
     const showApiCalls = import.meta.env.VITE_SHOW_API_CALLS === 'true';
-    
+
     if (showApiCalls || logLevel === 'debug') {
-      console.log(`✅ ${response.config.method?.toUpperCase()} ${response.config.url} - ${response.status}`, {
-        status: response.status,
-        statusText: response.statusText,
-        data: response.data
-      });
+      console.log(
+        `✅ ${response.config.method?.toUpperCase()} ${response.config.url} - ${response.status}`,
+        {
+          status: response.status,
+          statusText: response.statusText,
+          data: response.data,
+        }
+      );
     }
-    
+
     return response;
   },
   async (error: AxiosError) => {
@@ -106,9 +109,9 @@ httpClient.interceptors.response.use(
       statusText: error.response?.statusText,
       message: error.message,
       code: error.code,
-      data: error.response?.data
+      data: error.response?.data,
     };
-    
+
     // Tratamento específico por tipo de erro
     if (error.code === 'ECONNABORTED') {
       console.warn('⏱️ Request timeout:', errorInfo.url);
@@ -129,12 +132,12 @@ httpClient.interceptors.response.use(
     } else {
       console.error('🔌 Network/Connection error:', errorInfo);
     }
-    
+
     // Implementar retry automático para erros temporários
     if (shouldRetry(error) && !error.config?.__retryCount) {
       return retryRequest(error);
     }
-    
+
     return Promise.reject(error);
   }
 );
@@ -143,7 +146,7 @@ httpClient.interceptors.response.use(
 function shouldRetry(error: AxiosError): boolean {
   const retryableStatuses = [408, 429, 500, 502, 503, 504];
   const retryableCodes = ['ECONNABORTED', 'ENOTFOUND', 'ECONNRESET', 'ETIMEDOUT'];
-  
+
   return (
     (error.response && retryableStatuses.includes(error.response.status)) ||
     (error.code && retryableCodes.includes(error.code))
@@ -154,26 +157,31 @@ function shouldRetry(error: AxiosError): boolean {
 async function retryRequest(error: AxiosError): Promise<AxiosResponse> {
   const config = error.config!;
   config.__retryCount = (config.__retryCount || 0) + 1;
-  
+
   if (config.__retryCount > API_CONFIG.RETRY_ATTEMPTS) {
     return Promise.reject(error);
   }
-  
+
   const delay = API_CONFIG.RETRY_DELAY * Math.pow(2, config.__retryCount - 1);
-  
-  console.log(`🔄 Retrying request (${config.__retryCount}/${API_CONFIG.RETRY_ATTEMPTS}) in ${delay}ms:`, config.url);
-  
+
+  console.log(
+    `🔄 Retrying request (${config.__retryCount}/${API_CONFIG.RETRY_ATTEMPTS}) in ${delay}ms:`,
+    config.url
+  );
+
   await new Promise(resolve => setTimeout(resolve, delay));
-  
+
   return httpClient.request(config);
 }
 
 // Função para disparar evento de erro de autenticação
 function dispatchAuthError() {
   if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent('auth-error', {
-      detail: { message: 'Authentication failed' }
-    }));
+    window.dispatchEvent(
+      new CustomEvent('auth-error', {
+        detail: { message: 'Authentication failed' },
+      })
+    );
   }
 }
 
@@ -187,28 +195,25 @@ declare module 'axios' {
 // Funções utilitárias para requisições comuns
 export const apiUtils = {
   // GET request
-  get: <T = any>(url: string, config?: AxiosRequestConfig) => 
-    httpClient.get<T>(url, config),
-  
+  get: <T = any>(url: string, config?: AxiosRequestConfig) => httpClient.get<T>(url, config),
+
   // POST request
-  post: <T = any>(url: string, data?: any, config?: AxiosRequestConfig) => 
+  post: <T = any>(url: string, data?: any, config?: AxiosRequestConfig) =>
     httpClient.post<T>(url, data, config),
-  
+
   // PUT request
-  put: <T = any>(url: string, data?: any, config?: AxiosRequestConfig) => 
+  put: <T = any>(url: string, data?: any, config?: AxiosRequestConfig) =>
     httpClient.put<T>(url, data, config),
-  
+
   // DELETE request
-  delete: <T = any>(url: string, config?: AxiosRequestConfig) => 
-    httpClient.delete<T>(url, config),
-  
+  delete: <T = any>(url: string, config?: AxiosRequestConfig) => httpClient.delete<T>(url, config),
+
   // PATCH request
-  patch: <T = any>(url: string, data?: any, config?: AxiosRequestConfig) => 
+  patch: <T = any>(url: string, data?: any, config?: AxiosRequestConfig) =>
     httpClient.patch<T>(url, data, config),
-  
+
   // HEAD request
-  head: (url: string, config?: AxiosRequestConfig) => 
-    httpClient.head(url, config),
+  head: (url: string, config?: AxiosRequestConfig) => httpClient.head(url, config),
 };
 
 export default httpClient;

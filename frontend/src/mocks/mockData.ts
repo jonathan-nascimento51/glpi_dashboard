@@ -11,21 +11,21 @@ export const mockData = {
       low: 450,
       normal: 520,
       high: 200,
-      urgent: 80
+      urgent: 80,
     },
     tickets_by_status: {
       new: 85,
       assigned: 120,
       pending: 45,
       solved: 850,
-      closed: 150
+      closed: 150,
     },
     tickets_by_category: {
       hardware: 300,
       software: 450,
       network: 200,
       access: 150,
-      other: 150
+      other: 150,
     },
     monthly_trends: [
       { month: 'Jan', tickets: 95, resolved: 88 },
@@ -33,20 +33,21 @@ export const mockData = {
       { month: 'Mar', tickets: 125, resolved: 118 },
       { month: 'Apr', tickets: 108, resolved: 105 },
       { month: 'May', tickets: 132, resolved: 125 },
-      { month: 'Jun', tickets: 118, resolved: 115 }
+      { month: 'Jun', tickets: 118, resolved: 115 },
     ],
     response_time_metrics: {
       avg_first_response: 1.2,
       avg_resolution: 2.5,
-      sla_compliance: 92.5
-    }
+      sla_compliance: 92.5,
+    },
   },
 
   tickets: [
     {
       id: 1,
       title: 'Problema de conectividade de rede',
-      description: 'Usuário relatando problemas intermitentes de conexão com a internet no setor administrativo.',
+      description:
+        'Usuário relatando problemas intermitentes de conexão com a internet no setor administrativo.',
       status: 'open',
       priority: 'high',
       category: 'network',
@@ -54,12 +55,12 @@ export const mockData = {
         id: 1,
         name: 'João Silva',
         email: 'joao.silva@empresa.com',
-        avatar: null
+        avatar: null,
       },
       requester: {
         id: 2,
         name: 'Maria Santos',
-        email: 'maria.santos@empresa.com'
+        email: 'maria.santos@empresa.com',
       },
       created_at: '2024-01-15T09:30:00Z',
       updated_at: '2024-01-15T14:20:00Z',
@@ -68,7 +69,7 @@ export const mockData = {
       comments_count: 3,
       attachments_count: 1,
       time_spent: 2.5,
-      estimated_time: 4.0
+      estimated_time: 4.0,
     },
     {
       id: 2,
@@ -81,12 +82,12 @@ export const mockData = {
         id: 3,
         name: 'Pedro Costa',
         email: 'pedro.costa@empresa.com',
-        avatar: null
+        avatar: null,
       },
       requester: {
         id: 4,
         name: 'Ana Oliveira',
-        email: 'ana.oliveira@empresa.com'
+        email: 'ana.oliveira@empresa.com',
       },
       created_at: '2024-01-14T11:15:00Z',
       updated_at: '2024-01-15T08:45:00Z',
@@ -95,12 +96,13 @@ export const mockData = {
       comments_count: 2,
       attachments_count: 0,
       time_spent: 1.0,
-      estimated_time: 2.0
+      estimated_time: 2.0,
     },
     {
       id: 3,
       title: 'Computador não liga',
-      description: 'Equipamento da recepção apresentou falha e não está ligando. LED de energia não acende.',
+      description:
+        'Equipamento da recepção apresentou falha e não está ligando. LED de energia não acende.',
       status: 'pending',
       priority: 'urgent',
       category: 'hardware',
@@ -108,12 +110,12 @@ export const mockData = {
         id: 1,
         name: 'João Silva',
         email: 'joao.silva@empresa.com',
-        avatar: null
+        avatar: null,
       },
       requester: {
         id: 5,
         name: 'Carlos Ferreira',
-        email: 'carlos.ferreira@empresa.com'
+        email: 'carlos.ferreira@empresa.com',
       },
       created_at: '2024-01-15T16:20:00Z',
       updated_at: '2024-01-15T16:45:00Z',
@@ -122,7 +124,7 @@ export const mockData = {
       comments_count: 1,
       attachments_count: 2,
       time_spent: 0.5,
-      estimated_time: 3.0
+      estimated_time: 3.0,
     },
     {
       id: 4,
@@ -135,12 +137,12 @@ export const mockData = {
         id: 6,
         name: 'Lucia Mendes',
         email: 'lucia.mendes@empresa.com',
-        avatar: null
+        avatar: null,
       },
       requester: {
         id: 7,
         name: 'Roberto Lima',
-        email: 'roberto.lima@empresa.com'
+        email: 'roberto.lima@empresa.com',
       },
       created_at: '2024-01-12T10:00:00Z',
       updated_at: '2024-01-13T15:30:00Z',
@@ -149,7 +151,7 @@ export const mockData = {
       comments_count: 4,
       attachments_count: 0,
       time_spent: 1.5,
-      estimated_time: 1.0
+      estimated_time: 1.0,
     },
     {
       id: 5,
@@ -162,12 +164,12 @@ export const mockData = {
         id: 3,
         name: 'Pedro Costa',
         email: 'pedro.costa@empresa.com',
-        avatar: null
+        avatar: null,
       },
       requester: {
         id: 8,
         name: 'Fernanda Rocha',
-        email: 'fernanda.rocha@empresa.com'
+        email: 'fernanda.rocha@empresa.com',
       },
       created_at: '2024-01-10T14:30:00Z',
       updated_at: '2024-01-11T16:00:00Z',
@@ -176,8 +178,8 @@ export const mockData = {
       comments_count: 2,
       attachments_count: 1,
       time_spent: 2.0,
-      estimated_time: 2.0
-    }
+      estimated_time: 2.0,
+    },
   ],
 
   users: [
@@ -190,7 +192,7 @@ export const mockData = {
       active: true,
       avatar: null,
       phone: '(11) 99999-1111',
-      created_at: '2023-06-01T00:00:00Z'
+      created_at: '2023-06-01T00:00:00Z',
     },
     {
       id: 2,
@@ -201,7 +203,7 @@ export const mockData = {
       active: true,
       avatar: null,
       phone: '(11) 99999-2222',
-      created_at: '2023-07-15T00:00:00Z'
+      created_at: '2023-07-15T00:00:00Z',
     },
     {
       id: 3,
@@ -212,7 +214,7 @@ export const mockData = {
       active: true,
       avatar: null,
       phone: '(11) 99999-3333',
-      created_at: '2023-08-01T00:00:00Z'
+      created_at: '2023-08-01T00:00:00Z',
     },
     {
       id: 4,
@@ -223,7 +225,7 @@ export const mockData = {
       active: true,
       avatar: null,
       phone: '(11) 99999-4444',
-      created_at: '2023-09-10T00:00:00Z'
+      created_at: '2023-09-10T00:00:00Z',
     },
     {
       id: 5,
@@ -234,7 +236,7 @@ export const mockData = {
       active: true,
       avatar: null,
       phone: '(11) 99999-5555',
-      created_at: '2023-10-05T00:00:00Z'
+      created_at: '2023-10-05T00:00:00Z',
     },
     {
       id: 6,
@@ -245,8 +247,8 @@ export const mockData = {
       active: true,
       avatar: null,
       phone: '(11) 99999-6666',
-      created_at: '2023-05-01T00:00:00Z'
-    }
+      created_at: '2023-05-01T00:00:00Z',
+    },
   ],
 
   performanceMetrics: {
@@ -260,8 +262,8 @@ export const mockData = {
       technician_workload: {
         'João Silva': 12,
         'Pedro Costa': 15,
-        'Lucia Mendes': 8
-      }
+        'Lucia Mendes': 8,
+      },
     },
     '30d': {
       avg_response_time: 1.4,
@@ -273,8 +275,8 @@ export const mockData = {
       technician_workload: {
         'João Silva': 58,
         'Pedro Costa': 62,
-        'Lucia Mendes': 35
-      }
+        'Lucia Mendes': 35,
+      },
     },
     '90d': {
       avg_response_time: 1.6,
@@ -286,9 +288,9 @@ export const mockData = {
       technician_workload: {
         'João Silva': 170,
         'Pedro Costa': 185,
-        'Lucia Mendes': 95
-      }
-    }
+        'Lucia Mendes': 95,
+      },
+    },
   },
 
   trendsData: {
@@ -307,7 +309,7 @@ export const mockData = {
       { date: '2024-01-12', value: 58 },
       { date: '2024-01-13', value: 65 },
       { date: '2024-01-14', value: 72 },
-      { date: '2024-01-15', value: 68 }
+      { date: '2024-01-15', value: 68 },
     ],
     resolution_time: [
       { date: '2024-01-01', value: 3.2 },
@@ -324,7 +326,7 @@ export const mockData = {
       { date: '2024-01-12', value: 2.3 },
       { date: '2024-01-13', value: 2.7 },
       { date: '2024-01-14', value: 2.9 },
-      { date: '2024-01-15', value: 2.5 }
+      { date: '2024-01-15', value: 2.5 },
     ],
     satisfaction: [
       { date: '2024-01-01', value: 4.1 },
@@ -341,8 +343,8 @@ export const mockData = {
       { date: '2024-01-12', value: 4.2 },
       { date: '2024-01-13', value: 4.7 },
       { date: '2024-01-14', value: 4.5 },
-      { date: '2024-01-15', value: 4.3 }
-    ]
+      { date: '2024-01-15', value: 4.3 },
+    ],
   },
 
   notifications: [
@@ -353,7 +355,7 @@ export const mockData = {
       type: 'assignment',
       read: false,
       created_at: '2024-01-15T16:30:00Z',
-      action_url: '/tickets/1250'
+      action_url: '/tickets/1250',
     },
     {
       id: 2,
@@ -362,7 +364,7 @@ export const mockData = {
       type: 'warning',
       read: false,
       created_at: '2024-01-15T15:00:00Z',
-      action_url: '/tickets/1248'
+      action_url: '/tickets/1248',
     },
     {
       id: 3,
@@ -371,7 +373,7 @@ export const mockData = {
       type: 'success',
       read: true,
       created_at: '2024-01-15T14:20:00Z',
-      action_url: '/tickets/1245'
+      action_url: '/tickets/1245',
     },
     {
       id: 4,
@@ -380,8 +382,8 @@ export const mockData = {
       type: 'info',
       read: true,
       created_at: '2024-01-15T13:45:00Z',
-      action_url: '/tickets/1247'
-    }
+      action_url: '/tickets/1247',
+    },
   ],
 
   settings: {
@@ -390,7 +392,7 @@ export const mockData = {
       timezone: 'America/Sao_Paulo',
       language: 'pt-BR',
       date_format: 'DD/MM/YYYY',
-      time_format: '24h'
+      time_format: '24h',
     },
     notifications: {
       email_enabled: true,
@@ -402,22 +404,22 @@ export const mockData = {
         ticket_updated: true,
         ticket_resolved: true,
         ticket_overdue: true,
-        system_maintenance: true
-      }
+        system_maintenance: true,
+      },
     },
     sla: {
       response_time: {
         low: 24,
         normal: 8,
         high: 4,
-        urgent: 1
+        urgent: 1,
       },
       resolution_time: {
         low: 72,
         normal: 24,
         high: 8,
-        urgent: 4
-      }
+        urgent: 4,
+      },
     },
     security: {
       session_timeout: 480,
@@ -426,31 +428,31 @@ export const mockData = {
         require_uppercase: true,
         require_lowercase: true,
         require_numbers: true,
-        require_symbols: true
+        require_symbols: true,
       },
       two_factor_enabled: false,
-      login_attempts: 5
+      login_attempts: 5,
     },
     integrations: {
       glpi: {
         enabled: true,
         url: 'https://glpi.empresa.com',
-        sync_interval: 300
+        sync_interval: 300,
       },
       email: {
         enabled: true,
         smtp_server: 'smtp.empresa.com',
         smtp_port: 587,
-        use_tls: true
+        use_tls: true,
       },
       ldap: {
         enabled: false,
         server: '',
         port: 389,
-        base_dn: ''
-      }
-    }
-  }
+        base_dn: '',
+      },
+    },
+  },
 };
 
 export default mockData;

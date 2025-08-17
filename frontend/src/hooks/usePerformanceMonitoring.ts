@@ -17,7 +17,7 @@ export const usePerformanceMonitoring = (componentName: string) => {
   useEffect(() => {
     mountTime.current = performance.now();
     performanceMonitor.startMeasure(`${componentName}-mount`);
-    
+
     return () => {
       performanceMonitor.endMeasure(`${componentName}-mount`);
     };
@@ -29,29 +29,35 @@ export const usePerformanceMonitoring = (componentName: string) => {
     performanceMonitor.startMeasure(`${componentName}-render-${renderCount.current}`);
   }, [componentName]);
 
-  const endRender = useCallback((props?: any) => {
-    if (renderStartTime.current > 0) {
-      const renderTime = performance.now() - renderStartTime.current;
-      performanceMonitor.recordComponentRender(componentName, renderTime, props);
-      performanceMonitor.endMeasure(`${componentName}-render-${renderCount.current}`);
-      renderStartTime.current = 0;
-    }
-  }, [componentName]);
+  const endRender = useCallback(
+    (props?: any) => {
+      if (renderStartTime.current > 0) {
+        const renderTime = performance.now() - renderStartTime.current;
+        performanceMonitor.recordComponentRender(componentName, renderTime, props);
+        performanceMonitor.endMeasure(`${componentName}-render-${renderCount.current}`);
+        renderStartTime.current = 0;
+      }
+    },
+    [componentName]
+  );
 
-  const measureRender = useCallback((renderFunction: () => void) => {
-    startRender();
-    try {
-      renderFunction();
-    } finally {
-      endRender();
-    }
-  }, [startRender, endRender]);
+  const measureRender = useCallback(
+    (renderFunction: () => void) => {
+      startRender();
+      try {
+        renderFunction();
+      } finally {
+        endRender();
+      }
+    },
+    [startRender, endRender]
+  );
 
   return {
     startRender,
     endRender,
     measureRender,
-    renderCount: renderCount.current
+    renderCount: renderCount.current,
   };
 };
 
@@ -62,29 +68,26 @@ export const useFilterPerformance = () => {
   const [isFiltering, setIsFiltering] = useState(false);
   const [lastFilterTime, setLastFilterTime] = useState<number>(0);
 
-  const measureFilterOperation = useCallback(async <T>(
-    filterType: string,
-    operation: () => Promise<T>
-  ): Promise<T> => {
-    setIsFiltering(true);
-    
-    try {
-      const result = await performanceMonitor.measureFilterOperation(filterType, operation);
-      const duration = performanceMonitor.endMeasure(`filter-${filterType}`);
-      setLastFilterTime(duration);
-      return result;
-    } finally {
-      setIsFiltering(false);
-    }
-  }, []);
+  const measureFilterOperation = useCallback(
+    async <T>(filterType: string, operation: () => Promise<T>): Promise<T> => {
+      setIsFiltering(true);
 
-  const measureSyncFilterOperation = useCallback(<T>(
-    filterType: string,
-    operation: () => T
-  ): T => {
+      try {
+        const result = await performanceMonitor.measureFilterOperation(filterType, operation);
+        const duration = performanceMonitor.endMeasure(`filter-${filterType}`);
+        setLastFilterTime(duration);
+        return result;
+      } finally {
+        setIsFiltering(false);
+      }
+    },
+    []
+  );
+
+  const measureSyncFilterOperation = useCallback(<T>(filterType: string, operation: () => T): T => {
     setIsFiltering(true);
     performanceMonitor.startMeasure(`filter-${filterType}-sync`);
-    
+
     try {
       const result = operation();
       const duration = performanceMonitor.endMeasure(`filter-${filterType}-sync`);
@@ -99,7 +102,7 @@ export const useFilterPerformance = () => {
     measureFilterOperation,
     measureSyncFilterOperation,
     isFiltering,
-    lastFilterTime
+    lastFilterTime,
   };
 };
 
@@ -109,38 +112,40 @@ export const useFilterPerformance = () => {
 export const useApiPerformance = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [lastApiTime, setLastApiTime] = useState<number>(0);
-  const [apiMetrics, setApiMetrics] = useState<{
-    endpoint: string;
-    duration: number;
-    timestamp: number;
-  }[]>([]);
+  const [apiMetrics, setApiMetrics] = useState<
+    {
+      endpoint: string;
+      duration: number;
+      timestamp: number;
+    }[]
+  >([]);
 
-  const measureApiCall = useCallback(async <T>(
-    endpoint: string,
-    apiCall: () => Promise<T>
-  ): Promise<T> => {
-    setIsLoading(true);
-    const startTime = performance.now();
-    
-    try {
-      const result = await performanceMonitor.measureApiCall(endpoint, apiCall);
-      const duration = performance.now() - startTime;
-      
-      setLastApiTime(duration);
-      setApiMetrics(prev => [
-        ...prev.slice(-9), // Manter apenas os últimos 10
-        {
-          endpoint,
-          duration,
-          timestamp: Date.now()
-        }
-      ]);
-      
-      return result;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const measureApiCall = useCallback(
+    async <T>(endpoint: string, apiCall: () => Promise<T>): Promise<T> => {
+      setIsLoading(true);
+      const startTime = performance.now();
+
+      try {
+        const result = await performanceMonitor.measureApiCall(endpoint, apiCall);
+        const duration = performance.now() - startTime;
+
+        setLastApiTime(duration);
+        setApiMetrics(prev => [
+          ...prev.slice(-9), // Manter apenas os últimos 10
+          {
+            endpoint,
+            duration,
+            timestamp: Date.now(),
+          },
+        ]);
+
+        return result;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
 
   const getAverageApiTime = useCallback(() => {
     if (apiMetrics.length === 0) return 0;
@@ -152,7 +157,7 @@ export const useApiPerformance = () => {
     isLoading,
     lastApiTime,
     apiMetrics,
-    averageApiTime: getAverageApiTime()
+    averageApiTime: getAverageApiTime(),
   };
 };
 
@@ -165,14 +170,14 @@ export const usePerformanceReports = () => {
 
   const generateReport = useCallback(async () => {
     setIsGenerating(true);
-    
+
     try {
       // Aguardar um pouco para capturar métricas pendentes
       await new Promise(resolve => setTimeout(resolve, 100));
-      
+
       const report = performanceMonitor.generateReport();
       setReports(prev => [...prev.slice(-9), report]); // Manter últimos 10
-      
+
       // Log detalhado em desenvolvimento
       if (process.env.NODE_ENV === 'development') {
         console.group('📊 Performance Report');
@@ -181,7 +186,7 @@ export const usePerformanceReports = () => {
         console.log('All Metrics:', report.metrics);
         console.groupEnd();
       }
-      
+
       return report;
     } finally {
       setIsGenerating(false);
@@ -203,23 +208,23 @@ export const usePerformanceReports = () => {
 
   const getAverageMetrics = useCallback(() => {
     if (reports.length === 0) return null;
-    
+
     const totals = reports.reduce(
       (acc, report) => ({
         filterChangeTime: acc.filterChangeTime + report.summary.filterChangeTime,
         apiResponseTime: acc.apiResponseTime + report.summary.apiResponseTime,
         renderTime: acc.renderTime + report.summary.renderTime,
-        totalOperationTime: acc.totalOperationTime + report.summary.totalOperationTime
+        totalOperationTime: acc.totalOperationTime + report.summary.totalOperationTime,
       }),
       { filterChangeTime: 0, apiResponseTime: 0, renderTime: 0, totalOperationTime: 0 }
     );
-    
+
     const count = reports.length;
     return {
       filterChangeTime: totals.filterChangeTime / count,
       apiResponseTime: totals.apiResponseTime / count,
       renderTime: totals.renderTime / count,
-      totalOperationTime: totals.totalOperationTime / count
+      totalOperationTime: totals.totalOperationTime / count,
     };
   }, [reports]);
 
@@ -230,7 +235,7 @@ export const usePerformanceReports = () => {
     exportToAnalytics,
     isGenerating,
     latestReport: getLatestReport(),
-    averageMetrics: getAverageMetrics()
+    averageMetrics: getAverageMetrics(),
   };
 };
 
@@ -250,13 +255,13 @@ export const usePerformanceDebug = () => {
   const getDebugInfo = useCallback(() => {
     const stats = performanceMonitor.getDetailedStats();
     const browserMetrics = performanceMonitor.getBrowserMetrics();
-    
+
     const info = {
       stats,
       browserMetrics: browserMetrics.slice(-10), // Últimas 10 métricas
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
-    
+
     setDebugInfo(info);
     return info;
   }, []);
@@ -280,7 +285,7 @@ export const usePerformanceDebug = () => {
     getDebugInfo,
     logMetrics,
     clearMetrics,
-    debugInfo
+    debugInfo,
   };
 };
 
@@ -299,34 +304,28 @@ export const useRenderTracker = (componentName: string, dependencies: any[] = []
     lastRenderTime.current = now;
 
     // Detectar mudanças nas dependências
-    const depsChanged = dependencies.some((dep, index) => 
-      dep !== prevDeps.current[index]
-    );
-    
+    const depsChanged = dependencies.some((dep, index) => dep !== prevDeps.current[index]);
+
     prevDeps.current = dependencies;
 
     if (process.env.NODE_ENV === 'development') {
       console.log(`🔄 ${componentName} render #${renderCount.current}`, {
         timeSinceLastRender: timeSinceLastRender.toFixed(2) + 'ms',
         depsChanged,
-        dependencies: depsChanged ? dependencies : 'unchanged'
+        dependencies: depsChanged ? dependencies : 'unchanged',
       });
     }
 
-    performanceMonitor.recordComponentRender(
-      componentName,
-      timeSinceLastRender,
-      {
-        renderNumber: renderCount.current,
-        depsChanged,
-        dependencies: depsChanged ? dependencies : null
-      }
-    );
+    performanceMonitor.recordComponentRender(componentName, timeSinceLastRender, {
+      renderNumber: renderCount.current,
+      depsChanged,
+      dependencies: depsChanged ? dependencies : null,
+    });
   }, [componentName, dependencies]);
 
   return {
     trackRender,
     renderCount: renderCount.current,
-    lastRenderTime: lastRenderTime.current
+    lastRenderTime: lastRenderTime.current,
   };
 };

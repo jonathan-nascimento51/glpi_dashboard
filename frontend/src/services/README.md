@@ -5,21 +5,27 @@ Este diretório contém a implementação refatorada dos serviços de API do fro
 ## Estrutura dos Arquivos
 
 ### `httpClient.ts`
+
 Cliente HTTP centralizado baseado no Axios com:
+
 - **Configuração via variáveis de ambiente**: URL base, timeout, retry, tokens de autenticação
 - **Interceptadores de requisição**: Autenticação automática e logging
 - **Interceptadores de resposta**: Tratamento de erros e retry automático
 - **Funções utilitárias**: GET, POST, PUT, DELETE, PATCH, HEAD
 
 ### `api.ts`
+
 Serviços de API específicos do domínio:
+
 - **apiService**: Métodos para métricas, status do sistema, ranking de técnicos, etc.
 - **Integração com cache**: Sistema de cache inteligente
 - **Monitoramento de performance**: Métricas de tempo de resposta
 - **Fallbacks**: Dados de fallback em caso de falha
 
 ### `cache.ts`
+
 Sistema de cache para otimização de performance:
+
 - Cache em memória com TTL configurável
 - Invalidação automática
 - Métricas de hit/miss
@@ -27,11 +33,13 @@ Sistema de cache para otimização de performance:
 ## Configuração via Variáveis de Ambiente
 
 ### Variáveis Obrigatórias
+
 ```env
 VITE_API_BASE_URL=http://localhost:5000/api
 ```
 
 ### Variáveis Opcionais
+
 ```env
 # Configuração de Timeout e Retry
 VITE_API_TIMEOUT=10000
@@ -53,6 +61,7 @@ VITE_SHOW_CACHE_HITS=true
 ## Uso dos Serviços
 
 ### Uso Direto do httpClient
+
 ```typescript
 import { httpClient } from './services/httpClient';
 
@@ -64,13 +73,14 @@ const response = await httpClient.post('/endpoint', data);
 ```
 
 ### Uso dos Serviços de API
+
 ```typescript
 import { apiService } from './services/api';
 
 // Buscar métricas
 const metrics = await apiService.getMetrics({
   startDate: '2024-01-01',
-  endDate: '2024-01-31'
+  endDate: '2024-01-31',
 });
 
 // Verificar status do sistema
@@ -78,6 +88,7 @@ const status = await apiService.getSystemStatus();
 ```
 
 ### Uso com Hook useApi
+
 ```typescript
 import { useApi } from '../hooks/useApi';
 import { apiService } from '../services/api';
@@ -98,6 +109,7 @@ function MyComponent() {
 ```
 
 ### Hooks Especializados
+
 ```typescript
 import { useMetrics, useSystemStatus } from '../hooks/useApi';
 
@@ -107,7 +119,7 @@ const { data: metrics } = useMetrics({ autoExecute: true });
 // Executar quando dependências mudarem
 const { data: status } = useSystemStatus({
   autoExecute: true,
-  dependencies: [dateRange]
+  dependencies: [dateRange],
 });
 ```
 
@@ -156,29 +168,32 @@ npm run test:run -- src/__tests__/integration/ApiIntegration.test.tsx
 Para migrar código existente:
 
 1. **Substitua imports diretos do axios**:
+
    ```typescript
    // Antes
    import axios from 'axios';
-   
+
    // Depois
    import { httpClient } from './services/httpClient';
    ```
 
 2. **Use os serviços de API**:
+
    ```typescript
    // Antes
    const response = await axios.get('/api/metrics');
-   
+
    // Depois
    const metrics = await apiService.getMetrics();
    ```
 
 3. **Implemente hooks para gerenciamento de estado**:
+
    ```typescript
    // Antes
    const [data, setData] = useState(null);
    const [loading, setLoading] = useState(false);
-   
+
    // Depois
    const { data, loading, error, execute } = useApi(apiService.getMetrics);
    ```

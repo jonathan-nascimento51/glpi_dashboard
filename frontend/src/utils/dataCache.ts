@@ -24,7 +24,7 @@ class DataCacheManager {
   private cache: DashboardCache = {
     metrics: null,
     systemStatus: null,
-    technicianRanking: null
+    technicianRanking: null,
   };
 
   private readonly CACHE_DURATION = 300000; // 5 minutos - aumentado para reduzir consultas
@@ -39,43 +39,45 @@ class DataCacheManager {
     technicianRanking: TechnicianRanking[]
   ): DataIntegrityReport {
     const timestamp = Date.now();
-    
+
     // Validar todos os dados
     const validationReport = validateAllData(metrics, systemStatus, technicianRanking);
-    
+
     // Armazenar no cache
     this.cache.metrics = {
       data: validationReport.metrics.data,
       timestamp,
       validationReport,
-      isValid: validationReport.metrics.isValid
+      isValid: validationReport.metrics.isValid,
     };
-    
+
     this.cache.systemStatus = {
       data: validationReport.systemStatus.data,
       timestamp,
       validationReport,
-      isValid: validationReport.systemStatus.isValid
+      isValid: validationReport.systemStatus.isValid,
     };
-    
+
     this.cache.technicianRanking = {
       data: validationReport.technicianRanking.data,
       timestamp,
       validationReport,
-      isValid: validationReport.technicianRanking.isValid
+      isValid: validationReport.technicianRanking.isValid,
     };
-    
+
     console.log('📦 Dados armazenados no cache:', {
       timestamp: new Date(timestamp).toISOString(),
       isValid: validationReport.overallValid,
-      errors: validationReport.metrics.errors.length + 
-              validationReport.systemStatus.errors.length + 
-              validationReport.technicianRanking.errors.length,
-      warnings: validationReport.metrics.warnings.length + 
-                validationReport.systemStatus.warnings.length + 
-                validationReport.technicianRanking.warnings.length
+      errors:
+        validationReport.metrics.errors.length +
+        validationReport.systemStatus.errors.length +
+        validationReport.technicianRanking.errors.length,
+      warnings:
+        validationReport.metrics.warnings.length +
+        validationReport.systemStatus.warnings.length +
+        validationReport.technicianRanking.warnings.length,
     });
-    
+
     return validationReport;
   }
 
@@ -91,7 +93,7 @@ class DataCacheManager {
     cacheStatus: 'fresh' | 'stale' | 'expired' | 'empty';
   } {
     const now = Date.now();
-    
+
     // Verificar se há dados no cache
     if (!this.cache.metrics || !this.cache.systemStatus || !this.cache.technicianRanking) {
       return {
@@ -100,12 +102,12 @@ class DataCacheManager {
         technicianRanking: [],
         validationReport: null,
         isFromCache: false,
-        cacheStatus: 'empty'
+        cacheStatus: 'empty',
       };
     }
-    
+
     const age = now - this.cache.metrics.timestamp;
-    
+
     // Determinar status do cache
     let cacheStatus: 'fresh' | 'stale' | 'expired';
     if (age <= this.CACHE_DURATION) {
@@ -115,7 +117,7 @@ class DataCacheManager {
     } else {
       cacheStatus = 'expired';
     }
-    
+
     // Se expirado, limpar cache
     if (cacheStatus === 'expired') {
       this.clear();
@@ -125,24 +127,25 @@ class DataCacheManager {
         technicianRanking: [],
         validationReport: null,
         isFromCache: false,
-        cacheStatus: 'expired'
+        cacheStatus: 'expired',
       };
     }
-    
+
     console.log(`📦 Dados recuperados do cache (${cacheStatus}):`, {
       age: Math.round(age / 1000) + 's',
-      isValid: this.cache.metrics.isValid && 
-               this.cache.systemStatus.isValid && 
-               this.cache.technicianRanking.isValid
+      isValid:
+        this.cache.metrics.isValid &&
+        this.cache.systemStatus.isValid &&
+        this.cache.technicianRanking.isValid,
     });
-    
+
     return {
       metrics: this.cache.metrics.data,
       systemStatus: this.cache.systemStatus.data,
       technicianRanking: this.cache.technicianRanking.data,
       validationReport: this.cache.metrics.validationReport,
       isFromCache: true,
-      cacheStatus
+      cacheStatus,
     };
   }
 
@@ -151,7 +154,7 @@ class DataCacheManager {
    */
   isFresh(): boolean {
     if (!this.cache.metrics) return false;
-    
+
     const age = Date.now() - this.cache.metrics.timestamp;
     return age <= this.CACHE_DURATION;
   }
@@ -161,7 +164,7 @@ class DataCacheManager {
    */
   isStale(): boolean {
     if (!this.cache.metrics) return false;
-    
+
     const age = Date.now() - this.cache.metrics.timestamp;
     return age > this.CACHE_DURATION && age <= this.MAX_STALE_DURATION;
   }
@@ -173,7 +176,7 @@ class DataCacheManager {
     this.cache = {
       metrics: null,
       systemStatus: null,
-      technicianRanking: null
+      technicianRanking: null,
     };
     console.log('🗑️ Cache limpo');
   }
@@ -194,13 +197,13 @@ class DataCacheManager {
         age: 0,
         status: 'empty',
         isValid: false,
-        lastUpdate: null
+        lastUpdate: null,
       };
     }
-    
+
     const age = Date.now() - this.cache.metrics.timestamp;
     let status: 'fresh' | 'stale' | 'expired';
-    
+
     if (age <= this.CACHE_DURATION) {
       status = 'fresh';
     } else if (age <= this.MAX_STALE_DURATION) {
@@ -208,15 +211,16 @@ class DataCacheManager {
     } else {
       status = 'expired';
     }
-    
+
     return {
       hasData: true,
       age,
       status,
-      isValid: (this.cache.metrics?.isValid ?? false) && 
-               (this.cache.systemStatus?.isValid ?? false) && 
-               (this.cache.technicianRanking?.isValid ?? false),
-      lastUpdate: new Date(this.cache.metrics.timestamp)
+      isValid:
+        (this.cache.metrics?.isValid ?? false) &&
+        (this.cache.systemStatus?.isValid ?? false) &&
+        (this.cache.technicianRanking?.isValid ?? false),
+      lastUpdate: new Date(this.cache.metrics.timestamp),
     };
   }
 
@@ -252,7 +256,7 @@ class DataCacheManager {
     cacheStatus: string;
   }> {
     const cached = this.get();
-    
+
     // Se temos dados frescos, usar do cache
     if (cached.cacheStatus === 'fresh' && cached.metrics && cached.validationReport) {
       return {
@@ -261,29 +265,31 @@ class DataCacheManager {
         technicianRanking: cached.technicianRanking,
         validationReport: cached.validationReport,
         isFromCache: true,
-        cacheStatus: cached.cacheStatus
+        cacheStatus: cached.cacheStatus,
       };
     }
-    
+
     // Se temos dados obsoletos, usar enquanto busca novos em background
     if (cached.cacheStatus === 'stale' && cached.metrics && cached.validationReport) {
       // Buscar novos dados em background (não aguardar)
-      fetchFunction().then(newData => {
-        this.set(newData.metrics, newData.systemStatus, newData.technicianRanking);
-      }).catch(error => {
-        console.warn('Falha ao atualizar cache em background:', error);
-      });
-      
+      fetchFunction()
+        .then(newData => {
+          this.set(newData.metrics, newData.systemStatus, newData.technicianRanking);
+        })
+        .catch(error => {
+          console.warn('Falha ao atualizar cache em background:', error);
+        });
+
       return {
         metrics: cached.metrics,
         systemStatus: cached.systemStatus!,
         technicianRanking: cached.technicianRanking,
         validationReport: cached.validationReport,
         isFromCache: true,
-        cacheStatus: cached.cacheStatus
+        cacheStatus: cached.cacheStatus,
       };
     }
-    
+
     // Buscar dados frescos
     const newData = await fetchFunction();
     const validationReport = this.set(
@@ -291,14 +297,14 @@ class DataCacheManager {
       newData.systemStatus,
       newData.technicianRanking
     );
-    
+
     return {
       metrics: validationReport.metrics.data,
       systemStatus: validationReport.systemStatus.data,
       technicianRanking: validationReport.technicianRanking.data,
       validationReport,
       isFromCache: false,
-      cacheStatus: 'fresh'
+      cacheStatus: 'fresh',
     };
   }
 }
@@ -310,7 +316,7 @@ export const dataCacheManager = new DataCacheManager();
 export const debugCache = {
   info: () => dataCacheManager.getInfo(),
   clear: () => dataCacheManager.clear(),
-  invalidate: () => dataCacheManager.invalidate()
+  invalidate: () => dataCacheManager.invalidate(),
 };
 
 // Expor no window para debugging em desenvolvimento

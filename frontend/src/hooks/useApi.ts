@@ -32,20 +32,20 @@ export interface UseApiState<T> {
 
 /**
  * Hook personalizado para gerenciar chamadas de API
- * 
+ *
  * @param apiFunction - Função da API a ser executada
  * @param options - Opções de configuração
  * @returns Estado e funções para gerenciar a API
- * 
+ *
  * @example
  * ```tsx
  * const { data, loading, error, execute } = useApi(apiService.getMetrics);
- * 
+ *
  * // Executar manualmente
  * const handleClick = () => {
  *   execute({ startDate: '2024-01-01', endDate: '2024-01-31' });
  * };
- * 
+ *
  * // Auto-executar com dependências
  * const { data } = useApi(apiService.getMetrics, {
  *   autoExecute: true,
@@ -57,17 +57,12 @@ export function useApi<T = any>(
   apiFunction: (...args: any[]) => Promise<T>,
   options: UseApiOptions = {}
 ): UseApiState<T> {
-  const {
-    autoExecute = false,
-    dependencies = [],
-    onSuccess,
-    onError
-  } = options;
+  const { autoExecute = false, dependencies = [], onSuccess, onError } = options;
 
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Ref para controlar cancelamento de requisições
   const cancelRef = useRef<boolean>(false);
   const executionCountRef = useRef(0);
@@ -75,36 +70,39 @@ export function useApi<T = any>(
   /**
    * Executa a função da API
    */
-  const execute = useCallback(async (...args: any[]) => {
-    // Incrementar contador de execução para cancelar requisições anteriores
-    const currentExecution = ++executionCountRef.current;
-    cancelRef.current = false;
+  const execute = useCallback(
+    async (...args: any[]) => {
+      // Incrementar contador de execução para cancelar requisições anteriores
+      const currentExecution = ++executionCountRef.current;
+      cancelRef.current = false;
 
-    setLoading(true);
-    setError(null);
+      setLoading(true);
+      setError(null);
 
-    try {
-      const result = await apiFunction(...args);
-      
-      // Verificar se esta execução ainda é válida
-      if (currentExecution === executionCountRef.current && !cancelRef.current) {
-        setData(result);
-        onSuccess?.(result);
+      try {
+        const result = await apiFunction(...args);
+
+        // Verificar se esta execução ainda é válida
+        if (currentExecution === executionCountRef.current && !cancelRef.current) {
+          setData(result);
+          onSuccess?.(result);
+        }
+      } catch (err) {
+        // Verificar se esta execução ainda é válida
+        if (currentExecution === executionCountRef.current && !cancelRef.current) {
+          const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
+          setError(errorMessage);
+          onError?.(errorMessage);
+        }
+      } finally {
+        // Verificar se esta execução ainda é válida
+        if (currentExecution === executionCountRef.current && !cancelRef.current) {
+          setLoading(false);
+        }
       }
-    } catch (err) {
-      // Verificar se esta execução ainda é válida
-      if (currentExecution === executionCountRef.current && !cancelRef.current) {
-        const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
-        setError(errorMessage);
-        onError?.(errorMessage);
-      }
-    } finally {
-      // Verificar se esta execução ainda é válida
-      if (currentExecution === executionCountRef.current && !cancelRef.current) {
-        setLoading(false);
-      }
-    }
-  }, [apiFunction, onSuccess, onError]);
+    },
+    [apiFunction, onSuccess, onError]
+  );
 
   /**
    * Reseta o estado para os valores iniciais
@@ -136,7 +134,7 @@ export function useApi<T = any>(
     loading,
     error,
     execute,
-    reset
+    reset,
   };
 }
 
@@ -166,12 +164,15 @@ export function useSystemStatus(options?: UseApiOptions) {
 /**
  * Hook especializado para ranking de técnicos
  */
-export function useTechnicianRanking(filters?: {
-  start_date?: string;
-  end_date?: string;
-  level?: string;
-  limit?: number;
-}, options?: UseApiOptions) {
+export function useTechnicianRanking(
+  filters?: {
+    start_date?: string;
+    end_date?: string;
+    level?: string;
+    limit?: number;
+  },
+  options?: UseApiOptions
+) {
   const apiFunction = async () => {
     const { apiService } = await import('../services/api');
     return apiService.getTechnicianRanking(filters);

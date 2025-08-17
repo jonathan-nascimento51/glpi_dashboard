@@ -14,7 +14,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
   content,
   position = 'top',
   className = '',
-  delay = 300
+  delay = 300,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [actualPosition, setActualPosition] = useState(position);
@@ -47,7 +47,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
       const triggerRect = triggerRef.current.getBoundingClientRect();
       const viewport = {
         width: window.innerWidth,
-        height: window.innerHeight
+        height: window.innerHeight,
       };
 
       let newPosition = position;
@@ -70,28 +70,28 @@ export const Tooltip: React.FC<TooltipProps> = ({
           style = {
             top: triggerRect.top - 10,
             left: triggerRect.left + triggerRect.width / 2,
-            transform: 'translate(-50%, -100%)'
+            transform: 'translate(-50%, -100%)',
           };
           break;
         case 'bottom':
           style = {
             top: triggerRect.bottom + 10,
             left: triggerRect.left + triggerRect.width / 2,
-            transform: 'translate(-50%, 0)'
+            transform: 'translate(-50%, 0)',
           };
           break;
         case 'left':
           style = {
             top: triggerRect.top + triggerRect.height / 2,
             left: triggerRect.left - 10,
-            transform: 'translate(-100%, -50%)'
+            transform: 'translate(-100%, -50%)',
           };
           break;
         case 'right':
           style = {
             top: triggerRect.top + triggerRect.height / 2,
             left: triggerRect.right + 10,
-            transform: 'translate(0, -50%)'
+            transform: 'translate(0, -50%)',
           };
           break;
       }
@@ -105,7 +105,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
       // Atualizar posição quando a janela for redimensionada
       window.addEventListener('resize', updatePosition);
       window.addEventListener('scroll', updatePosition);
-      
+
       return () => {
         window.removeEventListener('resize', updatePosition);
         window.removeEventListener('scroll', updatePosition);
@@ -119,7 +119,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
 
   const getArrowClasses = () => {
     const baseClasses = 'absolute w-2 h-2 bg-gray-900 transform rotate-45';
-    
+
     switch (actualPosition) {
       case 'top':
         return `${baseClasses} top-full left-1/2 transform -translate-x-1/2 -translate-y-1/2`;
@@ -143,7 +143,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
   }, []);
 
   return (
-    <div 
+    <div
       ref={triggerRef}
       className={`relative inline-block ${className}`}
       onMouseEnter={showTooltip}
@@ -152,7 +152,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
       onBlur={hideTooltip}
     >
       {children}
-      
+
       <AnimatePresence>
         {isVisible && (
           <motion.div
@@ -164,7 +164,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
             className={getPositionClasses()}
             style={tooltipStyle}
           >
-            <div className="bg-gray-900 text-white text-sm rounded-lg px-3 py-2 shadow-lg max-w-xs relative">
+            <div className='bg-gray-900 text-white text-sm rounded-lg px-3 py-2 shadow-lg max-w-xs relative'>
               {content}
               <div className={getArrowClasses()} />
             </div>

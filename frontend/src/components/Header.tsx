@@ -20,7 +20,11 @@ interface HeaderProps {
   }>;
   onThemeChange: (theme: Theme) => void;
   onSearch: (query: string) => void;
-  onNotification: (title: string, message: string, type: 'success' | 'error' | 'warning' | 'info') => void;
+  onNotification: (
+    title: string,
+    message: string,
+    type: 'success' | 'error' | 'warning' | 'info'
+  ) => void;
   onDateRangeChange?: (dateRange: { startDate: string; endDate: string; label: string }) => void;
   onFilterTypeChange?: (type: string) => void;
   onPerformanceDashboard?: () => void;
@@ -62,7 +66,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
-  
+
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const themeRef = useRef<HTMLDivElement>(null);
@@ -71,10 +75,10 @@ export const Header: React.FC<HeaderProps> = ({
   // Format date for display - memoized
   const formatDate = useCallback((dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('pt-BR', { 
-      day: '2-digit', 
-      month: '2-digit', 
-      year: '2-digit' 
+    return date.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: '2-digit',
     });
   }, []);
 
@@ -84,39 +88,42 @@ export const Header: React.FC<HeaderProps> = ({
     if (!dateRange || !dateRange.startDate || !dateRange.endDate) {
       return 'Selecionar período';
     }
-    
+
     const start = new Date(dateRange.startDate);
     const end = new Date(dateRange.endDate);
     const diffTime = Math.abs(end.getTime() - start.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     const predefined = dateRanges.find(range => range.days === diffDays);
     if (predefined) return predefined.label;
-    
+
     return `${formatDate(dateRange.startDate)} - ${formatDate(dateRange.endDate)}`;
   }, [dateRange, formatDate]);
 
   // Handle predefined date range selection
-  const handleDateRangeSelect = useCallback((days: number) => {
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - days);
-    
-    const startStr = startDate.toISOString().split('T')[0];
-    const endStr = endDate.toISOString().split('T')[0];
-    
-    const range = dateRanges.find(r => r.days === days);
-    const newDateRange = {
-      startDate: startStr,
-      endDate: endStr,
-      label: range?.label || 'Período personalizado'
-    };
-    console.log('📅 Header - Enviando dateRange:', newDateRange);
-    onDateRangeChange?.(newDateRange);
-    setShowDatePicker(false);
-    
-    onNotification('Período Atualizado', `Filtro alterado para: ${range?.label}`, 'info');
-  }, [onDateRangeChange, onNotification]);
+  const handleDateRangeSelect = useCallback(
+    (days: number) => {
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+
+      const startStr = startDate.toISOString().split('T')[0];
+      const endStr = endDate.toISOString().split('T')[0];
+
+      const range = dateRanges.find(r => r.days === days);
+      const newDateRange = {
+        startDate: startStr,
+        endDate: endStr,
+        label: range?.label || 'Período personalizado',
+      };
+      console.log('📅 Header - Enviando dateRange:', newDateRange);
+      onDateRangeChange?.(newDateRange);
+      setShowDatePicker(false);
+
+      onNotification('Período Atualizado', `Filtro alterado para: ${range?.label}`, 'info');
+    },
+    [onDateRangeChange, onNotification]
+  );
 
   // Handle custom date range
   const handleCustomDateRange = useCallback(() => {
@@ -124,7 +131,7 @@ export const Header: React.FC<HeaderProps> = ({
       const customDateRange = {
         startDate: customStartDate,
         endDate: customEndDate,
-        label: 'Período personalizado'
+        label: 'Período personalizado',
       };
       console.log('📅 Header - Enviando período personalizado:', customDateRange);
       onDateRangeChange(customDateRange);
@@ -138,9 +145,12 @@ export const Header: React.FC<HeaderProps> = ({
     onSearch(query);
   }, 300);
 
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    debouncedSearch(e.target.value);
-  }, [debouncedSearch]);
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      debouncedSearch(e.target.value);
+    },
+    [debouncedSearch]
+  );
 
   const handleSearchFocus = useCallback(() => {
     if (searchResults.length > 0) setShowSearchResults(true);
@@ -150,15 +160,16 @@ export const Header: React.FC<HeaderProps> = ({
     setTimeout(() => setShowSearchResults(false), 200);
   }, []);
 
-
-
   // Theme change handler
-  const handleThemeChange = useCallback((newTheme: Theme) => {
-    onThemeChange(newTheme);
-    setShowThemeSelector(false);
-    const themeName = themes.find(t => t.value === newTheme)?.label;
-    onNotification('Tema', `Alterado para ${themeName}`, 'info');
-  }, [onThemeChange, onNotification]);
+  const handleThemeChange = useCallback(
+    (newTheme: Theme) => {
+      onThemeChange(newTheme);
+      setShowThemeSelector(false);
+      const themeName = themes.find(t => t.value === newTheme)?.label;
+      onNotification('Tema', `Alterado para ${themeName}`, 'info');
+    },
+    [onThemeChange, onNotification]
+  );
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -172,7 +183,6 @@ export const Header: React.FC<HeaderProps> = ({
         setShowThemeSelector(false);
         setShowDatePicker(false);
       }
-
     };
 
     document.addEventListener('keydown', handleKeyDown);
@@ -198,10 +208,7 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   // Memoize current theme to prevent recalculation
-  const currentTheme = useMemo(() => 
-    themes.find(t => t.value === theme) || themes[0], 
-    [theme]
-  );
+  const currentTheme = useMemo(() => themes.find(t => t.value === theme) || themes[0], [theme]);
 
   // Memoize search clear handler
   const handleSearchClear = useCallback(() => {
@@ -209,143 +216,144 @@ export const Header: React.FC<HeaderProps> = ({
   }, [onSearch]);
 
   return (
-    <header className="figma-header w-full shadow-xl relative z-50">
-      <div className="w-full px-6 py-4">
-        <div className="flex items-center justify-between w-full">
-          
+    <header className='figma-header w-full shadow-xl relative z-50'>
+      <div className='w-full px-6 py-4'>
+        <div className='flex items-center justify-between w-full'>
           {/* ========== SEÇÃO ESQUERDA: LOGO + TÍTULO ========== */}
-          <div className="flex items-center space-x-4 min-w-0 flex-shrink-0">
-            <div className="w-11 h-11 figma-glass-card rounded-xl flex items-center justify-center hover:scale-105 transition-all duration-200 group">
-              <SimpleTechIcon size={24} className="group-hover:scale-110 transition-transform" />
+          <div className='flex items-center space-x-4 min-w-0 flex-shrink-0'>
+            <div className='w-11 h-11 figma-glass-card rounded-xl flex items-center justify-center hover:scale-105 transition-all duration-200 group'>
+              <SimpleTechIcon size={24} className='group-hover:scale-110 transition-transform' />
             </div>
-            <div className="min-w-0">
-              <h1 className="figma-heading-large text-xl font-bold truncate">
-                Dashboard GLPI
-              </h1>
-              <p className="figma-subheading text-sm font-medium truncate">
+            <div className='min-w-0'>
+              <h1 className='figma-heading-large text-xl font-bold truncate'>Dashboard GLPI</h1>
+              <p className='figma-subheading text-sm font-medium truncate'>
                 Departamento de Tecnologia do Estado
               </p>
             </div>
           </div>
-          
+
           {/* ========== SEÇÃO CENTRO: BUSCA + FILTRO DE DATA ========== */}
-          <div className="flex items-center space-x-6 flex-1 justify-center max-w-2xl mx-8">
-            
+          <div className='flex items-center space-x-6 flex-1 justify-center max-w-2xl mx-8'>
             {/* Search Bar */}
-            <div className="relative flex-1 max-w-md" ref={searchRef}>
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 figma-body opacity-60" />
-                <input 
+            <div className='relative flex-1 max-w-md' ref={searchRef}>
+              <div className='relative'>
+                <Search className='absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 figma-body opacity-60' />
+                <input
                   ref={inputRef}
-                  type="text" 
+                  type='text'
                   value={searchQuery}
                   onChange={handleSearchChange}
                   onFocus={handleSearchFocus}
                   onBlur={handleSearchBlur}
-                  placeholder="Buscar chamados... (Ctrl+K)"
-                  className="input-field w-full pl-12 pr-10 py-3 rounded-xl text-sm font-medium"
+                  placeholder='Buscar chamados... (Ctrl+K)'
+                  className='input-field w-full pl-12 pr-10 py-3 rounded-xl text-sm font-medium'
                 />
                 {searchQuery && (
                   <button
                     onClick={handleSearchClear}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 figma-body opacity-60 hover:opacity-100 transition-opacity"
+                    className='absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 figma-body opacity-60 hover:opacity-100 transition-opacity'
                   >
-                    <X className="w-4 h-4" />
+                    <X className='w-4 h-4' />
                   </button>
                 )}
               </div>
-              
+
               {/* Search Results */}
               {showSearchResults && searchResults.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-200 max-h-80 overflow-y-auto z-50">
+                <div className='absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-200 max-h-80 overflow-y-auto z-50'>
                   {searchResults.map((result, index) => (
                     <button
                       key={`search-result-${index}`}
-                      className="w-full px-4 py-3 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
+                      className='w-full px-4 py-3 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors'
                     >
-                      <div className="text-sm font-medium text-gray-900">{result.title}</div>
-                      <div className="text-xs text-gray-500 mt-1">{result.description}</div>
+                      <div className='text-sm font-medium text-gray-900'>{result.title}</div>
+                      <div className='text-xs text-gray-500 mt-1'>{result.description}</div>
                     </button>
                   ))}
                 </div>
               )}
             </div>
-            
+
             {/* Date Range Picker - FUNCIONAL */}
-            <div className="relative" ref={dateRef}>
+            <div className='relative' ref={dateRef}>
               <button
                 onClick={() => setShowDatePicker(!showDatePicker)}
-                className="btn-secondary flex items-center space-x-3 px-4 py-3 rounded-xl font-medium"
+                className='btn-secondary flex items-center space-x-3 px-4 py-3 rounded-xl font-medium'
               >
-                <Calendar className="w-4 h-4" />
-                <span className="text-sm whitespace-nowrap">{getDateRangeLabel}</span>
-                <ChevronDown className="w-4 h-4" />
+                <Calendar className='w-4 h-4' />
+                <span className='text-sm whitespace-nowrap'>{getDateRangeLabel}</span>
+                <ChevronDown className='w-4 h-4' />
               </button>
-              
+
               {/* Date Picker Dropdown */}
               {showDatePicker && (
-                <div className="absolute top-full right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-200 py-3 min-w-80 z-50">
-                  <div className="px-4 pb-3 border-b border-gray-100">
-                    <h3 className="text-sm font-semibold text-gray-900">Filtros de Data</h3>
+                <div className='absolute top-full right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-200 py-3 min-w-80 z-50'>
+                  <div className='px-4 pb-3 border-b border-gray-100'>
+                    <h3 className='text-sm font-semibold text-gray-900'>Filtros de Data</h3>
                   </div>
-                  
+
                   {/* Filter Type Selector */}
                   {onFilterTypeChange && availableFilterTypes && (
-                    <div className="px-4 py-3 border-b border-gray-100">
-                      <div className="text-xs font-medium text-gray-500 mb-2">Tipo de Filtro</div>
+                    <div className='px-4 py-3 border-b border-gray-100'>
+                      <div className='text-xs font-medium text-gray-500 mb-2'>Tipo de Filtro</div>
                       <select
                         value={filterType || 'creation'}
-                        onChange={(e) => onFilterTypeChange(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        onChange={e => onFilterTypeChange(e.target.value)}
+                        className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
                       >
-                        {availableFilterTypes.map((type) => (
+                        {availableFilterTypes.map(type => (
                           <option key={type.key} value={type.key}>
                             {type.name}
                           </option>
                         ))}
                       </select>
-                      <div className="text-xs text-gray-400 mt-1">
-                        {availableFilterTypes.find(t => t.key === (filterType || 'creation'))?.description}
+                      <div className='text-xs text-gray-400 mt-1'>
+                        {
+                          availableFilterTypes.find(t => t.key === (filterType || 'creation'))
+                            ?.description
+                        }
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Predefined Ranges */}
-                  <div className="py-2">
-                    {dateRanges.map((range) => (
+                  <div className='py-2'>
+                    {dateRanges.map(range => (
                       <button
                         key={range.days}
                         onClick={() => handleDateRangeSelect(range.days)}
-                        className="w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors text-sm text-gray-700 hover:text-gray-900"
+                        className='w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors text-sm text-gray-700 hover:text-gray-900'
                       >
                         {range.label}
                       </button>
                     ))}
                   </div>
-                  
+
                   {/* Custom Range */}
-                  <div className="border-t border-gray-100 pt-3 px-4">
-                    <div className="text-xs font-medium text-gray-500 mb-2">Período Personalizado</div>
-                    <div className="grid grid-cols-2 gap-2 mb-3">
+                  <div className='border-t border-gray-100 pt-3 px-4'>
+                    <div className='text-xs font-medium text-gray-500 mb-2'>
+                      Período Personalizado
+                    </div>
+                    <div className='grid grid-cols-2 gap-2 mb-3'>
                       <input
-                        type="date"
+                        type='date'
                         value={customStartDate}
-                        onChange={(e) => setCustomStartDate(e.target.value)}
-                        className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Data inicial"
+                        onChange={e => setCustomStartDate(e.target.value)}
+                        className='px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+                        placeholder='Data inicial'
                       />
                       <input
-                        type="date"
+                        type='date'
                         value={customEndDate}
-                        onChange={(e) => setCustomEndDate(e.target.value)}
-                        className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Data final"
+                        onChange={e => setCustomEndDate(e.target.value)}
+                        className='px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+                        placeholder='Data final'
                       />
                     </div>
                     <button
                       onClick={handleCustomDateRange}
                       disabled={!customStartDate || !customEndDate}
-                      className="w-full px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className='w-full px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
                     >
                       Aplicar Período
                     </button>
@@ -354,37 +362,41 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </div>
           </div>
-          
+
           {/* ========== SEÇÃO DIREITA: CONTROLES + STATUS ========== */}
-          <div className="flex items-center space-x-4 flex-shrink-0">
-            
+          <div className='flex items-center space-x-4 flex-shrink-0'>
             {/* Performance Dashboard Button */}
             {onPerformanceDashboard && (
               <button
                 onClick={onPerformanceDashboard}
-                className="btn-secondary flex items-center space-x-2 px-3 py-2 rounded-xl text-sm font-medium hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                title="Abrir Dashboard de Performance"
+                className='btn-secondary flex items-center space-x-2 px-3 py-2 rounded-xl text-sm font-medium hover:bg-blue-50 hover:text-blue-600 transition-colors'
+                title='Abrir Dashboard de Performance'
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'
+                  />
                 </svg>
                 <span>Performance</span>
               </button>
             )}
 
             {/* Theme Selector */}
-            <div className="relative" ref={themeRef}>
+            <div className='relative' ref={themeRef}>
               <button
                 onClick={() => setShowThemeSelector(!showThemeSelector)}
-                className="btn-secondary flex items-center space-x-2 px-3 py-2 rounded-xl text-sm font-medium"
+                className='btn-secondary flex items-center space-x-2 px-3 py-2 rounded-xl text-sm font-medium'
               >
                 <span>{currentTheme.icon}</span>
                 <span>{currentTheme.label}</span>
               </button>
-              
+
               {showThemeSelector && (
-                <div className="absolute top-full right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 min-w-40 z-50">
-                  {themes.map((themeOption) => (
+                <div className='absolute top-full right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 min-w-40 z-50'>
+                  {themes.map(themeOption => (
                     <button
                       key={themeOption.value}
                       onClick={() => handleThemeChange(themeOption.value)}
@@ -393,22 +405,20 @@ export const Header: React.FC<HeaderProps> = ({
                       }`}
                     >
                       <span>{themeOption.icon}</span>
-                      <span className="text-sm">{themeOption.label}</span>
+                      <span className='text-sm'>{themeOption.label}</span>
                       {theme === themeOption.value && (
-                        <div className="ml-auto w-2 h-2 bg-blue-500 rounded-full" />
+                        <div className='ml-auto w-2 h-2 bg-blue-500 rounded-full' />
                       )}
                     </button>
                   ))}
                 </div>
               )}
             </div>
-            
-
 
             {/* Current Time */}
-            <div className="figma-glass-card flex items-center space-x-2 text-sm px-3 py-2 rounded-xl font-mono">
-              <Clock className="w-4 h-4" />
-              <span className="figma-body">{currentTime}</span>
+            <div className='figma-glass-card flex items-center space-x-2 text-sm px-3 py-2 rounded-xl font-mono'>
+              <Clock className='w-4 h-4' />
+              <span className='figma-body'>{currentTime}</span>
             </div>
           </div>
         </div>

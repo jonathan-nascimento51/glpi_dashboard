@@ -19,11 +19,11 @@ vi.mock('framer-motion', () => ({
 
 // Mock dos ícones
 vi.mock('lucide-react', () => ({
-  TrendingUp: () => <div data-testid="trending-up-icon" />,
-  TrendingDown: () => <div data-testid="trending-down-icon" />,
-  Minus: () => <div data-testid="minus-icon" />,
-  Ticket: () => <div data-testid="ticket-icon" />,
-  Info: () => <div data-testid="info-icon" />,
+  TrendingUp: () => <div data-testid='trending-up-icon' />,
+  TrendingDown: () => <div data-testid='trending-down-icon' />,
+  Minus: () => <div data-testid='minus-icon' />,
+  Ticket: () => <div data-testid='ticket-icon' />,
+  Info: () => <div data-testid='info-icon' />,
 }));
 
 const defaultProps = {
@@ -54,7 +54,7 @@ describe('StatusCard Component', () => {
     it('deve renderizar sem ícone quando não fornecido', () => {
       const propsWithoutIcon = { ...defaultProps };
       delete propsWithoutIcon.icon;
-      
+
       render(<StatusCard {...propsWithoutIcon} />);
 
       expect(screen.getByText('Novos Tickets')).toBeInTheDocument();
@@ -70,8 +70,8 @@ describe('StatusCard Component', () => {
         trend: {
           direction: 'up' as const,
           value: 12,
-          label: 'vs mês anterior'
-        }
+          label: 'vs mês anterior',
+        },
       };
 
       render(<StatusCard {...propsWithTrend} />);
@@ -86,8 +86,8 @@ describe('StatusCard Component', () => {
         trend: {
           direction: 'down' as const,
           value: 5,
-          label: 'vs mês anterior'
-        }
+          label: 'vs mês anterior',
+        },
       };
 
       render(<StatusCard {...propsWithTrend} />);
@@ -102,8 +102,8 @@ describe('StatusCard Component', () => {
         trend: {
           direction: 'stable' as const,
           value: 0,
-          label: 'sem alteração'
-        }
+          label: 'sem alteração',
+        },
       };
 
       render(<StatusCard {...propsWithTrend} />);
@@ -118,7 +118,7 @@ describe('StatusCard Component', () => {
       const mockOnClick = vi.fn();
       const propsWithClick = {
         ...defaultProps,
-        onClick: mockOnClick
+        onClick: mockOnClick,
       };
 
       render(<StatusCard {...propsWithClick} />);
@@ -133,7 +133,7 @@ describe('StatusCard Component', () => {
       const mockOnClick = vi.fn();
       const propsWithClick = {
         ...defaultProps,
-        onClick: mockOnClick
+        onClick: mockOnClick,
       };
 
       const { container } = render(<StatusCard {...propsWithClick} />);
@@ -156,7 +156,7 @@ describe('StatusCard Component', () => {
     it('deve aplicar variante compact', () => {
       const propsWithVariant = {
         ...defaultProps,
-        variant: 'compact' as const
+        variant: 'compact' as const,
       };
 
       render(<StatusCard {...propsWithVariant} />);
@@ -169,7 +169,7 @@ describe('StatusCard Component', () => {
       const propsWithVariant = {
         ...defaultProps,
         variant: 'gradient' as const,
-        status: 'active'
+        status: 'active',
       };
 
       render(<StatusCard {...propsWithVariant} />);
@@ -183,7 +183,7 @@ describe('StatusCard Component', () => {
     it('deve formatar números grandes corretamente', () => {
       const propsWithLargeValue = {
         ...defaultProps,
-        value: 1234567
+        value: 1234567,
       };
 
       render(<StatusCard {...propsWithLargeValue} />);
@@ -196,7 +196,7 @@ describe('StatusCard Component', () => {
     it('deve lidar com valor zero', () => {
       const propsWithZero = {
         ...defaultProps,
-        value: 0
+        value: 0,
       };
 
       render(<StatusCard {...propsWithZero} />);
@@ -207,7 +207,7 @@ describe('StatusCard Component', () => {
     it('deve lidar com valores negativos', () => {
       const propsWithNegative = {
         ...defaultProps,
-        value: -5
+        value: -5,
       };
 
       render(<StatusCard {...propsWithNegative} />);
@@ -221,7 +221,7 @@ describe('StatusCard Component', () => {
       const propsWithProgress = {
         ...defaultProps,
         showProgress: true,
-        maxValue: 100
+        maxValue: 100,
       };
 
       render(<StatusCard {...propsWithProgress} />);
@@ -236,7 +236,7 @@ describe('StatusCard Component', () => {
         ...defaultProps,
         value: 25,
         showProgress: true,
-        maxValue: 100
+        maxValue: 100,
       };
 
       render(<StatusCard {...propsWithProgress} />);
@@ -253,7 +253,7 @@ describe('StatusCard Component', () => {
       // Verificar se o card tem estrutura adequada
       const title = screen.getByText('Novos Tickets');
       const value = screen.getByText('15');
-      
+
       expect(title).toBeInTheDocument();
       expect(value).toBeInTheDocument();
     });
@@ -262,7 +262,7 @@ describe('StatusCard Component', () => {
       const mockOnClick = vi.fn();
       const propsWithClick = {
         ...defaultProps,
-        onClick: mockOnClick
+        onClick: mockOnClick,
       };
 
       const { container } = render(<StatusCard {...propsWithClick} />);
@@ -279,7 +279,7 @@ describe('StatusCard Component', () => {
       const invalidProps = {
         title: '',
         value: NaN,
-        trend: null as any
+        trend: null as any,
       };
 
       expect(() => {
@@ -290,7 +290,7 @@ describe('StatusCard Component', () => {
     it('deve renderizar com className customizada', () => {
       const propsWithClass = {
         ...defaultProps,
-        className: 'custom-status-card'
+        className: 'custom-status-card',
       };
 
       const { container } = render(<StatusCard {...propsWithClass} />);

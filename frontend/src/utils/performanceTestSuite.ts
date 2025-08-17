@@ -65,7 +65,7 @@ class PerformanceTestSuite {
       unit: 'ms',
       category: 'homepage',
       criticalThreshold: 2000,
-      testFunction: this.testHomepageLoadTime.bind(this)
+      testFunction: this.testHomepageLoadTime.bind(this),
     });
 
     this.addTestCase({
@@ -75,7 +75,7 @@ class PerformanceTestSuite {
       unit: 'ms',
       category: 'homepage',
       criticalThreshold: 600,
-      testFunction: this.testHomepageRenderTime.bind(this)
+      testFunction: this.testHomepageRenderTime.bind(this),
     });
 
     this.addTestCase({
@@ -85,7 +85,7 @@ class PerformanceTestSuite {
       unit: 'ms',
       category: 'homepage',
       criticalThreshold: 1000,
-      testFunction: this.testHomepageApiResponse.bind(this)
+      testFunction: this.testHomepageApiResponse.bind(this),
     });
 
     // Testes de Filtros
@@ -96,7 +96,7 @@ class PerformanceTestSuite {
       unit: 'ms',
       category: 'filters',
       criticalThreshold: 1000,
-      testFunction: this.testFilterResponseTime.bind(this)
+      testFunction: this.testFilterResponseTime.bind(this),
     });
 
     this.addTestCase({
@@ -106,7 +106,7 @@ class PerformanceTestSuite {
       unit: 'ms',
       category: 'filters',
       criticalThreshold: 500,
-      testFunction: this.testFilterRenderTime.bind(this)
+      testFunction: this.testFilterRenderTime.bind(this),
     });
 
     // Testes de Auto-refresh
@@ -117,7 +117,7 @@ class PerformanceTestSuite {
       unit: 'ms',
       category: 'autoRefresh',
       criticalThreshold: 1500,
-      testFunction: this.testAutoRefreshUpdateTime.bind(this)
+      testFunction: this.testAutoRefreshUpdateTime.bind(this),
     });
 
     this.addTestCase({
@@ -127,7 +127,7 @@ class PerformanceTestSuite {
       unit: 'ms',
       category: 'autoRefresh',
       criticalThreshold: 800,
-      testFunction: this.testAutoRefreshApiTime.bind(this)
+      testFunction: this.testAutoRefreshApiTime.bind(this),
     });
 
     // Testes de Web Vitals
@@ -138,7 +138,7 @@ class PerformanceTestSuite {
       unit: 'ms',
       category: 'webVitals',
       criticalThreshold: 4000,
-      testFunction: this.testLCP.bind(this)
+      testFunction: this.testLCP.bind(this),
     });
 
     this.addTestCase({
@@ -148,7 +148,7 @@ class PerformanceTestSuite {
       unit: 'ms',
       category: 'webVitals',
       criticalThreshold: 300,
-      testFunction: this.testFID.bind(this)
+      testFunction: this.testFID.bind(this),
     });
 
     this.addTestCase({
@@ -158,7 +158,7 @@ class PerformanceTestSuite {
       unit: 'score',
       category: 'webVitals',
       criticalThreshold: 0.25,
-      testFunction: this.testCLS.bind(this)
+      testFunction: this.testCLS.bind(this),
     });
   }
 
@@ -195,11 +195,13 @@ class PerformanceTestSuite {
       for (const testCase of this.testCases) {
         const result = await this.runSingleTest(testCase);
         results.push(result);
-        
+
         // Log do resultado
         const status = result.passed ? '✅' : '❌';
         const critical = result.criticalFailure ? ' (CRÍTICO)' : '';
-        console.log(`${status} ${testCase.name}: ${result.value}${testCase.unit} (target: ${testCase.target}${testCase.unit})${critical}`);
+        console.log(
+          `${status} ${testCase.name}: ${result.value}${testCase.unit} (target: ${testCase.target}${testCase.unit})${critical}`
+        );
       }
     } finally {
       this.isRunning = false;
@@ -220,13 +222,15 @@ class PerformanceTestSuite {
    */
   private async runSingleTest(testCase: PerformanceTestCase): Promise<PerformanceTestResult> {
     const startTime = performance.now();
-    
+
     try {
       const value = await testCase.testFunction();
       const executionTime = performance.now() - startTime;
-      
+
       const passed = value <= testCase.target;
-      const criticalFailure = testCase.criticalThreshold ? value > testCase.criticalThreshold : false;
+      const criticalFailure = testCase.criticalThreshold
+        ? value > testCase.criticalThreshold
+        : false;
 
       return {
         testCase: testCase.name,
@@ -235,11 +239,11 @@ class PerformanceTestSuite {
         passed,
         criticalFailure,
         executionTime,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     } catch (error) {
       const executionTime = performance.now() - startTime;
-      
+
       return {
         testCase: testCase.name,
         value: -1,
@@ -248,7 +252,7 @@ class PerformanceTestSuite {
         criticalFailure: true,
         executionTime,
         timestamp: Date.now(),
-        error: error instanceof Error ? error.message : 'Erro desconhecido'
+        error: error instanceof Error ? error.message : 'Erro desconhecido',
       };
     }
   }
@@ -263,22 +267,25 @@ class PerformanceTestSuite {
     const passedTests = results.filter(r => r.passed).length;
     const failedTests = results.length - passedTests;
     const criticalFailures = results.filter(r => r.criticalFailure).length;
-    
+
     // Agrupar por categoria
     const categories = ['homepage', 'filters', 'autoRefresh', 'webVitals'] as const;
-    const summary = categories.reduce((acc, category) => {
-      const categoryTests = this.testCases.filter(tc => tc.category === category);
-      const categoryResults = results.filter(r => 
-        categoryTests.some(tc => tc.name === r.testCase)
-      );
-      
-      acc[category] = {
-        passed: categoryResults.filter(r => r.passed).length,
-        total: categoryResults.length
-      };
-      
-      return acc;
-    }, {} as PerformanceTestSuiteResult['summary']);
+    const summary = categories.reduce(
+      (acc, category) => {
+        const categoryTests = this.testCases.filter(tc => tc.category === category);
+        const categoryResults = results.filter(r =>
+          categoryTests.some(tc => tc.name === r.testCase)
+        );
+
+        acc[category] = {
+          passed: categoryResults.filter(r => r.passed).length,
+          total: categoryResults.length,
+        };
+
+        return acc;
+      },
+      {} as PerformanceTestSuiteResult['summary']
+    );
 
     return {
       totalTests: results.length,
@@ -289,7 +296,7 @@ class PerformanceTestSuite {
       executionTime,
       results,
       summary,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
@@ -298,16 +305,16 @@ class PerformanceTestSuite {
   private async testHomepageLoadTime(): Promise<number> {
     // Simular carregamento da homepage
     const startTime = performance.now();
-    
+
     // Aguardar um frame para simular renderização
     await new Promise(resolve => requestAnimationFrame(resolve));
-    
+
     // Obter métricas de navegação se disponíveis
     const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
     if (navigation) {
       return navigation.loadEventEnd - navigation.loadEventStart;
     }
-    
+
     return performance.now() - startTime;
   }
 
@@ -326,10 +333,10 @@ class PerformanceTestSuite {
   private async testFilterResponseTime(): Promise<number> {
     // Simular aplicação de filtro
     const startTime = performance.now();
-    
+
     // Simular operação de filtro
     await new Promise(resolve => setTimeout(resolve, 50));
-    
+
     return performance.now() - startTime;
   }
 
@@ -342,10 +349,10 @@ class PerformanceTestSuite {
   private async testAutoRefreshUpdateTime(): Promise<number> {
     // Simular auto-refresh
     const startTime = performance.now();
-    
+
     // Simular atualização
     await new Promise(resolve => setTimeout(resolve, 100));
-    
+
     return performance.now() - startTime;
   }
 
@@ -376,7 +383,9 @@ class PerformanceTestSuite {
   /**
    * Executa testes específicos por categoria
    */
-  async runCategoryTests(category: PerformanceTestCase['category']): Promise<PerformanceTestResult[]> {
+  async runCategoryTests(
+    category: PerformanceTestCase['category']
+  ): Promise<PerformanceTestResult[]> {
     const categoryTests = this.testCases.filter(tc => tc.category === category);
     const results: PerformanceTestResult[] = [];
 
@@ -398,37 +407,43 @@ class PerformanceTestSuite {
     releaseApproved: boolean;
   }> {
     console.log('📋 Gerando relatório de release...');
-    
+
     const suiteResult = await this.runTestSuite();
-    
+
     // Comparar com linha de base se disponível
     const baseline = performanceBaseline.getBaseline();
     let baselineComparison = null;
-    
+
     if (baseline) {
       // Construir métricas atuais baseadas nos resultados dos testes
       const currentMetrics = {
         homepage: {
           loadTime: suiteResult.results.find(r => r.testCase === 'Homepage Load Time')?.value || 0,
-          renderTime: suiteResult.results.find(r => r.testCase === 'Homepage Initial Render')?.value || 0,
-          apiResponseTime: suiteResult.results.find(r => r.testCase === 'Homepage API Response')?.value || 0
+          renderTime:
+            suiteResult.results.find(r => r.testCase === 'Homepage Initial Render')?.value || 0,
+          apiResponseTime:
+            suiteResult.results.find(r => r.testCase === 'Homepage API Response')?.value || 0,
         },
         filters: {
-          responseTime: suiteResult.results.find(r => r.testCase === 'Filter Response Time')?.value || 0,
-          renderTime: suiteResult.results.find(r => r.testCase === 'Filter Render Time')?.value || 0
+          responseTime:
+            suiteResult.results.find(r => r.testCase === 'Filter Response Time')?.value || 0,
+          renderTime:
+            suiteResult.results.find(r => r.testCase === 'Filter Render Time')?.value || 0,
         },
         autoRefresh: {
-          updateTime: suiteResult.results.find(r => r.testCase === 'Auto-refresh Update Time')?.value || 0,
-          apiTime: suiteResult.results.find(r => r.testCase === 'Auto-refresh API Time')?.value || 0
-        }
+          updateTime:
+            suiteResult.results.find(r => r.testCase === 'Auto-refresh Update Time')?.value || 0,
+          apiTime:
+            suiteResult.results.find(r => r.testCase === 'Auto-refresh API Time')?.value || 0,
+        },
       };
-      
+
       baselineComparison = performanceBaseline.generateComparisonReport(currentMetrics);
     }
 
     // Gerar recomendações
     const recommendations = this.generateReleaseRecommendations(suiteResult, baselineComparison);
-    
+
     // Determinar se o release é aprovado
     const releaseApproved = suiteResult.overallPassed && suiteResult.criticalFailures === 0;
 
@@ -436,13 +451,13 @@ class PerformanceTestSuite {
       suiteResult,
       baselineComparison,
       recommendations,
-      releaseApproved
+      releaseApproved,
     };
 
     console.log('📊 Relatório de Release:', {
       testsPassados: `${suiteResult.passedTests}/${suiteResult.totalTests}`,
       falhasCriticas: suiteResult.criticalFailures,
-      aprovado: releaseApproved ? 'SIM' : 'NÃO'
+      aprovado: releaseApproved ? 'SIM' : 'NÃO',
     });
 
     return report;
@@ -465,21 +480,27 @@ class PerformanceTestSuite {
     // Verificar testes falhados
     const failedTests = suiteResult.results.filter(r => !r.passed);
     if (failedTests.length > 0) {
-      recommendations.push(`⚠️ ${failedTests.length} teste(s) falharam: ${failedTests.map(t => t.testCase).join(', ')}`);
+      recommendations.push(
+        `⚠️ ${failedTests.length} teste(s) falharam: ${failedTests.map(t => t.testCase).join(', ')}`
+      );
     }
 
     // Verificar degradação em relação à linha de base
     if (baselineComparison?.comparisons) {
       const degraded = baselineComparison.comparisons.filter((c: any) => c.status === 'degraded');
       if (degraded.length > 0) {
-        recommendations.push(`📉 Performance degradou em: ${degraded.map((d: any) => d.metric).join(', ')}`);
+        recommendations.push(
+          `📉 Performance degradou em: ${degraded.map((d: any) => d.metric).join(', ')}`
+        );
       }
     }
 
     // Recomendações por categoria
     Object.entries(suiteResult.summary).forEach(([category, stats]) => {
       if (stats.passed < stats.total) {
-        recommendations.push(`🔧 Otimizar categoria ${category}: ${stats.passed}/${stats.total} testes passaram`);
+        recommendations.push(
+          `🔧 Otimizar categoria ${category}: ${stats.passed}/${stats.total} testes passaram`
+        );
       }
     });
 
@@ -511,11 +532,11 @@ export const performanceTestSuite = new PerformanceTestSuite();
 // Utilitários para debugging e CI/CD
 export const debugTestSuite = {
   runTests: () => performanceTestSuite.runTestSuite(),
-  runCategoryTests: (category: PerformanceTestCase['category']) => 
+  runCategoryTests: (category: PerformanceTestCase['category']) =>
     performanceTestSuite.runCategoryTests(category),
   generateReleaseReport: () => performanceTestSuite.generateReleaseReport(),
   getTestCases: () => performanceTestSuite.getTestCases(),
-  addTestCase: (testCase: PerformanceTestCase) => performanceTestSuite.addTestCase(testCase)
+  addTestCase: (testCase: PerformanceTestCase) => performanceTestSuite.addTestCase(testCase),
 };
 
 // Expor no window para debugging em desenvolvimento
@@ -528,7 +549,7 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
 export const runPreReleaseTests = async (): Promise<boolean> => {
   try {
     const report = await performanceTestSuite.generateReleaseReport();
-    
+
     // Log para CI/CD
     console.log('='.repeat(50));
     console.log('RELATÓRIO DE PERFORMANCE PRÉ-RELEASE');
@@ -540,7 +561,7 @@ export const runPreReleaseTests = async (): Promise<boolean> => {
     console.log('Recomendações:');
     report.recommendations.forEach(rec => console.log(`  - ${rec}`));
     console.log('='.repeat(50));
-    
+
     return report.releaseApproved;
   } catch (error) {
     console.error('Erro ao executar testes pré-release:', error);

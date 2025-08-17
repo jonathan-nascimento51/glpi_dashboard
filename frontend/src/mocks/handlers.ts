@@ -8,7 +8,7 @@ export const handlers = [
   rest.get(`${API_BASE_URL}/api/dashboard/metrics`, (req, res, ctx) => {
     const startDate = req.url.searchParams.get('start_date');
     const endDate = req.url.searchParams.get('end_date');
-    
+
     // Simula filtro por data
     let metrics = mockData.dashboardMetrics;
     if (startDate && endDate) {
@@ -17,17 +17,17 @@ export const handlers = [
         ...metrics,
         filtered: true,
         start_date: startDate,
-        end_date: endDate
+        end_date: endDate,
       };
     }
-    
+
     return res(
       ctx.delay(100), // Simula latência da rede
       ctx.status(200),
       ctx.json({
         success: true,
         data: metrics,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       })
     );
   }),
@@ -39,9 +39,9 @@ export const handlers = [
     const status = req.url.searchParams.get('status');
     const priority = req.url.searchParams.get('priority');
     const search = req.url.searchParams.get('search');
-    
+
     let tickets = [...mockData.tickets];
-    
+
     // Filtros
     if (status) {
       tickets = tickets.filter(ticket => ticket.status === status);
@@ -50,17 +50,18 @@ export const handlers = [
       tickets = tickets.filter(ticket => ticket.priority === priority);
     }
     if (search) {
-      tickets = tickets.filter(ticket => 
-        ticket.title.toLowerCase().includes(search.toLowerCase()) ||
-        ticket.description.toLowerCase().includes(search.toLowerCase())
+      tickets = tickets.filter(
+        ticket =>
+          ticket.title.toLowerCase().includes(search.toLowerCase()) ||
+          ticket.description.toLowerCase().includes(search.toLowerCase())
       );
     }
-    
+
     // Paginação
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
     const paginatedTickets = tickets.slice(startIndex, endIndex);
-    
+
     return res(
       ctx.delay(150),
       ctx.status(200),
@@ -71,8 +72,8 @@ export const handlers = [
           page,
           limit,
           total: tickets.length,
-          pages: Math.ceil(tickets.length / limit)
-        }
+          pages: Math.ceil(tickets.length / limit),
+        },
       })
     );
   }),
@@ -81,23 +82,23 @@ export const handlers = [
   rest.get(`${API_BASE_URL}/api/tickets/:id`, (req, res, ctx) => {
     const { id } = req.params;
     const ticket = mockData.tickets.find(t => t.id === parseInt(id as string));
-    
+
     if (!ticket) {
       return res(
         ctx.status(404),
         ctx.json({
           success: false,
-          error: 'Ticket not found'
+          error: 'Ticket not found',
         })
       );
     }
-    
+
     return res(
       ctx.delay(100),
       ctx.status(200),
       ctx.json({
         success: true,
-        data: ticket
+        data: ticket,
       })
     );
   }),
@@ -113,8 +114,8 @@ export const handlers = [
           id: Date.now(),
           ...req.body,
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }
+          updated_at: new Date().toISOString(),
+        },
       })
     );
   }),
@@ -123,17 +124,17 @@ export const handlers = [
   rest.put(`${API_BASE_URL}/api/tickets/:id`, (req, res, ctx) => {
     const { id } = req.params;
     const ticket = mockData.tickets.find(t => t.id === parseInt(id as string));
-    
+
     if (!ticket) {
       return res(
         ctx.status(404),
         ctx.json({
           success: false,
-          error: 'Ticket not found'
+          error: 'Ticket not found',
         })
       );
     }
-    
+
     return res(
       ctx.delay(150),
       ctx.status(200),
@@ -142,8 +143,8 @@ export const handlers = [
         data: {
           ...ticket,
           ...req.body,
-          updated_at: new Date().toISOString()
-        }
+          updated_at: new Date().toISOString(),
+        },
       })
     );
   }),
@@ -152,21 +153,18 @@ export const handlers = [
   rest.delete(`${API_BASE_URL}/api/tickets/:id`, (req, res, ctx) => {
     const { id } = req.params;
     const ticket = mockData.tickets.find(t => t.id === parseInt(id as string));
-    
+
     if (!ticket) {
       return res(
         ctx.status(404),
         ctx.json({
           success: false,
-          error: 'Ticket not found'
+          error: 'Ticket not found',
         })
       );
     }
-    
-    return res(
-      ctx.delay(100),
-      ctx.status(204)
-    );
+
+    return res(ctx.delay(100), ctx.status(204));
   }),
 
   // Users list
@@ -176,7 +174,7 @@ export const handlers = [
       ctx.status(200),
       ctx.json({
         success: true,
-        data: mockData.users
+        data: mockData.users,
       })
     );
   }),
@@ -184,13 +182,13 @@ export const handlers = [
   // Performance metrics
   rest.get(`${API_BASE_URL}/api/performance`, (req, res, ctx) => {
     const period = req.url.searchParams.get('period') || '7d';
-    
+
     return res(
       ctx.delay(200),
       ctx.status(200),
       ctx.json({
         success: true,
-        data: mockData.performanceMetrics[period] || mockData.performanceMetrics['7d']
+        data: mockData.performanceMetrics[period] || mockData.performanceMetrics['7d'],
       })
     );
   }),
@@ -199,13 +197,13 @@ export const handlers = [
   rest.get(`${API_BASE_URL}/api/trends`, (req, res, ctx) => {
     const metric = req.url.searchParams.get('metric') || 'tickets';
     const period = req.url.searchParams.get('period') || '30d';
-    
+
     return res(
       ctx.delay(150),
       ctx.status(200),
       ctx.json({
         success: true,
-        data: mockData.trendsData[metric] || mockData.trendsData.tickets
+        data: mockData.trendsData[metric] || mockData.trendsData.tickets,
       })
     );
   }),
@@ -221,8 +219,8 @@ export const handlers = [
           status: 'healthy',
           timestamp: new Date().toISOString(),
           version: '1.0.0',
-          uptime: '5d 12h 30m'
-        }
+          uptime: '5d 12h 30m',
+        },
       })
     );
   }),
@@ -237,8 +235,8 @@ export const handlers = [
         data: {
           status: 'connected',
           response_time: '120ms',
-          last_check: new Date().toISOString()
-        }
+          last_check: new Date().toISOString(),
+        },
       })
     );
   }),
@@ -247,7 +245,7 @@ export const handlers = [
   rest.get(`${API_BASE_URL}/api/export`, (req, res, ctx) => {
     const format = req.url.searchParams.get('format') || 'json';
     const type = req.url.searchParams.get('type') || 'tickets';
-    
+
     if (format === 'csv') {
       return res(
         ctx.delay(300),
@@ -257,7 +255,7 @@ export const handlers = [
         ctx.text('id,title,status,priority\n1,"Test Ticket",open,high')
       );
     }
-    
+
     return res(
       ctx.delay(200),
       ctx.status(200),
@@ -265,7 +263,7 @@ export const handlers = [
         success: true,
         data: mockData.tickets,
         format,
-        type
+        type,
       })
     );
   }),
@@ -281,8 +279,8 @@ export const handlers = [
           file_id: 'file_' + Date.now(),
           filename: 'uploaded_file.txt',
           size: 1024,
-          url: '/uploads/file_' + Date.now() + '.txt'
-        }
+          url: '/uploads/file_' + Date.now() + '.txt',
+        },
       })
     );
   }),
@@ -291,29 +289,31 @@ export const handlers = [
   rest.get(`${API_BASE_URL}/api/search`, (req, res, ctx) => {
     const query = req.url.searchParams.get('q') || '';
     const type = req.url.searchParams.get('type') || 'all';
-    
+
     let results: any[] = [];
-    
+
     if (type === 'all' || type === 'tickets') {
       const ticketResults = mockData.tickets
-        .filter(ticket => 
-          ticket.title.toLowerCase().includes(query.toLowerCase()) ||
-          ticket.description.toLowerCase().includes(query.toLowerCase())
+        .filter(
+          ticket =>
+            ticket.title.toLowerCase().includes(query.toLowerCase()) ||
+            ticket.description.toLowerCase().includes(query.toLowerCase())
         )
         .map(ticket => ({ ...ticket, type: 'ticket' }));
       results = [...results, ...ticketResults];
     }
-    
+
     if (type === 'all' || type === 'users') {
       const userResults = mockData.users
-        .filter(user => 
-          user.name.toLowerCase().includes(query.toLowerCase()) ||
-          user.email.toLowerCase().includes(query.toLowerCase())
+        .filter(
+          user =>
+            user.name.toLowerCase().includes(query.toLowerCase()) ||
+            user.email.toLowerCase().includes(query.toLowerCase())
         )
         .map(user => ({ ...user, type: 'user' }));
       results = [...results, ...userResults];
     }
-    
+
     return res(
       ctx.delay(200),
       ctx.status(200),
@@ -321,7 +321,7 @@ export const handlers = [
         success: true,
         data: results,
         query,
-        total: results.length
+        total: results.length,
       })
     );
   }),
@@ -333,7 +333,7 @@ export const handlers = [
       ctx.status(200),
       ctx.json({
         success: true,
-        data: mockData.notifications
+        data: mockData.notifications,
       })
     );
   }),
@@ -345,7 +345,7 @@ export const handlers = [
       ctx.status(200),
       ctx.json({
         success: true,
-        data: { read: true }
+        data: { read: true },
       })
     );
   }),
@@ -357,7 +357,7 @@ export const handlers = [
       ctx.status(200),
       ctx.json({
         success: true,
-        data: mockData.settings
+        data: mockData.settings,
       })
     );
   }),
@@ -372,8 +372,8 @@ export const handlers = [
         data: {
           ...mockData.settings,
           ...req.body,
-          updated_at: new Date().toISOString()
-        }
+          updated_at: new Date().toISOString(),
+        },
       })
     );
   }),
@@ -386,7 +386,7 @@ export const handlers = [
       ctx.json({
         success: false,
         error: 'Endpoint not found',
-        path: req.url.pathname
+        path: req.url.pathname,
       })
     );
   }),

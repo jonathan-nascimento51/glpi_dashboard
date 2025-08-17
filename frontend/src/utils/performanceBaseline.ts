@@ -54,16 +54,16 @@ class PerformanceBaselineManager {
     homepage: {
       loadTime: 1000,
       renderTime: 300,
-      apiResponseTime: 500
+      apiResponseTime: 500,
     },
     filters: {
       responseTime: 500,
-      renderTime: 200
+      renderTime: 200,
     },
     autoRefresh: {
       updateTime: 800,
-      apiTime: 400
-    }
+      apiTime: 400,
+    },
   };
 
   /**
@@ -73,11 +73,11 @@ class PerformanceBaselineManager {
     const baseline: PerformanceBaseline = {
       ...metrics,
       timestamp: Date.now(),
-      version: process.env.REACT_APP_VERSION || '1.0.0'
+      version: process.env.REACT_APP_VERSION || '1.0.0',
     };
 
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(baseline));
-    
+
     console.log('📊 Nova linha de base estabelecida:', baseline);
     this.logBaselineComparison(baseline);
   }
@@ -98,7 +98,9 @@ class PerformanceBaselineManager {
   /**
    * Compara métricas atuais com a linha de base
    */
-  compareWithBaseline(currentMetrics: Omit<PerformanceBaseline, 'timestamp' | 'version'>): PerformanceComparison[] {
+  compareWithBaseline(
+    currentMetrics: Omit<PerformanceBaseline, 'timestamp' | 'version'>
+  ): PerformanceComparison[] {
     const baseline = this.getBaseline();
     if (!baseline) {
       console.warn('⚠️ Nenhuma linha de base encontrada. Estabelecendo nova linha de base...');
@@ -176,7 +178,7 @@ class PerformanceBaselineManager {
   ): PerformanceComparison {
     const difference = current - baseline;
     const percentageChange = baseline > 0 ? (difference / baseline) * 100 : 0;
-    
+
     let status: 'improved' | 'degraded' | 'stable';
     if (Math.abs(percentageChange) < 5) {
       status = 'stable';
@@ -194,7 +196,7 @@ class PerformanceBaselineManager {
       percentageChange,
       status,
       meetsTarget: current <= target,
-      target
+      target,
     };
   }
 
@@ -209,11 +211,13 @@ class PerformanceBaselineManager {
     const checks = {
       'Homepage Load Time': metrics.homepage.loadTime <= this.TARGETS.homepage.loadTime,
       'Homepage Render Time': metrics.homepage.renderTime <= this.TARGETS.homepage.renderTime,
-      'Homepage API Response': metrics.homepage.apiResponseTime <= this.TARGETS.homepage.apiResponseTime,
+      'Homepage API Response':
+        metrics.homepage.apiResponseTime <= this.TARGETS.homepage.apiResponseTime,
       'Filter Response Time': metrics.filters.responseTime <= this.TARGETS.filters.responseTime,
       'Filter Render Time': metrics.filters.renderTime <= this.TARGETS.filters.renderTime,
-      'Auto-refresh Update Time': metrics.autoRefresh.updateTime <= this.TARGETS.autoRefresh.updateTime,
-      'Auto-refresh API Time': metrics.autoRefresh.apiTime <= this.TARGETS.autoRefresh.apiTime
+      'Auto-refresh Update Time':
+        metrics.autoRefresh.updateTime <= this.TARGETS.autoRefresh.updateTime,
+      'Auto-refresh API Time': metrics.autoRefresh.apiTime <= this.TARGETS.autoRefresh.apiTime,
     };
 
     const failedTargets = Object.entries(checks)
@@ -223,7 +227,7 @@ class PerformanceBaselineManager {
     return {
       allTargetsMet: failedTargets.length === 0,
       failedTargets,
-      summary: checks
+      summary: checks,
     };
   }
 
@@ -244,7 +248,7 @@ class PerformanceBaselineManager {
       comparisons,
       targetCheck,
       recommendations,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     console.group('📊 Performance Comparison Report');
@@ -291,7 +295,9 @@ class PerformanceBaselineManager {
       recommendations.push('🏠 Considere lazy loading ou cache para a homepage');
     }
 
-    const slowAutoRefresh = comparisons.find(c => c.metric.includes('Auto-refresh') && !c.meetsTarget);
+    const slowAutoRefresh = comparisons.find(
+      c => c.metric.includes('Auto-refresh') && !c.meetsTarget
+    );
     if (slowAutoRefresh) {
       recommendations.push('🔄 Otimize o auto-refresh com updates incrementais');
     }
@@ -308,20 +314,34 @@ class PerformanceBaselineManager {
    */
   private logBaselineComparison(baseline: PerformanceBaseline): void {
     console.group('📊 Performance Baseline vs Targets');
-    
+
     console.log('🏠 Homepage:');
-    console.log(`  Load Time: ${baseline.homepage.loadTime}ms (target: ${this.TARGETS.homepage.loadTime}ms)`);
-    console.log(`  Render Time: ${baseline.homepage.renderTime}ms (target: ${this.TARGETS.homepage.renderTime}ms)`);
-    console.log(`  API Response: ${baseline.homepage.apiResponseTime}ms (target: ${this.TARGETS.homepage.apiResponseTime}ms)`);
-    
+    console.log(
+      `  Load Time: ${baseline.homepage.loadTime}ms (target: ${this.TARGETS.homepage.loadTime}ms)`
+    );
+    console.log(
+      `  Render Time: ${baseline.homepage.renderTime}ms (target: ${this.TARGETS.homepage.renderTime}ms)`
+    );
+    console.log(
+      `  API Response: ${baseline.homepage.apiResponseTime}ms (target: ${this.TARGETS.homepage.apiResponseTime}ms)`
+    );
+
     console.log('🔍 Filters:');
-    console.log(`  Response Time: ${baseline.filters.responseTime}ms (target: ${this.TARGETS.filters.responseTime}ms)`);
-    console.log(`  Render Time: ${baseline.filters.renderTime}ms (target: ${this.TARGETS.filters.renderTime}ms)`);
-    
+    console.log(
+      `  Response Time: ${baseline.filters.responseTime}ms (target: ${this.TARGETS.filters.responseTime}ms)`
+    );
+    console.log(
+      `  Render Time: ${baseline.filters.renderTime}ms (target: ${this.TARGETS.filters.renderTime}ms)`
+    );
+
     console.log('🔄 Auto-refresh:');
-    console.log(`  Update Time: ${baseline.autoRefresh.updateTime}ms (target: ${this.TARGETS.autoRefresh.updateTime}ms)`);
-    console.log(`  API Time: ${baseline.autoRefresh.apiTime}ms (target: ${this.TARGETS.autoRefresh.apiTime}ms)`);
-    
+    console.log(
+      `  Update Time: ${baseline.autoRefresh.updateTime}ms (target: ${this.TARGETS.autoRefresh.updateTime}ms)`
+    );
+    console.log(
+      `  API Time: ${baseline.autoRefresh.apiTime}ms (target: ${this.TARGETS.autoRefresh.apiTime}ms)`
+    );
+
     console.groupEnd();
   }
 
@@ -349,22 +369,22 @@ export const debugBaseline = {
   setBaseline: (metrics: Omit<PerformanceBaseline, 'timestamp' | 'version'>) => {
     performanceBaseline.setBaseline(metrics);
   },
-  
+
   getBaseline: () => {
     return performanceBaseline.getBaseline();
   },
-  
+
   compareWithBaseline: (metrics: Omit<PerformanceBaseline, 'timestamp' | 'version'>) => {
     return performanceBaseline.compareWithBaseline(metrics);
   },
-  
+
   checkTargets: (metrics: Omit<PerformanceBaseline, 'timestamp' | 'version'>) => {
     return performanceBaseline.checkTargets(metrics);
   },
-  
+
   resetBaseline: () => {
     performanceBaseline.resetBaseline();
-  }
+  },
 };
 
 // Expor no window para debugging em desenvolvimento

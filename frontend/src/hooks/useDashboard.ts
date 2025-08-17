@@ -1,9 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { fetchDashboardMetrics } from '../services/api';
-import type {
-  DashboardMetrics,
-  FilterParams
-} from '../types/api';
+import type { DashboardMetrics, FilterParams } from '../types/api';
 import { SystemStatus, NotificationData } from '../types';
 // Removed unused imports
 
@@ -51,14 +48,12 @@ const initialSystemStatus: SystemStatus = {
   version: '1.0.0',
   status: 'offline',
   sistema_ativo: false,
-  ultima_atualizacao: new Date().toISOString()
+  ultima_atualizacao: new Date().toISOString(),
 };
 
 // Removed unused getDefaultDateRange
 
 // Removed unused initialState
-
-
 
 // Removed unused performConsistencyChecks function
 
@@ -69,10 +64,12 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
   // Removed unused state variables
   const [filters, setFilters] = useState<FilterParams>(initialFilters);
   // Derivar dados dos resultados da API
-  const levelMetrics = data?.niveis ? {
-    ...data.niveis,
-    tendencias: data.tendencias
-  } : null;
+  const levelMetrics = data?.niveis
+    ? {
+        ...data.niveis,
+        tendencias: data.tendencias,
+      }
+    : null;
   const systemStatus = data?.systemStatus || initialSystemStatus;
   const technicianRanking = data?.technicianRanking || [];
   const [isPending] = useState<boolean>(false);
@@ -81,77 +78,87 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
   const [theme, setTheme] = useState<string>('light');
   const [dataIntegrityReport] = useState<any>(null);
   const [filterType, setFilterType] = useState<string>(initialFilters.filterType || 'creation');
-  const [availableFilterTypes, setAvailableFilterTypes] = useState<Array<{
-    key: string;
-    name: string;
-    description: string;
-    default?: boolean;
-  }>>([]);
+  const [availableFilterTypes, setAvailableFilterTypes] = useState<
+    Array<{
+      key: string;
+      name: string;
+      description: string;
+      default?: boolean;
+    }>
+  >([]);
 
-  const loadData = useCallback(async (newFilters?: FilterParams) => {
-    const filtersToUse = newFilters || filters;
-    
-    console.log('🔄 useDashboard - Iniciando loadData com filtros:', filtersToUse);
-    console.log('📅 useDashboard - DateRange específico:', filtersToUse.dateRange);
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-      // Fazer chamadas paralelas para todos os endpoints
-      const [metricsResult, systemStatusResult, technicianRankingResult] = await Promise.all([
-        fetchDashboardMetrics(filtersToUse),
-        import('../services/api').then(api => api.getSystemStatus()),
-        import('../services/api').then(api => {
-          // Preparar filtros para o ranking de técnicos
-          const rankingFilters: any = {};
-          
-          if (filtersToUse.dateRange?.startDate) {
-            rankingFilters.start_date = filtersToUse.dateRange.startDate;
-          }
-          if (filtersToUse.dateRange?.endDate) {
-            rankingFilters.end_date = filtersToUse.dateRange.endDate;
-          }
-          
-          console.log('🎯 useDashboard - Aplicando filtros ao ranking de técnicos:', rankingFilters);
-          return api.getTechnicianRanking(Object.keys(rankingFilters).length > 0 ? rankingFilters : undefined);
-        })
-      ]);
-      
-      // console.log('📥 useDashboard - Resultado recebido de fetchDashboardMetrics:', metricsResult);
-      // console.log('📥 useDashboard - Resultado recebido de getSystemStatus:', systemStatusResult);
-      // console.log('📥 useDashboard - Resultado recebido de getTechnicianRanking:', technicianRankingResult);
-      
-      // Performance metrics tracking removed for now
-      
-      if (metricsResult) {
-        // Combinar todos os dados em um objeto DashboardMetrics
-        const combinedData: DashboardMetrics = {
-          ...metricsResult,
-          systemStatus: systemStatusResult || initialSystemStatus,
-          technicianRanking: technicianRankingResult || []
-        };
-        
-        console.log('📊 useDashboard - Dados combinados:', {
-          metrics: !!metricsResult,
-          systemStatus: !!systemStatusResult,
-          technicianRanking: technicianRankingResult?.length || 0
-        });
-        
-        // console.log('✅ useDashboard - Definindo dados combinados no estado:', combinedData);
-        setData(combinedData);
-        setError(null);
-      } else {
-        console.error('❌ useDashboard - Resultado de métricas é null/undefined');
-        setError('Falha ao carregar dados do dashboard');
+  const loadData = useCallback(
+    async (newFilters?: FilterParams) => {
+      const filtersToUse = newFilters || filters;
+
+      console.log('🔄 useDashboard - Iniciando loadData com filtros:', filtersToUse);
+      console.log('📅 useDashboard - DateRange específico:', filtersToUse.dateRange);
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        // Fazer chamadas paralelas para todos os endpoints
+        const [metricsResult, systemStatusResult, technicianRankingResult] = await Promise.all([
+          fetchDashboardMetrics(filtersToUse),
+          import('../services/api').then(api => api.getSystemStatus()),
+          import('../services/api').then(api => {
+            // Preparar filtros para o ranking de técnicos
+            const rankingFilters: any = {};
+
+            if (filtersToUse.dateRange?.startDate) {
+              rankingFilters.start_date = filtersToUse.dateRange.startDate;
+            }
+            if (filtersToUse.dateRange?.endDate) {
+              rankingFilters.end_date = filtersToUse.dateRange.endDate;
+            }
+
+            console.log(
+              '🎯 useDashboard - Aplicando filtros ao ranking de técnicos:',
+              rankingFilters
+            );
+            return api.getTechnicianRanking(
+              Object.keys(rankingFilters).length > 0 ? rankingFilters : undefined
+            );
+          }),
+        ]);
+
+        // console.log('📥 useDashboard - Resultado recebido de fetchDashboardMetrics:', metricsResult);
+        // console.log('📥 useDashboard - Resultado recebido de getSystemStatus:', systemStatusResult);
+        // console.log('📥 useDashboard - Resultado recebido de getTechnicianRanking:', technicianRankingResult);
+
+        // Performance metrics tracking removed for now
+
+        if (metricsResult) {
+          // Combinar todos os dados em um objeto DashboardMetrics
+          const combinedData: DashboardMetrics = {
+            ...metricsResult,
+            systemStatus: systemStatusResult || initialSystemStatus,
+            technicianRanking: technicianRankingResult || [],
+          };
+
+          console.log('📊 useDashboard - Dados combinados:', {
+            metrics: !!metricsResult,
+            systemStatus: !!systemStatusResult,
+            technicianRanking: technicianRankingResult?.length || 0,
+          });
+
+          // console.log('✅ useDashboard - Definindo dados combinados no estado:', combinedData);
+          setData(combinedData);
+          setError(null);
+        } else {
+          console.error('❌ useDashboard - Resultado de métricas é null/undefined');
+          setError('Falha ao carregar dados do dashboard');
+        }
+      } catch (err) {
+        console.error('❌ useDashboard - Erro ao carregar dados:', err);
+        setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error('❌ useDashboard - Erro ao carregar dados:', err);
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
-    } finally {
-      setLoading(false);
-    }
-  }, [filters]);
+    },
+    [filters]
+  );
 
   // Removed unused forceRefresh function
 
@@ -160,14 +167,12 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     loadData();
   }, [loadData]);
 
-
-
   // Auto-refresh setup
   useEffect(() => {
     const refreshInterval = setInterval(() => {
       loadData();
     }, 300000); // 5 minutos
-    
+
     return () => clearInterval(refreshInterval);
   }, [loadData]);
 
@@ -182,7 +187,7 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
             key,
             name: value.name,
             description: value.description,
-            default: value.default
+            default: value.default,
           }));
           setAvailableFilterTypes(types);
         }
@@ -191,9 +196,24 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
       console.error('Erro ao buscar tipos de filtro:', error);
       // Fallback para tipos padrão
       setAvailableFilterTypes([
-        { key: 'creation', name: 'Data de Criação', description: 'Filtra tickets criados no período', default: true },
-        { key: 'modification', name: 'Data de Modificação', description: 'Filtra tickets modificados no período', default: false },
-        { key: 'current_status', name: 'Status Atual', description: 'Mostra snapshot atual dos tickets', default: false }
+        {
+          key: 'creation',
+          name: 'Data de Criação',
+          description: 'Filtra tickets criados no período',
+          default: true,
+        },
+        {
+          key: 'modification',
+          name: 'Data de Modificação',
+          description: 'Filtra tickets modificados no período',
+          default: false,
+        },
+        {
+          key: 'current_status',
+          name: 'Status Atual',
+          description: 'Mostra snapshot atual dos tickets',
+          default: false,
+        },
       ]);
     }
   }, []);
@@ -204,12 +224,15 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
   }, [fetchFilterTypes]);
 
   // Função para atualizar o tipo de filtro
-  const updateFilterType = useCallback((type: string) => {
-    setFilterType(type);
-    const updatedFilters = { ...filters, filterType: type };
-    setFilters(updatedFilters);
-    loadData(updatedFilters);
-  }, [filters, loadData]);
+  const updateFilterType = useCallback(
+    (type: string) => {
+      setFilterType(type);
+      const updatedFilters = { ...filters, filterType: type };
+      setFilters(updatedFilters);
+      loadData(updatedFilters);
+    },
+    [filters, loadData]
+  );
 
   const returnData: UseDashboardReturn = {
     metrics: data,
@@ -242,7 +265,7 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
         message: notification.message || '',
         type: notification.type || 'info',
         timestamp: notification.timestamp || new Date(),
-        duration: notification.duration
+        duration: notification.duration,
       };
       setNotifications(prev => [...prev, completeNotification]);
     },
@@ -255,11 +278,11 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
       setFilters(updatedFilters);
       // Forçar recarregamento imediato com os novos filtros
       loadData(updatedFilters);
-    }
+    },
   };
-  
+
   // Debug logs comentados para evitar erros de sintaxe
   // console.log('useDashboard - Retornando dados:', returnData);
-  
+
   return returnData;
 };

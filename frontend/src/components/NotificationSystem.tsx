@@ -69,11 +69,12 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onRem
         second: '2-digit',
       });
     }
-    
-    const timestamp = notification.timestamp instanceof Date 
-      ? notification.timestamp 
-      : new Date(notification.timestamp);
-      
+
+    const timestamp =
+      notification.timestamp instanceof Date
+        ? notification.timestamp
+        : new Date(notification.timestamp);
+
     return timestamp.toLocaleTimeString('pt-BR', {
       hour: '2-digit',
       minute: '2-digit',
@@ -84,10 +85,14 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onRem
   // Memoize progress bar color
   const progressBarColor = useMemo(() => {
     switch (notification.type) {
-      case 'success': return 'bg-green-500';
-      case 'error': return 'bg-red-500';
-      case 'warning': return 'bg-yellow-500';
-      default: return 'bg-blue-500';
+      case 'success':
+        return 'bg-green-500';
+      case 'error':
+        return 'bg-red-500';
+      case 'warning':
+        return 'bg-yellow-500';
+      default:
+        return 'bg-blue-500';
     }
   }, [notification.type]);
 
@@ -108,46 +113,44 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onRem
   }, [notification.id, notification.duration, onRemove]);
 
   return (
-    <div className={`
+    <div
+      className={`
       ${config.bgColor} ${config.borderColor}
       border rounded-lg shadow-lg p-4 mb-3 max-w-sm w-full
       transform transition-all duration-300 ease-in-out
       hover:shadow-xl
       animate-fade-in
-    `}>
-      <div className="flex items-start space-x-3">
-        <div className="flex-shrink-0">
+    `}
+    >
+      <div className='flex items-start space-x-3'>
+        <div className='flex-shrink-0'>
           <Icon className={`w-5 h-5 ${config.iconColor}`} />
         </div>
-        
-        <div className="flex-1 min-w-0">
+
+        <div className='flex-1 min-w-0'>
           <h4 className={`text-sm font-semibold ${config.titleColor} mb-1`}>
             {notification.title}
           </h4>
-          <p className={`text-sm ${config.messageColor} break-words`}>
-            {notification.message}
-          </p>
-          <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-            {formattedTime}
-          </div>
+          <p className={`text-sm ${config.messageColor} break-words`}>{notification.message}</p>
+          <div className='mt-2 text-xs text-gray-500 dark:text-gray-400'>{formattedTime}</div>
         </div>
-        
+
         <button
           onClick={handleClose}
-          className="flex-shrink-0 p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors duration-200"
-          aria-label="Fechar notificação"
+          className='flex-shrink-0 p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors duration-200'
+          aria-label='Fechar notificação'
         >
-          <X className="w-4 h-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" />
+          <X className='w-4 h-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300' />
         </button>
       </div>
-      
+
       {/* Progress bar for timed notifications */}
       {notification.duration && notification.duration > 0 && (
-        <div className="mt-3 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1">
-          <div 
+        <div className='mt-3 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1'>
+          <div
             className={`h-1 rounded-full transition-all ease-linear ${progressBarColor}`}
             style={{
-              animation: `shrink ${notification.duration}ms linear forwards`
+              animation: `shrink ${notification.duration}ms linear forwards`,
             }}
           />
         </div>
@@ -186,10 +189,10 @@ export const NotificationSystem: React.FC<NotificationSystemProps> = ({
           }
         }
       `}</style>
-      
+
       {/* Notification Container */}
-      <div className="fixed top-4 right-4 z-50 space-y-2">
-        {notifications.map((notification) => (
+      <div className='fixed top-4 right-4 z-50 space-y-2'>
+        {notifications.map(notification => (
           <NotificationItem
             key={notification.id}
             notification={notification}

@@ -972,7 +972,7 @@ describe('Testes Unitários de Hooks', () => {
         vi.advanceTimersByTime(1000);
       });
       
-      expect(callback).toHaveBeenCalledTimes(1); // Não deve ter chamado novamente
+      expect(callback).toHaveBeenCalledTimes(1);
     });
   });
 });

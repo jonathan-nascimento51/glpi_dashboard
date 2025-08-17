@@ -47,11 +47,11 @@ class WebVitalsMonitor {
       INP: 200, // 200ms conforme solicitado
       LCP: 2500,
       CLS: 0.1,
-      TTFB: 800
+      TTFB: 800,
     },
     sendToBackend: process.env.NODE_ENV === 'production',
     backendEndpoint: '/api/performance/web-vitals',
-    enableConsoleLogging: process.env.NODE_ENV === 'development'
+    enableConsoleLogging: process.env.NODE_ENV === 'development',
   };
 
   private alertCallbacks: ((alert: WebVitalsAlert) => void)[] = [];
@@ -69,11 +69,11 @@ class WebVitalsMonitor {
     getCLS(this.handleMetric.bind(this));
     getFID(this.handleMetric.bind(this));
     getLCP(this.handleMetric.bind(this));
-    
+
     // Outras métricas importantes
     getFCP(this.handleMetric.bind(this));
     getTTFB(this.handleMetric.bind(this));
-    
+
     // INP (Interaction to Next Paint) - substituto do FID
     onINP(this.handleMetric.bind(this));
 
@@ -92,11 +92,11 @@ class WebVitalsMonitor {
       rating: metric.rating,
       timestamp: Date.now(),
       id: metric.id,
-      navigationType: metric.navigationType
+      navigationType: metric.navigationType,
     };
 
     this.metrics.push(webVitalMetric);
-    
+
     // Manter apenas as últimas 100 métricas
     if (this.metrics.length > 100) {
       this.metrics = this.metrics.slice(-100);
@@ -158,11 +158,11 @@ class WebVitalsMonitor {
         threshold,
         timestamp: metric.timestamp,
         severity,
-        message: this.generateAlertMessage(metric, threshold, severity)
+        message: this.generateAlertMessage(metric, threshold, severity),
       };
 
       this.alerts.push(alert);
-      
+
       // Manter apenas os últimos 50 alertas
       if (this.alerts.length > 50) {
         this.alerts = this.alerts.slice(-50);
@@ -185,8 +185,8 @@ class WebVitalsMonitor {
     severity: 'warning' | 'critical'
   ): string {
     const unit = metric.name === 'CLS' ? '' : 'ms';
-    const exceedPercentage = ((metric.value - threshold) / threshold * 100).toFixed(1);
-    
+    const exceedPercentage = (((metric.value - threshold) / threshold) * 100).toFixed(1);
+
     return `${metric.name} de ${metric.value}${unit} excede o limite de ${threshold}${unit} em ${exceedPercentage}% (${severity})`;
   }
 
@@ -200,14 +200,14 @@ class WebVitalsMonitor {
       await fetch(this.config.backendEndpoint, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           metric,
           userAgent: navigator.userAgent,
           url: window.location.href,
-          timestamp: Date.now()
-        })
+          timestamp: Date.now(),
+        }),
       });
     } catch (error) {
       console.error('Erro ao enviar métrica para backend:', error);
@@ -220,15 +220,12 @@ class WebVitalsMonitor {
   private logMetric(metric: WebVitalsMetric): void {
     const unit = metric.name === 'CLS' ? '' : 'ms';
     const emoji = this.getMetricEmoji(metric.rating);
-    
-    console.log(
-      `${emoji} ${metric.name}: ${metric.value}${unit} (${metric.rating})`,
-      {
-        id: metric.id,
-        navigationType: metric.navigationType,
-        timestamp: new Date(metric.timestamp).toISOString()
-      }
-    );
+
+    console.log(`${emoji} ${metric.name}: ${metric.value}${unit} (${metric.rating})`, {
+      id: metric.id,
+      navigationType: metric.navigationType,
+      timestamp: new Date(metric.timestamp).toISOString(),
+    });
   }
 
   /**
@@ -236,10 +233,14 @@ class WebVitalsMonitor {
    */
   private getMetricEmoji(rating: string): string {
     switch (rating) {
-      case 'good': return '✅';
-      case 'needs-improvement': return '⚠️';
-      case 'poor': return '❌';
-      default: return '📊';
+      case 'good':
+        return '✅';
+      case 'needs-improvement':
+        return '⚠️';
+      case 'poor':
+        return '❌';
+      default:
+        return '📊';
     }
   }
 
@@ -248,7 +249,7 @@ class WebVitalsMonitor {
    */
   onAlert(callback: (alert: WebVitalsAlert) => void): () => void {
     this.alertCallbacks.push(callback);
-    
+
     // Retorna função para remover o callback
     return () => {
       const index = this.alertCallbacks.indexOf(callback);
@@ -263,7 +264,7 @@ class WebVitalsMonitor {
    */
   onMetric(callback: (metric: WebVitalsMetric) => void): () => void {
     this.metricCallbacks.push(callback);
-    
+
     // Retorna função para remover o callback
     return () => {
       const index = this.metricCallbacks.indexOf(callback);
@@ -299,14 +300,15 @@ class WebVitalsMonitor {
   } {
     const averageValues: Record<string, number> = {};
     const latestMetrics: Record<string, WebVitalsMetric | undefined> = {};
-    
+
     // Calcular médias por tipo de métrica
     const metricTypes = ['CLS', 'FID', 'FCP', 'LCP', 'TTFB', 'INP'];
-    
+
     metricTypes.forEach(type => {
       const metricsOfType = this.metrics.filter(m => m.name === type);
       if (metricsOfType.length > 0) {
-        averageValues[type] = metricsOfType.reduce((sum, m) => sum + m.value, 0) / metricsOfType.length;
+        averageValues[type] =
+          metricsOfType.reduce((sum, m) => sum + m.value, 0) / metricsOfType.length;
         latestMetrics[type] = metricsOfType[metricsOfType.length - 1];
       }
     });
@@ -316,7 +318,7 @@ class WebVitalsMonitor {
       totalAlerts: this.alerts.length,
       criticalAlerts: this.alerts.filter(a => a.severity === 'critical').length,
       averageValues,
-      latestMetrics
+      latestMetrics,
     };
   }
 
@@ -325,7 +327,7 @@ class WebVitalsMonitor {
    */
   updateConfig(newConfig: Partial<WebVitalsConfig>): void {
     this.config = { ...this.config, ...newConfig };
-    
+
     if (this.config.enableConsoleLogging) {
       console.log('🔧 Web Vitals Monitor configuração atualizada:', this.config);
     }
@@ -337,7 +339,7 @@ class WebVitalsMonitor {
   clear(): void {
     this.metrics = [];
     this.alerts = [];
-    
+
     if (this.config.enableConsoleLogging) {
       console.log('🧹 Web Vitals Monitor limpo');
     }
@@ -366,7 +368,7 @@ class WebVitalsMonitor {
       alerts: this.getAlerts(),
       summary: this.getSummary(),
       config: this.config,
-      exportTimestamp: Date.now()
+      exportTimestamp: Date.now(),
     };
   }
 }
@@ -408,7 +410,7 @@ export const useWebVitals = () => {
     summary,
     clearData: () => webVitalsMonitor.clear(),
     exportData: () => webVitalsMonitor.exportData(),
-    updateConfig: (config: Partial<WebVitalsConfig>) => webVitalsMonitor.updateConfig(config)
+    updateConfig: (config: Partial<WebVitalsConfig>) => webVitalsMonitor.updateConfig(config),
   };
 };
 
@@ -419,7 +421,7 @@ export const debugWebVitals = {
   getSummary: () => webVitalsMonitor.getSummary(),
   clear: () => webVitalsMonitor.clear(),
   exportData: () => webVitalsMonitor.exportData(),
-  forceCollection: () => webVitalsMonitor.forceCollection()
+  forceCollection: () => webVitalsMonitor.forceCollection(),
 };
 
 // Expor no window para debugging em desenvolvimento

@@ -34,16 +34,14 @@ const TestComponent: React.FC<{
   defaultValue?: any;
   ttl?: number;
 }> = ({ cacheKey, apiEndpoint, defaultValue = null, ttl = 5000 }) => {
-  const { value: cachedValue, setValue: setCachedValue, isExpired, clearCache } = useCache(
-    cacheKey,
-    defaultValue,
-    { ttl }
-  );
+  const {
+    value: cachedValue,
+    setValue: setCachedValue,
+    isExpired,
+    clearCache,
+  } = useCache(cacheKey, defaultValue, { ttl });
 
-  const apiFunction = React.useCallback(
-    () => httpClient.get(apiEndpoint),
-    [apiEndpoint]
-  );
+  const apiFunction = React.useCallback(() => httpClient.get(apiEndpoint), [apiEndpoint]);
 
   const { data: apiData, loading, error, execute } = useApi(apiFunction);
 
@@ -72,19 +70,17 @@ const TestComponent: React.FC<{
 
   return (
     <div>
-      <div data-testid="loading">{loading ? 'Loading...' : 'Not Loading'}</div>
-      <div data-testid="error">{error || 'No Error'}</div>
-      <div data-testid="cached-value">
+      <div data-testid='loading'>{loading ? 'Loading...' : 'Not Loading'}</div>
+      <div data-testid='error'>{error || 'No Error'}</div>
+      <div data-testid='cached-value'>
         {cachedValue ? JSON.stringify(cachedValue) : 'No Cached Value'}
       </div>
-      <div data-testid="api-data">
-        {apiData ? JSON.stringify(apiData) : 'No API Data'}
-      </div>
-      <div data-testid="is-expired">{isExpired ? 'Expired' : 'Not Expired'}</div>
-      <button onClick={handleRefresh} data-testid="refresh-btn">
+      <div data-testid='api-data'>{apiData ? JSON.stringify(apiData) : 'No API Data'}</div>
+      <div data-testid='is-expired'>{isExpired ? 'Expired' : 'Not Expired'}</div>
+      <button onClick={handleRefresh} data-testid='refresh-btn'>
         Refresh
       </button>
-      <button onClick={handleClearCache} data-testid="clear-cache-btn">
+      <button onClick={handleClearCache} data-testid='clear-cache-btn'>
         Clear Cache
       </button>
     </div>
@@ -107,13 +103,7 @@ describe('Cache System Integration', () => {
     const mockApiData = { id: 1, name: 'Test Data' };
     (httpClient.get as any).mockResolvedValueOnce(mockApiData);
 
-    render(
-      <TestComponent 
-        cacheKey="test-cache" 
-        apiEndpoint="/api/test" 
-        defaultValue={null}
-      />
-    );
+    render(<TestComponent cacheKey='test-cache' apiEndpoint='/api/test' defaultValue={null} />);
 
     // Inicialmente deve mostrar loading
     expect(screen.getByTestId('loading')).toHaveTextContent('Loading...');
@@ -135,23 +125,18 @@ describe('Cache System Integration', () => {
     const cacheEntry = {
       value: cachedData,
       timestamp: Date.now(),
-      ttl: 5000
+      ttl: 5000,
     };
-    
+
     localStorageMock.getItem.mockReturnValue(JSON.stringify(cacheEntry));
 
-    render(
-      <TestComponent 
-        cacheKey="test-cache" 
-        apiEndpoint="/api/test" 
-      />
-    );
+    render(<TestComponent cacheKey='test-cache' apiEndpoint='/api/test' />);
 
     // Deve usar dados do cache imediatamente
     expect(screen.getByTestId('cached-value')).toHaveTextContent(JSON.stringify(cachedData));
     expect(screen.getByTestId('is-expired')).toHaveTextContent('Not Expired');
     expect(screen.getByTestId('loading')).toHaveTextContent('Not Loading');
-    
+
     // Não deve fazer requisição à API
     expect(httpClient.get).not.toHaveBeenCalled();
   });
@@ -159,22 +144,17 @@ describe('Cache System Integration', () => {
   it('deve recarregar dados quando cache expira', async () => {
     const expiredData = { id: 3, name: 'Expired Data' };
     const newData = { id: 4, name: 'Fresh Data' };
-    
+
     const expiredCacheEntry = {
       value: expiredData,
       timestamp: Date.now() - 10000, // 10 segundos atrás
-      ttl: 5000 // TTL de 5 segundos
+      ttl: 5000, // TTL de 5 segundos
     };
-    
+
     localStorageMock.getItem.mockReturnValue(JSON.stringify(expiredCacheEntry));
     (httpClient.get as any).mockResolvedValueOnce(newData);
 
-    render(
-      <TestComponent 
-        cacheKey="test-cache" 
-        apiEndpoint="/api/test" 
-      />
-    );
+    render(<TestComponent cacheKey='test-cache' apiEndpoint='/api/test' />);
 
     // Inicialmente mostra dados expirados
     expect(screen.getByTestId('cached-value')).toHaveTextContent(JSON.stringify(expiredData));
@@ -195,22 +175,17 @@ describe('Cache System Integration', () => {
   it('deve permitir refresh manual dos dados', async () => {
     const cachedData = { id: 5, name: 'Cached Data' };
     const freshData = { id: 6, name: 'Fresh Data' };
-    
+
     const cacheEntry = {
       value: cachedData,
       timestamp: Date.now(),
-      ttl: 5000
+      ttl: 5000,
     };
-    
+
     localStorageMock.getItem.mockReturnValue(JSON.stringify(cacheEntry));
     (httpClient.get as any).mockResolvedValueOnce(freshData);
 
-    render(
-      <TestComponent 
-        cacheKey="test-cache" 
-        apiEndpoint="/api/test" 
-      />
-    );
+    render(<TestComponent cacheKey='test-cache' apiEndpoint='/api/test' />);
 
     // Inicialmente usa cache
     expect(screen.getByTestId('cached-value')).toHaveTextContent(JSON.stringify(cachedData));
@@ -241,17 +216,13 @@ describe('Cache System Integration', () => {
     const cacheEntry = {
       value: cachedData,
       timestamp: Date.now(),
-      ttl: 5000
+      ttl: 5000,
     };
-    
+
     localStorageMock.getItem.mockReturnValue(JSON.stringify(cacheEntry));
 
     render(
-      <TestComponent 
-        cacheKey="test-cache" 
-        apiEndpoint="/api/test" 
-        defaultValue="Default Value"
-      />
+      <TestComponent cacheKey='test-cache' apiEndpoint='/api/test' defaultValue='Default Value' />
     );
 
     // Inicialmente usa cache
@@ -273,18 +244,13 @@ describe('Cache System Integration', () => {
     const expiredCacheEntry = {
       value: cachedData,
       timestamp: Date.now() - 10000,
-      ttl: 5000
+      ttl: 5000,
     };
-    
+
     localStorageMock.getItem.mockReturnValue(JSON.stringify(expiredCacheEntry));
     (httpClient.get as any).mockRejectedValueOnce(new Error('API Error'));
 
-    render(
-      <TestComponent 
-        cacheKey="test-cache" 
-        apiEndpoint="/api/test" 
-      />
-    );
+    render(<TestComponent cacheKey='test-cache' apiEndpoint='/api/test' />);
 
     // Deve tentar recarregar devido ao cache expirado
     expect(screen.getByTestId('loading')).toHaveTextContent('Loading...');
@@ -303,24 +269,16 @@ describe('Cache System Integration', () => {
   it('deve funcionar com múltiplas instâncias usando chaves diferentes', async () => {
     const data1 = { id: 9, name: 'Data 1' };
     const data2 = { id: 10, name: 'Data 2' };
-    
-    (httpClient.get as any)
-      .mockResolvedValueOnce(data1)
-      .mockResolvedValueOnce(data2);
+
+    (httpClient.get as any).mockResolvedValueOnce(data1).mockResolvedValueOnce(data2);
 
     const { container } = render(
       <div>
-        <div data-testid="component-1">
-          <TestComponent 
-            cacheKey="cache-1" 
-            apiEndpoint="/api/data1" 
-          />
+        <div data-testid='component-1'>
+          <TestComponent cacheKey='cache-1' apiEndpoint='/api/data1' />
         </div>
-        <div data-testid="component-2">
-          <TestComponent 
-            cacheKey="cache-2" 
-            apiEndpoint="/api/data2" 
-          />
+        <div data-testid='component-2'>
+          <TestComponent cacheKey='cache-2' apiEndpoint='/api/data2' />
         </div>
       </div>
     );
@@ -329,21 +287,21 @@ describe('Cache System Integration', () => {
     await waitFor(() => {
       const component1 = container.querySelector('[data-testid="component-1"]');
       const component2 = container.querySelector('[data-testid="component-2"]');
-      
-      expect(component1?.querySelector('[data-testid="loading"]'))
-        .toHaveTextContent('Not Loading');
-      expect(component2?.querySelector('[data-testid="loading"]'))
-        .toHaveTextContent('Not Loading');
+
+      expect(component1?.querySelector('[data-testid="loading"]')).toHaveTextContent('Not Loading');
+      expect(component2?.querySelector('[data-testid="loading"]')).toHaveTextContent('Not Loading');
     });
 
     // Verifica se cada componente tem seus próprios dados
     const component1 = container.querySelector('[data-testid="component-1"]');
     const component2 = container.querySelector('[data-testid="component-2"]');
-    
-    expect(component1?.querySelector('[data-testid="cached-value"]'))
-      .toHaveTextContent(JSON.stringify(data1));
-    expect(component2?.querySelector('[data-testid="cached-value"]'))
-      .toHaveTextContent(JSON.stringify(data2));
+
+    expect(component1?.querySelector('[data-testid="cached-value"]')).toHaveTextContent(
+      JSON.stringify(data1)
+    );
+    expect(component2?.querySelector('[data-testid="cached-value"]')).toHaveTextContent(
+      JSON.stringify(data2)
+    );
 
     // Verifica se foram feitas requisições separadas
     expect(httpClient.get).toHaveBeenCalledWith('/api/data1');
@@ -356,24 +314,18 @@ describe('Cache System Integration', () => {
     const cacheEntry = {
       value: sharedData,
       timestamp: Date.now(),
-      ttl: 5000
+      ttl: 5000,
     };
-    
+
     localStorageMock.getItem.mockReturnValue(JSON.stringify(cacheEntry));
 
     const { container } = render(
       <div>
-        <div data-testid="component-a">
-          <TestComponent 
-            cacheKey="shared-cache" 
-            apiEndpoint="/api/shared" 
-          />
+        <div data-testid='component-a'>
+          <TestComponent cacheKey='shared-cache' apiEndpoint='/api/shared' />
         </div>
-        <div data-testid="component-b">
-          <TestComponent 
-            cacheKey="shared-cache" 
-            apiEndpoint="/api/shared" 
-          />
+        <div data-testid='component-b'>
+          <TestComponent cacheKey='shared-cache' apiEndpoint='/api/shared' />
         </div>
       </div>
     );
@@ -381,11 +333,13 @@ describe('Cache System Integration', () => {
     // Ambos componentes devem usar o mesmo cache
     const componentA = container.querySelector('[data-testid="component-a"]');
     const componentB = container.querySelector('[data-testid="component-b"]');
-    
-    expect(componentA?.querySelector('[data-testid="cached-value"]'))
-      .toHaveTextContent(JSON.stringify(sharedData));
-    expect(componentB?.querySelector('[data-testid="cached-value"]'))
-      .toHaveTextContent(JSON.stringify(sharedData));
+
+    expect(componentA?.querySelector('[data-testid="cached-value"]')).toHaveTextContent(
+      JSON.stringify(sharedData)
+    );
+    expect(componentB?.querySelector('[data-testid="cached-value"]')).toHaveTextContent(
+      JSON.stringify(sharedData)
+    );
 
     // Não deve fazer requisições desnecessárias
     expect(httpClient.get).not.toHaveBeenCalled();
@@ -394,23 +348,17 @@ describe('Cache System Integration', () => {
   it('deve respeitar TTL personalizado', async () => {
     const shortTtlData = { id: 12, name: 'Short TTL Data' };
     const newData = { id: 13, name: 'New Data' };
-    
+
     const shortTtlEntry = {
       value: shortTtlData,
       timestamp: Date.now() - 1500, // 1.5 segundos atrás
-      ttl: 1000 // TTL de 1 segundo
+      ttl: 1000, // TTL de 1 segundo
     };
-    
+
     localStorageMock.getItem.mockReturnValue(JSON.stringify(shortTtlEntry));
     (httpClient.get as any).mockResolvedValueOnce(newData);
 
-    render(
-      <TestComponent 
-        cacheKey="short-ttl-cache" 
-        apiEndpoint="/api/test" 
-        ttl={1000}
-      />
-    );
+    render(<TestComponent cacheKey='short-ttl-cache' apiEndpoint='/api/test' ttl={1000} />);
 
     // Cache deve estar expirado devido ao TTL curto
     expect(screen.getByTestId('is-expired')).toHaveTextContent('Expired');
@@ -431,24 +379,18 @@ describe('Cache System Integration', () => {
     const permanentEntry = {
       value: permanentData,
       timestamp: Date.now() - 100000, // Muito tempo atrás
-      ttl: 0 // Cache permanente
+      ttl: 0, // Cache permanente
     };
-    
+
     localStorageMock.getItem.mockReturnValue(JSON.stringify(permanentEntry));
 
-    render(
-      <TestComponent 
-        cacheKey="permanent-cache" 
-        apiEndpoint="/api/test" 
-        ttl={0}
-      />
-    );
+    render(<TestComponent cacheKey='permanent-cache' apiEndpoint='/api/test' ttl={0} />);
 
     // Cache nunca deve expirar
     expect(screen.getByTestId('is-expired')).toHaveTextContent('Not Expired');
     expect(screen.getByTestId('cached-value')).toHaveTextContent(JSON.stringify(permanentData));
     expect(screen.getByTestId('loading')).toHaveTextContent('Not Loading');
-    
+
     // Não deve fazer requisição
     expect(httpClient.get).not.toHaveBeenCalled();
   });

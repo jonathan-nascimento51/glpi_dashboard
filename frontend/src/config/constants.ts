@@ -1,10 +1,4 @@
-import type {
-  AppConfig,
-  CacheConfig,
-  Theme,
-  UserPreferences,
-  ExportOptions
-} from '../types/api';
+import type { AppConfig, CacheConfig, Theme, UserPreferences, ExportOptions } from '../types/api';
 
 /**
  * Constantes e configurações da aplicação
@@ -21,8 +15,8 @@ export const API_CONFIG = {
     METRICS_FILTERED: '/metrics/filtered',
     HEALTH: '/health',
     TECHNICIAN_RANKING: '/technician-ranking',
-    NEW_TICKETS: '/new-tickets'
-  }
+    NEW_TICKETS: '/new-tickets',
+  },
 } as const;
 
 // Configuração de cache
@@ -30,7 +24,7 @@ export const CACHE_CONFIG: CacheConfig = {
   enabled: true,
   ttl: 300000, // 5 minutos
   maxSize: 100,
-  strategy: 'lru'
+  strategy: 'lru',
 };
 
 // Configuração padrão da aplicação
@@ -43,7 +37,7 @@ export const DEFAULT_APP_CONFIG: AppConfig = {
   enableNotifications: true,
   dateFormat: 'DD/MM/YYYY',
   timeFormat: '24h',
-  timezone: 'America/Sao_Paulo'
+  timezone: 'America/Sao_Paulo',
 };
 
 // Preferências padrão do usuário
@@ -62,13 +56,13 @@ export const DEFAULT_USER_PREFERENCES: UserPreferences = {
   emailNotifications: false,
   notifications: {
     enabled: true,
-    types: ['success', 'error', 'warning', 'info']
+    types: ['success', 'error', 'warning', 'info'],
   },
   dashboard: {
     defaultView: 'cards',
     autoRefresh: true,
-    showTrends: true
-  }
+    showTrends: true,
+  },
 };
 
 // Temas disponíveis
@@ -85,20 +79,20 @@ export const THEMES: Record<string, Theme> = {
       info: '#3B82F6',
       background: '#FFFFFF',
       surface: '#F9FAFB',
-      text: '#111827'
+      text: '#111827',
     },
     spacing: {
       xs: '0.25rem',
       sm: '0.5rem',
       md: '1rem',
       lg: '1.5rem',
-      xl: '2rem'
+      xl: '2rem',
     },
     borderRadius: {
       sm: '0.25rem',
       md: '0.5rem',
-      lg: '0.75rem'
-    }
+      lg: '0.75rem',
+    },
   },
   dark: {
     name: 'dark',
@@ -112,20 +106,20 @@ export const THEMES: Record<string, Theme> = {
       info: '#60A5FA',
       background: '#111827',
       surface: '#1F2937',
-      text: '#F9FAFB'
+      text: '#F9FAFB',
     },
     spacing: {
       xs: '0.25rem',
       sm: '0.5rem',
       md: '1rem',
       lg: '1.5rem',
-      xl: '2rem'
+      xl: '2rem',
     },
     borderRadius: {
       sm: '0.25rem',
       md: '0.5rem',
-      lg: '0.75rem'
-    }
+      lg: '0.75rem',
+    },
   },
   system: {
     name: 'system',
@@ -139,21 +133,21 @@ export const THEMES: Record<string, Theme> = {
       info: '#3B82F6',
       background: '#FFFFFF',
       surface: '#F9FAFB',
-      text: '#111827'
+      text: '#111827',
     },
     spacing: {
       xs: '0.25rem',
       sm: '0.5rem',
       md: '1rem',
       lg: '1.5rem',
-      xl: '2rem'
+      xl: '2rem',
     },
     borderRadius: {
       sm: '0.25rem',
       md: '0.5rem',
-      lg: '0.75rem'
-    }
-  }
+      lg: '0.75rem',
+    },
+  },
 };
 
 // Opções de status
@@ -162,7 +156,7 @@ export const STATUS_OPTIONS = [
   { value: 'aberto', label: 'Aberto' },
   { value: 'fechado', label: 'Fechado' },
   { value: 'pendente', label: 'Pendente' },
-  { value: 'atrasado', label: 'Atrasado' }
+  { value: 'atrasado', label: 'Atrasado' },
 ] as const;
 
 // Opções de prioridade
@@ -171,7 +165,7 @@ export const PRIORITY_OPTIONS = [
   { value: 'baixa', label: 'Baixa' },
   { value: 'media', label: 'Média' },
   { value: 'alta', label: 'Alta' },
-  { value: 'critica', label: 'Crítica' }
+  { value: 'critica', label: 'Crítica' },
 ] as const;
 
 // Opções de nível
@@ -180,7 +174,7 @@ export const LEVEL_OPTIONS = [
   { value: 'N1', label: 'Nível 1' },
   { value: 'N2', label: 'Nível 2' },
   { value: 'N3', label: 'Nível 3' },
-  { value: 'N4', label: 'Nível 4' }
+  { value: 'N4', label: 'Nível 4' },
 ] as const;
 
 // Configurações de exportação
@@ -188,7 +182,7 @@ export const EXPORT_OPTIONS: ExportOptions = {
   format: 'pdf',
   includeFilters: true,
   includeTimestamp: true,
-  filename: 'dashboard-export'
+  filename: 'dashboard-export',
 };
 
 // Configurações de performance
@@ -197,7 +191,7 @@ export const PERFORMANCE_CONFIG = {
   CACHE_HIT_RATE_THRESHOLD: 0.8, // 80%
   ERROR_RATE_THRESHOLD: 0.05, // 5%
   MEMORY_USAGE_THRESHOLD: 0.9, // 90%
-  MONITORING_INTERVAL: 10000 // 10 segundos
+  MONITORING_INTERVAL: 10000, // 10 segundos
 } as const;
 
 // Configurações de notificação
@@ -209,8 +203,8 @@ export const NOTIFICATION_CONFIG = {
     SUCCESS: 'success',
     ERROR: 'error',
     WARNING: 'warning',
-    INFO: 'info'
-  }
+    INFO: 'info',
+  },
 } as const;
 
 // Configurações de validação
@@ -219,7 +213,7 @@ export const VALIDATION_CONFIG = {
   MIN_REFRESH_INTERVAL: 5000, // 5 segundos
   MAX_REFRESH_INTERVAL: 300000, // 5 minutos
   MAX_FILTER_LENGTH: 100,
-  REQUIRED_FIELDS: ['startDate', 'endDate']
+  REQUIRED_FIELDS: ['startDate', 'endDate'],
 } as const;
 
 // Mensagens de erro padrão
@@ -232,7 +226,7 @@ export const ERROR_MESSAGES = {
   SERVER_ERROR: 'Erro interno do servidor',
   UNKNOWN_ERROR: 'Erro desconhecido',
   CACHE_ERROR: 'Erro no sistema de cache',
-  PARSE_ERROR: 'Erro ao processar dados'
+  PARSE_ERROR: 'Erro ao processar dados',
 } as const;
 
 // Configurações de debug
@@ -241,7 +235,7 @@ export const DEBUG_CONFIG = {
   LOG_LEVEL: import.meta.env.VITE_LOG_LEVEL || 'info',
   SHOW_PERFORMANCE: import.meta.env.VITE_SHOW_PERFORMANCE === 'true',
   SHOW_API_CALLS: import.meta.env.VITE_SHOW_API_CALLS === 'true',
-  SHOW_CACHE_HITS: import.meta.env.VITE_SHOW_CACHE_HITS === 'true'
+  SHOW_CACHE_HITS: import.meta.env.VITE_SHOW_CACHE_HITS === 'true',
 } as const;
 
 // Configurações de layout
@@ -251,7 +245,7 @@ export const LAYOUT_CONFIG = {
   FOOTER_HEIGHT: 48,
   CONTENT_PADDING: 24,
   CARD_BORDER_RADIUS: 8,
-  ANIMATION_DURATION: 200
+  ANIMATION_DURATION: 200,
 } as const;
 
 // Breakpoints responsivos
@@ -261,7 +255,7 @@ export const BREAKPOINTS = {
   md: 768,
   lg: 1024,
   xl: 1280,
-  '2xl': 1536
+  '2xl': 1536,
 } as const;
 
 // Configurações de gráficos
@@ -275,19 +269,19 @@ export const CHART_CONFIG = {
     '#8B5CF6', // purple
     '#06B6D4', // cyan
     '#F97316', // orange
-    '#84CC16'  // lime
+    '#84CC16', // lime
   ],
   ANIMATION_DURATION: 750,
   TOOLTIP_ENABLED: true,
   LEGEND_ENABLED: true,
-  GRID_ENABLED: true
+  GRID_ENABLED: true,
 } as const;
 
 // Configurações de paginação
 export const PAGINATION_CONFIG = {
   DEFAULT_PAGE_SIZE: 20,
   PAGE_SIZE_OPTIONS: [10, 20, 50, 100],
-  MAX_VISIBLE_PAGES: 5
+  MAX_VISIBLE_PAGES: 5,
 } as const;
 
 // Configurações de busca
@@ -295,7 +289,7 @@ export const SEARCH_CONFIG = {
   MIN_SEARCH_LENGTH: 2,
   DEBOUNCE_DELAY: 300,
   MAX_RESULTS: 50,
-  HIGHLIGHT_MATCHES: true
+  HIGHLIGHT_MATCHES: true,
 } as const;
 
 export default {
@@ -317,5 +311,5 @@ export default {
   BREAKPOINTS,
   CHART_CONFIG,
   PAGINATION_CONFIG,
-  SEARCH_CONFIG
+  SEARCH_CONFIG,
 };

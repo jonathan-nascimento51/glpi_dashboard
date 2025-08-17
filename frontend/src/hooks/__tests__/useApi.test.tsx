@@ -81,10 +81,10 @@ describe('useApi Hook', () => {
 
   it('deve limpar erro ao executar nova requisição', async () => {
     const mockGetMetrics = vi.mocked(apiService.getMetrics);
-    
+
     // Primeira requisição com erro
     mockGetMetrics.mockRejectedValueOnce(new Error('First error'));
-    
+
     const { result } = renderHook(() => useApi(apiService.getMetrics));
 
     // Executar primeira requisição
@@ -98,7 +98,7 @@ describe('useApi Hook', () => {
 
     // Segunda requisição com sucesso
     mockGetMetrics.mockResolvedValueOnce({ niveis: {}, tendencias: {} });
-    
+
     act(() => {
       result.current.execute();
     });
@@ -150,7 +150,7 @@ describe('useApi Hook', () => {
 
     const dateRange = {
       startDate: '2024-01-01',
-      endDate: '2024-01-31'
+      endDate: '2024-01-31',
     };
 
     // Executar com parâmetros
@@ -167,12 +167,12 @@ describe('useApi Hook', () => {
 
   it('deve cancelar requisição anterior se nova for iniciada', async () => {
     const mockGetMetrics = vi.mocked(apiService.getMetrics);
-    
+
     // Primeira requisição lenta
     mockGetMetrics.mockImplementationOnce(
       () => new Promise(resolve => setTimeout(() => resolve({ data: 'first' }), 200))
     );
-    
+
     // Segunda requisição rápida
     mockGetMetrics.mockImplementationOnce(
       () => new Promise(resolve => setTimeout(() => resolve({ data: 'second' }), 50))
@@ -220,10 +220,11 @@ describe('useApi Hook', () => {
 
     let deps = ['dep1'];
     const { rerender } = renderHook(
-      ({ dependencies }) => useApi(apiService.getMetrics, { 
-        autoExecute: true, 
-        dependencies 
-      }),
+      ({ dependencies }) =>
+        useApi(apiService.getMetrics, {
+          autoExecute: true,
+          dependencies,
+        }),
       { initialProps: { dependencies: deps } }
     );
 

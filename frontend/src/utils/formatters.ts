@@ -1,7 +1,4 @@
-import type {
-  LevelMetrics,
-  PerformanceMetrics
-} from '../types/api';
+import type { LevelMetrics, PerformanceMetrics } from '../types/api';
 
 /**
  * Utilitários de formatação para exibição de dados
@@ -12,7 +9,7 @@ export const formatNumber = (value: number, options?: Intl.NumberFormatOptions):
   return new Intl.NumberFormat('pt-BR', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
-    ...options
+    ...options,
   }).format(value);
 };
 
@@ -21,7 +18,7 @@ export const formatPercentage = (value: number, decimals: number = 1): string =>
   return new Intl.NumberFormat('pt-BR', {
     style: 'percent',
     minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals
+    maximumFractionDigits: decimals,
   }).format(value / 100);
 };
 
@@ -29,18 +26,21 @@ export const formatPercentage = (value: number, decimals: number = 1): string =>
 export const formatCurrency = (value: number, currency: string = 'BRL'): string => {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
-    currency
+    currency,
   }).format(value);
 };
 
 // Formatação de data
-export const formatDate = (date: Date | string, format: 'short' | 'long' | 'time' = 'short'): string => {
+export const formatDate = (
+  date: Date | string,
+  format: 'short' | 'long' | 'time' = 'short'
+): string => {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  
+
   if (isNaN(dateObj.getTime())) {
     return 'Data inválida';
   }
-  
+
   switch (format) {
     case 'short':
       return dateObj.toLocaleDateString('pt-BR');
@@ -49,7 +49,7 @@ export const formatDate = (date: Date | string, format: 'short' | 'long' | 'time
         weekday: 'long',
         year: 'numeric',
         month: 'long',
-        day: 'numeric'
+        day: 'numeric',
       });
     case 'time':
       return dateObj.toLocaleString('pt-BR');
@@ -63,26 +63,26 @@ export const formatRelativeTime = (date: Date | string): string => {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000);
-  
+
   if (diffInSeconds < 60) {
     return 'Agora mesmo';
   }
-  
+
   const diffInMinutes = Math.floor(diffInSeconds / 60);
   if (diffInMinutes < 60) {
     return `${diffInMinutes} minuto${diffInMinutes > 1 ? 's' : ''} atrás`;
   }
-  
+
   const diffInHours = Math.floor(diffInMinutes / 60);
   if (diffInHours < 24) {
     return `${diffInHours} hora${diffInHours > 1 ? 's' : ''} atrás`;
   }
-  
+
   const diffInDays = Math.floor(diffInHours / 24);
   if (diffInDays < 7) {
     return `${diffInDays} dia${diffInDays > 1 ? 's' : ''} atrás`;
   }
-  
+
   return formatDate(dateObj);
 };
 
@@ -91,22 +91,22 @@ export const formatDuration = (milliseconds: number): string => {
   if (milliseconds < 1000) {
     return `${Math.round(milliseconds)}ms`;
   }
-  
+
   const seconds = milliseconds / 1000;
   if (seconds < 60) {
     return `${seconds.toFixed(1)}s`;
   }
-  
+
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = Math.floor(seconds % 60);
-  
+
   if (minutes < 60) {
     return `${minutes}m ${remainingSeconds}s`;
   }
-  
+
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
-  
+
   return `${hours}h ${remainingMinutes}m`;
 };
 
@@ -115,12 +115,12 @@ export const formatFileSize = (bytes: number): string => {
   const units = ['B', 'KB', 'MB', 'GB', 'TB'];
   let size = bytes;
   let unitIndex = 0;
-  
+
   while (size >= 1024 && unitIndex < units.length - 1) {
     size /= 1024;
     unitIndex++;
   }
-  
+
   return `${size.toFixed(1)} ${units[unitIndex]}`;
 };
 
@@ -130,22 +130,36 @@ export const formatStatus = (status: string): { text: string; color: string; bgC
     aberto: { text: 'Aberto', color: 'text-blue-700', bgColor: 'bg-blue-100' },
     fechado: { text: 'Fechado', color: 'text-green-700', bgColor: 'bg-green-100' },
     pendente: { text: 'Pendente', color: 'text-yellow-700', bgColor: 'bg-yellow-100' },
-    atrasado: { text: 'Atrasado', color: 'text-red-700', bgColor: 'bg-red-100' }
+    atrasado: { text: 'Atrasado', color: 'text-red-700', bgColor: 'bg-red-100' },
   };
-  
-  return statusMap[status.toLowerCase()] || { text: status, color: 'text-gray-700', bgColor: 'bg-gray-100' };
+
+  return (
+    statusMap[status.toLowerCase()] || {
+      text: status,
+      color: 'text-gray-700',
+      bgColor: 'bg-gray-100',
+    }
+  );
 };
 
 // Formatação de prioridade com cores
-export const formatPriority = (priority: string): { text: string; color: string; bgColor: string } => {
+export const formatPriority = (
+  priority: string
+): { text: string; color: string; bgColor: string } => {
   const priorityMap: Record<string, { text: string; color: string; bgColor: string }> = {
     baixa: { text: 'Baixa', color: 'text-green-700', bgColor: 'bg-green-100' },
     media: { text: 'Média', color: 'text-yellow-700', bgColor: 'bg-yellow-100' },
     alta: { text: 'Alta', color: 'text-orange-700', bgColor: 'bg-orange-100' },
-    critica: { text: 'Crítica', color: 'text-red-700', bgColor: 'bg-red-100' }
+    critica: { text: 'Crítica', color: 'text-red-700', bgColor: 'bg-red-100' },
   };
-  
-  return priorityMap[priority.toLowerCase()] || { text: priority, color: 'text-gray-700', bgColor: 'bg-gray-100' };
+
+  return (
+    priorityMap[priority.toLowerCase()] || {
+      text: priority,
+      color: 'text-gray-700',
+      bgColor: 'bg-gray-100',
+    }
+  );
 };
 
 // Formatação de nível
@@ -154,9 +168,9 @@ export const formatLevel = (level: string): string => {
     N1: 'Nível 1',
     N2: 'Nível 2',
     N3: 'Nível 3',
-    N4: 'Nível 4'
+    N4: 'Nível 4',
   };
-  
+
   return levelMap[level.toUpperCase()] || level;
 };
 
@@ -166,19 +180,19 @@ export const formatTrend = (value: number): { text: string; icon: string; color:
     return {
       text: `+${formatPercentage(Math.abs(value))}`,
       icon: '↗',
-      color: 'text-green-600'
+      color: 'text-green-600',
     };
   } else if (value < 0) {
     return {
       text: `-${formatPercentage(Math.abs(value))}`,
       icon: '↘',
-      color: 'text-red-600'
+      color: 'text-red-600',
     };
   } else {
     return {
       text: '0%',
       icon: '→',
-      color: 'text-gray-600'
+      color: 'text-gray-600',
     };
   }
 };
@@ -189,7 +203,7 @@ export const formatPerformanceMetrics = (metrics: PerformanceMetrics): Record<st
     responseTime: formatDuration(metrics.responseTime),
     cacheHit: metrics.cacheHit ? 'Sim' : 'Não',
     timestamp: formatDate(metrics.timestamp, 'time'),
-    endpoint: metrics.endpoint
+    endpoint: metrics.endpoint,
   };
 };
 
@@ -198,20 +212,20 @@ export const formatLevelMetricsForDisplay = (metrics: LevelMetrics) => {
   return {
     abertos: {
       value: formatNumber(metrics.abertos || 0),
-      trend: metrics.tendencia_abertos ? formatTrend(metrics.tendencia_abertos) : null
+      trend: metrics.tendencia_abertos ? formatTrend(metrics.tendencia_abertos) : null,
     },
     fechados: {
       value: formatNumber(metrics.fechados || 0),
-      trend: metrics.tendencia_fechados ? formatTrend(metrics.tendencia_fechados) : null
+      trend: metrics.tendencia_fechados ? formatTrend(metrics.tendencia_fechados) : null,
     },
     pendentes: {
       value: formatNumber(metrics.pendentes || 0),
-      trend: metrics.tendencia_pendentes ? formatTrend(metrics.tendencia_pendentes) : null
+      trend: metrics.tendencia_pendentes ? formatTrend(metrics.tendencia_pendentes) : null,
     },
     atrasados: {
       value: formatNumber(metrics.atrasados || 0),
-      trend: metrics.tendencia_atrasados ? formatTrend(metrics.tendencia_atrasados) : null
-    }
+      trend: metrics.tendencia_atrasados ? formatTrend(metrics.tendencia_atrasados) : null,
+    },
   };
 };
 
@@ -220,44 +234,52 @@ export const truncateText = (text: string, maxLength: number = 50): string => {
   if (text.length <= maxLength) {
     return text;
   }
-  
+
   return text.substring(0, maxLength - 3) + '...';
 };
 
 // Formatação de nome de usuário
-export const formatUserName = (firstName?: string, lastName?: string, username?: string): string => {
+export const formatUserName = (
+  firstName?: string,
+  lastName?: string,
+  username?: string
+): string => {
   if (firstName && lastName) {
     return `${firstName} ${lastName}`;
   }
-  
+
   if (firstName) {
     return firstName;
   }
-  
+
   if (username) {
     return username;
   }
-  
+
   return 'Usuário desconhecido';
 };
 
 // Formatação de lista com separadores
-export const formatList = (items: string[], separator: string = ', ', lastSeparator: string = ' e '): string => {
+export const formatList = (
+  items: string[],
+  separator: string = ', ',
+  lastSeparator: string = ' e '
+): string => {
   if (items.length === 0) {
     return '';
   }
-  
+
   if (items.length === 1) {
     return items[0];
   }
-  
+
   if (items.length === 2) {
     return items.join(lastSeparator);
   }
-  
+
   const allButLast = items.slice(0, -1);
   const last = items[items.length - 1];
-  
+
   return allButLast.join(separator) + lastSeparator + last;
 };
 
@@ -279,11 +301,11 @@ export const formatPlaceholder = (value: any, placeholder: string = 'N/A'): stri
   if (value === null || value === undefined || value === '') {
     return placeholder;
   }
-  
+
   if (typeof value === 'number' && isNaN(value)) {
     return placeholder;
   }
-  
+
   return String(value);
 };
 
@@ -324,5 +346,5 @@ export default {
   formatFriendlyUrl,
   formatPlaceholder,
   formatConditionalClass,
-  formatAriaLabel
+  formatAriaLabel,
 };

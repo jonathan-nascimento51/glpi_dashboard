@@ -32,13 +32,9 @@ const TestComponent: React.FC<{ endpoint: string }> = ({ endpoint }) => {
   return (
     <div>
       <button onClick={() => execute({ test: 'param' })}>Carregar Dados</button>
-      {loading && <div data-testid="loading">Carregando...</div>}
-      {error && <div data-testid="error">Erro: {error}</div>}
-      {data && (
-        <div data-testid="data">
-          {JSON.stringify(data)}
-        </div>
-      )}
+      {loading && <div data-testid='loading'>Carregando...</div>}
+      {error && <div data-testid='error'>Erro: {error}</div>}
+      {data && <div data-testid='data'>{JSON.stringify(data)}</div>}
     </div>
   );
 };
@@ -54,13 +50,9 @@ const AutoExecuteComponent: React.FC = () => {
 
   return (
     <div>
-      {loading && <div data-testid="auto-loading">Auto Carregando...</div>}
-      {error && <div data-testid="auto-error">Auto Erro: {error}</div>}
-      {data && (
-        <div data-testid="auto-data">
-          {JSON.stringify(data)}
-        </div>
-      )}
+      {loading && <div data-testid='auto-loading'>Auto Carregando...</div>}
+      {error && <div data-testid='auto-error'>Auto Erro: {error}</div>}
+      {data && <div data-testid='auto-data'>{JSON.stringify(data)}</div>}
     </div>
   );
 };
@@ -88,9 +80,9 @@ const ErrorTestComponent: React.FC<{ errorType: string }> = ({ errorType }) => {
   return (
     <div>
       <button onClick={() => execute()}>Testar {errorType}</button>
-      {loading && <div data-testid="error-loading">Carregando...</div>}
-      {error && <div data-testid="error-message">{error}</div>}
-      {data && <div data-testid="error-data">{JSON.stringify(data)}</div>}
+      {loading && <div data-testid='error-loading'>Carregando...</div>}
+      {error && <div data-testid='error-message'>{error}</div>}
+      {data && <div data-testid='error-data'>{JSON.stringify(data)}</div>}
     </div>
   );
 };
@@ -109,7 +101,7 @@ describe('Integração API - Componentes com httpClient', () => {
     const mockGet = vi.mocked(httpClient.get);
     mockGet.mockResolvedValue({ data: mockData });
 
-    render(<TestComponent endpoint="/test-endpoint" />);
+    render(<TestComponent endpoint='/test-endpoint' />);
 
     const button = screen.getByText('Carregar Dados');
     fireEvent.click(button);
@@ -124,7 +116,7 @@ describe('Integração API - Componentes com httpClient', () => {
 
     // Verificar se a requisição foi feita corretamente
     expect(mockGet).toHaveBeenCalledWith('/test-endpoint', {
-      params: { test: 'param' }
+      params: { test: 'param' },
     });
 
     // Verificar dados renderizados
@@ -154,7 +146,7 @@ describe('Integração API - Componentes com httpClient', () => {
   });
 
   it('deve tratar erro de rede corretamente', async () => {
-    render(<ErrorTestComponent errorType="network" />);
+    render(<ErrorTestComponent errorType='network' />);
 
     const button = screen.getByText('Testar network');
     fireEvent.click(button);
@@ -168,7 +160,7 @@ describe('Integração API - Componentes com httpClient', () => {
   });
 
   it('deve tratar erro de timeout corretamente', async () => {
-    render(<ErrorTestComponent errorType="timeout" />);
+    render(<ErrorTestComponent errorType='timeout' />);
 
     const button = screen.getByText('Testar timeout');
     fireEvent.click(button);
@@ -181,7 +173,7 @@ describe('Integração API - Componentes com httpClient', () => {
   });
 
   it('deve tratar erro de autenticação corretamente', async () => {
-    render(<ErrorTestComponent errorType="auth" />);
+    render(<ErrorTestComponent errorType='auth' />);
 
     const button = screen.getByText('Testar auth');
     fireEvent.click(button);
@@ -194,7 +186,7 @@ describe('Integração API - Componentes com httpClient', () => {
   });
 
   it('deve tratar erro de servidor corretamente', async () => {
-    render(<ErrorTestComponent errorType="server" />);
+    render(<ErrorTestComponent errorType='server' />);
 
     const button = screen.getByText('Testar server');
     fireEvent.click(button);
@@ -208,8 +200,8 @@ describe('Integração API - Componentes com httpClient', () => {
 
   it('deve limpar erro ao fazer nova requisição bem-sucedida', async () => {
     const mockGet = vi.mocked(httpClient.get);
-    
-    render(<TestComponent endpoint="/test" />);
+
+    render(<TestComponent endpoint='/test' />);
     const button = screen.getByText('Carregar Dados');
 
     // Primeira requisição com erro
@@ -237,22 +229,18 @@ describe('Integração API - Componentes com httpClient', () => {
 
   it('deve cancelar requisição anterior quando nova é iniciada', async () => {
     const mockGet = vi.mocked(httpClient.get);
-    
-    render(<TestComponent endpoint="/slow-endpoint" />);
+
+    render(<TestComponent endpoint='/slow-endpoint' />);
     const button = screen.getByText('Carregar Dados');
 
     // Primeira requisição lenta
     mockGet.mockImplementationOnce(
-      () => new Promise(resolve => 
-        setTimeout(() => resolve({ data: { result: 'first' } }), 200)
-      )
+      () => new Promise(resolve => setTimeout(() => resolve({ data: { result: 'first' } }), 200))
     );
 
     // Segunda requisição rápida
     mockGet.mockImplementationOnce(
-      () => new Promise(resolve => 
-        setTimeout(() => resolve({ data: { result: 'second' } }), 50)
-      )
+      () => new Promise(resolve => setTimeout(() => resolve({ data: { result: 'second' } }), 50))
     );
 
     // Primeira requisição
@@ -263,9 +251,12 @@ describe('Integração API - Componentes com httpClient', () => {
     fireEvent.click(button);
 
     // Aguardar resultado
-    await waitFor(() => {
-      expect(screen.getByTestId('data')).toBeInTheDocument();
-    }, { timeout: 300 });
+    await waitFor(
+      () => {
+        expect(screen.getByTestId('data')).toBeInTheDocument();
+      },
+      { timeout: 300 }
+    );
 
     // Deve mostrar resultado da segunda requisição
     expect(screen.getByTestId('data')).toHaveTextContent('"result":"second"');
@@ -273,7 +264,7 @@ describe('Integração API - Componentes com httpClient', () => {
 
   it('deve manter configuração do httpClient', async () => {
     const { API_CONFIG } = await import('../../services/httpClient');
-    
+
     expect(API_CONFIG.BASE_URL).toBe('http://localhost:5000/api');
     expect(API_CONFIG.TIMEOUT).toBe(10000);
     expect(API_CONFIG.RETRY_ATTEMPTS).toBe(3);

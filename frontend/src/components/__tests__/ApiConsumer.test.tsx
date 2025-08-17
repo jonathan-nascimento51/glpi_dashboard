@@ -52,20 +52,20 @@ const TestApiConsumer: React.FC = () => {
 
   return (
     <div>
-      <button onClick={fetchData} data-testid="fetch-button">
+      <button onClick={fetchData} data-testid='fetch-button'>
         Buscar Dados
       </button>
-      
-      {loading && <div data-testid="loading">Carregando...</div>}
-      
+
+      {loading && <div data-testid='loading'>Carregando...</div>}
+
       {error && (
-        <div data-testid="error" role="alert">
+        <div data-testid='error' role='alert'>
           Erro: {error}
         </div>
       )}
-      
+
       {data && (
-        <div data-testid="success">
+        <div data-testid='success'>
           <h2>Dados carregados com sucesso</h2>
           <pre>{JSON.stringify(data, null, 2)}</pre>
         </div>
@@ -91,7 +91,7 @@ describe('ApiConsumer Component', () => {
     );
 
     render(<TestApiConsumer />);
-    
+
     const fetchButton = screen.getByTestId('fetch-button');
     fireEvent.click(fetchButton);
 
@@ -112,16 +112,16 @@ describe('ApiConsumer Component', () => {
         n1: { novos: 5, pendentes: 2, progresso: 1, resolvidos: 10, total: 18 },
         n2: { novos: 3, pendentes: 2, progresso: 1, resolvidos: 5, total: 11 },
         n3: { novos: 2, pendentes: 1, progresso: 1, resolvidos: 3, total: 7 },
-        n4: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 2, total: 2 }
+        n4: { novos: 0, pendentes: 0, progresso: 0, resolvidos: 2, total: 2 },
       },
-      tendencias: { novos: '+5%', pendentes: '-2%', progresso: '+1%', resolvidos: '+10%' }
+      tendencias: { novos: '+5%', pendentes: '-2%', progresso: '+1%', resolvidos: '+10%' },
     };
 
     const mockGetMetrics = vi.mocked(apiService.getMetrics);
     mockGetMetrics.mockResolvedValue(mockData);
 
     render(<TestApiConsumer />);
-    
+
     const fetchButton = screen.getByTestId('fetch-button');
     fireEvent.click(fetchButton);
 
@@ -136,12 +136,12 @@ describe('ApiConsumer Component', () => {
 
   it('deve mostrar erro quando a API falha', async () => {
     const errorMessage = 'Falha na conexão com o servidor';
-    
+
     const mockGetMetrics = vi.mocked(apiService.getMetrics);
     mockGetMetrics.mockRejectedValue(new Error(errorMessage));
 
     render(<TestApiConsumer />);
-    
+
     const fetchButton = screen.getByTestId('fetch-button');
     fireEvent.click(fetchButton);
 
@@ -156,12 +156,12 @@ describe('ApiConsumer Component', () => {
 
   it('deve limpar erro anterior ao fazer nova requisição', async () => {
     const mockGetMetrics = vi.mocked(apiService.getMetrics);
-    
+
     // Primeira requisição com erro
     mockGetMetrics.mockRejectedValueOnce(new Error('Primeiro erro'));
-    
+
     render(<TestApiConsumer />);
-    
+
     const fetchButton = screen.getByTestId('fetch-button');
     fireEvent.click(fetchButton);
 
@@ -172,7 +172,7 @@ describe('ApiConsumer Component', () => {
 
     // Segunda requisição com sucesso
     mockGetMetrics.mockResolvedValueOnce({ niveis: {}, tendencias: {} });
-    
+
     fireEvent.click(fetchButton);
 
     // Verificar que o erro foi limpo durante o loading
@@ -187,7 +187,7 @@ describe('ApiConsumer Component', () => {
 
   it('deve não mostrar loading quando não há requisição ativa', () => {
     render(<TestApiConsumer />);
-    
+
     expect(screen.queryByTestId('loading')).not.toBeInTheDocument();
     expect(screen.queryByTestId('error')).not.toBeInTheDocument();
     expect(screen.queryByTestId('success')).not.toBeInTheDocument();
@@ -203,12 +203,12 @@ describe('API Error Handling', () => {
   it('deve tratar erro de rede', async () => {
     const networkError = new Error('Network Error');
     networkError.name = 'NetworkError';
-    
+
     const mockGetMetrics = vi.mocked(apiService.getMetrics);
     mockGetMetrics.mockRejectedValue(networkError);
 
     render(<TestApiConsumer />);
-    
+
     const fetchButton = screen.getByTestId('fetch-button');
     fireEvent.click(fetchButton);
 
@@ -220,12 +220,12 @@ describe('API Error Handling', () => {
   it('deve tratar timeout', async () => {
     const timeoutError = new Error('Request timeout');
     timeoutError.name = 'TimeoutError';
-    
+
     const mockGetMetrics = vi.mocked(apiService.getMetrics);
     mockGetMetrics.mockRejectedValue(timeoutError);
 
     render(<TestApiConsumer />);
-    
+
     const fetchButton = screen.getByTestId('fetch-button');
     fireEvent.click(fetchButton);
 
@@ -237,12 +237,12 @@ describe('API Error Handling', () => {
   it('deve tratar erro de autenticação', async () => {
     const authError = new Error('Authentication failed');
     authError.name = 'AuthenticationError';
-    
+
     const mockGetMetrics = vi.mocked(apiService.getMetrics);
     mockGetMetrics.mockRejectedValue(authError);
 
     render(<TestApiConsumer />);
-    
+
     const fetchButton = screen.getByTestId('fetch-button');
     fireEvent.click(fetchButton);
 
