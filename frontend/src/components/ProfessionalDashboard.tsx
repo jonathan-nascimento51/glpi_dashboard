@@ -3,6 +3,7 @@ import { MetricsData, TechnicianRanking, NewTicket } from '../types';
 import { DateRange } from '../types';
 import { apiService } from '../services/api';
 import { useThrottledCallback } from '../hooks/useDebounce';
+import { useSmartRefresh } from '../hooks/useSmartRefresh';
 import {
   BarChart3,
   Clock,
@@ -141,13 +142,6 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
   dateRange,
   onRefresh,
 }) => {
-  // Debug logs
-  console.log('🔍 ProfessionalDashboard - Props recebidos:', {
-    metrics,
-    technicianRanking,
-    isLoading,
-    dateRange,
-  });
   const [newTickets, setNewTickets] = useState<NewTicket[]>([]);
   const [ticketsLoading, setTicketsLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState('');
@@ -186,34 +180,19 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
     }
   }, 2000); // 2 second throttle
 
-  // Fetch recent tickets - OTIMIZADO para reduzir recarregamentos
+  // Fetch initial tickets
   useEffect(() => {
     throttledFetchNewTickets();
-
-    // CORREÇÃO: Aumentado para 5 minutos e adicionado controle de interação
-    const interval = setInterval(() => {
-      // Verificar se auto-refresh está habilitado
-      const autoRefreshEnabled = localStorage.getItem('autoRefreshEnabled');
-      if (autoRefreshEnabled === 'false') {
-        console.log('⏸️ Auto-refresh de tickets desabilitado pelo usuário');
-        return;
-      }
-
-      const lastInteraction = localStorage.getItem('lastUserInteraction');
-      const now = Date.now();
-      const timeSinceInteraction = lastInteraction ? now - parseInt(lastInteraction) : Infinity;
-
-      // Só atualiza se não houver interação recente (últimos 2 minutos)
-      if (timeSinceInteraction > 120000) {
-        console.log('🎫 Atualizando tickets novos no Professional Dashboard');
-        throttledFetchNewTickets();
-      } else {
-        console.log('⏸️ Atualização de tickets pausada no Professional Dashboard');
-      }
-    }, 300000); // 5 minutos
-
-    return () => clearInterval(interval);
   }, []);
+
+  // Smart refresh para tickets
+  useSmartRefresh({
+    refreshKey: 'professional-dashboard-tickets',
+    refreshFn: throttledFetchNewTickets,
+    intervalMs: 300000, // 5 minutos
+    immediate: false,
+    enabled: true,
+  });
 
   if (isLoading && !metrics) {
     return (
@@ -366,7 +345,9 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
                       </div>
                     </div>
                     <div className='text-right'>
-                      <div className='text-lg font-semibold text-gray-900'>{tech.total}</div>
+                      <div className='text-lg font-semibold text-gray-900'>
+                        {tech.total || tech.total_tickets || 0}
+                      </div>
                       <div className='text-sm text-gray-500'>chamados</div>
                     </div>
                   </div>

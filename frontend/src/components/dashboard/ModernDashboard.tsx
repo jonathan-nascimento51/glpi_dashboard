@@ -12,6 +12,7 @@ import {
 } from '../LazyComponents';
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import RequestMonitorDashboard from '../RequestMonitorDashboard';
 
 import { MetricsData, TicketStatus, SystemStatus, TechnicianRanking } from '@/types';
 import { cn } from '@/lib/utils';
@@ -88,7 +89,6 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
   filters,
 }) {
   // Sistema funcionando corretamente
-  // console.log('✅ ModernDashboard carregado - correção dos níveis aplicada');
 
   // Performance monitoring hooks
   const { measureRender } = usePerformanceMonitoring('ModernDashboard');
@@ -106,17 +106,14 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
 
   // Memoizar dados do ranking processados
   const processedRankingData = useMemo(() => {
-    // console.log('📊 ModernDashboard - Processando ranking de', technicianRanking?.length || 0, 'técnicos')
-
     const result = technicianRanking.map(tech => ({
       id: tech.id || String(tech.name),
       name: tech.name || tech.nome || 'Técnico',
       level: tech.level || 'N1',
-      total: tech.total || 0,
+      total: tech.total || tech.total_tickets || 0,
       rank: tech.rank || 0,
     }));
 
-    // console.log('✅ ModernDashboard - Ranking processado:', result.length, 'técnicos')
     return result;
   }, [technicianRanking]);
 
@@ -192,17 +189,25 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
         </motion.div>
       </div>
 
-      {/* Ranking de técnicos - ocupando toda a largura na parte inferior */}
-      <motion.div variants={itemVariants} className='dashboard-ranking-section'>
-        <Suspense fallback={<TableSkeleton />}>
-          <LazyRankingTable
-            data={processedRankingData}
-            title='Ranking de Técnicos'
-            className='w-full h-full'
-            filters={filters}
-          />
-        </Suspense>
-      </motion.div>
+      {/* Layout inferior com ranking e monitor de requisições */}
+      <div className='dashboard-bottom-grid'>
+        {/* Ranking de técnicos */}
+        <motion.div variants={itemVariants} className='dashboard-ranking-section'>
+          <Suspense fallback={<TableSkeleton />}>
+            <LazyRankingTable
+              data={processedRankingData}
+              title='Ranking de Técnicos'
+              className='w-full h-full'
+              filters={filters}
+            />
+          </Suspense>
+        </motion.div>
+
+        {/* Monitor de requisições */}
+        <motion.div variants={itemVariants} className='dashboard-monitor-section'>
+          <RequestMonitorDashboard className='h-full' />
+        </motion.div>
+      </div>
     </motion.div>
   );
 });

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { fetchDashboardMetrics } from '../services/api';
 import type { DashboardMetrics, FilterParams } from '../types/api';
 import { SystemStatus, NotificationData } from '../types';
+import { useSmartRefresh } from './useSmartRefresh';
 // Removed unused imports
 
 interface UseDashboardReturn {
@@ -91,9 +92,6 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     async (newFilters?: FilterParams) => {
       const filtersToUse = newFilters || filters;
 
-      console.log('🔄 useDashboard - Iniciando loadData com filtros:', filtersToUse);
-      console.log('📅 useDashboard - DateRange específico:', filtersToUse.dateRange);
-
       setLoading(true);
       setError(null);
 
@@ -113,19 +111,11 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
               rankingFilters.end_date = filtersToUse.dateRange.endDate;
             }
 
-            console.log(
-              '🎯 useDashboard - Aplicando filtros ao ranking de técnicos:',
-              rankingFilters
-            );
             return api.getTechnicianRanking(
               Object.keys(rankingFilters).length > 0 ? rankingFilters : undefined
             );
           }),
         ]);
-
-        // console.log('📥 useDashboard - Resultado recebido de fetchDashboardMetrics:', metricsResult);
-        // console.log('📥 useDashboard - Resultado recebido de getSystemStatus:', systemStatusResult);
-        // console.log('📥 useDashboard - Resultado recebido de getTechnicianRanking:', technicianRankingResult);
 
         // Performance metrics tracking removed for now
 
@@ -137,21 +127,13 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
             technicianRanking: technicianRankingResult || [],
           };
 
-          console.log('📊 useDashboard - Dados combinados:', {
-            metrics: !!metricsResult,
-            systemStatus: !!systemStatusResult,
-            technicianRanking: technicianRankingResult?.length || 0,
-          });
-
           // console.log('✅ useDashboard - Definindo dados combinados no estado:', combinedData);
           setData(combinedData);
           setError(null);
         } else {
-          console.error('❌ useDashboard - Resultado de métricas é null/undefined');
           setError('Falha ao carregar dados do dashboard');
         }
       } catch (err) {
-        console.error('❌ useDashboard - Erro ao carregar dados:', err);
         setError(err instanceof Error ? err.message : 'Erro desconhecido');
       } finally {
         setLoading(false);
@@ -167,14 +149,14 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     loadData();
   }, [loadData]);
 
-  // Auto-refresh setup
-  useEffect(() => {
-    const refreshInterval = setInterval(() => {
-      loadData();
-    }, 300000); // 5 minutos
-
-    return () => clearInterval(refreshInterval);
-  }, [loadData]);
+  // Smart refresh - coordenado e inteligente
+  useSmartRefresh({
+    refreshKey: 'dashboard-main',
+    refreshFn: loadData,
+    intervalMs: 300000, // 5 minutos
+    immediate: false,
+    enabled: true,
+  });
 
   // Função para buscar tipos de filtro disponíveis
   const fetchFilterTypes = useCallback(async () => {
@@ -272,9 +254,7 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     removeNotification: (id: string) => setNotifications(prev => prev.filter(n => n.id !== id)),
     changeTheme: (newTheme: string) => setTheme(newTheme),
     updateDateRange: (dateRange: any) => {
-      console.log('🔄 updateDateRange chamado com:', dateRange);
       const updatedFilters = { ...filters, dateRange };
-      console.log('📝 Filtros atualizados:', updatedFilters);
       setFilters(updatedFilters);
       // Forçar recarregamento imediato com os novos filtros
       loadData(updatedFilters);
