@@ -13,7 +13,7 @@ aiofiles==23.2.0
 httpx==0.25.2
 
 # === CACHE & STORAGE ===
-redis==5.0.1
+redis==6.4.0
 aioredis==2.0.1
 
 # === DATABASE (se necessário) ===
