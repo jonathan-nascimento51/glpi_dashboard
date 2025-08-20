@@ -37,7 +37,7 @@ tox==4.11.4
 watchdog==3.0.0
 
 # API testing
-httpx==0.26.0
+httpx==0.28.1
 requests-mock==1.11.0
 
 # Database testing
