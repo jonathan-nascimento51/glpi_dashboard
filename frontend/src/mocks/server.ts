@@ -1,86 +1,91 @@
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http, HttpResponse, HttpHandler } from 'msw';
 import { handlers } from './handlers';
 
 // Configura o servidor MSW para testes Node.js
 export const server = setupServer(...handlers);
 
 // Handlers adicionais para cenários específicos de teste
-export const testHandlers = {
+export const testHandlers: Record<string, HttpHandler> = {
   // Handler para simular erro de rede
-  networkError: rest.get('*', (req, res, ctx) => {
-    return res.networkError('Network error');
+  networkError: http.get('*', () => {
+    return HttpResponse.error();
   }),
 
   // Handler para simular timeout
-  timeout: rest.get('*', (req, res, ctx) => {
-    return res(ctx.delay('infinite'));
+  timeout: http.get('*', async () => {
+    await new Promise(() => {}); // Infinite delay
+    return HttpResponse.json({ message: 'This should never resolve' });
   }),
 
   // Handler para simular erro 500
-  serverError: rest.get('*', (req, res, ctx) => {
-    return res(
-      ctx.status(500),
-      ctx.json({
+  serverError: http.get('*', () => {
+    return HttpResponse.json(
+      {
         error: 'Internal Server Error',
         message: 'Something went wrong on the server',
-      })
+      },
+      { status: 500 }
     );
   }),
 
   // Handler para simular erro 404
-  notFound: rest.get('*', (req, res, ctx) => {
-    return res(
-      ctx.status(404),
-      ctx.json({
+  notFound: http.get('*', () => {
+    return HttpResponse.json(
+      {
         error: 'Not Found',
         message: 'The requested resource was not found',
-      })
+      },
+      { status: 404 }
     );
   }),
 
   // Handler para simular erro 401
-  unauthorized: rest.get('*', (req, res, ctx) => {
-    return res(
-      ctx.status(401),
-      ctx.json({
+  unauthorized: http.get('*', () => {
+    return HttpResponse.json(
+      {
         error: 'Unauthorized',
         message: 'Authentication required',
-      })
+      },
+      { status: 401 }
     );
   }),
 
   // Handler para simular erro 403
-  forbidden: rest.get('*', (req, res, ctx) => {
-    return res(
-      ctx.status(403),
-      ctx.json({
+  forbidden: http.get('*', () => {
+    return HttpResponse.json(
+      {
         error: 'Forbidden',
         message: 'Access denied',
-      })
+      },
+      { status: 403 }
     );
   }),
 
   // Handler para simular resposta lenta
-  slowResponse: rest.get('*', (req, res, ctx) => {
-    return res(ctx.delay(3000), ctx.json({ message: 'Slow response' }));
+  slowResponse: http.get('*', async () => {
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    return HttpResponse.json({ message: 'Slow response' });
   }),
 
   // Handler para simular resposta vazia
-  emptyResponse: rest.get('*', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({}));
+  emptyResponse: http.get('*', () => {
+    return HttpResponse.json({});
   }),
 
   // Handler para simular resposta com dados inválidos
-  invalidData: rest.get('*', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.text('Invalid JSON response'));
+  invalidData: http.get('*', () => {
+    return new HttpResponse('Invalid JSON response', {
+      status: 200,
+      headers: { 'Content-Type': 'text/plain' },
+    });
   }),
 };
 
 // Utilitários para testes
 export const testUtils = {
   // Usa um handler específico para o próximo request
-  useHandler: (handler: any) => {
+  useHandler: (handler: HttpHandler) => {
     server.use(handler);
   },
 
@@ -90,7 +95,7 @@ export const testUtils = {
   },
 
   // Adiciona handlers temporários
-  addHandlers: (...handlers: any[]) => {
+  addHandlers: (...handlers: HttpHandler[]) => {
     server.use(...handlers);
   },
 

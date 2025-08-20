@@ -1,13 +1,15 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { mockData } from './mockData';
+import type { MockApiResponse, MockRequestParams } from '../types/mock';
 
 const API_BASE_URL = 'http://localhost:8000';
 
 export const handlers = [
   // Dashboard metrics
-  rest.get(`${API_BASE_URL}/api/dashboard/metrics`, (req, res, ctx) => {
-    const startDate = req.url.searchParams.get('start_date');
-    const endDate = req.url.searchParams.get('end_date');
+  http.get(`${API_BASE_URL}/api/dashboard/metrics`, ({ request }) => {
+    const url = new URL(request.url);
+    const startDate = url.searchParams.get('start_date');
+    const endDate = url.searchParams.get('end_date');
 
     // Simula filtro por data
     let metrics = mockData.dashboardMetrics;
@@ -21,24 +23,25 @@ export const handlers = [
       };
     }
 
-    return res(
-      ctx.delay(100), // Simula latência da rede
-      ctx.status(200),
-      ctx.json({
-        success: true,
-        data: metrics,
-        timestamp: new Date().toISOString(),
-      })
-    );
+    const response: MockApiResponse = {
+      success: true,
+      data: metrics,
+      timestamp: new Date().toISOString(),
+    };
+
+    return HttpResponse.json(response, {
+      headers: { 'Content-Type': 'application/json' },
+    });
   }),
 
   // Tickets list
-  rest.get(`${API_BASE_URL}/api/tickets`, (req, res, ctx) => {
-    const page = parseInt(req.url.searchParams.get('page') || '1');
-    const limit = parseInt(req.url.searchParams.get('limit') || '10');
-    const status = req.url.searchParams.get('status');
-    const priority = req.url.searchParams.get('priority');
-    const search = req.url.searchParams.get('search');
+  http.get(`${API_BASE_URL}/api/tickets`, ({ request }) => {
+    const url = new URL(request.url);
+    const page = parseInt(url.searchParams.get('page') || '1');
+    const limit = parseInt(url.searchParams.get('limit') || '10');
+    const status = url.searchParams.get('status');
+    const priority = url.searchParams.get('priority');
+    const search = url.searchParams.get('search');
 
     let tickets = [...mockData.tickets];
 
@@ -62,233 +65,234 @@ export const handlers = [
     const endIndex = startIndex + limit;
     const paginatedTickets = tickets.slice(startIndex, endIndex);
 
-    return res(
-      ctx.delay(150),
-      ctx.status(200),
-      ctx.json({
-        success: true,
-        data: paginatedTickets,
-        pagination: {
-          page,
-          limit,
-          total: tickets.length,
-          pages: Math.ceil(tickets.length / limit),
-        },
-      })
-    );
+    const response: MockApiResponse = {
+      success: true,
+      data: paginatedTickets,
+      pagination: {
+        page,
+        limit,
+        total: tickets.length,
+        pages: Math.ceil(tickets.length / limit),
+      },
+    };
+
+    return HttpResponse.json(response);
   }),
 
   // Single ticket
-  rest.get(`${API_BASE_URL}/api/tickets/:id`, (req, res, ctx) => {
-    const { id } = req.params;
+  http.get(`${API_BASE_URL}/api/tickets/:id`, ({ params }) => {
+    const { id } = params;
     const ticket = mockData.tickets.find(t => t.id === parseInt(id as string));
 
     if (!ticket) {
-      return res(
-        ctx.status(404),
-        ctx.json({
+      return HttpResponse.json(
+        {
           success: false,
           error: 'Ticket not found',
-        })
+        },
+        { status: 404 }
       );
     }
 
-    return res(
-      ctx.delay(100),
-      ctx.status(200),
-      ctx.json({
-        success: true,
-        data: ticket,
-      })
-    );
+    const response: MockApiResponse = {
+      success: true,
+      data: ticket,
+    };
+
+    return HttpResponse.json(response);
   }),
 
   // Create ticket
-  rest.post(`${API_BASE_URL}/api/tickets`, (req, res, ctx) => {
-    return res(
-      ctx.delay(200),
-      ctx.status(201),
-      ctx.json({
-        success: true,
-        data: {
-          id: Date.now(),
-          ...req.body,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-      })
-    );
+  http.post(`${API_BASE_URL}/api/tickets`, async ({ request }) => {
+    const body = await request.json();
+
+    const response: MockApiResponse = {
+      success: true,
+      data: {
+        id: Date.now(),
+        ...body,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    };
+
+    return HttpResponse.json(response, { status: 201 });
   }),
 
   // Update ticket
-  rest.put(`${API_BASE_URL}/api/tickets/:id`, (req, res, ctx) => {
-    const { id } = req.params;
-    const ticket = mockData.tickets.find(t => t.id === parseInt(id as string));
+  http.put(`${API_BASE_URL}/api/tickets/:id`, async ({ params, request }) => {
+    const { id } = params;
+    const body = await request.json();
+    const ticketIndex = mockData.tickets.findIndex(t => t.id === parseInt(id as string));
 
-    if (!ticket) {
-      return res(
-        ctx.status(404),
-        ctx.json({
+    if (ticketIndex === -1) {
+      return HttpResponse.json(
+        {
           success: false,
           error: 'Ticket not found',
-        })
+        },
+        { status: 404 }
       );
     }
 
-    return res(
-      ctx.delay(150),
-      ctx.status(200),
-      ctx.json({
-        success: true,
-        data: {
-          ...ticket,
-          ...req.body,
-          updated_at: new Date().toISOString(),
-        },
-      })
-    );
+    const updatedTicket = {
+      ...mockData.tickets[ticketIndex],
+      ...body,
+      updated_at: new Date().toISOString(),
+    };
+
+    mockData.tickets[ticketIndex] = updatedTicket;
+
+    const response: MockApiResponse = {
+      success: true,
+      data: updatedTicket,
+    };
+
+    return HttpResponse.json(response);
   }),
 
   // Delete ticket
-  rest.delete(`${API_BASE_URL}/api/tickets/:id`, (req, res, ctx) => {
-    const { id } = req.params;
-    const ticket = mockData.tickets.find(t => t.id === parseInt(id as string));
+  http.delete(`${API_BASE_URL}/api/tickets/:id`, ({ params }) => {
+    const { id } = params;
+    const ticketIndex = mockData.tickets.findIndex(t => t.id === parseInt(id as string));
 
-    if (!ticket) {
-      return res(
-        ctx.status(404),
-        ctx.json({
+    if (ticketIndex === -1) {
+      return HttpResponse.json(
+        {
           success: false,
           error: 'Ticket not found',
-        })
+        },
+        { status: 404 }
       );
     }
 
-    return res(ctx.delay(100), ctx.status(204));
+    mockData.tickets.splice(ticketIndex, 1);
+
+    return new HttpResponse(null, { status: 204 });
   }),
 
   // Users list
-  rest.get(`${API_BASE_URL}/api/users`, (req, res, ctx) => {
-    return res(
-      ctx.delay(100),
-      ctx.status(200),
-      ctx.json({
-        success: true,
-        data: mockData.users,
-      })
-    );
+  http.get(`${API_BASE_URL}/api/users`, () => {
+    const response: MockApiResponse = {
+      success: true,
+      data: mockData.users,
+    };
+
+    return HttpResponse.json(response);
   }),
 
   // Performance metrics
-  rest.get(`${API_BASE_URL}/api/performance`, (req, res, ctx) => {
-    const period = req.url.searchParams.get('period') || '7d';
+  http.get(`${API_BASE_URL}/api/performance`, ({ request }) => {
+    const url = new URL(request.url);
+    const period = url.searchParams.get('period') || '7d';
 
-    return res(
-      ctx.delay(200),
-      ctx.status(200),
-      ctx.json({
-        success: true,
-        data: mockData.performanceMetrics[period] || mockData.performanceMetrics['7d'],
-      })
-    );
+    const response: MockApiResponse = {
+      success: true,
+      data: mockData.performanceMetrics[period] || mockData.performanceMetrics['7d'],
+    };
+
+    return HttpResponse.json(response);
   }),
 
   // Trends data
-  rest.get(`${API_BASE_URL}/api/trends`, (req, res, ctx) => {
-    const metric = req.url.searchParams.get('metric') || 'tickets';
-    const period = req.url.searchParams.get('period') || '30d';
+  http.get(`${API_BASE_URL}/api/trends`, ({ request }) => {
+    const url = new URL(request.url);
+    const metric = url.searchParams.get('metric') || 'tickets';
+    const period = url.searchParams.get('period') || '30d';
 
-    return res(
-      ctx.delay(150),
-      ctx.status(200),
-      ctx.json({
-        success: true,
-        data: mockData.trendsData[metric] || mockData.trendsData.tickets,
-      })
-    );
+    const response: MockApiResponse = {
+      success: true,
+      data: mockData.trendsData[metric] || mockData.trendsData.tickets,
+    };
+
+    return HttpResponse.json(response);
   }),
 
   // Health check
-  rest.get(`${API_BASE_URL}/api/health`, (req, res, ctx) => {
-    return res(
-      ctx.delay(50),
-      ctx.status(200),
-      ctx.json({
-        success: true,
-        data: {
-          status: 'healthy',
-          timestamp: new Date().toISOString(),
-          version: '1.0.0',
-          uptime: '5d 12h 30m',
+  http.get(`${API_BASE_URL}/api/health`, () => {
+    const response: MockApiResponse = {
+      success: true,
+      data: {
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        services: {
+          database: 'connected',
+          glpi: 'connected',
+          cache: 'active',
         },
-      })
-    );
+        uptime: Math.floor(Math.random() * 86400), // Random uptime in seconds
+      },
+    };
+
+    return HttpResponse.json(response);
   }),
 
   // GLPI health check
-  rest.get(`${API_BASE_URL}/api/health/glpi`, (req, res, ctx) => {
-    return res(
-      ctx.delay(100),
-      ctx.status(200),
-      ctx.json({
-        success: true,
-        data: {
-          status: 'connected',
-          response_time: '120ms',
-          last_check: new Date().toISOString(),
-        },
-      })
-    );
+  http.get(`${API_BASE_URL}/api/health/glpi`, () => {
+    const response: MockApiResponse = {
+      success: true,
+      data: {
+        status: 'connected',
+        version: '10.0.7',
+        response_time: Math.floor(Math.random() * 100) + 50, // 50-150ms
+        last_sync: new Date(Date.now() - Math.random() * 300000).toISOString(), // Last 5 minutes
+      },
+    };
+
+    return HttpResponse.json(response);
   }),
 
   // Export data
-  rest.get(`${API_BASE_URL}/api/export`, (req, res, ctx) => {
-    const format = req.url.searchParams.get('format') || 'json';
-    const type = req.url.searchParams.get('type') || 'tickets';
+  http.get(`${API_BASE_URL}/api/export`, ({ request }) => {
+    const url = new URL(request.url);
+    const format = url.searchParams.get('format') || 'json';
+    const type = url.searchParams.get('type') || 'tickets';
 
-    if (format === 'csv') {
-      return res(
-        ctx.delay(300),
-        ctx.status(200),
-        ctx.set('Content-Type', 'text/csv'),
-        ctx.set('Content-Disposition', `attachment; filename="${type}.csv"`),
-        ctx.text('id,title,status,priority\n1,"Test Ticket",open,high')
-      );
+    let data;
+    switch (type) {
+      case 'tickets':
+        data = mockData.tickets;
+        break;
+      case 'users':
+        data = mockData.users;
+        break;
+      default:
+        data = mockData.dashboardMetrics;
     }
 
-    return res(
-      ctx.delay(200),
-      ctx.status(200),
-      ctx.json({
-        success: true,
-        data: mockData.tickets,
+    const response: MockApiResponse = {
+      success: true,
+      data: {
         format,
         type,
-      })
-    );
+        records: data,
+        exported_at: new Date().toISOString(),
+      },
+    };
+
+    return HttpResponse.json(response);
   }),
 
-  // Upload file
-  rest.post(`${API_BASE_URL}/api/upload`, (req, res, ctx) => {
-    return res(
-      ctx.delay(500),
-      ctx.status(200),
-      ctx.json({
-        success: true,
-        data: {
-          file_id: 'file_' + Date.now(),
-          filename: 'uploaded_file.txt',
-          size: 1024,
-          url: '/uploads/file_' + Date.now() + '.txt',
-        },
-      })
-    );
+  // File upload
+  http.post(`${API_BASE_URL}/api/upload`, () => {
+    const response: MockApiResponse = {
+      success: true,
+      data: {
+        file_id: `file_${Date.now()}`,
+        filename: 'uploaded_file.txt',
+        size: Math.floor(Math.random() * 1000000), // Random size
+        uploaded_at: new Date().toISOString(),
+      },
+    };
+
+    return HttpResponse.json(response, { status: 201 });
   }),
 
   // Search
-  rest.get(`${API_BASE_URL}/api/search`, (req, res, ctx) => {
-    const query = req.url.searchParams.get('q') || '';
-    const type = req.url.searchParams.get('type') || 'all';
+  http.get(`${API_BASE_URL}/api/search`, ({ request }) => {
+    const url = new URL(request.url);
+    const query = url.searchParams.get('q') || '';
+    const type = url.searchParams.get('type') || 'all';
 
     let results: any[] = [];
 
@@ -314,80 +318,71 @@ export const handlers = [
       results = [...results, ...userResults];
     }
 
-    return res(
-      ctx.delay(200),
-      ctx.status(200),
-      ctx.json({
-        success: true,
-        data: results,
-        query,
-        total: results.length,
-      })
-    );
+    const response: MockApiResponse = {
+      success: true,
+      data: results,
+      query,
+      total: results.length,
+    };
+
+    return HttpResponse.json(response);
   }),
 
   // Notifications
-  rest.get(`${API_BASE_URL}/api/notifications`, (req, res, ctx) => {
-    return res(
-      ctx.delay(100),
-      ctx.status(200),
-      ctx.json({
-        success: true,
-        data: mockData.notifications,
-      })
-    );
+  http.get(`${API_BASE_URL}/api/notifications`, () => {
+    const response: MockApiResponse = {
+      success: true,
+      data: mockData.notifications,
+    };
+
+    return HttpResponse.json(response);
   }),
 
   // Mark notification as read
-  rest.put(`${API_BASE_URL}/api/notifications/:id/read`, (req, res, ctx) => {
-    return res(
-      ctx.delay(100),
-      ctx.status(200),
-      ctx.json({
-        success: true,
-        data: { read: true },
-      })
-    );
+  http.put(`${API_BASE_URL}/api/notifications/:id/read`, () => {
+    const response: MockApiResponse = {
+      success: true,
+      data: { read: true },
+    };
+
+    return HttpResponse.json(response);
   }),
 
   // Settings
-  rest.get(`${API_BASE_URL}/api/settings`, (req, res, ctx) => {
-    return res(
-      ctx.delay(100),
-      ctx.status(200),
-      ctx.json({
-        success: true,
-        data: mockData.settings,
-      })
-    );
+  http.get(`${API_BASE_URL}/api/settings`, () => {
+    const response: MockApiResponse = {
+      success: true,
+      data: mockData.settings,
+    };
+
+    return HttpResponse.json(response);
   }),
 
   // Update settings
-  rest.put(`${API_BASE_URL}/api/settings`, (req, res, ctx) => {
-    return res(
-      ctx.delay(150),
-      ctx.status(200),
-      ctx.json({
-        success: true,
-        data: {
-          ...mockData.settings,
-          ...req.body,
-          updated_at: new Date().toISOString(),
-        },
-      })
-    );
+  http.put(`${API_BASE_URL}/api/settings`, async ({ request }) => {
+    const body = await request.json();
+    const response: MockApiResponse = {
+      success: true,
+      data: {
+        ...mockData.settings,
+        ...body,
+        updated_at: new Date().toISOString(),
+      },
+    };
+
+    return HttpResponse.json(response);
   }),
 
-  // Fallback handler para requisições não mapeadas
-  rest.all('*', (req, res, ctx) => {
-    console.warn(`Unhandled ${req.method} request to ${req.url}`);
-    return res(
-      ctx.status(404),
-      ctx.json({
+  // Catch-all handler for unmatched requests
+  http.all('*', ({ request }) => {
+    console.warn(`Unhandled ${request.method} request to ${request.url}`);
+    return HttpResponse.json(
+      {
         success: false,
         error: 'Endpoint not found',
-        path: req.url.pathname,
-      })
+        message: `No handler found for ${request.method} ${request.url}`,
+      },
+      { status: 404 }
     );
   }),
 ];

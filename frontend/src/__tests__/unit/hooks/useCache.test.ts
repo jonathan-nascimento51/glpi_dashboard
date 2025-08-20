@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { useCache } from '../../../hooks/useCache';
+import { useCache } from '../../../hooks/useLocalCache';
+import type { CacheHookResult, CacheData, CacheOptions } from '../../../types/test';
 
 // Mock do localStorage
 const localStorageMock = {

@@ -119,7 +119,6 @@ export function useApi<T = any>(
     if (autoExecute) {
       execute();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoExecute, ...dependencies]);
 
   // Cancelar requisições pendentes quando o componente for desmontado

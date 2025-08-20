@@ -8,6 +8,7 @@ import { NewTicket } from '@/types';
 import { cn, formatRelativeTime } from '@/lib/utils';
 import { apiService } from '@/services/api';
 import { useThrottledCallback } from '@/hooks/useDebounce';
+import { useSmartRefresh } from '@/hooks/useSmartRefresh';
 
 interface NewTicketsListProps {
   className?: string;
@@ -180,33 +181,19 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
     }
   }, 2000); // 2 second throttle
 
+  // Fetch initial tickets
   useEffect(() => {
     fetchTickets();
-
-    // CORREÇÃO: Auto-refresh otimizado para 5 minutos com controle de interação
-    const interval = setInterval(() => {
-      // Verificar se auto-refresh está habilitado
-      const autoRefreshEnabled = localStorage.getItem('autoRefreshEnabled');
-      if (autoRefreshEnabled === 'false') {
-        console.log('⏸️ Auto-refresh de tickets desabilitado pelo usuário');
-        return;
-      }
-
-      const lastInteraction = localStorage.getItem('lastUserInteraction');
-      const now = Date.now();
-      const timeSinceInteraction = lastInteraction ? now - parseInt(lastInteraction) : Infinity;
-
-      // Só atualiza se não houver interação recente (últimos 2 minutos)
-      if (timeSinceInteraction > 120000) {
-        console.log('🎫 Atualizando lista de tickets novos');
-        fetchTickets();
-      } else {
-        console.log('⏸️ Atualização da lista de tickets pausada (interação recente)');
-      }
-    }, 300000); // 5 minutos
-
-    return () => clearInterval(interval);
   }, [fetchTickets]);
+
+  // Smart refresh para lista de tickets
+  useSmartRefresh({
+    refreshKey: 'new-tickets-list',
+    refreshFn: fetchTickets,
+    intervalMs: 300000, // 5 minutos
+    immediate: false,
+    enabled: true,
+  });
 
   // Memoizar valores derivados
   const ticketsCount = useMemo(() => tickets.length, [tickets.length]);
@@ -303,3 +290,5 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
 });
 
 NewTicketsList.displayName = 'NewTicketsList';
+
+export default NewTicketsList;

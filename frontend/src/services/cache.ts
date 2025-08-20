@@ -36,7 +36,7 @@ class LocalCache<T> {
   };
   private requestTimes = new Map<string, number[]>(); // Armazena tempos de resposta por chave
   private requestCounts = new Map<string, number>(); // Conta requisições por chave
-  private isActive = false; // Cache ativo ou não
+  private isActive = true; // Cache ativo por padrão
 
   constructor(config: Partial<CacheConfig> = {}) {
     this.config = {
@@ -162,7 +162,10 @@ class LocalCache<T> {
    * Recupera dados do cache se válidos
    */
   get(params: Record<string, any>): T | null {
-    if (!this.isActive) return null; // Não recupera se cache não estiver ativo
+    if (!this.isActive) {
+      this.stats.misses++;
+      return null; // Não recupera se cache não estiver ativo
+    }
 
     const key = this.generateKey(params);
     const entry = this.cache.get(key);
@@ -180,8 +183,14 @@ class LocalCache<T> {
       return null;
     }
 
+    // Cache hit
     this.stats.hits++;
     console.log(`📦 Cache: Hit para chave: ${key}`);
+
+    // Atualizar último acesso
+    entry.lastAccessed = Date.now();
+    entry.accessCount = (entry.accessCount || 0) + 1;
+
     return entry.data;
   }
 
@@ -233,6 +242,7 @@ class LocalCache<T> {
     isActive: boolean;
     totalRequests: number;
     avgResponseTime: number;
+    memoryUsage: number;
   } {
     const entries = Array.from(this.cache.entries()).map(([key, entry]) => ({
       key,
@@ -250,7 +260,39 @@ class LocalCache<T> {
       isActive: this.isActive,
       totalRequests: Array.from(this.requestCounts.values()).reduce((sum, count) => sum + count, 0),
       avgResponseTime: this.getAverageResponseTime(),
+      memoryUsage: this.getMemoryUsage(),
     };
+  }
+
+  private getMemoryUsage(): number {
+    let totalSize = 0;
+    for (const [key, entry] of this.cache.entries()) {
+      totalSize += JSON.stringify({ key, entry }).length;
+    }
+    return totalSize;
+  }
+
+  /**
+   * Método para pré-aquecer o cache com dados importantes
+   */
+  preWarm(params: Record<string, any>, data: T): void {
+    this.set(params, data);
+    console.log(`🔥 Cache: Pré-aquecido para chave: ${this.generateKey(params)}`);
+  }
+
+  /**
+   * Método para invalidar cache por padrão
+   */
+  invalidatePattern(pattern: string): void {
+    const regex = new RegExp(pattern);
+    let deletedCount = 0;
+    for (const [key] of this.cache.entries()) {
+      if (regex.test(key)) {
+        this.cache.delete(key);
+        deletedCount++;
+      }
+    }
+    console.log(`🗑️ Cache: Invalidadas ${deletedCount} entradas com padrão: ${pattern}`);
   }
 
   private getAverageResponseTime(): number {

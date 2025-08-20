@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 """Configurações compartilhadas para todos os testes"""
-import pytest
 import logging
-import sys
 import os
+import sys
 from unittest.mock import Mock, patch
 
-# Adicionar o diretório backend ao path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+import pytest
 
-from backend.services.glpi_service import GLPIService
+# Adicionar o diretório backend ao path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+from services.glpi_service import GLPIService
 
 
 @pytest.fixture(autouse=True)
@@ -17,13 +18,13 @@ def setup_logging():
     """Configura logging para testes"""
     logging.basicConfig(
         level=logging.DEBUG,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
-    
+
     # Silencia logs durante testes para não poluir a saída
-    logging.getLogger('glpi_service').setLevel(logging.CRITICAL)
-    logging.getLogger('requests').setLevel(logging.CRITICAL)
-    logging.getLogger('urllib3').setLevel(logging.CRITICAL)
+    logging.getLogger("glpi_service").setLevel(logging.CRITICAL)
+    logging.getLogger("requests").setLevel(logging.CRITICAL)
+    logging.getLogger("urllib3").setLevel(logging.CRITICAL)
 
 
 @pytest.fixture
@@ -78,8 +79,8 @@ def sample_ticket_data():
                 "8": "91",  # Grupo (N3)
                 "15": "2024-01-17 09:15:00",
                 "21": "Descrição do ticket 3",
-            }
-        ]
+            },
+        ],
     }
 
 
@@ -96,7 +97,7 @@ def sample_user_data():
                 "realname": "Silva",
                 "firstname": "João",
                 "is_active": 1,
-                "is_deleted": 0
+                "is_deleted": 0,
             },
             {
                 "2": "2",
@@ -105,9 +106,9 @@ def sample_user_data():
                 "realname": "Santos",
                 "firstname": "Maria",
                 "is_active": 1,
-                "is_deleted": 0
-            }
-        ]
+                "is_deleted": 0,
+            },
+        ],
     }
 
 
@@ -120,7 +121,7 @@ def sample_field_ids():
         "TECHNICIAN": "5",
         "DATE": "15",
         "PRIORITY": "3",
-        "CATEGORY": "7"
+        "CATEGORY": "7",
     }
 
 
@@ -135,7 +136,7 @@ def sample_metrics_data():
                 "Processando (planejado)": 3,
                 "Pendente": 2,
                 "Solucionado": 8,
-                "Fechado": 12
+                "Fechado": 12,
             },
             "N2": {
                 "Novo": 15,
@@ -143,7 +144,7 @@ def sample_metrics_data():
                 "Processando (planejado)": 4,
                 "Pendente": 3,
                 "Solucionado": 6,
-                "Fechado": 9
+                "Fechado": 9,
             },
             "N3": {
                 "Novo": 8,
@@ -151,7 +152,7 @@ def sample_metrics_data():
                 "Processando (planejado)": 2,
                 "Pendente": 1,
                 "Solucionado": 5,
-                "Fechado": 7
+                "Fechado": 7,
             },
             "N4": {
                 "Novo": 12,
@@ -159,8 +160,8 @@ def sample_metrics_data():
                 "Processando (planejado)": 3,
                 "Pendente": 2,
                 "Solucionado": 4,
-                "Fechado": 8
-            }
+                "Fechado": 8,
+            },
         },
         "general_metrics": {
             "Novo": 50,
@@ -168,15 +169,15 @@ def sample_metrics_data():
             "Processando (planejado)": 15,
             "Pendente": 10,
             "Solucionado": 30,
-            "Fechado": 40
-        }
+            "Fechado": 40,
+        },
     }
 
 
 @pytest.fixture
 def glpi_service(mock_glpi_config):
     """Fixture para instanciar GLPIService com configuração mockada"""
-    with patch('backend.services.glpi_service.active_config', mock_glpi_config):
+    with patch("services.glpi_service.active_config", mock_glpi_config):
         service = GLPIService()
         return service
 

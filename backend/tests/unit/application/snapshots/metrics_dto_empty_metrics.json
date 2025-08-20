@@ -1,0 +1,70 @@
+{
+  "avg_tickets_per_technician": null,
+  "niveis": {
+    "N1": {
+      "avg_resolution_time": null,
+      "level": "N1",
+      "metrics": {
+        "cancelados": 0,
+        "fechados": 0,
+        "novos": 0,
+        "pendentes": 0,
+        "progresso": 0,
+        "resolvidos": 0,
+        "total": 0
+      },
+      "technician_count": 0
+    },
+    "N2": {
+      "avg_resolution_time": null,
+      "level": "N2",
+      "metrics": {
+        "cancelados": 0,
+        "fechados": 0,
+        "novos": 0,
+        "pendentes": 0,
+        "progresso": 0,
+        "resolvidos": 0,
+        "total": 0
+      },
+      "technician_count": 0
+    },
+    "N3": {
+      "avg_resolution_time": null,
+      "level": "N3",
+      "metrics": {
+        "cancelados": 0,
+        "fechados": 0,
+        "novos": 0,
+        "pendentes": 0,
+        "progresso": 0,
+        "resolvidos": 0,
+        "total": 0
+      },
+      "technician_count": 0
+    },
+    "N4": {
+      "avg_resolution_time": null,
+      "level": "N4",
+      "metrics": {
+        "cancelados": 0,
+        "fechados": 0,
+        "novos": 0,
+        "pendentes": 0,
+        "progresso": 0,
+        "resolvidos": 0,
+        "total": 0
+      },
+      "technician_count": 0
+    }
+  },
+  "novos": 0,
+  "pendentes": 0,
+  "period_end": null,
+  "period_start": null,
+  "progresso": 0,
+  "resolvidos": 0,
+  "timestamp": "2024-01-01T00:00:00",
+  "total": 0,
+  "total_technicians": 0
+}

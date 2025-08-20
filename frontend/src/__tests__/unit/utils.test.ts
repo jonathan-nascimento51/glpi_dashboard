@@ -100,7 +100,13 @@ export const formatters = {
 export const validators = {
   // Validação de email
   isValidEmail: (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex =
+      /^[a-zA-Z0-9]([a-zA-Z0-9._+-]*[a-zA-Z0-9]|[a-zA-Z0-9])*@[a-zA-Z0-9]([a-zA-Z0-9.-]*[a-zA-Z0-9])?\.[a-zA-Z]{2,}$/;
+    // Verificar se não há pontos consecutivos na parte local
+    const localPart = email.split('@')[0];
+    if (localPart && localPart.includes('..')) {
+      return false;
+    }
     return emailRegex.test(email);
   },
 

@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react';
+import { vi } from 'vitest';
 import { ModernDashboard } from '../ModernDashboard';
 import { MetricsData, TechnicianRanking } from '@/types';
 
 // Mock do RankingTable para verificar se os props são passados corretamente
-jest.mock('../RankingTable', () => ({
+vi.mock('../RankingTable', () => ({
   RankingTable: ({ data, title, filters }: any) => (
     <div data-testid='ranking-table'>
       <h2>{title}</h2>

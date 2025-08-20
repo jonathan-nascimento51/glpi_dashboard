@@ -47,7 +47,7 @@ services:
       dockerfile: Dockerfile
     container_name: glpi_dashboard_backend
     environment:
-      - FLASK_APP=app.py
+      - FLASK_APP=backend/app.py
       - FLASK_ENV=development
       - FLASK_DEBUG=1
       - DATABASE_URL=mysql+pymysql://glpi_user:glpi_password@mysql:3306/glpi_dashboard

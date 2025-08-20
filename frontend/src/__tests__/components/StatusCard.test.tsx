@@ -3,8 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { screen, fireEvent } from '@testing-library/react';
-import { render } from '../setup';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { StatusCard } from '../../components/dashboard/StatusCard';
 import { Ticket, TrendingUp, TrendingDown } from 'lucide-react';
 

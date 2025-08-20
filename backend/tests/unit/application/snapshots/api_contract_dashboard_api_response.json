@@ -1,0 +1,35 @@
+{
+  "data": {
+    "cache_hit": true,
+    "data_freshness": "2024-01-01T00:00:00",
+    "metrics": {
+      "fechados": 10,
+      "niveis": {},
+      "novos": 40,
+      "pendentes": 60,
+      "progresso": 50,
+      "resolvidos": 40,
+      "timestamp": "2024-01-01T00:00:00",
+      "total": 200,
+      "total_technicians": 20
+    },
+    "recent_tickets": [],
+    "response_time_ms": 125.0,
+    "technicians": [
+      {
+        "efficiency_score": 85.5,
+        "id": 1,
+        "level": "N1",
+        "metrics": {
+          "resolvidos": 15,
+          "total": 30
+        },
+        "name": "João Silva",
+        "rank": 1
+      }
+    ],
+    "top_performers": []
+  },
+  "message": "Dashboard carregado com sucesso",
+  "success": true
+}

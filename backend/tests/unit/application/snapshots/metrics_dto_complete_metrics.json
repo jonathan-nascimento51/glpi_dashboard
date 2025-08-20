@@ -1,0 +1,35 @@
+{
+  "avg_tickets_per_technician": 10.0,
+  "niveis": {
+    "N1": {
+      "avg_resolution_time": 24.5,
+      "level": "N1",
+      "metrics": {
+        "cancelados": 0,
+        "fechados": 5,
+        "novos": 20,
+        "pendentes": 30,
+        "progresso": 25,
+        "resolvidos": 20,
+        "total": 100
+      },
+      "technician_count": 10
+    },
+    "N2": {
+      "avg_resolution_time": 18.2,
+      "level": "N2",
+      "metrics": {
+        "cancelados": 0,
+        "fechados": 5,
+        "novos": 15,
+        "pendentes": 25,
+        "progresso": 20,
+        "resolvidos": 15,
+        "total": 80
+      },
+      "technician_count": 8
+    }
+  },
+  "novos": 35,
+  "pendentes": 55,
+  "period_end": 

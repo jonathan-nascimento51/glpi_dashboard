@@ -199,6 +199,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
               </div>
 
               <Select
+                key={`select-${currentRange?.label || 'default'}`}
                 value={currentRange?.label || ''}
                 onValueChange={value => {
                   const preset = predefinedRanges.find(p => p.label === value);
@@ -208,11 +209,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                 }}
               >
                 <SelectTrigger className='w-48 border-gray-200 bg-white/80 hover:bg-white transition-colors'>
-                  <SelectValue
-                    placeholder={formatDateForDisplay(
-                      currentRange || { label: 'Selecionar período', startDate: '', endDate: '' }
-                    )}
-                  />
+                  <SelectValue>{currentRange?.label || 'Selecionar período'}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {predefinedRanges.map(preset => (
@@ -278,7 +275,11 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                 <h4 className='text-xs font-medium text-slate-300 uppercase tracking-wide mb-3'>
                   Tipo de Filtro
                 </h4>
-                <Select value={filterType} onValueChange={onFilterTypeChange}>
+                <Select
+                  key={`filter-type-${filterType}`}
+                  value={filterType}
+                  onValueChange={onFilterTypeChange}
+                >
                   <SelectTrigger className='w-full bg-slate-700/60 border-slate-600/50 text-slate-200'>
                     <SelectValue placeholder='Selecione o tipo de filtro' />
                   </SelectTrigger>

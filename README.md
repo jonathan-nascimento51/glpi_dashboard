@@ -2,6 +2,23 @@
 
 Aplicação completa para dashboard de métricas do GLPI, com backend Flask e frontend React.
 
+## 🚀 Melhorias Recentes
+
+### Otimizações de Performance
+- **Paginação Robusta**: Implementado método `_fetch_all_pages_robust` para melhor tratamento de requisições à API GLPI
+- **Redução de Requisições**: Otimizada a busca de dados para reduzir o número de chamadas à API
+- **Cache Inteligente**: Melhorado sistema de cache para evitar requisições desnecessárias
+
+### Padronização de Logs
+- **Timestamps UTC**: Todos os logs agora utilizam timestamps padronizados em UTC
+- **Observabilidade**: Implementado sistema de logs estruturados para melhor monitoramento
+- **Rastreabilidade**: Logs detalhados para facilitar debugging e análise de performance
+
+### Limpeza de Código
+- **Remoção de Arquivos Obsoletos**: Removidos 63 arquivos de debug e teste temporários
+- **Estrutura Limpa**: Eliminados diretórios `__pycache__` e arquivos temporários
+- **Código Organizado**: Mantida apenas a estrutura essencial do projeto
+
 ## Estrutura do Projeto
 
 ```
@@ -42,7 +59,7 @@ Aplicação completa para dashboard de métricas do GLPI, com backend Flask e fr
 │   ├── tests/             # Scripts e arquivos de teste
 │   ├── validation/        # Scripts de validação
 │   └── README.md          # Documentação dos scripts
-├── app.py                 # Ponto de entrada do backend
+
 ├── pyproject.toml         # Configuração e dependências Python
 ├── .env.example           # Exemplo de variáveis de ambiente
 └── README.md              # Este arquivo
@@ -155,7 +172,7 @@ Edite o arquivo `.env` com suas configurações específicas do GLPI.
 
 ```bash
 # Com o ambiente virtual ativado
-python app.py
+python backend/app.py
 ```
 
 O backend será executado em `http://localhost:5000`

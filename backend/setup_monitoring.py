@@ -6,37 +6,38 @@ Este script configura a execução automática do sistema de monitoramento,
 criando tarefas agendadas e configurações necessárias.
 """
 
-import os
 import json
 import logging
+import os
 from datetime import datetime
 from pathlib import Path
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class MonitoringSetup:
     """Configurador do sistema de monitoramento"""
-    
-    def __init__(self):
+
+    def __init__(self) -> None:
         self.base_dir = Path(__file__).parent
         self.config_file = self.base_dir / "monitoring_config.json"
         self.log_dir = self.base_dir / "logs"
         self.reports_dir = self.base_dir / "monitoring_reports"
-    
-    def create_directories(self):
+
+    def create_directories(self) -> None:
         """Cria diretórios necessários"""
         logger.info("Criando diretórios necessários...")
-        
+
         directories = [self.log_dir, self.reports_dir]
         for directory in directories:
             directory.mkdir(exist_ok=True)
             logger.info(f"Diretório criado/verificado: {directory}")
-    
-    def create_config_file(self):
+
+    def create_config_file(self) -> None:
         """Cria arquivo de configuração do monitoramento"""
         logger.info("Criando arquivo de configuração...")
-        
+
         config = {
             "monitoring": {
                 "enabled": True,
@@ -44,50 +45,38 @@ class MonitoringSetup:
                 "alert_thresholds": {
                     "high_severity_max": 0,  # Máximo de alertas de alta severidade
                     "medium_severity_max": 3,  # Máximo de alertas de média severidade
-                    "total_alerts_max": 10  # Máximo total de alertas
+                    "total_alerts_max": 10,  # Máximo total de alertas
                 },
                 "notifications": {
                     "email_enabled": False,
                     "email_recipients": [],
                     "slack_enabled": False,
-                    "slack_webhook": ""
+                    "slack_webhook": "",
                 },
                 "retention": {
                     "reports_days": 30,  # Manter relatórios por 30 dias
-                    "logs_days": 7  # Manter logs por 7 dias
-                }
+                    "logs_days": 7,  # Manter logs por 7 dias
+                },
             },
             "checks": {
-                "technician_groups_consistency": {
-                    "enabled": True,
-                    "critical": True
-                },
-                "ranking_completeness": {
-                    "enabled": True,
-                    "critical": True
-                },
-                "api_connectivity": {
-                    "enabled": True,
-                    "critical": True
-                },
-                "data_freshness": {
-                    "enabled": True,
-                    "critical": False
-                }
+                "technician_groups_consistency": {"enabled": True, "critical": True},
+                "ranking_completeness": {"enabled": True, "critical": True},
+                "api_connectivity": {"enabled": True, "critical": True},
+                "data_freshness": {"enabled": True, "critical": False},
             },
             "created_at": datetime.now().isoformat(),
-            "version": "1.0.0"
+            "version": "1.0.0",
         }
-        
-        with open(self.config_file, 'w', encoding='utf-8') as f:
+
+        with open(self.config_file, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=2, ensure_ascii=False)
-        
+
         logger.info(f"Arquivo de configuração criado: {self.config_file}")
-    
-    def create_batch_script(self):
+
+    def create_batch_script(self) -> None:
         """Cria script batch para execução no Windows"""
         logger.info("Criando script batch para Windows...")
-        
+
         batch_content = f"""@echo off
 REM Script de execução do monitoramento GLPI Dashboard
 REM Criado automaticamente em {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
@@ -117,17 +106,17 @@ if %ERRORLEVEL% neq 0 (
 
 pause
 """
-        
+
         batch_file = self.base_dir / "run_monitoring.bat"
-        with open(batch_file, 'w', encoding='utf-8') as f:
+        with open(batch_file, "w", encoding="utf-8") as f:
             f.write(batch_content)
-        
+
         logger.info(f"Script batch criado: {batch_file}")
-    
-    def create_powershell_script(self):
+
+    def create_powershell_script(self) -> None:
         """Cria script PowerShell para execução"""
         logger.info("Criando script PowerShell...")
-        
+
         ps_content = f"""# Script PowerShell para execução do monitoramento GLPI Dashboard
 # Criado automaticamente em {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
@@ -162,17 +151,17 @@ try {{
     exit 1
 }}
 """
-        
+
         ps_file = self.base_dir / "run_monitoring.ps1"
-        with open(ps_file, 'w', encoding='utf-8') as f:
+        with open(ps_file, "w", encoding="utf-8") as f:
             f.write(ps_content)
-        
+
         logger.info(f"Script PowerShell criado: {ps_file}")
-    
-    def create_task_scheduler_xml(self):
+
+    def create_task_scheduler_xml(self) -> None:
         """Cria arquivo XML para agendamento no Windows Task Scheduler"""
         logger.info("Criando arquivo XML para Task Scheduler...")
-        
+
         xml_content = f"""<?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
@@ -227,17 +216,17 @@ try {{
   </Actions>
 </Task>
 """
-        
+
         xml_file = self.base_dir / "glpi_monitoring_task.xml"
-        with open(xml_file, 'w', encoding='utf-16') as f:
+        with open(xml_file, "w", encoding="utf-16") as f:
             f.write(xml_content)
-        
+
         logger.info(f"Arquivo XML criado: {xml_file}")
-    
-    def create_readme(self):
+
+    def create_readme(self) -> None:
         """Cria arquivo README com instruções"""
         logger.info("Criando arquivo README...")
-        
+
         readme_content = f"""# Sistema de Monitoramento - Dashboard GLPI
 
 Sistema automatizado para monitoramento da integridade dos dados do Dashboard GLPI.
@@ -356,17 +345,17 @@ Verifique os logs em `logs/monitoring.log` para detalhes de erros.
 **Criado em**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 **Versão**: 1.0.0
 """
-        
+
         readme_file = self.base_dir / "MONITORING_README.md"
-        with open(readme_file, 'w', encoding='utf-8') as f:
+        with open(readme_file, "w", encoding="utf-8") as f:
             f.write(readme_content)
-        
+
         logger.info(f"README criado: {readme_file}")
-    
-    def setup_complete_monitoring(self):
+
+    def setup_complete_monitoring(self) -> bool:
         """Executa configuração completa do sistema de monitoramento"""
         logger.info("Iniciando configuração completa do sistema de monitoramento...")
-        
+
         try:
             self.create_directories()
             self.create_config_file()
@@ -374,12 +363,12 @@ Verifique os logs em `logs/monitoring.log` para detalhes de erros.
             self.create_powershell_script()
             self.create_task_scheduler_xml()
             self.create_readme()
-            
+
             logger.info("✅ Configuração do sistema de monitoramento concluída com sucesso!")
-            
-            print("\n" + "="*60)
+
+            print("\n" + "=" * 60)
             print("SISTEMA DE MONITORAMENTO CONFIGURADO COM SUCESSO!")
-            print("="*60)
+            print("=" * 60)
             print(f"Diretório base: {self.base_dir}")
             print(f"Configuração: {self.config_file}")
             print(f"Logs: {self.log_dir}")
@@ -388,24 +377,26 @@ Verifique os logs em `logs/monitoring.log` para detalhes de erros.
             print("1. Execute manualmente: run_monitoring.bat ou run_monitoring.ps1")
             print("2. Configure agendamento: Importe glpi_monitoring_task.xml no Task Scheduler")
             print("3. Leia o MONITORING_README.md para instruções detalhadas")
-            print("="*60)
-            
+            print("=" * 60)
+
             return True
-            
+
         except Exception as e:
             logger.error(f"Erro durante configuração: {e}")
             return False
 
-def main():
+
+def main() -> int:
     """Função principal"""
     setup = MonitoringSetup()
     success = setup.setup_complete_monitoring()
-    
+
     if not success:
         print("❌ Falha na configuração do sistema de monitoramento")
         return 1
-    
+
     return 0
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     exit(main())

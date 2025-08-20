@@ -1,0 +1,24 @@
+{
+  "fechados": 5,
+  "niveis": {
+    "N1": {
+      "level": "N1",
+      "metrics": {
+        "total": 50
+      },
+      "technician_count": 5
+    },
+    "N2": {
+      "level": "N2",
+      "metrics": {
+        "total": 30
+      },
+      "technician_count": 3
+    }
+  },
+  "novos": 20,
+  "pendentes": 30,
+  "progresso": 25,
+  "resolvidos": 20,
+  "total": 100
+}

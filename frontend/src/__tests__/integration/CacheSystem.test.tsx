@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { useApi } from '../../hooks/useApi';
-import { useCache } from '../../hooks/useCache';
+import { useCache } from '../../hooks/useLocalCache';
 import { httpClient } from '../../services/httpClient';
 
 // Mock do httpClient

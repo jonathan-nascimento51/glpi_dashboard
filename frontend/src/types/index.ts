@@ -121,3 +121,9 @@ export interface DashboardState {
   dataIntegrityReport: any | null; // Será tipado adequadamente quando importado
   monitoringAlerts: any[];
 }
+
+// Export all types
+export * from './api';
+export * from './mock';
+export * from './test';
+export * from './contract';

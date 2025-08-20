@@ -256,7 +256,12 @@ describe('Button Component', () => {
 
 describe('Input Component', () => {
   test('renders input with label', () => {
-    render(<Input label='Username' />);
+    render(
+      <div>
+        <label htmlFor='username'>Username</label>
+        <Input id='username' />
+      </div>
+    );
     expect(screen.getByLabelText('Username')).toBeInTheDocument();
   });
 
@@ -280,7 +285,8 @@ describe('Input Component', () => {
 
   test('renders different input types', () => {
     render(<Input type='password' />);
-    expect(screen.getByRole('textbox')).toHaveAttribute('type', 'password');
+    const passwordInput = screen.getByDisplayValue('');
+    expect(passwordInput).toHaveAttribute('type', 'password');
   });
 });
 

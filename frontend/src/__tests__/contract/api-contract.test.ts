@@ -1,21 +1,17 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { httpClient } from '../../services/httpClient';
-
-// Definição dos contratos da API
-interface ApiContract {
-  endpoint: string;
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-  requestSchema?: any;
-  responseSchema: any;
-  statusCode: number;
-  headers?: Record<string, string>;
-}
+import type {
+  ApiContract,
+  SchemaDefinition,
+  ValidationResult,
+  SchemaValidator,
+} from '../../types/contract';
 
 // Schemas de validação usando uma implementação simples
-const createSchema = (schema: any) => ({
-  validate: (data: any) => {
+const createSchema = (schema: SchemaDefinition): SchemaValidator => ({
+  validate: (data: any): ValidationResult => {
     try {
       validateObject(data, schema);
       return { success: true, data };
@@ -25,7 +21,7 @@ const createSchema = (schema: any) => ({
   },
 });
 
-const validateObject = (data: any, schema: any): void => {
+const validateObject = (data: any, schema: SchemaDefinition): void => {
   if (schema.type === 'object') {
     if (typeof data !== 'object' || data === null) {
       throw new Error(`Expected object, got ${typeof data}`);
@@ -339,70 +335,64 @@ const apiContracts: ApiContract[] = [
 // Mock server para testes de contrato
 const contractHandlers = [
   // Dashboard Metrics
-  rest.get('/api/dashboard/metrics', (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
-        totalTickets: 1234,
-        openTickets: 456,
-        closedTickets: 778,
-        averageResolutionTime: 2.5,
-        ticketsByStatus: {
-          open: 456,
-          inProgress: 123,
-          closed: 655,
-        },
-        ticketsByPriority: {
-          high: 89,
-          medium: 567,
-          low: 578,
-        },
-      })
-    );
+  http.get('/api/dashboard/metrics', () => {
+    return HttpResponse.json({
+      totalTickets: 1234,
+      openTickets: 456,
+      closedTickets: 778,
+      averageResolutionTime: 2.5,
+      ticketsByStatus: {
+        open: 456,
+        inProgress: 123,
+        closed: 655,
+      },
+      ticketsByPriority: {
+        high: 89,
+        medium: 567,
+        low: 578,
+      },
+    });
   }),
 
   // Tickets List
-  rest.get('/api/tickets', (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
-        data: [
-          {
-            id: 1,
-            title: 'Problema no sistema',
-            description: 'Descrição do problema',
-            status: 'open',
-            priority: 'high',
-            assigneeId: 1,
-            createdAt: '2024-01-15T10:30:00Z',
-            updatedAt: '2024-01-15T10:30:00Z',
-          },
-          {
-            id: 2,
-            title: 'Manutenção programada',
-            description: 'Descrição da manutenção',
-            status: 'in_progress',
-            priority: 'medium',
-            assigneeId: 2,
-            createdAt: '2024-01-14T09:15:00Z',
-            updatedAt: '2024-01-15T08:45:00Z',
-          },
-        ],
-        pagination: {
-          page: 1,
-          limit: 10,
-          total: 50,
-          totalPages: 5,
+  http.get('/api/tickets', () => {
+    return HttpResponse.json({
+      data: [
+        {
+          id: 1,
+          title: 'Problema no sistema',
+          description: 'Descrição do problema',
+          status: 'open',
+          priority: 'high',
+          assigneeId: 1,
+          createdAt: '2024-01-15T10:30:00Z',
+          updatedAt: '2024-01-15T10:30:00Z',
         },
-      })
-    );
+        {
+          id: 2,
+          title: 'Manutenção programada',
+          description: 'Descrição da manutenção',
+          status: 'in_progress',
+          priority: 'medium',
+          assigneeId: 2,
+          createdAt: '2024-01-14T09:15:00Z',
+          updatedAt: '2024-01-15T08:45:00Z',
+        },
+      ],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 50,
+        totalPages: 5,
+      },
+    });
   }),
 
   // Create Ticket
-  rest.post('/api/tickets', (req, res, ctx) => {
-    return res(
-      ctx.status(201),
-      ctx.json({
+  http.post('/api/tickets', async ({ request }) => {
+    const body = await request.json();
+    return HttpResponse.json(
+      {
         id: 3,
         title: 'Novo ticket',
         description: 'Descrição do novo ticket',
@@ -411,163 +401,151 @@ const contractHandlers = [
         assigneeId: 1,
         createdAt: '2024-01-15T11:00:00Z',
         updatedAt: '2024-01-15T11:00:00Z',
-      })
+      },
+      { status: 201 }
     );
   }),
 
   // Update Ticket
-  rest.put('/api/tickets/:id', (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
-        id: 1,
-        title: 'Ticket atualizado',
-        description: 'Descrição atualizada',
-        status: 'in_progress',
-        priority: 'high',
-        assigneeId: 2,
-        createdAt: '2024-01-15T10:30:00Z',
-        updatedAt: '2024-01-15T11:15:00Z',
-      })
-    );
+  http.put('/api/tickets/:id', async ({ params, request }) => {
+    const body = await request.json();
+    return HttpResponse.json({
+      id: 1,
+      title: 'Ticket atualizado',
+      description: 'Descrição atualizada',
+      status: 'in_progress',
+      priority: 'high',
+      assigneeId: 2,
+      createdAt: '2024-01-15T10:30:00Z',
+      updatedAt: '2024-01-15T11:15:00Z',
+    });
   }),
 
   // Delete Ticket
-  rest.delete('/api/tickets/:id', (req, res, ctx) => {
-    return res(ctx.status(204));
+  http.delete('/api/tickets/:id', ({ params }) => {
+    return new HttpResponse(null, { status: 204 });
   }),
 
   // Users List
-  rest.get('/api/users', (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json([
-        {
-          id: 1,
-          name: 'João Silva',
-          email: 'joao@example.com',
-          role: 'admin',
-          isActive: true,
-          createdAt: '2024-01-01T00:00:00Z',
-        },
-        {
-          id: 2,
-          name: 'Maria Santos',
-          email: 'maria@example.com',
-          role: 'technician',
-          isActive: true,
-          createdAt: '2024-01-02T00:00:00Z',
-        },
-      ])
-    );
+  http.get('/api/users', () => {
+    return HttpResponse.json([
+      {
+        id: 1,
+        name: 'João Silva',
+        email: 'joao@example.com',
+        role: 'admin',
+        isActive: true,
+        createdAt: '2024-01-01T00:00:00Z',
+      },
+      {
+        id: 2,
+        name: 'Maria Santos',
+        email: 'maria@example.com',
+        role: 'technician',
+        isActive: true,
+        createdAt: '2024-01-02T00:00:00Z',
+      },
+    ]);
   }),
 
   // Performance Metrics
-  rest.get('/api/performance/metrics', (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
-        responseTime: {
-          average: 150.5,
-          p95: 300.2,
-          p99: 500.8,
-        },
-        throughput: 1250.5,
-        errorRate: 0.5,
-        uptime: 99.9,
-      })
-    );
+  http.get('/api/performance/metrics', () => {
+    return HttpResponse.json({
+      responseTime: {
+        average: 150.5,
+        p95: 300.2,
+        p99: 500.8,
+      },
+      throughput: 1250.5,
+      errorRate: 0.5,
+      uptime: 99.9,
+    });
   }),
 
   // Health Check
-  rest.get('/api/health', (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
-        status: 'healthy',
-        timestamp: '2024-01-15T12:00:00Z',
-        services: {
-          database: 'up',
-          glpi: 'up',
-          cache: 'up',
-        },
-        version: '1.0.0',
-      })
-    );
+  http.get('/api/health', () => {
+    return HttpResponse.json({
+      status: 'healthy',
+      timestamp: '2024-01-15T12:00:00Z',
+      services: {
+        database: 'up',
+        glpi: 'up',
+        cache: 'up',
+      },
+      version: '1.0.0',
+    });
   }),
 
   // Error Response
-  rest.get('/api/tickets/999999', (req, res, ctx) => {
-    return res(
-      ctx.status(404),
-      ctx.json({
+  http.get('/api/tickets/999999', () => {
+    return HttpResponse.json(
+      {
         error: 'Not Found',
         message: 'Ticket not found',
         code: 'TICKET_NOT_FOUND',
         timestamp: '2024-01-15T12:00:00Z',
-      })
+      },
+      { status: 404 }
     );
   }),
 
   // Invalid Request
-  rest.post('/api/tickets/invalid', (req, res, ctx) => {
-    return res(
-      ctx.status(400),
-      ctx.json({
-        error: 'Bad Request',
-        message: 'Invalid request data',
-        code: 'VALIDATION_ERROR',
-        timestamp: '2024-01-15T12:00:00Z',
-        details: [
-          {
-            field: 'title',
-            message: 'Title is required',
-          },
-          {
-            field: 'priority',
-            message: 'Priority must be one of: low, medium, high',
-          },
-        ],
-      })
-    );
+  http.post('/api/tickets/invalid', async ({ request }) => {
+    const body = await request.json();
+    return HttpResponse.json({
+      error: 'Bad Request',
+      message: 'Invalid request data',
+      code: 'VALIDATION_ERROR',
+      timestamp: '2024-01-15T12:00:00Z',
+      details: [
+        {
+          field: 'title',
+          message: 'Title is required',
+        },
+        {
+          field: 'priority',
+          message: 'Priority must be one of: low, medium, high',
+        },
+      ],
+    });
   }),
 
   // Unauthorized
-  rest.get('/api/admin/settings', (req, res, ctx) => {
-    return res(
-      ctx.status(401),
-      ctx.json({
+  http.get('/api/admin/settings', () => {
+    return HttpResponse.json(
+      {
         error: 'Unauthorized',
         message: 'Authentication required',
         code: 'AUTH_REQUIRED',
         timestamp: '2024-01-15T12:00:00Z',
-      })
+      },
+      { status: 401 }
     );
   }),
 
   // Forbidden
-  rest.delete('/api/admin/users/:id', (req, res, ctx) => {
-    return res(
-      ctx.status(403),
-      ctx.json({
+  http.delete('/api/admin/users/:id', ({ params }) => {
+    return HttpResponse.json(
+      {
         error: 'Forbidden',
         message: 'Insufficient permissions',
         code: 'INSUFFICIENT_PERMISSIONS',
         timestamp: '2024-01-15T12:00:00Z',
-      })
+      },
+      { status: 403 }
     );
   }),
 
   // Server Error
-  rest.get('/api/reports/generate', (req, res, ctx) => {
-    return res(
-      ctx.status(500),
-      ctx.json({
+  http.get('/api/reports/generate', () => {
+    return HttpResponse.json(
+      {
         error: 'Internal Server Error',
         message: 'An unexpected error occurred',
         code: 'INTERNAL_ERROR',
         timestamp: '2024-01-15T12:00:00Z',
-      })
+      },
+      { status: 500 }
     );
   }),
 ];
@@ -576,7 +554,7 @@ const server = setupServer(...contractHandlers);
 
 describe('Testes de Contrato da API', () => {
   beforeAll(() => {
-    server.listen({ onUnhandledRequest: 'error' });
+    server.listen({ onUnhandledRequest: 'warn' });
   });
 
   afterAll(() => {

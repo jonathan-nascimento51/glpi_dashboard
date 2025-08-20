@@ -1,4 +1,6 @@
-export const mockData = {
+import type { MockData } from '../types/mock';
+
+export const mockData: MockData = {
   dashboardMetrics: {
     total_tickets: 1250,
     open_tickets: 320,

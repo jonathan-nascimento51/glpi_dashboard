@@ -1,0 +1,10 @@
+{
+  "result": {
+    "tickets": {
+      "new": 20,
+      "pending": 30,
+      "total": 100
+    }
+  },
+  "status": "success"
+}

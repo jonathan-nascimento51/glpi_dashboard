@@ -1,0 +1,10 @@
+{
+  "data": {
+    "novos": 20,
+    "pendentes": 30,
+    "total": 100
+  },
+  "message": "Dados obtidos com sucesso",
+  "success": true,
+  "version": "2.0"
+}

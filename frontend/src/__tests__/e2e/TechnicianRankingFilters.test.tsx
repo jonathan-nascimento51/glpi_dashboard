@@ -1,7 +1,8 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
+import { vi } from 'vitest';
 import App from '../../App';
 import { TechnicianRanking } from '@/types';
 
@@ -43,34 +44,33 @@ const mockFilteredRankingData: TechnicianRanking[] = [
 // Configuração do MSW (Mock Service Worker)
 const server = setupServer(
   // Mock da API de métricas
-  rest.get('/api/dashboard/metrics', (req, res, ctx) => {
-    return res(
-      ctx.json({
-        success: true,
-        data: {
-          geral: {
-            total_tickets: 100,
-            open_tickets: 25,
-            closed_tickets: 75,
-            pending_tickets: 10,
-            in_progress_tickets: 15,
-          },
-          tendencias: {
-            total_tickets: { valor: 5, tipo: 'aumento' },
-            open_tickets: { valor: 2, tipo: 'aumento' },
-            closed_tickets: { valor: 3, tipo: 'aumento' },
-          },
+  http.get('/api/dashboard/metrics', () => {
+    return HttpResponse.json({
+      success: true,
+      data: {
+        geral: {
+          total_tickets: 100,
+          open_tickets: 25,
+          closed_tickets: 75,
+          pending_tickets: 10,
+          in_progress_tickets: 15,
         },
-      })
-    );
+        tendencias: {
+          total_tickets: { valor: 5, tipo: 'aumento' },
+          open_tickets: { valor: 2, tipo: 'aumento' },
+          closed_tickets: { valor: 3, tipo: 'aumento' },
+        },
+      },
+    });
   }),
 
   // Mock da API de ranking sem filtros
-  rest.get('/api/technicians/ranking', (req, res, ctx) => {
-    const startDate = req.url.searchParams.get('start_date');
-    const endDate = req.url.searchParams.get('end_date');
-    const level = req.url.searchParams.get('level');
-    const limit = req.url.searchParams.get('limit');
+  http.get('/api/technicians/ranking', ({ request }) => {
+    const url = new URL(request.url);
+    const startDate = url.searchParams.get('start_date');
+    const endDate = url.searchParams.get('end_date');
+    const level = url.searchParams.get('level');
+    const limit = url.searchParams.get('limit');
 
     // Se há filtros, retorna dados filtrados
     if (startDate || endDate || level || limit) {
@@ -84,42 +84,34 @@ const server = setupServer(
         filteredData = filteredData.slice(0, parseInt(limit));
       }
 
-      return res(
-        ctx.json({
-          success: true,
-          data: filteredData,
-          message: `Ranking obtido com filtros aplicados`,
-        })
-      );
+      return HttpResponse.json({
+        success: true,
+        data: filteredData,
+        message: `Ranking obtido com filtros aplicados`,
+      });
     }
 
     // Sem filtros, retorna todos os dados
-    return res(
-      ctx.json({
-        success: true,
-        data: mockRankingData,
-        message: 'Ranking obtido com sucesso',
-      })
-    );
+    return HttpResponse.json({
+      success: true,
+      data: mockRankingData,
+      message: 'Ranking obtido com sucesso',
+    });
   }),
 
   // Mock de outras APIs necessárias
-  rest.get('/api/system/status', (req, res, ctx) => {
-    return res(
-      ctx.json({
-        success: true,
-        data: { status: 'healthy' },
-      })
-    );
+  http.get('/api/system/status', () => {
+    return HttpResponse.json({
+      success: true,
+      data: { status: 'healthy' },
+    });
   }),
 
-  rest.get('/api/tickets/new', (req, res, ctx) => {
-    return res(
-      ctx.json({
-        success: true,
-        data: [],
-      })
-    );
+  http.get('/api/tickets/new', () => {
+    return HttpResponse.json({
+      success: true,
+      data: [],
+    });
   })
 );
 
@@ -129,26 +121,26 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 // Mock do hook de performance
-jest.mock('../../hooks/usePerformanceMonitoring', () => ({
+vi.mock('../../hooks/usePerformanceMonitoring', () => ({
   usePerformanceMonitoring: () => ({
-    measureRender: jest.fn(),
-    measureApiCall: jest.fn(),
+    measureRender: vi.fn(),
+    measureApiCall: vi.fn(),
   }),
 }));
 
 // Mock do monitor de performance
-jest.mock('../../utils/performanceMonitor', () => ({
+vi.mock('../../utils/performanceMonitor', () => ({
   performanceMonitor: {
-    markComponentRender: jest.fn(),
-    markApiCall: jest.fn(),
+    markComponentRender: vi.fn(),
+    markApiCall: vi.fn(),
   },
-  usePerformanceProfiler: () => jest.fn(),
+  usePerformanceProfiler: () => vi.fn(),
 }));
 
 describe('Technician Ranking Filters E2E', () => {
   beforeEach(() => {
     // Reset de mocks antes de cada teste
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('deve exibir ranking sem filtros inicialmente', async () => {
@@ -321,14 +313,12 @@ describe('Technician Ranking Filters E2E', () => {
   it('deve exibir mensagem apropriada quando não há dados com filtros aplicados', async () => {
     // Mock para retornar dados vazios
     server.use(
-      rest.get('/api/technicians/ranking', (req, res, ctx) => {
-        return res(
-          ctx.json({
-            success: true,
-            data: [],
-            message: 'Nenhum técnico encontrado com os filtros aplicados',
-          })
-        );
+      http.get('/api/technicians/ranking', () => {
+        return HttpResponse.json({
+          success: true,
+          data: [],
+          message: 'Nenhum técnico encontrado com os filtros aplicados',
+        });
       })
     );
 

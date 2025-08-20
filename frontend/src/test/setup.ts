@@ -1,24 +1,32 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
+import { toHaveNoViolations } from 'jest-axe';
+
+// Extend Vitest matchers
+expect.extend(toHaveNoViolations);
 
 // Mock das variáveis de ambiente para testes
-Object.defineProperty(import.meta, 'env', {
+Object.defineProperty(globalThis, 'import', {
   value: {
-    VITE_API_BASE_URL: 'http://localhost:5000/api',
-    VITE_API_TIMEOUT: '10000',
-    VITE_API_RETRY_ATTEMPTS: '3',
-    VITE_API_RETRY_DELAY: '1000',
-    VITE_LOG_LEVEL: 'info',
-    VITE_SHOW_PERFORMANCE: 'true',
-    VITE_SHOW_API_CALLS: 'true',
-    VITE_SHOW_CACHE_HITS: 'true',
-    VITE_API_TOKEN: 'test-api-token',
-    VITE_APP_TOKEN: 'test-app-token',
-    VITE_USER_TOKEN: 'test-user-token',
-    MODE: 'test',
-    DEV: false,
-    PROD: false,
-    SSR: false,
+    meta: {
+      env: {
+        VITE_API_BASE_URL: 'http://localhost:5000/api',
+        VITE_API_TIMEOUT: '10000',
+        VITE_API_RETRY_ATTEMPTS: '3',
+        VITE_API_RETRY_DELAY: '1000',
+        VITE_LOG_LEVEL: 'info',
+        VITE_SHOW_PERFORMANCE: 'true',
+        VITE_SHOW_API_CALLS: 'true',
+        VITE_SHOW_CACHE_HITS: 'true',
+        VITE_API_TOKEN: 'test-api-token',
+        VITE_APP_TOKEN: 'test-app-token',
+        VITE_USER_TOKEN: 'test-user-token',
+        MODE: 'test',
+        DEV: false,
+        PROD: false,
+        SSR: false,
+      },
+    },
   },
   writable: true,
 });
@@ -33,24 +41,38 @@ global.console = {
   error: vi.fn(),
 };
 
-// Mock do localStorage
-const localStorageMock = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
+// Mock do localStorage com comportamento funcional
+const createStorageMock = () => {
+  let store: Record<string, string> = {};
+
+  return {
+    getItem: vi.fn((key: string) => store[key] || null),
+    setItem: vi.fn((key: string, value: string) => {
+      store[key] = value;
+    }),
+    removeItem: vi.fn((key: string) => {
+      delete store[key];
+    }),
+    clear: vi.fn(() => {
+      store = {};
+    }),
+    get length() {
+      return Object.keys(store).length;
+    },
+    key: vi.fn((index: number) => {
+      const keys = Object.keys(store);
+      return keys[index] || null;
+    }),
+  };
 };
+
+const localStorageMock = createStorageMock();
 Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
 });
 
 // Mock do sessionStorage
-const sessionStorageMock = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
-};
+const sessionStorageMock = createStorageMock();
 Object.defineProperty(window, 'sessionStorage', {
   value: sessionStorageMock,
 });

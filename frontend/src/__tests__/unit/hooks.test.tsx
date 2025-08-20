@@ -3,11 +3,11 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 // Hook para gerenciar estado local com localStorage
-export const useLocalStorage = function<T>(
+export const useLocalStorage = function <T>(
   key: string,
   initialValue: T
 ): [T, (value: T | ((prev: T) => T)) => void] {
-  const [storedValue, setStoredValue] = useState<T>(() => { // eslint-disable-line @typescript-eslint/no-unnecessary-type-constraint
+  const [storedValue, setStoredValue] = useState<T>(() => {
     try {
       const item = window.localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
@@ -34,7 +34,7 @@ export const useLocalStorage = function<T>(
 };
 
 // Hook para debounce
-export const useDebounce = function<T>(value: T, delay: number): T {
+export const useDebounce = function <T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export const useDebounce = function<T>(value: T, delay: number): T {
 };
 
 // Hook para fazer requisições HTTP
-export const useFetch = function<T>(
+export const useFetch = function <T>(
   url: string,
   options?: RequestInit
 ): {
@@ -68,13 +68,13 @@ export const useFetch = function<T>(
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await fetch(url, options);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-      
+
       const result = await response.json();
       setData(result);
     } catch (err) {
@@ -103,7 +103,7 @@ export const useForm = <T extends Record<string, any>>(
   const setValue = useCallback(
     (name: keyof T, value: any) => {
       setValues(prev => ({ ...prev, [name]: value }));
-      
+
       // Validar campo se há regras de validação
       if (validationRules?.[name]) {
         const error = validationRules[name]!(value);
@@ -113,30 +113,27 @@ export const useForm = <T extends Record<string, any>>(
     [validationRules]
   );
 
-  const setTouched = useCallback(
-    (name: keyof T) => {
-      setTouched(prev => ({ ...prev, [name]: true }));
-    },
-    []
-  );
+  const setTouched = useCallback((name: keyof T) => {
+    setTouched(prev => ({ ...prev, [name]: true }));
+  }, []);
 
   const validate = useCallback(() => {
     if (!validationRules) return true;
-    
+
     const newErrors: Partial<Record<keyof T, string>> = {};
     let isValid = true;
-    
+
     Object.keys(validationRules).forEach(key => {
       const fieldKey = key as keyof T;
       const validator = validationRules[fieldKey]!;
       const error = validator(values[fieldKey]);
-      
+
       if (error) {
         newErrors[fieldKey] = error;
         isValid = false;
       }
     });
-    
+
     setErrors(newErrors);
     return isValid;
   }, [values, validationRules]);
@@ -155,15 +152,12 @@ export const useForm = <T extends Record<string, any>>(
     setTouched,
     validate,
     reset,
-    isValid: Object.keys(errors).length === 0
+    isValid: Object.keys(errors).length === 0,
   };
 };
 
 // Hook para detectar clique fora do elemento
-export const useClickOutside = (
-  ref: React.RefObject<HTMLElement>,
-  callback: () => void
-) => {
+export const useClickOutside = (ref: React.RefObject<HTMLElement>, callback: () => void) => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (ref.current && !ref.current.contains(event.target as Node)) {
@@ -179,9 +173,7 @@ export const useClickOutside = (
 };
 
 // Hook para gerenciar estado de loading
-export const useAsync = <T, Args extends any[]>(
-  asyncFunction: (...args: Args) => Promise<T>
-) => {
+export const useAsync = <T, Args extends any[]>(asyncFunction: (...args: Args) => Promise<T>) => {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -209,16 +201,13 @@ export const useAsync = <T, Args extends any[]>(
 };
 
 // Hook para gerenciar paginação
-export const usePagination = (
-  totalItems: number,
-  itemsPerPage: number = 10
-) => {
+export const usePagination = (totalItems: number, itemsPerPage: number = 10) => {
   const [currentPage, setCurrentPage] = useState(1);
-  
+
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-  
+
   const goToPage = useCallback(
     (page: number) => {
       if (page >= 1 && page <= totalPages) {
@@ -227,23 +216,23 @@ export const usePagination = (
     },
     [totalPages]
   );
-  
+
   const goToNext = useCallback(() => {
     goToPage(currentPage + 1);
   }, [currentPage, goToPage]);
-  
+
   const goToPrevious = useCallback(() => {
     goToPage(currentPage - 1);
   }, [currentPage, goToPage]);
-  
+
   const goToFirst = useCallback(() => {
     goToPage(1);
   }, [goToPage]);
-  
+
   const goToLast = useCallback(() => {
     goToPage(totalPages);
   }, [goToPage, totalPages]);
-  
+
   return {
     currentPage,
     totalPages,
@@ -255,46 +244,38 @@ export const usePagination = (
     goToNext,
     goToPrevious,
     goToFirst,
-    goToLast
+    goToLast,
   };
 };
 
 // Hook para gerenciar filtros
 export const useFilters = <T extends Record<string, any>>(initialFilters: T) => {
   const [filters, setFilters] = useState<T>(initialFilters);
-  
-  const setFilter = useCallback(
-    (key: keyof T, value: any) => {
-      setFilters(prev => ({ ...prev, [key]: value }));
-    },
-    []
-  );
-  
-  const removeFilter = useCallback(
-    (key: keyof T) => {
-      setFilters(prev => {
-        const newFilters = { ...prev };
-        delete newFilters[key];
-        return newFilters;
-      });
-    },
-    []
-  );
-  
+
+  const setFilter = useCallback((key: keyof T, value: any) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  }, []);
+
+  const removeFilter = useCallback((key: keyof T) => {
+    setFilters(prev => {
+      const newFilters = { ...prev };
+      delete newFilters[key];
+      return newFilters;
+    });
+  }, []);
+
   const clearFilters = useCallback(() => {
     setFilters(initialFilters);
   }, [initialFilters]);
-  
-  const hasActiveFilters = Object.keys(filters).some(
-    key => filters[key] !== initialFilters[key]
-  );
-  
+
+  const hasActiveFilters = Object.keys(filters).some(key => filters[key] !== initialFilters[key]);
+
   return {
     filters,
     setFilter,
     removeFilter,
     clearFilters,
-    hasActiveFilters
+    hasActiveFilters,
   };
 };
 
@@ -309,7 +290,7 @@ export const useMediaQuery = (query: string): boolean => {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
+
     const mediaQuery = window.matchMedia(query);
     const handler = (event: MediaQueryListEvent) => {
       setMatches(event.matches);
@@ -325,19 +306,19 @@ export const useMediaQuery = (query: string): boolean => {
 // Hook para gerenciar estado de toggle
 export const useToggle = (initialValue: boolean = false) => {
   const [value, setValue] = useState<boolean>(initialValue);
-  
+
   const toggle = useCallback(() => {
     setValue(prev => !prev);
   }, []);
-  
+
   const setTrue = useCallback(() => {
     setValue(true);
   }, []);
-  
+
   const setFalse = useCallback(() => {
     setValue(false);
   }, []);
-  
+
   return { value, toggle, setTrue, setFalse, setValue };
 };
 
@@ -351,11 +332,11 @@ export const useInterval = (callback: () => void, delay: number | null) => {
 
   useEffect(() => {
     if (delay === null) return;
-    
+
     const tick = () => {
       savedCallback.current?.();
     };
-    
+
     const id = setInterval(tick, delay);
     return () => clearInterval(id);
   }, [delay]);
@@ -370,56 +351,56 @@ describe('Testes Unitários de Hooks', () => {
   describe('useLocalStorage', () => {
     it('deve inicializar com valor padrão', () => {
       const { result } = renderHook(() => useLocalStorage('test-key', 'default-value'));
-      
+
       expect(result.current[0]).toBe('default-value');
     });
 
     it('deve salvar valor no localStorage', () => {
       const { result } = renderHook(() => useLocalStorage('test-key', 'initial'));
-      
+
       act(() => {
         result.current[1]('new-value');
       });
-      
+
       expect(result.current[0]).toBe('new-value');
       expect(localStorage.getItem('test-key')).toBe('"new-value"');
     });
 
     it('deve carregar valor existente do localStorage', () => {
       localStorage.setItem('existing-key', '"existing-value"');
-      
+
       const { result } = renderHook(() => useLocalStorage('existing-key', 'default'));
-      
+
       expect(result.current[0]).toBe('existing-value');
     });
 
     it('deve lidar com função como valor', () => {
       const { result } = renderHook(() => useLocalStorage('counter', 0));
-      
+
       act(() => {
         result.current[1](prev => prev + 1);
       });
-      
+
       expect(result.current[0]).toBe(1);
     });
 
     it('deve lidar com erro no localStorage', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      
+
       // Simular erro no localStorage
       const originalSetItem = Storage.prototype.setItem;
       Storage.prototype.setItem = vi.fn(() => {
         throw new Error('Storage error');
       });
-      
+
       const { result } = renderHook(() => useLocalStorage('error-key', 'default'));
-      
+
       act(() => {
         result.current[1]('new-value');
       });
-      
+
       expect(consoleSpy).toHaveBeenCalled();
-      
+
       // Restaurar método original
       Storage.prototype.setItem = originalSetItem;
       consoleSpy.mockRestore();
@@ -437,46 +418,44 @@ describe('Testes Unitários de Hooks', () => {
 
     it('deve retornar valor inicial imediatamente', () => {
       const { result } = renderHook(() => useDebounce('initial', 500));
-      
+
       expect(result.current).toBe('initial');
     });
 
     it('deve debounce mudanças de valor', () => {
-      const { result, rerender } = renderHook(
-        ({ value, delay }) => useDebounce(value, delay),
-        { initialProps: { value: 'initial', delay: 500 } }
-      );
-      
+      const { result, rerender } = renderHook(({ value, delay }) => useDebounce(value, delay), {
+        initialProps: { value: 'initial', delay: 500 },
+      });
+
       expect(result.current).toBe('initial');
-      
+
       rerender({ value: 'updated', delay: 500 });
       expect(result.current).toBe('initial'); // Ainda não mudou
-      
+
       act(() => {
         vi.advanceTimersByTime(500);
       });
-      
+
       expect(result.current).toBe('updated');
     });
 
     it('deve cancelar timer anterior em mudanças rápidas', () => {
-      const { result, rerender } = renderHook(
-        ({ value, delay }) => useDebounce(value, delay),
-        { initialProps: { value: 'initial', delay: 500 } }
-      );
-      
+      const { result, rerender } = renderHook(({ value, delay }) => useDebounce(value, delay), {
+        initialProps: { value: 'initial', delay: 500 },
+      });
+
       rerender({ value: 'first', delay: 500 });
-      
+
       act(() => {
         vi.advanceTimersByTime(250);
       });
-      
+
       rerender({ value: 'second', delay: 500 });
-      
+
       act(() => {
         vi.advanceTimersByTime(500);
       });
-      
+
       expect(result.current).toBe('second');
     });
   });
@@ -490,19 +469,19 @@ describe('Testes Unitários de Hooks', () => {
       const mockData = { id: 1, name: 'Test' };
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
-        json: async () => mockData
+        json: async () => mockData,
       });
-      
+
       const { result } = renderHook(() => useFetch('/api/test'));
-      
+
       expect(result.current.loading).toBe(true);
       expect(result.current.data).toBeNull();
       expect(result.current.error).toBeNull();
-      
+
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
       });
-      
+
       expect(result.current.data).toEqual(mockData);
       expect(result.current.error).toBeNull();
     });
@@ -511,15 +490,15 @@ describe('Testes Unitários de Hooks', () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: false,
         status: 404,
-        statusText: 'Not Found'
+        statusText: 'Not Found',
       });
-      
+
       const { result } = renderHook(() => useFetch('/api/not-found'));
-      
+
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
       });
-      
+
       expect(result.current.data).toBeNull();
       expect(result.current.error).toBe('HTTP 404: Not Found');
     });
@@ -528,25 +507,25 @@ describe('Testes Unitários de Hooks', () => {
       const mockData = { id: 1, name: 'Test' };
       (global.fetch as any).mockResolvedValue({
         ok: true,
-        json: async () => mockData
+        json: async () => mockData,
       });
-      
+
       const { result } = renderHook(() => useFetch('/api/test'));
-      
+
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
       });
-      
+
       act(() => {
         result.current.refetch();
       });
-      
+
       expect(result.current.loading).toBe(true);
-      
+
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
       });
-      
+
       expect(global.fetch).toHaveBeenCalledTimes(2);
     });
   });
@@ -555,18 +534,19 @@ describe('Testes Unitários de Hooks', () => {
     const initialValues = {
       name: '',
       email: '',
-      age: 0
+      age: 0,
     };
 
     const validationRules = {
-      name: (value: string) => value.length < 2 ? 'Nome deve ter pelo menos 2 caracteres' : null,
-      email: (value: string) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? 'Email inválido' : null,
-      age: (value: number) => value < 18 ? 'Idade deve ser maior que 18' : null
+      name: (value: string) => (value.length < 2 ? 'Nome deve ter pelo menos 2 caracteres' : null),
+      email: (value: string) =>
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? 'Email inválido' : null,
+      age: (value: number) => (value < 18 ? 'Idade deve ser maior que 18' : null),
     };
 
     it('deve inicializar com valores padrão', () => {
       const { result } = renderHook(() => useForm(initialValues));
-      
+
       expect(result.current.values).toEqual(initialValues);
       expect(result.current.errors).toEqual({});
       expect(result.current.touched).toEqual({});
@@ -575,65 +555,65 @@ describe('Testes Unitários de Hooks', () => {
 
     it('deve atualizar valores', () => {
       const { result } = renderHook(() => useForm(initialValues));
-      
+
       act(() => {
         result.current.setValue('name', 'John');
       });
-      
+
       expect(result.current.values.name).toBe('John');
     });
 
     it('deve validar campos com regras', () => {
       const { result } = renderHook(() => useForm(initialValues, validationRules));
-      
+
       act(() => {
         result.current.setValue('name', 'J');
       });
-      
+
       expect(result.current.errors.name).toBe('Nome deve ter pelo menos 2 caracteres');
       expect(result.current.isValid).toBe(false);
     });
 
     it('deve marcar campos como touched', () => {
       const { result } = renderHook(() => useForm(initialValues));
-      
+
       act(() => {
         result.current.setTouched('name');
       });
-      
+
       expect(result.current.touched.name).toBe(true);
     });
 
     it('deve validar todos os campos', () => {
       const { result } = renderHook(() => useForm(initialValues, validationRules));
-      
+
       act(() => {
         result.current.setValue('name', 'J');
         result.current.setValue('email', 'invalid-email');
         result.current.setValue('age', 16);
       });
-      
+
       let isValid;
       act(() => {
         isValid = result.current.validate();
       });
-      
+
       expect(isValid).toBe(false);
       expect(Object.keys(result.current.errors)).toHaveLength(3);
     });
 
     it('deve resetar formulário', () => {
       const { result } = renderHook(() => useForm(initialValues));
-      
+
       act(() => {
         result.current.setValue('name', 'John');
         result.current.setTouched('name');
       });
-      
+
       act(() => {
         result.current.reset();
       });
-      
+
       expect(result.current.values).toEqual(initialValues);
       expect(result.current.errors).toEqual({});
       expect(result.current.touched).toEqual({});
@@ -644,27 +624,27 @@ describe('Testes Unitários de Hooks', () => {
     it('deve chamar callback quando clica fora', () => {
       const callback = vi.fn();
       const ref = { current: document.createElement('div') };
-      
+
       renderHook(() => useClickOutside(ref, callback));
-      
+
       // Simular clique fora do elemento
       const outsideElement = document.createElement('div');
       document.body.appendChild(outsideElement);
-      
+
       const event = new MouseEvent('mousedown', {
         bubbles: true,
         cancelable: true,
       });
-      
+
       Object.defineProperty(event, 'target', {
         value: outsideElement,
-        enumerable: true
+        enumerable: true,
       });
-      
+
       document.dispatchEvent(event);
-      
+
       expect(callback).toHaveBeenCalledTimes(1);
-      
+
       document.body.removeChild(outsideElement);
     });
 
@@ -673,21 +653,21 @@ describe('Testes Unitários de Hooks', () => {
       const ref = { current: document.createElement('div') };
       const insideElement = document.createElement('span');
       ref.current.appendChild(insideElement);
-      
+
       renderHook(() => useClickOutside(ref, callback));
-      
+
       const event = new MouseEvent('mousedown', {
         bubbles: true,
         cancelable: true,
       });
-      
+
       Object.defineProperty(event, 'target', {
         value: insideElement,
-        enumerable: true
+        enumerable: true,
       });
-      
+
       document.dispatchEvent(event);
-      
+
       expect(callback).not.toHaveBeenCalled();
     });
   });
@@ -696,16 +676,16 @@ describe('Testes Unitários de Hooks', () => {
     it('deve executar função assíncrona com sucesso', async () => {
       const asyncFn = vi.fn().mockResolvedValue('success');
       const { result } = renderHook(() => useAsync(asyncFn));
-      
+
       expect(result.current.loading).toBe(false);
       expect(result.current.data).toBeNull();
       expect(result.current.error).toBeNull();
-      
+
       let returnValue;
       await act(async () => {
         returnValue = await result.current.execute('arg1', 'arg2');
       });
-      
+
       expect(result.current.loading).toBe(false);
       expect(result.current.data).toBe('success');
       expect(result.current.error).toBeNull();
@@ -717,7 +697,7 @@ describe('Testes Unitários de Hooks', () => {
       const error = new Error('Async error');
       const asyncFn = vi.fn().mockRejectedValue(error);
       const { result } = renderHook(() => useAsync(asyncFn));
-      
+
       await act(async () => {
         try {
           await result.current.execute();
@@ -725,7 +705,7 @@ describe('Testes Unitários de Hooks', () => {
           // Erro esperado
         }
       });
-      
+
       expect(result.current.loading).toBe(false);
       expect(result.current.data).toBeNull();
       expect(result.current.error).toBe('Async error');
@@ -735,7 +715,7 @@ describe('Testes Unitários de Hooks', () => {
   describe('usePagination', () => {
     it('deve inicializar com valores corretos', () => {
       const { result } = renderHook(() => usePagination(100, 10));
-      
+
       expect(result.current.currentPage).toBe(1);
       expect(result.current.totalPages).toBe(10);
       expect(result.current.startIndex).toBe(0);
@@ -746,52 +726,52 @@ describe('Testes Unitários de Hooks', () => {
 
     it('deve navegar entre páginas', () => {
       const { result } = renderHook(() => usePagination(100, 10));
-      
+
       act(() => {
         result.current.goToNext();
       });
-      
+
       expect(result.current.currentPage).toBe(2);
       expect(result.current.startIndex).toBe(10);
       expect(result.current.endIndex).toBe(20);
-      
+
       act(() => {
         result.current.goToPrevious();
       });
-      
+
       expect(result.current.currentPage).toBe(1);
     });
 
     it('deve ir para primeira e última página', () => {
       const { result } = renderHook(() => usePagination(100, 10));
-      
+
       act(() => {
         result.current.goToLast();
       });
-      
+
       expect(result.current.currentPage).toBe(10);
       expect(result.current.hasNext).toBe(false);
-      
+
       act(() => {
         result.current.goToFirst();
       });
-      
+
       expect(result.current.currentPage).toBe(1);
     });
 
     it('deve validar limites de página', () => {
       const { result } = renderHook(() => usePagination(100, 10));
-      
+
       act(() => {
         result.current.goToPage(0); // Inválido
       });
-      
+
       expect(result.current.currentPage).toBe(1);
-      
+
       act(() => {
         result.current.goToPage(11); // Inválido
       });
-      
+
       expect(result.current.currentPage).toBe(1);
     });
   });
@@ -800,53 +780,53 @@ describe('Testes Unitários de Hooks', () => {
     const initialFilters = {
       status: '',
       priority: '',
-      search: ''
+      search: '',
     };
 
     it('deve inicializar com filtros padrão', () => {
       const { result } = renderHook(() => useFilters(initialFilters));
-      
+
       expect(result.current.filters).toEqual(initialFilters);
       expect(result.current.hasActiveFilters).toBe(false);
     });
 
     it('deve definir filtro', () => {
       const { result } = renderHook(() => useFilters(initialFilters));
-      
+
       act(() => {
         result.current.setFilter('status', 'open');
       });
-      
+
       expect(result.current.filters.status).toBe('open');
       expect(result.current.hasActiveFilters).toBe(true);
     });
 
     it('deve remover filtro', () => {
       const { result } = renderHook(() => useFilters(initialFilters));
-      
+
       act(() => {
         result.current.setFilter('status', 'open');
       });
-      
+
       act(() => {
         result.current.removeFilter('status');
       });
-      
+
       expect(result.current.filters.status).toBeUndefined();
     });
 
     it('deve limpar todos os filtros', () => {
       const { result } = renderHook(() => useFilters(initialFilters));
-      
+
       act(() => {
         result.current.setFilter('status', 'open');
         result.current.setFilter('priority', 'high');
       });
-      
+
       act(() => {
         result.current.clearFilters();
       });
-      
+
       expect(result.current.filters).toEqual(initialFilters);
       expect(result.current.hasActiveFilters).toBe(false);
     });
@@ -858,16 +838,16 @@ describe('Testes Unitários de Hooks', () => {
       const mockMatchMedia = vi.fn().mockImplementation(query => ({
         matches: query === '(min-width: 768px)',
         addEventListener: vi.fn(),
-        removeEventListener: vi.fn()
+        removeEventListener: vi.fn(),
       }));
-      
+
       Object.defineProperty(window, 'matchMedia', {
         writable: true,
-        value: mockMatchMedia
+        value: mockMatchMedia,
       });
-      
+
       const { result } = renderHook(() => useMediaQuery('(min-width: 768px)'));
-      
+
       expect(result.current).toBe(true);
       expect(mockMatchMedia).toHaveBeenCalledWith('(min-width: 768px)');
     });
@@ -876,49 +856,49 @@ describe('Testes Unitários de Hooks', () => {
   describe('useToggle', () => {
     it('deve inicializar com valor padrão', () => {
       const { result } = renderHook(() => useToggle());
-      
+
       expect(result.current.value).toBe(false);
     });
 
     it('deve inicializar com valor customizado', () => {
       const { result } = renderHook(() => useToggle(true));
-      
+
       expect(result.current.value).toBe(true);
     });
 
     it('deve alternar valor', () => {
       const { result } = renderHook(() => useToggle(false));
-      
+
       act(() => {
         result.current.toggle();
       });
-      
+
       expect(result.current.value).toBe(true);
-      
+
       act(() => {
         result.current.toggle();
       });
-      
+
       expect(result.current.value).toBe(false);
     });
 
     it('deve definir valor como true', () => {
       const { result } = renderHook(() => useToggle(false));
-      
+
       act(() => {
         result.current.setTrue();
       });
-      
+
       expect(result.current.value).toBe(true);
     });
 
     it('deve definir valor como false', () => {
       const { result } = renderHook(() => useToggle(true));
-      
+
       act(() => {
         result.current.setFalse();
       });
-      
+
       expect(result.current.value).toBe(false);
     });
   });
@@ -934,44 +914,43 @@ describe('Testes Unitários de Hooks', () => {
 
     it('deve executar callback em intervalos', () => {
       const callback = vi.fn();
-      
+
       renderHook(() => useInterval(callback, 1000));
-      
+
       expect(callback).not.toHaveBeenCalled();
-      
+
       act(() => {
         vi.advanceTimersByTime(1000);
       });
-      
+
       expect(callback).toHaveBeenCalledTimes(1);
-      
+
       act(() => {
         vi.advanceTimersByTime(1000);
       });
-      
+
       expect(callback).toHaveBeenCalledTimes(2);
     });
 
     it('deve parar intervalo quando delay é null', () => {
       const callback = vi.fn();
-      
-      const { rerender } = renderHook(
-        ({ delay }) => useInterval(callback, delay),
-        { initialProps: { delay: 1000 } }
-      );
-      
+
+      const { rerender } = renderHook(({ delay }) => useInterval(callback, delay), {
+        initialProps: { delay: 1000 },
+      });
+
       act(() => {
         vi.advanceTimersByTime(1000);
       });
-      
+
       expect(callback).toHaveBeenCalledTimes(1);
-      
+
       rerender({ delay: null });
-      
+
       act(() => {
         vi.advanceTimersByTime(1000);
       });
-      
+
       expect(callback).toHaveBeenCalledTimes(1);
     });
   });

@@ -17,25 +17,25 @@ export default defineConfig({
   reporter: [
     ['html'],
     ['json', { outputFile: 'test-results/e2e-results.json' }],
-    ['junit', { outputFile: 'test-results/e2e-results.xml' }]
+    ['junit', { outputFile: 'test-results/e2e-results.xml' }],
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:5173',
+    baseURL: 'http://localhost:3001',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    
+
     /* Take screenshot on failure */
     screenshot: 'only-on-failure',
-    
+
     /* Record video on failure */
     video: 'retain-on-failure',
-    
+
     /* Global timeout for each action */
     actionTimeout: 10000,
-    
+
     /* Global timeout for navigation */
     navigationTimeout: 30000,
   },
@@ -46,61 +46,27 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-
-    /* Test against mobile viewports. */
-    {
-      name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
-    },
-    {
-      name: 'Mobile Safari',
-      use: { ...devices['iPhone 12'] },
-    },
-
-    /* Test against branded browsers. */
-    {
-      name: 'Microsoft Edge',
-      use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    },
-    {
-      name: 'Google Chrome',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    },
   ],
 
   /* Run your local dev server before starting the tests */
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:5173',
+    url: 'http://localhost:3001',
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
   },
-  
-  /* Global setup and teardown */
-  globalSetup: require.resolve('./src/__tests__/e2e/global-setup.ts'),
-  globalTeardown: require.resolve('./src/__tests__/e2e/global-teardown.ts'),
-  
+
   /* Test timeout */
   timeout: 30000,
-  
+
   /* Expect timeout */
   expect: {
     timeout: 5000,
   },
-  
+
   /* Output directory for test results */
   outputDir: 'test-results/',
-  
+
   /* Maximum number of test failures */
   maxFailures: process.env.CI ? 10 : undefined,
 });

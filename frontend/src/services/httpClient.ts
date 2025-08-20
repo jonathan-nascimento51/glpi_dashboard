@@ -1,11 +1,27 @@
-import axios, { AxiosInstance, AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios from 'axios';
+import type {
+  AxiosInstance,
+  AxiosError,
+  AxiosRequestConfig,
+  AxiosResponse,
+  AxiosHeaders,
+} from 'axios';
+
+// Função auxiliar para acessar variáveis de ambiente
+const getEnvVar = (key: string, defaultValue: string = '') => {
+  try {
+    return (globalThis as any).__VITE_ENV__?.[key] || defaultValue;
+  } catch {
+    return defaultValue;
+  }
+};
 
 // Configuração da API usando variáveis de ambiente
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
-  TIMEOUT: parseInt(import.meta.env.VITE_API_TIMEOUT || '30000'),
-  RETRY_ATTEMPTS: parseInt(import.meta.env.VITE_API_RETRY_ATTEMPTS || '3'),
-  RETRY_DELAY: parseInt(import.meta.env.VITE_API_RETRY_DELAY || '1000'),
+  BASE_URL: getEnvVar('VITE_API_BASE_URL', 'http://localhost:5000/api'),
+  TIMEOUT: parseInt(getEnvVar('VITE_API_TIMEOUT', '30000')),
+  RETRY_ATTEMPTS: parseInt(getEnvVar('VITE_API_RETRY_ATTEMPTS', '3')),
+  RETRY_DELAY: parseInt(getEnvVar('VITE_API_RETRY_DELAY', '1000')),
 };
 
 // Interface para configuração de autenticação
@@ -16,10 +32,10 @@ export interface AuthConfig {
 }
 
 // Configuração de autenticação (pode ser definida via variáveis de ambiente)
-export const authConfig: AuthConfig = {
-  apiToken: import.meta.env.VITE_API_TOKEN,
-  appToken: import.meta.env.VITE_APP_TOKEN,
-  userToken: import.meta.env.VITE_USER_TOKEN,
+export const authConfig = {
+  apiToken: getEnvVar('VITE_API_TOKEN'),
+  appToken: getEnvVar('VITE_APP_TOKEN'),
+  userToken: getEnvVar('VITE_USER_TOKEN'),
 };
 
 // Função para atualizar tokens de autenticação
@@ -39,32 +55,25 @@ export const httpClient: AxiosInstance = axios.create({
 
 // Interceptador de requisição para autenticação e logging
 httpClient.interceptors.request.use(
-  (config: AxiosRequestConfig) => {
-    // Adicionar headers de autenticação se disponíveis
+  (config: any) => {
+    // Garantir que headers existe
+    config.headers = config.headers || {};
+
     if (authConfig.apiToken) {
-      config.headers = {
-        ...config.headers,
-        Authorization: `Bearer ${authConfig.apiToken}`,
-      };
+      config.headers['Authorization'] = `Bearer ${authConfig.apiToken}`;
     }
 
     if (authConfig.appToken) {
-      config.headers = {
-        ...config.headers,
-        'App-Token': authConfig.appToken,
-      };
+      config.headers['App-Token'] = authConfig.appToken;
     }
 
     if (authConfig.userToken) {
-      config.headers = {
-        ...config.headers,
-        'Session-Token': authConfig.userToken,
-      };
+      config.headers['Session-Token'] = authConfig.userToken;
     }
 
     // Log da requisição
-    const logLevel = import.meta.env.VITE_LOG_LEVEL || 'info';
-    const showApiCalls = import.meta.env.VITE_SHOW_API_CALLS === 'true';
+    const logLevel = getEnvVar('VITE_LOG_LEVEL', 'info');
+    const showApiCalls = getEnvVar('VITE_SHOW_API_CALLS') === 'true';
 
     if (showApiCalls || logLevel === 'debug') {
       console.log(`🚀 ${config.method?.toUpperCase()} ${config.url}`, {
@@ -85,8 +94,8 @@ httpClient.interceptors.request.use(
 // Interceptador de resposta para tratamento de erros e logging
 httpClient.interceptors.response.use(
   (response: AxiosResponse) => {
-    const logLevel = import.meta.env.VITE_LOG_LEVEL || 'info';
-    const showApiCalls = import.meta.env.VITE_SHOW_API_CALLS === 'true';
+    const logLevel = getEnvVar('VITE_LOG_LEVEL', 'info');
+    const showApiCalls = getEnvVar('VITE_SHOW_API_CALLS') === 'true';
 
     if (showApiCalls || logLevel === 'debug') {
       console.log(
@@ -125,9 +134,9 @@ httpClient.interceptors.response.use(
       console.warn('🔍 Endpoint not found:', errorInfo.url);
     } else if (error.response?.status === 429) {
       console.warn('🚦 Rate limit exceeded:', errorInfo.url);
-    } else if (error.response?.status >= 500) {
+    } else if (error.response?.status && error.response.status >= 500) {
       console.error('🚨 Server error:', errorInfo);
-    } else if (error.response?.status >= 400) {
+    } else if (error.response?.status && error.response.status >= 400) {
       console.warn('⚠️ Client error:', errorInfo);
     } else {
       console.error('🔌 Network/Connection error:', errorInfo);
@@ -148,8 +157,8 @@ function shouldRetry(error: AxiosError): boolean {
   const retryableCodes = ['ECONNABORTED', 'ENOTFOUND', 'ECONNRESET', 'ETIMEDOUT'];
 
   return (
-    (error.response && retryableStatuses.includes(error.response.status)) ||
-    (error.code && retryableCodes.includes(error.code))
+    (error.response?.status && retryableStatuses.includes(error.response.status)) ||
+    (error.code && retryableCodes.includes(error.code as string))
   );
 }
 
@@ -185,12 +194,37 @@ function dispatchAuthError() {
   }
 }
 
-// Estender a interface AxiosRequestConfig para incluir __retryCount
+// Estender a interface AxiosRequestConfig para incluir propriedades personalizadas
 declare module 'axios' {
   interface AxiosRequestConfig {
     __retryCount?: number;
+    cache?: boolean;
+    retry?: number;
   }
+
+  // Extensões customizadas para AxiosInstance são adicionadas via métodos dinâmicos abaixo
 }
+
+// Adicionar métodos para interceptadores (para compatibilidade com testes)
+(httpClient as any).addRequestInterceptor = (interceptor: any) => {
+  return httpClient.interceptors.request.use(interceptor);
+};
+
+(httpClient as any).addResponseInterceptor = (interceptor: any) => {
+  return httpClient.interceptors.response.use(interceptor);
+};
+
+(httpClient as any).setBaseURL = (baseURL: string) => {
+  httpClient.defaults.baseURL = baseURL;
+};
+
+(httpClient as any).removeRequestInterceptor = (interceptor: any) => {
+  httpClient.interceptors.request.eject(interceptor);
+};
+
+(httpClient as any).removeResponseInterceptor = (interceptor: any) => {
+  httpClient.interceptors.response.eject(interceptor);
+};
 
 // Funções utilitárias para requisições comuns
 export const apiUtils = {

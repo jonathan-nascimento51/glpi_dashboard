@@ -9,6 +9,12 @@ import {
   SkeletonLevelsSection,
   ErrorState,
 } from './components/LoadingSpinner';
+import { MetricsValidator } from './utils/metricsValidator';
+import { visualValidator } from './utils/visualValidator';
+import { dataIntegrityMonitor } from './utils/dataIntegrityMonitor';
+import { preDeliveryValidator } from './utils/preDeliveryValidator';
+import { workflowOptimizer } from './utils/workflowOptimizer';
+import { realTimeMonitor } from './utils/realTimeMonitor';
 
 // Componentes lazy centralizados
 import {
@@ -78,6 +84,200 @@ function App() {
       new Set()
     );
   };
+
+  // Validação automática de métricas (DESABILITADA TEMPORARIAMENTE)
+  // useEffect(() => {
+  //   if (metrics) {
+  //     const frontendValidation = MetricsValidator.validateFrontendDataProcessing({
+  //       novos: metrics.novos,
+  //       pendentes: metrics.pendentes,
+  //       progresso: metrics.progresso,
+  //       resolvidos: metrics.resolvidos,
+  //     });
+  //
+  //     if (!frontendValidation.isValid) {
+  //       console.error('❌ VALIDAÇÃO FALHOU - Problemas encontrados:', frontendValidation.errors);
+  //     }
+  //   }
+  // }, [metrics]);
+
+  // Validação visual automática após renderização (DESABILITADA TEMPORARIAMENTE)
+  useEffect(() => {
+    if (metrics) {
+      // Aguardar renderização completa antes de validar visualmente
+      const timer = setTimeout(async () => {
+        try {
+          console.log('🎯 App.tsx - Validação visual desabilitada temporariamente');
+          // const visualResult = await visualValidator.validateDashboardRendering();
+
+          // if (visualResult.isValid) {
+          //   console.log('✅ VALIDAÇÃO VISUAL PASSOU - Dashboard renderizado corretamente');
+          // } else {
+          //   console.error('❌ VALIDAÇÃO VISUAL FALHOU:', visualResult.errors);
+          //   // Em desenvolvimento, mostrar alerta para problemas críticos
+          //   if (process.env.NODE_ENV === 'development' && visualResult.errors.length > 0) {
+          //     console.warn('🚨 ATENÇÃO: Problemas de renderização detectados!');
+          //   }
+          // }
+        } catch (error) {
+          console.error('💥 Erro durante validação visual:', error);
+        }
+      }, 1500); // Aguardar 1.5s para renderização completa
+
+      return () => clearTimeout(timer);
+    }
+  }, [metrics]);
+
+  // Monitoramento de integridade de dados em tempo real (DESABILITADO TEMPORARIAMENTE)
+  // useEffect(() => {
+  //   // Configurar alertas para problemas críticos
+  //   dataIntegrityMonitor.onAlert(report => {
+  //     if (report.overallStatus === 'critical') {
+  //       console.error('🚨 ALERTA CRÍTICO: Problemas graves de integridade detectados!');
+  //       console.error('📋 Relatório:', report);
+
+  //       if (process.env.NODE_ENV === 'development') {
+  //         const criticalIssues = report.checks
+  //           .filter(c => !c.isValid && c.severity === 'critical')
+  //           .map(c => c.name)
+  //           .join(', ');
+  //         alert(
+  //           `🚨 PROBLEMAS CRÍTICOS DETECTADOS:\n${criticalIssues}\n\nVerifique o console para detalhes.`
+  //         );
+  //       }
+  //     } else if (report.overallStatus === 'warning') {
+  //       console.warn('⚠️ Avisos de integridade detectados:', report.summary);
+  //     }
+  //   });
+
+  //   // Iniciar monitoramento (já configurado para auto-start em desenvolvimento)
+  //   // Em produção, pode ser iniciado manualmente se necessário
+  //   // DESABILITADO TEMPORARIAMENTE
+  //   // if (process.env.NODE_ENV === 'production') {
+  //   //   dataIntegrityMonitor.startMonitoring();
+  //   // }
+
+  //   // Cleanup ao desmontar
+  //   return () => {
+  //     dataIntegrityMonitor.stopMonitoring();
+  //   };
+  // }, []);
+
+  // Configuração do validador pré-entrega
+  useEffect(() => {
+    // Disponibilizar validador globalmente para uso no console
+    (window as any).preDeliveryValidator = preDeliveryValidator;
+
+    // Configurar validador para ambiente de desenvolvimento
+    if (process.env.NODE_ENV === 'development') {
+      preDeliveryValidator.configure({
+        requireFullPipeline: false, // Pipeline mais rápido em dev
+        allowConditionalDelivery: true,
+        minimumScore: 75, // Score mais baixo em dev
+        criticalIssueThreshold: 0,
+      });
+
+      console.log('🔧 Validador Pré-Entrega configurado para desenvolvimento');
+      console.log('Comandos disponíveis:');
+      console.log('  - validateForDelivery() - Validação completa');
+      console.log('  - quickValidation() - Validação rápida');
+      console.log('  - hasValidApproval() - Verificar aprovação válida');
+      console.log('  - getLastApproval() - Última aprovação');
+    } else {
+      // Configuração mais rigorosa para produção
+      preDeliveryValidator.configure({
+        requireFullPipeline: true,
+        allowConditionalDelivery: false,
+        minimumScore: 90,
+        criticalIssueThreshold: 0,
+      });
+    }
+  }, []);
+
+  // Configuração do monitor em tempo real
+  useEffect(() => {
+    // Disponibilizar ferramentas globalmente
+    (window as any).workflowOptimizer = workflowOptimizer;
+    (window as any).realTimeMonitor = realTimeMonitor;
+
+    // Configurar monitor para ambiente
+    if (process.env.NODE_ENV === 'development') {
+      realTimeMonitor.configure({
+        enabled: true,
+        checkInterval: 15000, // 15 segundos em dev
+        alertThresholds: {
+          consecutiveFailures: 2,
+          responseTimeMs: 3000,
+          zeroMetricsThreshold: 30, // 30 segundos
+        },
+        autoRecovery: {
+          enabled: true,
+          maxAttempts: 2,
+          backoffMultiplier: 1.5,
+        },
+        notifications: {
+          console: true,
+          visual: true,
+          sound: false,
+        },
+        healthChecks: {
+          api: true,
+          metrics: true,
+          visual: true,
+          performance: false, // Desabilitado em dev para reduzir ruído
+        },
+      });
+
+      console.log('🔧 Monitor em Tempo Real configurado para desenvolvimento');
+      console.log('Comandos disponíveis:');
+      console.log('  - startMonitoring() - Iniciar monitoramento');
+      console.log('  - stopMonitoring() - Parar monitoramento');
+      console.log('  - getSystemStatus() - Status do sistema');
+      console.log('  - executeOptimizedWorkflow() - Executar workflow otimizado');
+      console.log('  - quickWorkflow() - Workflow rápido');
+
+      // Iniciar monitoramento automaticamente em dev (DESABILITADO TEMPORARIAMENTE)
+      // setTimeout(() => {
+      //   realTimeMonitor.startMonitoring();
+      // }, 2000); // Aguardar 2 segundos para o app carregar
+    } else {
+      // Configuração mais conservadora para produção
+      realTimeMonitor.configure({
+        enabled: true,
+        checkInterval: 60000, // 1 minuto em produção
+        alertThresholds: {
+          consecutiveFailures: 3,
+          responseTimeMs: 5000,
+          zeroMetricsThreshold: 120, // 2 minutos
+        },
+        autoRecovery: {
+          enabled: true,
+          maxAttempts: 3,
+          backoffMultiplier: 2,
+        },
+        notifications: {
+          console: true,
+          visual: false, // Sem alertas visuais em produção
+          sound: false,
+        },
+        healthChecks: {
+          api: true,
+          metrics: true,
+          visual: true,
+          performance: true,
+        },
+      });
+
+      // Iniciar monitoramento em produção (DESABILITADO TEMPORARIAMENTE)
+      // realTimeMonitor.startMonitoring();
+    }
+
+    // Cleanup ao desmontar
+    return () => {
+      realTimeMonitor.stopMonitoring();
+    };
+  }, []);
+
   const { measureFilterOperation } = useFilterPerformance();
 
   // Cache notifications
@@ -201,18 +401,31 @@ function App() {
       <div className='flex-1 overflow-hidden'>
         {levelMetrics ? (
           <Profiler id='ModernDashboard' onRender={profilerCallback}>
-            <ModernDashboard
-              metrics={{
-                ...(levelMetrics?.geral || {}),
-                tendencias: levelMetrics?.tendencias || {},
-              }}
-              levelMetrics={levelMetrics}
-              systemStatus={systemStatus}
-              technicianRanking={technicianRanking}
-              onFilterByStatus={handleFilterByStatus}
-              isLoading={isLoading}
-              filters={filters}
-            />
+            {(() => {
+              const dashboardMetrics = {
+                novos: metrics?.novos || 0,
+                pendentes: metrics?.pendentes || 0,
+                progresso: metrics?.progresso || 0,
+                resolvidos: metrics?.resolvidos || 0,
+                tendencias: metrics?.tendencias || {},
+              };
+              console.log(
+                '🎯 App.tsx - Métricas sendo passadas para ModernDashboard:',
+                dashboardMetrics
+              );
+              console.log('🔍 App.tsx - Objeto metrics completo:', metrics);
+              return (
+                <ModernDashboard
+                  metrics={dashboardMetrics}
+                  levelMetrics={levelMetrics}
+                  systemStatus={systemStatus}
+                  technicianRanking={technicianRanking}
+                  onFilterByStatus={handleFilterByStatus}
+                  isLoading={isLoading}
+                  filters={filters}
+                />
+              );
+            })()}
           </Profiler>
         ) : (
           // Fallback para quando não há dados

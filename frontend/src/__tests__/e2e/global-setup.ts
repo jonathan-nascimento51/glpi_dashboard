@@ -1,10 +1,10 @@
-import { chromium, FullConfig } from '@playwright/test';
+import { chromium, FullConfig, Page } from '@playwright/test';
 
 async function globalSetup(config: FullConfig) {
   console.log('🚀 Starting E2E test setup...');
 
   // Verificar se o servidor de desenvolvimento está rodando
-  const baseURL = config.projects[0].use.baseURL || 'http://localhost:5173';
+  const baseURL = config.projects[0].use.baseURL || 'http://localhost:3001';
 
   try {
     const browser = await chromium.launch();
@@ -33,7 +33,7 @@ async function globalSetup(config: FullConfig) {
   }
 }
 
-async function setupTestData(page: any) {
+async function setupTestData(page: Page) {
   console.log('🔧 Setting up test data...');
 
   try {
@@ -47,7 +47,7 @@ async function setupTestData(page: any) {
     await page.evaluate(() => {
       // Configurações de teste
       localStorage.setItem('test-mode', 'true');
-      localStorage.setItem('api-base-url', 'http://localhost:8000');
+      localStorage.setItem('api-base-url', 'http://localhost:5000');
 
       // Dados de usuário de teste
       const testUser = {

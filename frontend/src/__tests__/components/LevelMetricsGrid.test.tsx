@@ -3,8 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { screen } from '@testing-library/react';
-import { render } from '../setup';
+import { render, screen } from '@testing-library/react';
 import { LevelMetricsGrid } from '../../components/dashboard/LevelMetricsGrid';
 import { MetricsData } from '../../types';
 

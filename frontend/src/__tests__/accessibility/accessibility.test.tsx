@@ -1,11 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { axe, toHaveNoViolations } from 'jest-axe';
+import { axe } from 'jest-axe';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
-
-// Extend Jest matchers
-expect.extend(toHaveNoViolations);
 
 // Mock components para testes
 const MockDashboard = () => (

@@ -150,7 +150,7 @@ const TechnicianCard = React.memo<{
 
   return (
     <motion.div
-      key={technician.id}
+      data-testid={`technician-card-${index}`}
       variants={cardVariants}
       whileHover='hover'
       className={cn(
@@ -292,7 +292,7 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
         className
       )}
     >
-      <CardHeader className='px-5 pt-4 pb-2 flex-shrink-0'>
+      <CardHeader className='px-5 pt-2 pb-1 flex-shrink-0'>
         <div className='flex items-center justify-between'>
           <div className='flex flex-col gap-2'>
             <CardTitle className='figma-heading-large flex items-center gap-2'>
@@ -353,7 +353,11 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
             className='flex w-full flex-1 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent px-2 space-x-3'
           >
             {topTechnicians.map((technician, index) => (
-              <TechnicianCard key={technician.id} technician={technician} index={index} />
+              <TechnicianCard
+                key={`${technician.id}-${index}`}
+                technician={technician}
+                index={index}
+              />
             ))}
           </div>
         </motion.div>

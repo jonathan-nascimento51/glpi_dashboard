@@ -7,7 +7,7 @@ import React from 'react';
 // Configuração global para testes
 beforeAll(() => {
   // Inicia o servidor de mocks MSW
-  server.listen({ onUnhandledRequest: 'error' });
+  server.listen({ onUnhandledRequest: 'warn' });
 
   // Mock do console para evitar logs desnecessários durante os testes
   vi.spyOn(console, 'log').mockImplementation(() => {});

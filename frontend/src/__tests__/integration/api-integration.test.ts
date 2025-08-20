@@ -1,14 +1,16 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import * as React from 'react';
+import type { TestApiClient, TestComponentProps, TestMocks } from '../../types/test';
 
 // Mock para API client
-class ApiClient {
-  private baseURL: string;
-  private token: string | null = null;
+class ApiClient implements TestApiClient {
+  public baseURL: string;
+  public token: string | null = null;
 
   constructor(baseURL: string) {
     this.baseURL = baseURL;
@@ -18,7 +20,7 @@ class ApiClient {
     this.token = token;
   }
 
-  private async request(endpoint: string, options: RequestInit = {}) {
+  async request(endpoint: string, options: RequestInit = {}) {
     const url = `${this.baseURL}${endpoint}`;
     const headers = {
       'Content-Type': 'application/json',
@@ -258,30 +260,30 @@ const mockUsers = {
 // Setup MSW server
 const server = setupServer(
   // Dashboard endpoints
-  rest.get('/api/dashboard/metrics', (req, res, ctx) => {
-    return res(ctx.json(mockMetrics));
+  http.get('/api/dashboard/metrics', () => {
+    return HttpResponse.json(mockMetrics);
   }),
 
-  rest.get('/api/dashboard/charts/:type', (req, res, ctx) => {
-    const { type } = req.params;
-    return res(
-      ctx.json({
-        type,
-        data: type === 'status' ? mockMetrics.ticketsByStatus : mockMetrics.ticketsByPriority,
-      })
-    );
+  http.get('/api/dashboard/charts/:type', ({ params, request }) => {
+    const { type } = params;
+    return HttpResponse.json({
+      type,
+      data: type === 'status' ? mockMetrics.ticketsByStatus : mockMetrics.ticketsByPriority,
+    });
   }),
 
-  rest.get('/api/dashboard/export', (req, res, ctx) => {
-    const format = req.url.searchParams.get('format');
-    return res(ctx.json({ format, data: mockMetrics }));
+  http.get('/api/dashboard/export', ({ request }) => {
+    const url = new URL(request.url);
+    const format = url.searchParams.get('format');
+    return HttpResponse.json({ format, data: mockMetrics });
   }),
 
   // Ticket endpoints
-  rest.get('/api/tickets', (req, res, ctx) => {
-    const status = req.url.searchParams.get('status');
-    const priority = req.url.searchParams.get('priority');
-    const search = req.url.searchParams.get('search');
+  http.get('/api/tickets', ({ request }) => {
+    const url = new URL(request.url);
+    const status = url.searchParams.get('status');
+    const priority = url.searchParams.get('priority');
+    const search = url.searchParams.get('search');
 
     let filteredTickets = mockTickets.data;
 
@@ -301,73 +303,74 @@ const server = setupServer(
       );
     }
 
-    return res(
-      ctx.json({
-        data: filteredTickets,
-        pagination: {
-          ...mockTickets.pagination,
-          total: filteredTickets.length,
-        },
-      })
-    );
+    return HttpResponse.json({
+      data: filteredTickets,
+      pagination: {
+        ...mockTickets.pagination,
+        total: filteredTickets.length,
+      },
+    });
   }),
 
-  rest.get('/api/tickets/:id', (req, res, ctx) => {
-    const { id } = req.params;
+  http.get('/api/tickets/:id', ({ params }) => {
+    const { id } = params;
     const ticket = mockTickets.data.find(t => t.id === parseInt(id as string));
 
     if (!ticket) {
-      return res(ctx.status(404), ctx.json({ error: 'Ticket não encontrado' }));
+      return new HttpResponse(null, { status: 404 });
     }
 
-    return res(ctx.json(ticket));
+    return HttpResponse.json(ticket);
   }),
 
-  rest.post('/api/tickets', (req, res, ctx) => {
-    return res(
-      ctx.status(201),
-      ctx.json({
+  http.post('/api/tickets', async ({ request }) => {
+    const body = (await request.json()) as Record<string, any>;
+    return HttpResponse.json(
+      {
         id: 3,
-        ...req.body,
+        ...(body || {}),
         status: 'open',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      })
+      },
+      { status: 201 }
     );
   }),
 
-  rest.put('/api/tickets/:id', (req, res, ctx) => {
-    const { id } = req.params;
-    return res(
-      ctx.json({
-        id: parseInt(id as string),
-        ...req.body,
-        updatedAt: new Date().toISOString(),
-      })
-    );
+  http.put('/api/tickets/:id', async ({ params, request }) => {
+    const { id } = params;
+    const body = (await request.json()) as Record<string, any>;
+    return HttpResponse.json({
+      id: parseInt(id as string),
+      ...(body || {}),
+      updatedAt: new Date().toISOString(),
+    });
   }),
 
-  rest.delete('/api/tickets/:id', (req, res, ctx) => {
-    return res(ctx.status(204));
+  http.delete('/api/tickets/:id', () => {
+    return new HttpResponse(null, { status: 204 });
   }),
 
-  rest.post('/api/tickets/:id/comments', (req, res, ctx) => {
-    return res(
-      ctx.status(201),
-      ctx.json({
+  http.post('/api/tickets/:id/comments', async ({ params, request }) => {
+    const { id } = params;
+    const body = await request.json();
+    return HttpResponse.json(
+      {
         id: 1,
-        ticketId: parseInt(req.params.id as string),
-        comment: (req.body as any).comment,
+        ticketId: parseInt(id as string),
+        comment: (body as any).comment,
         author: 'Usuário Atual',
         createdAt: new Date().toISOString(),
-      })
+      },
+      { status: 201 }
     );
   }),
 
   // User endpoints
-  rest.get('/api/users', (req, res, ctx) => {
-    const role = req.url.searchParams.get('role');
-    const active = req.url.searchParams.get('active');
+  http.get('/api/users', ({ request }) => {
+    const url = new URL(request.url);
+    const role = url.searchParams.get('role');
+    const active = url.searchParams.get('active');
 
     let filteredUsers = mockUsers.data;
 
@@ -379,90 +382,84 @@ const server = setupServer(
       filteredUsers = filteredUsers.filter(user => user.active === (active === 'true'));
     }
 
-    return res(ctx.json({ data: filteredUsers }));
+    return HttpResponse.json({ data: filteredUsers });
   }),
 
-  rest.get('/api/users/:id', (req, res, ctx) => {
-    const { id } = req.params;
+  http.get('/api/users/:id', ({ params }) => {
+    const { id } = params;
     const user = mockUsers.data.find(u => u.id === parseInt(id as string));
 
     if (!user) {
-      return res(ctx.status(404), ctx.json({ error: 'Usuário não encontrado' }));
+      return new HttpResponse(null, { status: 404 });
     }
 
-    return res(ctx.json(user));
+    return HttpResponse.json(user);
   }),
 
-  rest.post('/api/users', (req, res, ctx) => {
-    return res(
-      ctx.status(201),
-      ctx.json({
+  http.post('/api/users', async ({ request }) => {
+    const body = (await request.json()) as Record<string, any>;
+    return HttpResponse.json(
+      {
         id: 3,
-        ...req.body,
+        ...(body || {}),
         active: true,
         createdAt: new Date().toISOString(),
-      })
+      },
+      { status: 201 }
     );
   }),
 
-  rest.put('/api/users/:id', (req, res, ctx) => {
-    const { id } = req.params;
-    return res(
-      ctx.json({
-        id: parseInt(id as string),
-        ...req.body,
-      })
-    );
+  http.put('/api/users/:id', async ({ params, request }) => {
+    const { id } = params;
+    const body = (await request.json()) as Record<string, any>;
+    return HttpResponse.json({
+      id: parseInt(id as string),
+      ...(body || {}),
+    });
   }),
 
   // Auth endpoints
-  rest.post('/api/auth/login', (req, res, ctx) => {
-    const { username, password } = req.body as any;
+  http.post('/api/auth/login', async ({ request }) => {
+    const { username, password } = (await request.json()) as any;
 
     if (username === 'admin' && password === 'password') {
-      return res(
-        ctx.json({
-          token: 'mock-jwt-token',
-          user: {
-            id: 1,
-            name: 'Administrador',
-            email: 'admin@empresa.com',
-            role: 'admin',
-          },
-        })
-      );
+      return HttpResponse.json({
+        token: 'mock-jwt-token',
+        user: {
+          id: 1,
+          name: 'Administrador',
+          email: 'admin@empresa.com',
+          role: 'admin',
+        },
+      });
     }
 
-    return res(ctx.status(401), ctx.json({ error: 'Credenciais inválidas' }));
+    return new HttpResponse(null, { status: 401 });
   }),
 
-  rest.post('/api/auth/logout', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({ message: 'Logout realizado com sucesso' }));
+  http.post('/api/auth/logout', () => {
+    return HttpResponse.json({ message: 'Logout realizado com sucesso' });
   }),
 
-  rest.post('/api/auth/refresh', (req, res, ctx) => {
-    return res(
-      ctx.json({
-        token: 'new-mock-jwt-token',
-      })
-    );
+  http.post('/api/auth/refresh', () => {
+    return HttpResponse.json({
+      token: 'new-mock-jwt-token',
+    });
   }),
 
-  rest.get('/api/auth/me', (req, res, ctx) => {
-    const authHeader = req.headers.get('Authorization');
+  http.get('/api/auth/me', ({ request }) => {
+    const authHeader = request.headers.get('Authorization');
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res(ctx.status(401), ctx.json({ error: 'Token não fornecido' }));
+      return new HttpResponse(null, { status: 401 });
     }
 
-    return res(
-      ctx.json({
-        id: 1,
-        name: 'Administrador',
-        email: 'admin@empresa.com',
-        role: 'admin',
-      })
-    );
+    return HttpResponse.json({
+      id: 1,
+      name: 'Administrador',
+      email: 'admin@empresa.com',
+      role: 'admin',
+    });
   })
 );
 
@@ -782,8 +779,8 @@ describe('Testes de Integração da API', () => {
     it('deve lidar com erros de rede de forma consistente', async () => {
       // Simular erro de rede
       server.use(
-        rest.get('/api/tickets', (req, res, ctx) => {
-          return res.networkError('Erro de conexão');
+        http.get('/api/tickets', () => {
+          return HttpResponse.error();
         })
       );
 
@@ -793,8 +790,8 @@ describe('Testes de Integração da API', () => {
     it('deve lidar com respostas de erro HTTP', async () => {
       // Simular erro 500
       server.use(
-        rest.get('/api/dashboard/metrics', (req, res, ctx) => {
-          return res(ctx.status(500), ctx.json({ error: 'Erro interno do servidor' }));
+        http.get('/api/dashboard/metrics', () => {
+          return HttpResponse.json({ error: 'Erro interno do servidor' }, { status: 500 });
         })
       );
 
@@ -829,8 +826,9 @@ describe('Testes de Integração da API', () => {
     it('deve lidar com timeout de requisições', async () => {
       // Simular timeout
       server.use(
-        rest.get('/api/tickets', (req, res, ctx) => {
-          return res(ctx.delay(5000)); // 5 segundos de delay
+        http.get('/api/tickets', async () => {
+          await new Promise(resolve => setTimeout(resolve, 5000)); // 5 segundos de delay
+          return HttpResponse.json([]);
         })
       );
 

@@ -1,0 +1,14 @@
+{
+  "data": null,
+  "errors": [
+    "Falha na conexão com GLPI",
+    "Timeout na consulta"
+  ],
+  "execution_time_ms": 5000.0,
+  "message": "Erro interno do servidor",
+  "success": false,
+  "warnings": [
+    "Cache expirado",
+    "Dados podem estar desatualizados"
+  ]
+}

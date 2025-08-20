@@ -3,8 +3,8 @@
 Arquivo de aplicação Flask para testes
 """
 
-import sys
 import os
+import sys
 
 # Adiciona o diretório raiz do projeto ao path
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -17,5 +17,5 @@ from backend.config.settings import active_config
 # Cria a aplicação
 app = create_app(active_config)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
