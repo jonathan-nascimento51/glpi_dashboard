@@ -61,6 +61,20 @@ Thumbs.db
 test_local_*
 debug_local_*
 
+# Arquivos de debug específicos do projeto
+debug_*.py
+debug_*.txt
+resultado_*.txt
+test_*.py
+!test_app.py
+!test_groups.py
+!test_user_search.py
+simple_*.py
+minimal_*.py
+*.txt
+!requirements*.txt
+!README.txt
+
 # Trae AI IDE
 .trae/
 

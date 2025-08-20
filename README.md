@@ -1,6 +1,32 @@
 # GLPI Dashboard
 
-Aplicação completa para dashboard de métricas do GLPI, com backend Flask e frontend React.
+Aplicação completa para dashboard de métricas do GLPI, com backend Flask e frontend React + TypeScript.
+
+## 📋 Funcionalidades
+
+- **Dashboard Interativo**: Visualização em tempo real de métricas do GLPI
+- **Ranking de Técnicos**: Classificação por número de chamados resolvidos
+- **Monitor de Requisições**: Acompanhamento de performance da API em tempo real
+- **Filtros Avançados**: Filtros por período, status e outras categorias
+- **Interface Responsiva**: Design moderno e adaptável a diferentes dispositivos
+- **Cache Inteligente**: Sistema de cache para otimização de performance
+- **Logs Estruturados**: Sistema de monitoramento e observabilidade
+
+## 🛠️ Tecnologias Utilizadas
+
+### Backend
+- **Flask**: Framework web Python
+- **Flask-CORS**: Suporte a CORS
+- **Flask-Caching**: Sistema de cache
+- **Requests**: Cliente HTTP para integração com GLPI
+- **Python-dotenv**: Gerenciamento de variáveis de ambiente
+
+### Frontend
+- **React 18**: Biblioteca para interfaces de usuário
+- **TypeScript**: Superset tipado do JavaScript
+- **Vite**: Build tool e dev server
+- **CSS3**: Estilização moderna com Grid e Flexbox
+- **Fetch API**: Cliente HTTP nativo
 
 ## 🚀 Melhorias Recentes
 
@@ -142,62 +168,110 @@ Para mais detalhes sobre os scripts, consulte `scripts/README.md`.
 - Node.js 16+
 - npm ou yarn
 
-### 1. Configuração do Backend (Flask)
+### 1. Clone do Repositório
+
+```bash
+git clone https://github.com/seu-usuario/glpi_dashboard.git
+cd glpi_dashboard
+```
+
+### 2. Configuração do Backend (Flask)
 
 ```bash
 # Criar e ativar ambiente virtual
 python -m venv venv
 
-# Windows
+# Windows (PowerShell)
 .\venv\Scripts\Activate.ps1
+
+# Windows (CMD)
+venv\Scripts\activate.bat
 
 # Linux/Mac
 source venv/bin/activate
 
-# Instalar dependências
-pip install flask flask-cors flask-caching flask-sqlalchemy gunicorn psycopg2-binary python-dotenv requests email-validator
+# Instalar dependências do Python
+pip install -r requirements.txt
 ```
 
-### 2. Configuração das Variáveis de Ambiente
+### 3. Configuração das Variáveis de Ambiente
 
+#### Backend
 ```bash
 # Copiar arquivo de exemplo
 copy .env.example .env  # Windows
 cp .env.example .env    # Linux/Mac
 ```
 
-Edite o arquivo `.env` com suas configurações específicas do GLPI.
+Edite o arquivo `.env` na raiz do projeto com suas configurações específicas do GLPI:
 
-### 3. Executar o Backend
+```env
+# Configurações do Flask
+FLASK_ENV=dev
+SECRET_KEY=sua-chave-secreta-aqui
+FLASK_DEBUG=true
+HOST=0.0.0.0
+PORT=5000
 
-```bash
-# Com o ambiente virtual ativado
-python backend/app.py
+# Configurações do GLPI
+GLPI_URL=http://seu-servidor-glpi/glpi/apirest.php
+GLPI_USER_TOKEN=seu-user-token
+GLPI_APP_TOKEN=seu-app-token
+
+# Outras configurações...
 ```
 
-O backend será executado em `http://localhost:5000`
+#### Frontend
+```bash
+cd frontend
+copy .env.example .env  # Windows
+cp .env.example .env    # Linux/Mac
+```
+
+Edite o arquivo `frontend/.env`:
+
+```env
+VITE_API_BASE_URL=http://localhost:5000/api
+VITE_LOG_LEVEL=info
+```
 
 ### 4. Configurar e Executar o Frontend
-
-Em um novo terminal:
 
 ```bash
 # Navegar para a pasta frontend
 cd frontend
 
-# Instalar dependências
+# Instalar dependências do Node.js
 npm install
 
 # Executar servidor de desenvolvimento
 npm run dev
 ```
 
-O frontend será executado em `http://localhost:3000` (ou próxima porta disponível)
+O frontend será executado em `http://localhost:3001`
 
-### 5. Acessar a Aplicação
+### 5. Executar o Backend
 
-- **Frontend (Interface)**: `http://localhost:3000`
+Em um novo terminal, na raiz do projeto:
+
+```bash
+# Ativar ambiente virtual (se não estiver ativo)
+# Windows
+.\venv\Scripts\Activate.ps1
+# Linux/Mac
+source venv/bin/activate
+
+# Executar o backend
+python app.py
+```
+
+O backend será executado em `http://localhost:5000`
+
+### 6. Acessar a Aplicação
+
+- **Frontend (Interface)**: `http://localhost:3001`
 - **Backend (API)**: `http://localhost:5000`
+- **API Docs**: `http://localhost:5000/api/status`
 
 ## Endpoints da API
 

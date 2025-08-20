@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, Suspense } from 'react';
+import React, { useEffect, useMemo, Suspense, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MetricsGrid } from './MetricsGrid';
 import { LevelMetricsGrid } from './LevelMetricsGrid';
@@ -88,7 +88,35 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
   className,
   filters,
 }) {
-  // Sistema funcionando corretamente
+  // Estado para monitorar se o monitor está minimizado
+  const [isMonitorMinimized, setIsMonitorMinimized] = useState(() => {
+    const saved = localStorage.getItem('requestMonitorMinimized');
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  // Escutar mudanças no localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const saved = localStorage.getItem('requestMonitorMinimized');
+      setIsMonitorMinimized(saved ? JSON.parse(saved) : false);
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Também escutar mudanças diretas no localStorage
+    const interval = setInterval(() => {
+      const saved = localStorage.getItem('requestMonitorMinimized');
+      const currentState = saved ? JSON.parse(saved) : false;
+      if (currentState !== isMonitorMinimized) {
+        setIsMonitorMinimized(currentState);
+      }
+    }, 100);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [isMonitorMinimized]);
 
   // Performance monitoring hooks
   const { measureRender } = usePerformanceMonitoring('ModernDashboard');
@@ -167,7 +195,12 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
       variants={containerVariants}
       initial='hidden'
       animate='visible'
-      className={cn('dashboard-fullscreen-container', className)}
+      className={cn(
+        isMonitorMinimized 
+          ? 'dashboard-fullscreen-container-minimized' 
+          : 'dashboard-fullscreen-container', 
+        className
+      )}
     >
       {/* Cards de métricas principais */}
       <motion.div variants={itemVariants} className='dashboard-metrics-section'>
@@ -190,7 +223,7 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
       </div>
 
       {/* Layout inferior com ranking e monitor de requisições */}
-      <div className='dashboard-bottom-grid'>
+      <div className={isMonitorMinimized ? 'dashboard-bottom-grid-minimized' : 'dashboard-bottom-grid'}>
         {/* Ranking de técnicos */}
         <motion.div variants={itemVariants} className='dashboard-ranking-section'>
           <Suspense fallback={<TableSkeleton />}>
@@ -203,11 +236,16 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
           </Suspense>
         </motion.div>
 
-        {/* Monitor de requisições */}
-        <motion.div variants={itemVariants} className='dashboard-monitor-section'>
-          <RequestMonitorDashboard className='h-full' />
-        </motion.div>
+        {/* Monitor de requisições - só renderizar se não estiver minimizado */}
+        {!isMonitorMinimized && (
+          <motion.div variants={itemVariants} className='dashboard-monitor-section'>
+            <RequestMonitorDashboard className='h-full' />
+          </motion.div>
+        )}
       </div>
+      
+      {/* Renderizar o monitor minimizado se necessário */}
+      {isMonitorMinimized && <RequestMonitorDashboard />}
     </motion.div>
   );
 });

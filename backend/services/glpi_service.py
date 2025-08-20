@@ -4443,7 +4443,31 @@ class GLPIService:
         return self._count_tickets_by_technician_optimized(tech_id, tech_field_id)
 
     def _get_technician_ticket_details(self, tech_id: int, tech_field_id: str) -> Optional[dict]:
-        """Obtém dados detalhados dos tickets de um técnico
+        """Obtém dados detalhados dos tickets de um técnico (versão legacy - usa função otimizada)
+        
+        Retorna:
+        {
+            "total_tickets": int,
+            "resolved_tickets": int, 
+            "pending_tickets": int,
+            "avg_resolution_time": float
+        }
+        """
+        try:
+            # Usar a versão otimizada para um único técnico
+            result = self._get_technician_ticket_details_optimized([tech_id], tech_field_id)
+            return result.get(str(tech_id), {
+                "total_tickets": 0,
+                "resolved_tickets": 0,
+                "pending_tickets": 0,
+                "avg_resolution_time": 0.0
+            })
+        except Exception as e:
+            self.logger.error(f"Erro ao obter dados detalhados dos tickets do técnico {tech_id}: {e}")
+            return None
+
+    def _get_technician_ticket_details_legacy(self, tech_id: int, tech_field_id: str) -> Optional[dict]:
+        """Versão original da função (mantida para referência)
         
         Retorna:
         {
@@ -4573,6 +4597,82 @@ class GLPIService:
         except Exception as e:
             self.logger.error(f"Erro ao obter dados detalhados dos tickets do técnico {tech_id}: {e}")
             return None
+
+    def _get_technician_ticket_details_optimized(self, technician_ids: list, tech_field_id: str) -> dict:
+        """Obtém dados detalhados dos tickets de múltiplos técnicos em uma única consulta
+        
+        Args:
+            technician_ids: Lista de IDs dos técnicos
+            tech_field_id: ID do campo técnico no GLPI
+            
+        Retorna:
+            Dict com dados de cada técnico: {
+                "tech_id": {
+                    "total_tickets": int,
+                    "resolved_tickets": int, 
+                    "pending_tickets": int,
+                    "avg_resolution_time": float
+                }
+            }
+        """
+        try:
+            # Inicializar resultado para todos os técnicos
+            result = {}
+            for tech_id in technician_ids:
+                result[str(tech_id)] = {
+                    "total_tickets": 0,
+                    "resolved_tickets": 0,
+                    "pending_tickets": 0,
+                    "avg_resolution_time": 0.0
+                }
+            
+            if not technician_ids:
+                return result
+            
+            # Buscar todos os tickets dos técnicos em uma única consulta
+            # Usar OR para incluir todos os técnicos
+            params = {
+                "is_deleted": 0,
+                "forcedisplay[0]": tech_field_id,  # Campo do técnico
+                "forcedisplay[1]": "12",  # Status
+                "forcedisplay[2]": "15",  # Data de abertura
+                "forcedisplay[3]": "16",  # Data de fechamento
+                "range": "0-9999"  # Buscar muitos tickets
+            }
+            
+            # Adicionar critérios OR para todos os técnicos
+            for i, tech_id in enumerate(technician_ids):
+                params[f"criteria[{i}][field]"] = tech_field_id
+                params[f"criteria[{i}][searchtype]"] = "equals"
+                params[f"criteria[{i}][value]"] = str(tech_id)
+                if i < len(technician_ids) - 1:
+                    params[f"criteria[{i}][link]"] = "OR"
+            
+            # Fazer a requisição para buscar todos os tickets
+            response = self._make_authenticated_request("GET", f"{self.glpi_url}/search/Ticket", params=params)
+            if response and response.status_code == 200:
+                tickets_json = response.json()
+                if "data" in tickets_json:
+                    # Processar os tickets e agrupar por técnico
+                    for ticket in tickets_json["data"]:
+                        tech_id_str = str(ticket.get(str(tech_field_id), ""))
+                        if tech_id_str in result:
+                            status = int(ticket.get("12", 0))  # Status do ticket
+                            result[tech_id_str]["total_tickets"] += 1
+                            
+                            # Contar tickets resolvidos (status 5 e 6)
+                            if status in [5, 6]:
+                                result[tech_id_str]["resolved_tickets"] += 1
+                            # Contar tickets pendentes (status 1, 2, 3, 4)
+                            elif status in [1, 2, 3, 4]:
+                                result[tech_id_str]["pending_tickets"] += 1
+            
+            self.logger.info(f"Dados de tickets obtidos para {len(result)} técnicos em uma única consulta")
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"Erro ao buscar dados de tickets em lote: {e}")
+            return result
 
     def close_session(self):
         """Encerra a sessão com a API do GLPI"""

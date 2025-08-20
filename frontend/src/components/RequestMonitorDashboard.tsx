@@ -6,11 +6,74 @@ interface RequestMonitorDashboardProps {
   className?: string;
 }
 
+// Componente do botão minimizado
+const MinimizedMonitorButton: React.FC<{
+  stats: RequestStats;
+  onExpand: () => void;
+}> = ({ stats, onExpand }) => {
+  const getStatusColor = (errorRate: number) => {
+    if (errorRate === 0) return 'bg-green-500';
+    if (errorRate < 0.1) return 'bg-yellow-500';
+    return 'bg-red-500';
+  };
+
+  const formatPercentage = (value: number) => {
+    return `${(value * 100).toFixed(1)}%`;
+  };
+
+  return (
+    <div className="fixed bottom-4 right-4 z-50">
+      <button
+        onClick={onExpand}
+        className="bg-white rounded-lg shadow-lg border border-gray-200 p-3 hover:shadow-xl transition-all duration-200 group"
+        title="Expandir Monitor de Requisições"
+      >
+        <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2">
+            <div className={`w-3 h-3 rounded-full animate-pulse ${getStatusColor(stats.errorRate)}`}></div>
+            <span className="text-sm font-medium text-gray-700">Monitor</span>
+          </div>
+          <div className="flex items-center space-x-2 text-xs text-gray-600">
+            <span>{stats.totalRequests}</span>
+            <span className="text-gray-400">|</span>
+            <span className={stats.errorRate > 0 ? 'text-red-600' : 'text-green-600'}>
+              {formatPercentage(stats.errorRate)}
+            </span>
+          </div>
+          <svg
+            className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M7 17L17 7M17 7H7M17 7V17"
+            />
+          </svg>
+        </div>
+      </button>
+    </div>
+  );
+};
+
 const RequestMonitorDashboard: React.FC<RequestMonitorDashboardProps> = ({ className = '' }) => {
   const [stats, setStats] = useState<RequestStats | null>(null);
   const [slowestRequests, setSlowestRequests] = useState<RequestMetric[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(() => {
+    // Recuperar estado do localStorage
+    const saved = localStorage.getItem('requestMonitorMinimized');
+    return saved ? JSON.parse(saved) : false;
+  });
   const [refreshInterval, setRefreshInterval] = useState(5000); // 5 segundos
+
+  // Salvar estado no localStorage quando mudar
+  useEffect(() => {
+    localStorage.setItem('requestMonitorMinimized', JSON.stringify(isMinimized));
+  }, [isMinimized]);
 
   const updateStats = () => {
     const currentStats = requestMonitor.getStats();
@@ -40,6 +103,15 @@ const RequestMonitorDashboard: React.FC<RequestMonitorDashboardProps> = ({ class
     return 'text-red-600';
   };
 
+  const handleMinimize = () => {
+    setIsMinimized(true);
+    setIsExpanded(false);
+  };
+
+  const handleExpand = () => {
+    setIsMinimized(false);
+  };
+
   if (!stats) {
     return (
       <div className={`bg-white rounded-lg shadow p-4 ${className}`}>
@@ -49,6 +121,11 @@ const RequestMonitorDashboard: React.FC<RequestMonitorDashboardProps> = ({ class
         </div>
       </div>
     );
+  }
+
+  // Se estiver minimizado, renderizar apenas o botão flutuante
+  if (isMinimized) {
+    return <MinimizedMonitorButton stats={stats} onExpand={handleExpand} />;
   }
 
   return (
@@ -68,6 +145,25 @@ const RequestMonitorDashboard: React.FC<RequestMonitorDashboardProps> = ({ class
             <div className={`text-sm font-medium ${getStatusColor(stats.errorRate)}`}>
               {formatPercentage(stats.errorRate)} erros
             </div>
+            <button
+              onClick={handleMinimize}
+              className='p-1 hover:bg-gray-100 rounded transition-colors'
+              title='Minimizar Monitor'
+            >
+              <svg
+                className='w-4 h-4 text-gray-400 hover:text-gray-600'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+              >
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={2}
+                  d='M20 12H4'
+                />
+              </svg>
+            </button>
             <svg
               className={`w-5 h-5 text-gray-400 transition-transform ${
                 isExpanded ? 'rotate-180' : ''
