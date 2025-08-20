@@ -10,7 +10,7 @@ pydantic-settings==2.1.0
 # === ASYNC & HTTP ===
 aiohttp==3.9.1
 aiofiles==23.2.0
-httpx==0.25.2
+httpx==0.28.1
 
 # === CACHE & STORAGE ===
 redis==5.0.1
