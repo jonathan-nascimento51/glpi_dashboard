@@ -82,11 +82,12 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
         if (value > 100) return { type: 'info', text: 'Large cache uses more memory' };
         return { type: 'success', text: 'Good balance between memory and performance' };
       
-      case 'cacheExpiration':
+      case 'cacheExpiration': {
         const minutes = value / 60000;
         if (minutes < 2) return { type: 'warning', text: 'Short expiration may reduce cache benefits' };
         if (minutes > 15) return { type: 'info', text: 'Long expiration may serve stale data' };
         return { type: 'success', text: 'Good balance between freshness and performance' };
+      }
       
       default:
         return null;
