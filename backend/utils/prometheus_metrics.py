@@ -8,7 +8,7 @@ import logging
 import time
 from contextlib import contextmanager
 from functools import wraps
-from typing import Any, Dict, List, Optional, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 try:
     from prometheus_client import (
@@ -27,10 +27,10 @@ try:
 except ImportError:
     PROMETHEUS_AVAILABLE = False
     CONTENT_TYPE_LATEST = "text/plain"
-    
+
     def generate_latest(registry: Any) -> Union[str, bytes]:  # type: ignore
         return ""
-    
+
     def push_to_gateway(gateway: str, job: str, registry: Any, **kwargs: Any) -> None:  # type: ignore
         pass
 
@@ -218,8 +218,8 @@ class PrometheusMetrics:
         # Criar métricas mock usando as classes mock definidas no bloco except
         class MockMetric:
             """Mock para métricas quando Prometheus não está disponível."""
-            
-            def labels(self, **kwargs: Any) -> 'MockMetric':
+
+            def labels(self, **kwargs: Any) -> "MockMetric":
                 return self
 
             def inc(self, amount: float = 1) -> None:

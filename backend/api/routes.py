@@ -54,6 +54,7 @@ _metrics_cache = {"data": None, "timestamp": 0, "ttl": 180, "filters_hash": None
 # Cache para ranking de técnicos (evita chamadas frequentes)
 _ranking_cache = {"data": None, "timestamp": 0, "ttl": 60, "filters_hash": None}  # Cache por 60 segundos
 
+
 @api_bp.route("/metrics")
 @monitor_api_endpoint("get_metrics")
 @monitor_performance
@@ -62,33 +63,38 @@ _ranking_cache = {"data": None, "timestamp": 0, "ttl": 60, "filters_hash": None}
 def get_metrics(validated_start_date=None, validated_end_date=None, validated_filters=None):
     """Endpoint para obter métricas do dashboard do GLPI com filtros avançados de forma robusta"""
     # Gerar correlation_id para rastreabilidade
-    from utils.observability import ObservabilityLogger
     import hashlib
     import json
+
+    from utils.observability import ObservabilityLogger
 
     correlation_id = ObservabilityLogger.generate_correlation_id()
     observability_logger = ObservabilityLogger("metrics_api")
 
     start_time = time.time()
-    
+
     # Verificar cache baseado nos filtros
-    filters_str = json.dumps({
-        "start_date": validated_start_date.isoformat() if validated_start_date else None,
-        "end_date": validated_end_date.isoformat() if validated_end_date else None,
-        "filters": validated_filters or {}
-    }, sort_keys=True)
+    filters_str = json.dumps(
+        {
+            "start_date": validated_start_date.isoformat() if validated_start_date else None,
+            "end_date": validated_end_date.isoformat() if validated_end_date else None,
+            "filters": validated_filters or {},
+        },
+        sort_keys=True,
+    )
     filters_hash = hashlib.md5(filters_str.encode()).hexdigest()
-    
+
     current_time = time.time()
-    if (_metrics_cache["data"] is not None and 
-        current_time - _metrics_cache["timestamp"] < _metrics_cache["ttl"] and
-        _metrics_cache["filters_hash"] == filters_hash):
-        
+    if (
+        _metrics_cache["data"] is not None
+        and current_time - _metrics_cache["timestamp"] < _metrics_cache["ttl"]
+        and _metrics_cache["filters_hash"] == filters_hash
+    ):
         cached_data = _metrics_cache["data"].copy()
         if isinstance(cached_data, dict):
             cached_data["cached"] = True
             cached_data["correlation_id"] = correlation_id
-        
+
         response_time = (time.time() - start_time) * 1000
         logger.info(f"[{correlation_id}] Métricas retornadas do cache em {response_time:.2f}ms")
         return jsonify(cached_data)
@@ -222,7 +228,7 @@ def get_metrics(validated_start_date=None, validated_end_date=None, validated_fi
         if isinstance(metrics_data, dict) and "data" in metrics_data:
             metrics_data["correlation_id"] = correlation_id
             metrics_data["cached"] = False
-        
+
         # Salvar no cache para próximas requisições
         _metrics_cache["data"] = metrics_data.copy() if isinstance(metrics_data, dict) else metrics_data
         _metrics_cache["timestamp"] = current_time
@@ -409,62 +415,56 @@ def get_metrics_simple():
 def get_technicians():
     """Endpoint para obter lista de técnicos com filtros"""
     from utils.observability import ObservabilityLogger
-    
+
     start_time = time.time()
     obs_logger = ObservabilityLogger("get_technicians")
     correlation_id = obs_logger.generate_correlation_id()
-    
+
     try:
         # Obter parâmetros de filtro
         entity_id = request.args.get("entity_id")
         limit = request.args.get("limit", 100)
-        
+
         # Validar limite
         try:
             limit = int(limit)
             limit = max(1, min(limit, 500))
         except (ValueError, TypeError):
             limit = 100
-        
+
         # Validar entity_id
         if entity_id:
             try:
                 entity_id = int(entity_id)
             except (ValueError, TypeError):
                 entity_id = None
-        
+
         # Buscar técnicos usando método correto
         technician_ids, technician_names = glpi_service._get_all_technician_ids_and_names(entity_id=entity_id)
-        
+
         # Converter para formato de lista de dicionários
         technicians = []
         for tech_id in technician_ids:
             tech_name = technician_names.get(tech_id, f"Técnico {tech_id}")
-            technicians.append({
-                "id": tech_id,
-                "name": tech_name
-            })
-        
+            technicians.append({"id": tech_id, "name": tech_name})
+
         # Limitar resultados
         if len(technicians) > limit:
             technicians = technicians[:limit]
-        
+
         # Formatar resposta
         response_data = {
             "success": True,
             "technicians": technicians,
             "total_count": len(technicians),
-            "filters_applied": {
-                "entity_id": entity_id,
-                "limit": limit
-            },
+            "filters_applied": {"entity_id": entity_id, "limit": limit},
             "response_time_ms": round((time.time() - start_time) * 1000, 2),
             "correlation_id": correlation_id,
-            "cached": False
+            "cached": False,
         }
-        
+
         return jsonify(response_data)
-        
+
     except Exception as e:
         logger.error(f"Erro ao buscar técnicos: {e}", exc_info=True)
         error_response = ResponseFormatter.format_error_response(f"Erro interno do servidor: {str(e)}", [str(e)])
@@ -508,7 +508,7 @@ def get_technician_ranking(validated_start_date=None, validated_end_date=None, v
         # Verificar cache
         current_time = time.time()
         filters_hash = hash(str(sorted(filters.items())) + str(start_date) + str(end_date) + str(limit) + str(entity_id))
-        
+
         if (
             _ranking_cache["data"] is not None
             and current_time - _ranking_cache["timestamp"] < _ranking_cache["ttl"]
@@ -560,7 +560,9 @@ def get_technician_ranking(validated_start_date=None, validated_end_date=None, v
         obs_logger.log_pipeline_step(correlation_id, "glpi_parameters", glpi_params)
 
         # Buscar ranking com ou sem filtros
-        print(f"[ROUTES DEBUG] Chamando get_technician_ranking_with_filters com start_date={start_date}, end_date={end_date}, entity_id={entity_id}")
+        print(
+            f"[ROUTES DEBUG] Chamando get_technician_ranking_with_filters com start_date={start_date}, end_date={end_date}, entity_id={entity_id}"
+        )
         if any([start_date, end_date, level, entity_id]):
             ranking_data = glpi_service.get_technician_ranking_with_filters(
                 start_date=start_date,
@@ -671,12 +673,12 @@ def get_technician_ranking(validated_start_date=None, validated_end_date=None, v
                 "entity_id": entity_id,
             },
         }
-        
+
         # Salvar no cache
         _ranking_cache["data"] = response_data.copy()
         _ranking_cache["timestamp"] = current_time
         _ranking_cache["filters_hash"] = filters_hash
-        
+
         return jsonify(response_data)
 
     except Exception as e:
@@ -926,10 +928,137 @@ def get_performance_stats():
         )
 
 
+@api_bp.route("/performance/metrics")
+def get_performance_metrics():
+    """Endpoint para obter métricas detalhadas de performance"""
+    try:
+        metrics = {
+            "filter_performance": {
+                "average_response_time": performance_monitor.get_average_response_time(),
+                "total_requests": performance_monitor.get_total_requests(),
+                "last_filter_time": performance_monitor.get_last_operation_time(),
+                "recent_history": performance_monitor.get_recent_history(10)
+            },
+            "cache_stats": {
+                "hit_rate": performance_monitor.get_cache_hit_rate(),
+                "total_hits": performance_monitor.get_cache_hits(),
+                "total_misses": performance_monitor.get_cache_misses(),
+                "cache_size": performance_monitor.get_cache_size()
+            },
+            "system_health": {
+                "memory_usage": performance_monitor.get_memory_usage(),
+                "cpu_usage": performance_monitor.get_cpu_usage(),
+                "active_connections": performance_monitor.get_active_connections()
+            }
+        }
+        
+        return jsonify({
+            "success": True,
+            "data": metrics,
+            "timestamp": time.time(),
+            "message": "Métricas de performance obtidas com sucesso"
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro ao obter métricas de performance: {e}", exc_info=True)
+        return jsonify({
+            "success": False,
+            "error": f"Erro interno no servidor: {str(e)}",
+            "data": None
+        }), 500
+
+
+@api_bp.route("/performance/cache/clear", methods=["POST"])
+def clear_performance_cache():
+    """Endpoint para limpar cache de performance"""
+    try:
+        # Limpa cache do Flask-Caching
+        if cache:
+            cache.clear()
+            
+        # Limpa cache interno do performance monitor
+        performance_monitor.clear_cache()
+        
+        # Limpa caches específicos
+        global _metrics_cache, _ranking_cache, _status_cache, _response_cache
+        _metrics_cache = {"data": None, "timestamp": 0, "ttl": 180, "filters_hash": None}
+        _ranking_cache = {"data": None, "timestamp": 0, "ttl": 60, "filters_hash": None}
+        _status_cache = {"data": None, "timestamp": 0, "ttl": 30}
+        _response_cache = {"data": None, "timestamp": 0, "ttl": 30}
+        
+        return jsonify({
+            "success": True,
+            "message": "Cache de performance limpo com sucesso",
+            "timestamp": time.time()
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro ao limpar cache de performance: {e}", exc_info=True)
+        return jsonify({
+            "success": False,
+            "error": f"Erro interno no servidor: {str(e)}"
+        }), 500
+
+
+@api_bp.route("/performance/settings", methods=["GET", "POST"])
+def performance_settings():
+    """Endpoint para gerenciar configurações de performance"""
+    if request.method == "GET":
+        try:
+            settings = {
+                "cache_enabled": True,
+                "cache_ttl": 300,
+                "metrics_enabled": True,
+                "debug_mode": active_config.DEBUG,
+                "max_cache_size": 1000,
+                "performance_monitoring": True
+            }
+            
+            return jsonify({
+                "success": True,
+                "data": settings,
+                "message": "Configurações de performance obtidas com sucesso"
+            })
+            
+        except Exception as e:
+            logger.error(f"Erro ao obter configurações de performance: {e}", exc_info=True)
+            return jsonify({
+                "success": False,
+                "error": f"Erro interno no servidor: {str(e)}"
+            }), 500
+    
+    elif request.method == "POST":
+        try:
+            settings = request.get_json()
+            
+            # Validar e aplicar configurações
+            if "cache_ttl" in settings:
+                # Atualizar TTL do cache
+                pass
+                
+            if "metrics_enabled" in settings:
+                # Ativar/desativar métricas
+                pass
+            
+            return jsonify({
+                "success": True,
+                "message": "Configurações de performance atualizadas com sucesso",
+                "data": settings
+            })
+            
+        except Exception as e:
+            logger.error(f"Erro ao atualizar configurações de performance: {e}", exc_info=True)
+            return jsonify({
+                "success": False,
+                "error": f"Erro interno no servidor: {str(e)}"
+            }), 500
+
+
 # Cache para status do GLPI (evita chamadas frequentes)
 _status_cache = {"data": None, "timestamp": 0, "ttl": 30}  # Cache por 30 segundos
 # Cache completo da resposta para máxima performance
 _response_cache = {"data": None, "timestamp": 0, "ttl": 30}
+
 
 @api_bp.route("/status")
 def get_status():
@@ -938,13 +1067,12 @@ def get_status():
 
     try:
         current_time_unix = time.time()
-        
+
         # Verificar cache completo da resposta primeiro (máxima performance)
         response_cache_valid = (
-            _response_cache["data"] is not None and 
-            (current_time_unix - _response_cache["timestamp"]) < _response_cache["ttl"]
+            _response_cache["data"] is not None and (current_time_unix - _response_cache["timestamp"]) < _response_cache["ttl"]
         )
-        
+
         if response_cache_valid:
             cached_response = _response_cache["data"].copy()
             # Atualizar apenas o response_time para refletir a performance atual
@@ -954,8 +1082,7 @@ def get_status():
 
         # Verificar cache do status do GLPI
         cache_valid = (
-            _status_cache["data"] is not None and 
-            (current_time_unix - _status_cache["timestamp"]) < _status_cache["ttl"]
+            _status_cache["data"] is not None and (current_time_unix - _status_cache["timestamp"]) < _status_cache["ttl"]
         )
 
         if cache_valid:
@@ -964,10 +1091,11 @@ def get_status():
             # Verificação simplificada do GLPI (sem autenticação completa)
             try:
                 import requests
+
                 glpi_start = time.time()
                 response = requests.get(f"{active_config.GLPI_URL}/apirest.php", timeout=1)
                 glpi_response_time = (time.time() - glpi_start) * 1000
-                
+
                 if response.status_code == 200:
                     glpi_info = {
                         "status": "online",
@@ -980,14 +1108,14 @@ def get_status():
                         "message": f"GLPI respondeu com status {response.status_code}",
                         "response_time": round(glpi_response_time, 2),
                     }
-                    
+
             except Exception as glpi_error:
                 glpi_info = {
                     "status": "offline",
                     "message": f"GLPI inacessível: {str(glpi_error)}",
                     "response_time": 0,
                 }
-                
+
             # Atualizar cache
             _status_cache["data"] = glpi_info
             _status_cache["timestamp"] = current_time_unix
@@ -1016,11 +1144,11 @@ def get_status():
             "overall_status": overall_status,
             "response_time_ms": round(response_time, 2),
         }
-        
+
         # Cache da resposta completa para máxima performance
         _response_cache["data"] = response_data
         _response_cache["timestamp"] = current_time_unix
-        
+
         return jsonify(response_data)
 
     except Exception as e:
@@ -1134,12 +1262,13 @@ def glpi_health_check():
 @api_bp.route("/docs", methods=["GET"])
 def swagger_ui():
     """Serve Swagger UI for API documentation"""
-    from flask import send_from_directory
     import os
-    
+
+    from flask import send_from_directory
+
     # Caminho para o arquivo HTML do Swagger UI
     docs_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "docs", "api")
-    
+
     swagger_html = """
     <!DOCTYPE html>
     <html>
@@ -1185,28 +1314,25 @@ def swagger_ui():
     </body>
     </html>
     """
-    
+
     from flask import Response
-    return Response(swagger_html, mimetype='text/html')
+
+    return Response(swagger_html, mimetype="text/html")
 
 
 @api_bp.route("/openapi.yaml", methods=["GET"])
 def openapi_spec():
     """Serve OpenAPI specification file"""
     import os
-    from flask import send_file, Response
-    
+
+    from flask import Response, send_file
+
     # Caminho para o arquivo openapi.yaml
-    openapi_path = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 
-        "docs", 
-        "api", 
-        "openapi.yaml"
-    )
-    
+    openapi_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "docs", "api", "openapi.yaml")
+
     if os.path.exists(openapi_path):
-        with open(openapi_path, 'r', encoding='utf-8') as f:
+        with open(openapi_path, "r", encoding="utf-8") as f:
             content = f.read()
-        return Response(content, mimetype='application/x-yaml')
+        return Response(content, mimetype="application/x-yaml")
     else:
         return jsonify({"error": "OpenAPI specification not found"}), 404

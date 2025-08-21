@@ -116,7 +116,7 @@ export const useRequestMonitor = ({
       setTopEndpoints(topEps);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao atualizar estatísticas');
-      console.error('Erro ao atualizar estatísticas do monitor:', err);
+      // Erro ao atualizar estatísticas do monitor
     } finally {
       setIsLoading(false);
     }
@@ -132,7 +132,7 @@ export const useRequestMonitor = ({
       setDetailedStats(detailed);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao obter estatísticas detalhadas');
-      console.error('Erro ao obter estatísticas detalhadas:', err);
+      // Erro ao obter estatísticas detalhadas
     } finally {
       setIsLoading(false);
     }
@@ -147,7 +147,7 @@ export const useRequestMonitor = ({
       refreshStats();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao limpar histórico');
-      console.error('Erro ao limpar histórico:', err);
+      // Erro ao limpar histórico
     }
   }, [refreshStats]);
 
@@ -159,7 +159,7 @@ export const useRequestMonitor = ({
       return requestMonitor.exportData();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao exportar dados');
-      console.error('Erro ao exportar dados:', err);
+      // Erro ao exportar dados
       return null;
     }
   }, []);

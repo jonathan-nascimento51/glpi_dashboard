@@ -19,8 +19,15 @@ export interface PerformanceReport {
     apiResponseTime: number;
     renderTime: number;
     totalOperationTime: number;
+    totalRequests?: number;
+    cacheHitRate?: number;
+    systemHealth?: {
+      cpuUsage: number;
+      memoryUsage: number;
+    };
   };
   componentMetrics: ComponentMetric[];
+  timeRange?: string;
 }
 
 export interface ComponentMetric {
@@ -61,7 +68,7 @@ class PerformanceMonitor {
       metadata,
     });
 
-    console.log(`🚀 Performance: Iniciando medição '${name}'`, metadata);
+    // Performance: Iniciando medição
   }
 
   /**
@@ -72,7 +79,7 @@ class PerformanceMonitor {
 
     const metric = this.metrics.get(name);
     if (!metric) {
-      console.warn(`⚠️ Performance: Medição '${name}' não foi iniciada`);
+      // Performance: Medição não foi iniciada
       return 0;
     }
 
@@ -93,10 +100,7 @@ class PerformanceMonitor {
       metric.metadata = { ...metric.metadata, ...metadata };
     }
 
-    console.log(`✅ Performance: '${name}' concluído em ${duration.toFixed(2)}ms`, {
-      duration,
-      metadata: metric.metadata,
-    });
+    // Performance measurement completed
 
     return duration;
   }
@@ -147,7 +151,7 @@ class PerformanceMonitor {
       });
     }
 
-    console.log(`🎨 Component Render: ${componentName} - ${renderTime.toFixed(2)}ms`);
+    // Component render time recorded
   }
 
   /**
@@ -255,7 +259,7 @@ class PerformanceMonitor {
       performance.clearMarks();
       performance.clearMeasures();
     }
-    console.log('🧹 Performance: Métricas limpas');
+    // Performance metrics cleared
   }
 
   /**
@@ -301,7 +305,7 @@ class PerformanceMonitor {
    */
   setEnabled(enabled: boolean): void {
     this.isEnabled = enabled;
-    console.log(`🔧 Performance Monitor: ${enabled ? 'Habilitado' : 'Desabilitado'}`);
+    // Performance monitor state changed
   }
 
   /**
@@ -314,7 +318,7 @@ class PerformanceMonitor {
 
     // Em produção, enviar para serviço de analytics
     // Exemplo: Google Analytics, DataDog, etc.
-    console.log('📊 Enviando métricas para analytics:', report.summary);
+    // Analytics data would be sent here
 
     // Implementar integração com serviço de analytics aqui
     // gtag('event', 'performance_metric', {
@@ -355,12 +359,12 @@ export const usePerformanceProfiler = () => {
 export const debugPerformance = {
   logCurrentMetrics: () => {
     const stats = performanceMonitor.getDetailedStats();
-    console.table(stats);
+    // Performance stats available
   },
 
   logComponentMetrics: () => {
     const components = Array.from(performanceMonitor['componentMetrics'].values());
-    console.table(components);
+    // Component metrics available
   },
 
   generateReport: () => {

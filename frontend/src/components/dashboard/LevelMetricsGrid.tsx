@@ -4,10 +4,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Users, Clock, AlertCircle, CheckCircle, TrendingUp } from 'lucide-react';
 import { MetricsData } from '@/types';
-import { cn } from '@/lib/utils';
+import { cn, getStatusBadgeVariant } from '@/lib/utils';
+import TrendIndicator, { parseTrendFromAPI } from '@/components/ui/TrendIndicator';
 
 interface LevelMetricsGridProps {
-  metrics?: MetricsData;
+  metrics?: MetricsData & {
+    tendencias?: {
+      novos: string;
+      pendentes: string;
+      progresso: string;
+      resolvidos: string;
+    };
+  };
   className?: string;
 }
 
@@ -117,7 +125,8 @@ const StatusItem = React.memo<{
   status: string;
   statusConf: (typeof statusConfig)[keyof typeof statusConfig];
   value: number | undefined;
-}>(function StatusItem({ status, statusConf, value }) {
+  trendData?: { trend: 'up' | 'down' | 'stable'; percentage: number };
+}>(function StatusItem({ status, statusConf, value, trendData }) {
   const Icon = statusConf.icon;
 
   return (
@@ -125,28 +134,42 @@ const StatusItem = React.memo<{
       key={`status-item-${status}`}
       variants={statusVariants}
       whileHover='hover'
-      className='flex items-center justify-between p-4 rounded-lg figma-glass-card min-h-[60px] border border-gray-100/50 dark:border-gray-800/50 cursor-pointer'
+      className='flex flex-col items-center justify-center p-2 rounded-lg figma-glass-card min-h-[60px] border border-gray-100/50 dark:border-gray-800/50 cursor-pointer text-center'
     >
-      <div className='flex items-center gap-3'>
+      <div className='flex items-center gap-1 mb-1'>
         <motion.div
-          className={`p-2 rounded-lg ${statusConf.bgColor} shadow-sm`}
+          className={`p-1 rounded-lg ${statusConf.bgColor} shadow-sm`}
           whileHover={{ scale: 1.1 }}
           transition={{ duration: 0.2 }}
         >
-          <Icon className={`h-4 w-4 ${statusConf.iconColor}`} />
+          <Icon className={`h-3 w-3 ${statusConf.iconColor}`} />
         </motion.div>
-        <span className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+        <span className='text-xs font-medium text-gray-700 dark:text-gray-300 truncate'>
           {statusConf.label}
         </span>
       </div>
-      <motion.span
-        className={`text-lg font-bold ${statusConf.color} tabular-nums`}
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ duration: 0.6, ease: 'easeOut', delay: 0.2 }}
-      >
-        {value || 0}
-      </motion.span>
+      <div className='flex flex-col items-center gap-1'>
+        <Badge
+          variant={getStatusBadgeVariant(status)}
+          className='text-xs px-2 py-1 font-medium border'
+        >
+          {value || 0}
+        </Badge>
+        {trendData && (
+          <motion.div
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.4 }}
+          >
+            <TrendIndicator
+              trend={trendData.trend}
+              percentage={trendData.percentage}
+              size='sm'
+              className='text-xs'
+            />
+          </motion.div>
+        )}
+      </div>
     </motion.div>
   );
 });
@@ -156,7 +179,13 @@ const LevelCard = React.memo<{
   level: string;
   levelData: any;
   config: (typeof levelConfig)[keyof typeof levelConfig];
-}>(function LevelCard({ level, levelData, config }) {
+  tendencias?: {
+    novos: string;
+    pendentes: string;
+    progresso: string;
+    resolvidos: string;
+  };
+}>(function LevelCard({ level, levelData, config, tendencias }) {
   const total = useMemo(() => {
     return Object.values(levelData).reduce((sum: number, value) => sum + (Number(value) || 0), 0);
   }, [levelData]);
@@ -184,8 +213,8 @@ const LevelCard = React.memo<{
             </CardTitle>
             <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
               <Badge
-                variant='outline'
-                className={`${config.bgColor} ${config.textColor} border-0 text-sm px-3 py-1.5 font-bold`}
+                variant={getStatusBadgeVariant('info')}
+                className='text-sm px-3 py-1.5 font-bold border'
               >
                 {total}
               </Badge>
@@ -193,10 +222,12 @@ const LevelCard = React.memo<{
           </div>
         </CardHeader>
 
-        <CardContent className='px-4 pb-4 flex-1 relative z-10'>
-          <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 w-full h-full'>
+        <CardContent className='px-3 pb-3 flex-1 relative z-10'>
+          <div className='grid grid-cols-2 gap-2 w-full h-full'>
             {Object.entries(statusConfig).map(([status, statusConf]) => {
               const value = levelData[status as keyof typeof levelData];
+              const trendString = tendencias?.[status as keyof typeof tendencias];
+              const trendData = trendString ? parseTrendFromAPI(trendString) : undefined;
 
               return (
                 <StatusItem
@@ -204,6 +235,7 @@ const LevelCard = React.memo<{
                   status={status}
                   statusConf={statusConf}
                   value={value}
+                  trendData={trendData}
                 />
               );
             })}
@@ -254,7 +286,7 @@ export const LevelMetricsGrid = React.memo<LevelMetricsGridProps>(function Level
 
   return (
     <div className={cn('h-full flex flex-col overflow-hidden', className)}>
-      <div className='grid grid-cols-1 sm:grid-cols-2 grid-rows-1 sm:grid-rows-2 gap-2 sm:gap-3 h-full overflow-hidden p-1'>
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-2 gap-2 sm:gap-3 lg:gap-2 xl:gap-3 h-full overflow-hidden p-1'>
         {levelEntries.map(([level, levelData]) => {
           const config = levelConfig[level as keyof typeof levelConfig];
           if (!config || !levelData) return null;
@@ -265,6 +297,7 @@ export const LevelMetricsGrid = React.memo<LevelMetricsGridProps>(function Level
               level={level}
               levelData={levelData}
               config={config}
+              tendencias={metrics.tendencias}
             />
           );
         })}

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, Suspense, useState } from 'react';
 import { motion } from 'framer-motion';
-import { MetricsGrid } from './MetricsGrid';
+import { HierarchicalMetricsGrid } from './HierarchicalMetricsGrid';
 import { LevelMetricsGrid } from './LevelMetricsGrid';
 
 // Componentes lazy centralizados
@@ -204,7 +204,7 @@ export const ModernDashboard = React.memo<ModernDashboardProps>(function ModernD
     >
       {/* Cards de métricas principais */}
       <motion.div variants={itemVariants} className='dashboard-metrics-section'>
-        <MetricsGrid metrics={metrics} onFilterByStatus={onFilterByStatus} />
+        <HierarchicalMetricsGrid metrics={metrics} onFilterByStatus={onFilterByStatus} />
       </motion.div>
 
       {/* Layout principal com métricas por nível e tickets novos */}

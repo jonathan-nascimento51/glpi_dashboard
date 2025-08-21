@@ -3,6 +3,8 @@ import { Search, X, Clock, Calendar, ChevronDown } from 'lucide-react';
 import { Theme, SearchResult } from '../types';
 import { SimpleTechIcon } from './SimpleTechIcon';
 import { useDebouncedCallback } from '../hooks/useDebounce';
+import { Breadcrumb } from './ui/Breadcrumb';
+import { useBreadcrumb } from '../hooks/useBreadcrumb';
 
 interface HeaderProps {
   currentTime: string;
@@ -28,6 +30,8 @@ interface HeaderProps {
   onDateRangeChange?: (dateRange: { startDate: string; endDate: string; label: string }) => void;
   onFilterTypeChange?: (type: string) => void;
   onPerformanceDashboard?: () => void;
+  onChartExample?: () => void;
+  showChartExample?: boolean;
 }
 
 const themes: { value: Theme; label: string; icon: string }[] = [
@@ -59,6 +63,8 @@ export const Header: React.FC<HeaderProps> = ({
   onDateRangeChange,
   onFilterTypeChange,
   onPerformanceDashboard,
+  onChartExample,
+  showChartExample,
 }) => {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [showThemeSelector, setShowThemeSelector] = useState(false);
@@ -116,7 +122,7 @@ export const Header: React.FC<HeaderProps> = ({
         endDate: endStr,
         label: range?.label || 'Período personalizado',
       };
-      console.log('📅 Header - Enviando dateRange:', newDateRange);
+      // Enviando dateRange
       onDateRangeChange?.(newDateRange);
       setShowDatePicker(false);
 
@@ -133,7 +139,7 @@ export const Header: React.FC<HeaderProps> = ({
         endDate: customEndDate,
         label: 'Período personalizado',
       };
-      console.log('📅 Header - Enviando período personalizado:', customDateRange);
+      // Enviando período personalizado
       onDateRangeChange(customDateRange);
       setShowDatePicker(false);
       onNotification('Período Personalizado', 'Período customizado aplicado', 'success');
@@ -215,10 +221,14 @@ export const Header: React.FC<HeaderProps> = ({
     onSearch('');
   }, [onSearch]);
 
+  // Breadcrumb navigation
+  const { items: breadcrumbItems } = useBreadcrumb({ showHomeIcon: true, maxItems: 5 });
+
   return (
     <header className='figma-header w-full shadow-xl relative z-50'>
       <div className='w-full px-6 py-4'>
         <div className='flex items-center justify-between w-full'>
+          {/* Main header content */}
           {/* ========== SEÇÃO ESQUERDA: LOGO + TÍTULO ========== */}
           <div className='flex items-center space-x-4 min-w-0 flex-shrink-0'>
             <div className='w-11 h-11 figma-glass-card rounded-xl flex items-center justify-center hover:scale-105 transition-all duration-200 group'>
@@ -365,6 +375,29 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* ========== SEÇÃO DIREITA: CONTROLES + STATUS ========== */}
           <div className='flex items-center space-x-4 flex-shrink-0'>
+            {/* Chart Example Button */}
+            {onChartExample && (
+              <button
+                onClick={onChartExample}
+                className={`btn-secondary flex items-center space-x-2 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
+                  showChartExample
+                    ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                    : 'hover:bg-blue-50 hover:text-blue-600'
+                }`}
+                title={showChartExample ? 'Voltar ao Dashboard Principal' : 'Ver Exemplo de Drill-Down'}
+              >
+                <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z'
+                  />
+                </svg>
+                <span>{showChartExample ? 'Dashboard' : 'Drill-Down'}</span>
+              </button>
+            )}
+
             {/* Performance Dashboard Button */}
             {onPerformanceDashboard && (
               <button
@@ -422,6 +455,17 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
         </div>
+        
+        {/* Breadcrumb Navigation */}
+        {breadcrumbItems.length > 1 && (
+          <div className='w-full px-6 py-2 border-t border-gray-100/50'>
+            <Breadcrumb 
+              items={breadcrumbItems} 
+              className='text-sm'
+              showHomeIcon={true}
+            />
+          </div>
+        )}
       </div>
     </header>
   );

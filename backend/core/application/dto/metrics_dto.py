@@ -301,24 +301,38 @@ class MetricsResponseDTO(BaseModel):
 
 def create_empty_metrics_dto() -> MetricsDTO:
     """Cria um DTO de métricas vazio com valores padrão."""
+    empty_ticket_metrics = TicketMetricsDTO(
+        total=0,
+        novos=0,
+        pendentes=0,
+        progresso=0,
+        resolvidos=0,
+        fechados=0,
+        cancelados=0
+    )
+    
     return MetricsDTO(
         total=0,
         novos=0,
         pendentes=0,
         progresso=0,
         resolvidos=0,
+        period_start=None,
+        period_end=None,
+        total_technicians=0,
+        avg_tickets_per_technician=None,
         niveis={
             TechnicianLevel.N1.value: LevelMetricsDTO(
-                level=TechnicianLevel.N1, metrics=TicketMetricsDTO(), technician_count=0
+                level=TechnicianLevel.N1, metrics=empty_ticket_metrics, technician_count=0, avg_resolution_time=None
             ),
             TechnicianLevel.N2.value: LevelMetricsDTO(
-                level=TechnicianLevel.N2, metrics=TicketMetricsDTO(), technician_count=0
+                level=TechnicianLevel.N2, metrics=empty_ticket_metrics, technician_count=0, avg_resolution_time=None
             ),
             TechnicianLevel.N3.value: LevelMetricsDTO(
-                level=TechnicianLevel.N3, metrics=TicketMetricsDTO(), technician_count=0
+                level=TechnicianLevel.N3, metrics=empty_ticket_metrics, technician_count=0, avg_resolution_time=None
             ),
             TechnicianLevel.N4.value: LevelMetricsDTO(
-                level=TechnicianLevel.N4, metrics=TicketMetricsDTO(), technician_count=0
+                level=TechnicianLevel.N4, metrics=empty_ticket_metrics, technician_count=0, avg_resolution_time=None
             ),
         },
     )
@@ -326,7 +340,15 @@ def create_empty_metrics_dto() -> MetricsDTO:
 
 def create_error_response(error_message: str, correlation_id: Optional[str] = None) -> MetricsResponseDTO:
     """Cria uma resposta de erro padronizada."""
-    return MetricsResponseDTO(success=False, data=None, errors=[error_message], correlation_id=correlation_id)
+    return MetricsResponseDTO(
+        success=False, 
+        data=None, 
+        message="Erro na operação",
+        errors=[error_message], 
+        correlation_id=correlation_id,
+        execution_time_ms=0.0,
+        pagination=None
+    )
 
 
 def create_success_response(
@@ -335,4 +357,11 @@ def create_success_response(
     message: Optional[str] = None,
 ) -> MetricsResponseDTO:
     """Cria uma resposta de sucesso padronizada."""
-    return MetricsResponseDTO(success=True, data=data, message=message, correlation_id=correlation_id)
+    return MetricsResponseDTO(
+        success=True, 
+        data=data, 
+        message=message or "Operação realizada com sucesso", 
+        correlation_id=correlation_id,
+        execution_time_ms=0.0,
+        pagination=None
+    )

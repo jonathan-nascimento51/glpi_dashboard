@@ -120,7 +120,7 @@ export const RequestMonitorCard: React.FC<RequestMonitorCardProps> = ({
         <CardContent>
           <Alert variant='destructive'>
             <XCircle className='h-4 w-4' />
-            <AlertDescription>{error}</AlertDescription>
+            <AlertDescription>{typeof error === 'string' ? error : error?.message || 'Erro desconhecido'}</AlertDescription>
           </Alert>
         </CardContent>
       </Card>
@@ -349,7 +349,12 @@ export const RequestMonitorCard: React.FC<RequestMonitorCardProps> = ({
                         >
                           <span className='font-mono'>{error.endpoint}</span>
                           <div className='flex items-center gap-2'>
-                            <span className='text-red-600'>{error.error}</span>
+                            <span className='text-red-600'>
+                              {typeof error.error === 'string' 
+                                ? error.error 
+                                : error.error?.message || error.error?.toString() || JSON.stringify(error.error)
+                              }
+                            </span>
                             <Badge variant='destructive'>{error.count}</Badge>
                           </div>
                         </div>

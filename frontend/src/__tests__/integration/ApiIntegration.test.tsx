@@ -82,7 +82,7 @@ const ErrorTestComponent: React.FC<{ errorType: string }> = ({ errorType }) => {
     <div>
       <button onClick={() => execute()}>Testar {errorType}</button>
       {loading && <div data-testid='error-loading'>Carregando...</div>}
-      {error && <div data-testid='error-message'>{error}</div>}
+      {error && <div data-testid='error-message'>{error.message || error.toString()}</div>}
       {data && <div data-testid='error-data'>{JSON.stringify(data)}</div>}
     </div>
   );

@@ -3,7 +3,7 @@ import time
 import uuid
 from datetime import datetime
 from functools import wraps
-from typing import Any, Dict, Optional, Callable, List
+from typing import Any, Callable, Dict, List, Optional
 
 
 class ObservabilityLogger:
@@ -114,7 +114,9 @@ class ObservabilityLogger:
                 unresolved_ids=unresolved_ids,
             )
 
-    def check_zero_totals(self, correlation_id: str, technicians: List[Dict[str, Any]], filters_applied: Dict[str, Any]) -> None:
+    def check_zero_totals(
+        self, correlation_id: str, technicians: List[Dict[str, Any]], filters_applied: Dict[str, Any]
+    ) -> None:
         """Verifica se há totais zerados após filtros"""
         zero_total_count = sum(1 for tech in technicians if tech.get("total", 0) == 0)
 

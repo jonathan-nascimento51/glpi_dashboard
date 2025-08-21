@@ -1,5 +1,7 @@
-# Pre-commit hooks configuration for GLPI Dashboard
+# Enhanced Pre-commit Configuration for GLPI Dashboard
+# This configuration ensures code quality and security before commits
 # Install with: pip install pre-commit && pre-commit install
+# Run all hooks: pre-commit run --all-files
 
 repos:
   # Python code formatting and linting
@@ -7,7 +9,6 @@ repos:
     rev: 23.12.1
     hooks:
       - id: black
-        language_version: python3.11
         args: [--line-length=127]
         files: ^backend/
 
@@ -22,12 +23,24 @@ repos:
     rev: 7.0.0
     hooks:
       - id: flake8
-        args: [--max-line-length=127, --max-complexity=10]
+        args: [--max-line-length=127, --max-complexity=12]
         files: ^backend/
         additional_dependencies:
           - flake8-docstrings
-          - flake8-import-order
           - flake8-bugbear
+          - flake8-comprehensions
+          - flake8-simplify
+          - flake8-security
+          - flake8-bandit
+
+  # Type checking
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+      - id: mypy
+        files: ^backend/.*\.py$
+        args: [--ignore-missing-imports, --show-error-codes]
+        additional_dependencies: [types-requests, types-redis]
 
   # Python security
   - repo: https://github.com/PyCQA/bandit
@@ -36,6 +49,22 @@ repos:
       - id: bandit
         args: [-r, backend/, -ll]
         files: ^backend/
+
+  # Secret detection
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: package.lock.json
+
+  # GitGuardian integration
+  - repo: https://github.com/gitguardian/ggshield
+    rev: v1.25.0
+    hooks:
+      - id: ggshield
+        language: python
+        stages: [commit]
 
   # General file checks
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -112,20 +141,102 @@ repos:
         pass_filenames: false
         stages: [manual]
 
-  # Security checks
+  # Docker security
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.0
+    hooks:
+      - id: hadolint-docker
+        args: [--ignore, DL3008, --ignore, DL3009]
+
+  # Documentation
+  - repo: https://github.com/executablebooks/mdformat
+    rev: 0.7.17
+    hooks:
+      - id: mdformat
+        args: [--wrap=80]
+        additional_dependencies:
+          - mdformat-gfm
+          - mdformat-black
+
+  # Enhanced security and quality checks
   - repo: local
     hooks:
       - id: safety-check
-        name: safety check
-        entry: bash -c 'safety check -r backend/requirements.txt'
+        name: Safety Check (Python Dependencies)
+        entry: bash -c 'safety check -r backend/requirements.txt --json'
         language: system
         files: ^backend/requirements\.txt$
         pass_filenames: false
 
+      - id: pip-audit
+        name: Pip Audit (Vulnerability Scanner)
+        entry: bash -c 'pip-audit -r backend/requirements.txt --format=json'
+        language: system
+        files: ^backend/requirements\.txt$
+        pass_filenames: false
+
+      - id: npm-audit
+        name: NPM Security Audit
+        entry: bash -c 'cd frontend && npm audit --audit-level=high'
+        language: system
+        files: ^frontend/package.*\.json$
+        pass_filenames: false
+
+      - id: license-check
+        name: License Compatibility Check
+        entry: bash -c 'pip-licenses --format=json --output-file=licenses.json && echo "License check completed"'
+        language: system
+        files: ^backend/requirements\.txt$
+        pass_filenames: false
+
+      - id: complexity-check
+        name: Code Complexity Check
+        entry: bash -c 'radon cc backend/ --min=B --show-complexity'
+        language: system
+        files: ^backend/.*\.py$
+        pass_filenames: false
+
+      - id: test-coverage
+        name: Test Coverage Check
+        entry: bash -c 'cd backend && python -m pytest --cov=. --cov-fail-under=80 --quiet tests/unit/'
+        language: system
+        files: ^backend/.*\.py$
+        pass_filenames: false
+        stages: [manual]
+
+      - id: semgrep-security
+        name: Semgrep Security Analysis
+        entry: bash -c 'semgrep --config=auto --error --quiet .'
+        language: system
+        files: \.(py|js|jsx|ts|tsx)$
+        pass_filenames: false
+        stages: [manual]
+
 # Configuration
+default_language_version:
+  python: python3.11
+  node: '18'
+
 default_stages: [commit]
 fail_fast: false
+minimum_pre_commit_version: '3.0.0'
 
-# To run specific hooks manually:
+# CI settings
+ci:
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit hooks
+
+    for more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_branch: ''
+  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false
+
+# Manual execution commands:
 # pre-commit run --hook-stage manual pytest-check
 # pre-commit run --hook-stage manual vitest-check
+# pre-commit run --hook-stage manual test-coverage
+# pre-commit run --hook-stage manual semgrep-security
+# pre-commit run --all-files  # Run all hooks on all files

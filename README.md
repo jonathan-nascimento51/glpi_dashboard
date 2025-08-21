@@ -11,6 +11,42 @@ Aplicação completa para dashboard de métricas do GLPI, com backend Flask e fr
 - **Interface Responsiva**: Design moderno e adaptável a diferentes dispositivos
 - **Cache Inteligente**: Sistema de cache para otimização de performance
 - **Logs Estruturados**: Sistema de monitoramento e observabilidade
+- **Sistema de Performance**: Monitoramento completo de performance frontend e backend
+
+## 📊 Sistema de Monitoramento de Performance
+
+O GLPI Dashboard inclui um sistema abrangente de monitoramento de performance que rastreia métricas em tempo real tanto no frontend quanto no backend.
+
+### Funcionalidades do Sistema de Performance
+
+- **Monitoramento de API**: Rastreamento de tempo de resposta e latência
+- **Performance de Filtros**: Medição de tempo de aplicação de filtros
+- **Métricas de Renderização**: Análise de performance de componentes React
+- **Relatórios Automáticos**: Geração de relatórios consolidados
+- **Debug Tools**: Ferramentas de debug para desenvolvimento
+- **Cache Inteligente**: Sistema de cache com TTL dinâmico
+
+### Hooks de Performance Disponíveis
+
+- `usePerformanceMonitoring`: Hook principal para monitoramento básico
+- `useApiPerformance`: Monitoramento específico de chamadas de API
+- `useFilterPerformance`: Performance de operações de filtro
+- `usePerformanceReports`: Geração e gestão de relatórios
+- `usePerformanceDebug`: Ferramentas de debug e análise
+- `useRenderTracker`: Rastreamento de renderizações de componentes
+
+### Endpoints de Performance
+
+- `GET /api/performance/metrics`: Métricas atuais do sistema
+- `POST /api/performance/cache/clear`: Limpeza de cache
+- `GET /api/performance/reports`: Relatórios históricos
+
+### Documentação Detalhada
+
+Para informações completas sobre implementação e uso:
+
+- **[Sistema de Performance](docs/PERFORMANCE_SYSTEM.md)**: Documentação completa do sistema
+- **[Guia de Desenvolvimento](docs/PERFORMANCE_DEVELOPMENT_GUIDE.md)**: Guia para desenvolvedores
 
 ## 🛠️ Tecnologias Utilizadas
 
@@ -79,7 +115,9 @@ Aplicação completa para dashboard de métricas do GLPI, com backend Flask e fr
 │   └── vite.config.ts     # Configuração do Vite
 ├── docs/                  # Documentação do projeto
 │   ├── AUDITORIA_COMPLETA_RESULTADOS.md # Resultados da auditoria
-│   └── GUIA_IMPLEMENTACAO_FILTROS_DATA_GLPI.md # Guia de filtros
+│   ├── GUIA_IMPLEMENTACAO_FILTROS_DATA_GLPI.md # Guia de filtros
+│   ├── PERFORMANCE_SYSTEM.md # Documentação do sistema de performance
+│   └── PERFORMANCE_DEVELOPMENT_GUIDE.md # Guia de desenvolvimento de performance
 ├── scripts/               # Scripts auxiliares
 │   ├── debug/             # Scripts de debug
 │   ├── tests/             # Scripts e arquivos de teste

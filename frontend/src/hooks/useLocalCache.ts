@@ -47,7 +47,7 @@ export function useCache<T>(
         isExpired,
       };
     } catch (error) {
-      console.warn('Erro ao carregar cache:', error);
+      // Erro ao carregar cache do localStorage
       return { value: defaultValue, isExpired: false };
     }
   }, [key, defaultValue, ttl]);
@@ -69,7 +69,7 @@ export function useCache<T>(
         };
         localStorage.setItem(key, JSON.stringify(data));
       } catch (error) {
-        console.warn('Erro ao salvar cache:', error);
+        // Erro ao salvar cache no localStorage
       }
     },
     [key, ttl]
@@ -90,7 +90,7 @@ export function useCache<T>(
       localStorage.removeItem(key);
       setCacheState({ value: defaultValue, isExpired: false });
     } catch (error) {
-      console.warn('Erro ao limpar cache:', error);
+      // Erro ao limpar cache do localStorage
     }
   }, [key, defaultValue]);
 

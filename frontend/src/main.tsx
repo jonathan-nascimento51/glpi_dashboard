@@ -5,16 +5,16 @@ import './index.css';
 
 // Global error handler
 window.addEventListener('error', event => {
-  console.error('Global error:', event.error);
+  // Global error captured
 });
 
 // Handle connection status
 window.addEventListener('online', () => {
-  console.log('Conexão restabelecida');
+  // Connection restored - could trigger UI notification here
 });
 
 window.addEventListener('offline', () => {
-  console.log('Conexão perdida. Trabalhando offline.');
+  // Connection lost - could trigger UI notification here
 });
 
 // Performance monitoring
@@ -22,7 +22,7 @@ if ('performance' in window) {
   window.addEventListener('load', () => {
     setTimeout(() => {
       const perfData = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-      console.log('Page load time:', perfData.loadEventEnd - perfData.loadEventStart, 'ms');
+      // Performance data available for monitoring tools
     }, 0);
   });
 }

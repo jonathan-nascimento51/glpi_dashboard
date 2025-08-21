@@ -78,7 +78,7 @@ class WebVitalsMonitor {
     onINP(this.handleMetric.bind(this));
 
     if (this.config.enableConsoleLogging) {
-      console.log('🔍 Web Vitals Monitor inicializado');
+      // Web Vitals Monitor inicializado
     }
   }
 
@@ -171,8 +171,7 @@ class WebVitalsMonitor {
       // Notificar callbacks
       this.alertCallbacks.forEach(callback => callback(alert));
 
-      // Log do alerta
-      console.warn(`🚨 Web Vitals Alert [${severity.toUpperCase()}]:`, alert.message);
+      // Log do alerta removido para limpeza do código
     }
   }
 
@@ -210,7 +209,7 @@ class WebVitalsMonitor {
         }),
       });
     } catch (error) {
-      console.error('Erro ao enviar métrica para backend:', error);
+      // Erro ao enviar métrica para backend
     }
   }
 
@@ -221,11 +220,7 @@ class WebVitalsMonitor {
     const unit = metric.name === 'CLS' ? '' : 'ms';
     const emoji = this.getMetricEmoji(metric.rating);
 
-    console.log(`${emoji} ${metric.name}: ${metric.value}${unit} (${metric.rating})`, {
-      id: metric.id,
-      navigationType: metric.navigationType,
-      timestamp: new Date(metric.timestamp).toISOString(),
-    });
+    // Log formatado da métrica removido para limpeza do código
   }
 
   /**
@@ -329,7 +324,7 @@ class WebVitalsMonitor {
     this.config = { ...this.config, ...newConfig };
 
     if (this.config.enableConsoleLogging) {
-      console.log('🔧 Web Vitals Monitor configuração atualizada:', this.config);
+      // Web Vitals Monitor configuração atualizada
     }
   }
 
@@ -341,7 +336,7 @@ class WebVitalsMonitor {
     this.alerts = [];
 
     if (this.config.enableConsoleLogging) {
-      console.log('🧹 Web Vitals Monitor limpo');
+      // Web Vitals Monitor limpo
     }
   }
 

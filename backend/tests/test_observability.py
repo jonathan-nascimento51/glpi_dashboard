@@ -6,10 +6,10 @@ from unittest.mock import MagicMock, Mock, patch
 import pytest
 from flask import Flask
 
-from backend.utils.alerting_system import AlertManager, AlertRule, AlertSeverity, MetricCollector
-from backend.utils.observability_middleware import ObservabilityMiddleware, setup_observability
-from backend.utils.prometheus_metrics import PrometheusMetrics
-from backend.utils.structured_logging import JSONFormatter, StructuredLogger, api_logger, glpi_logger
+from utils.alerting_system import AlertManager, AlertRule, AlertSeverity, MetricCollector
+from utils.observability_middleware import ObservabilityMiddleware, setup_observability
+from utils.prometheus_metrics import PrometheusMetrics
+from utils.structured_logging import JSONFormatter, StructuredLogger, api_logger, glpi_logger
 
 
 class TestPrometheusMetrics:

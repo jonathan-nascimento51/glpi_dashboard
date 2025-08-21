@@ -160,7 +160,7 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
                     className='text-xs text-red-600 flex items-start space-x-1'
                   >
                     <AlertTriangle className='w-3 h-3 mt-0.5 flex-shrink-0' />
-                    <span>{error}</span>
+                    <span>{typeof error === 'string' ? error : error?.message || 'Erro desconhecido'}</span>
                   </div>
                 ))}
                 {report.metrics.warnings.map((warning, index) => (
@@ -169,7 +169,7 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
                     className='text-xs text-yellow-600 flex items-start space-x-1'
                   >
                     <Info className='w-3 h-3 mt-0.5 flex-shrink-0' />
-                    <span>{warning}</span>
+                    <span>{typeof warning === 'string' ? warning : warning?.message || 'Aviso desconhecido'}</span>
                   </div>
                 ))}
               </div>
@@ -194,7 +194,7 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
                     className='text-xs text-red-600 flex items-start space-x-1'
                   >
                     <AlertTriangle className='w-3 h-3 mt-0.5 flex-shrink-0' />
-                    <span>{error}</span>
+                    <span>{typeof error === 'string' ? error : error?.message || 'Erro desconhecido'}</span>
                   </div>
                 ))}
                 {report.systemStatus.warnings.map((warning, index) => (
@@ -203,7 +203,7 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
                     className='text-xs text-yellow-600 flex items-start space-x-1'
                   >
                     <Info className='w-3 h-3 mt-0.5 flex-shrink-0' />
-                    <span>{warning}</span>
+                    <span>{typeof warning === 'string' ? warning : warning?.message || 'Aviso desconhecido'}</span>
                   </div>
                 ))}
               </div>
@@ -231,7 +231,7 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
                     className='text-xs text-red-600 flex items-start space-x-1'
                   >
                     <AlertTriangle className='w-3 h-3 mt-0.5 flex-shrink-0' />
-                    <span>{error}</span>
+                    <span>{typeof error === 'string' ? error : error?.message || 'Erro desconhecido'}</span>
                   </div>
                 ))}
                 {report.technicianRanking.warnings.map((warning, index) => (
@@ -240,7 +240,7 @@ const DataIntegrityMonitor: React.FC<DataIntegrityMonitorProps> = ({
                     className='text-xs text-yellow-600 flex items-start space-x-1'
                   >
                     <Info className='w-3 h-3 mt-0.5 flex-shrink-0' />
-                    <span>{warning}</span>
+                    <span>{typeof warning === 'string' ? warning : warning?.message || 'Aviso desconhecido'}</span>
                   </div>
                 ))}
               </div>

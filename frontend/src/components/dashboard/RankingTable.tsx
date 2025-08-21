@@ -154,7 +154,7 @@ const TechnicianCard = React.memo<{
       variants={cardVariants}
       whileHover='hover'
       className={cn(
-        'flex-shrink-0 w-48 flex flex-col p-4 rounded-lg border transition-all duration-200',
+        'flex-shrink-0 w-44 h-36 flex flex-col p-3 rounded-lg border transition-all duration-200',
         'cursor-pointer relative group hover:shadow-md',
         levelStyle.bgColor,
         levelStyle.borderColor,
@@ -165,7 +165,7 @@ const TechnicianCard = React.memo<{
       )}
     >
       {/* Header - Posição e Nível */}
-      <div className='flex items-center justify-between mb-3'>
+      <div className='flex items-center justify-between mb-2'>
         {/* Indicador de posição */}
         <div
           className={cn(
@@ -202,7 +202,7 @@ const TechnicianCard = React.memo<{
       </div>
 
       {/* Nome do técnico */}
-      <div className='text-center mb-3'>
+      <div className='text-center mb-2'>
         <div className='font-medium text-gray-900 text-sm leading-tight'>{formattedName}</div>
       </div>
 
@@ -211,7 +211,7 @@ const TechnicianCard = React.memo<{
         <div className={cn('text-2xl font-bold mb-1', levelStyle.textColor)}>
           {formatNumber(technician.total)}
         </div>
-        <div className='text-xs text-gray-500 mb-2'>chamados</div>
+        <div className='text-xs text-gray-500 mb-1'>chamados</div>
 
         {/* Indicador de performance */}
         <div className='flex justify-center space-x-1'>
@@ -292,7 +292,7 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
         className
       )}
     >
-      <CardHeader className='px-5 pt-2 pb-1 flex-shrink-0'>
+      <CardHeader className='px-4 pt-3 pb-2 flex-shrink-0'>
         <div className='flex items-center justify-between'>
           <div className='flex flex-col gap-2'>
             <CardTitle className='figma-heading-large flex items-center gap-2'>
@@ -341,7 +341,7 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
         </div>
       </CardHeader>
 
-      <CardContent className='px-5 pb-4 pt-0 flex-1 flex flex-col'>
+      <CardContent className='px-4 pb-4 pt-1 flex-1 flex flex-col'>
         <motion.div
           variants={containerVariants}
           initial='hidden'
@@ -350,7 +350,7 @@ export const RankingTable = React.memo<RankingTableProps>(function RankingTable(
         >
           <div
             ref={scrollContainerRef}
-            className='flex w-full flex-1 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent px-2 space-x-3'
+            className='flex w-full flex-1 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent px-1 space-x-2'
           >
             {topTechnicians.map((technician, index) => (
               <TechnicianCard

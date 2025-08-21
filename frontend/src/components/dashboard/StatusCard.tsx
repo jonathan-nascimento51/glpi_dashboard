@@ -3,7 +3,7 @@ import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { cn, formatNumber, getStatusIcon, getTrendIcon, getTrendColor } from '@/lib/utils';
+import { cn, formatNumber, getStatusIcon, getTrendIcon, getTrendColor, getStatusBadgeVariant } from '@/lib/utils';
 import { type LucideIcon, Info, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { SimpleTooltip } from '@/components/ui/SimpleTooltip';
 
@@ -269,10 +269,8 @@ export const StatusCard = memo<StatusCardProps>(function StatusCard({
             {status && (
               <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
                 <Badge
-                  className={cn(
-                    'capitalize text-xs font-semibold px-3 py-1 border-0 shadow-lg bg-gradient-to-r text-white',
-                    statusGradient
-                  )}
+                  variant={getStatusBadgeVariant(status)}
+                  className='capitalize text-xs font-semibold px-3 py-1 border shadow-sm'
                 >
                   {status}
                 </Badge>

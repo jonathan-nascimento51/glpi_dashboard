@@ -12,7 +12,7 @@ from datetime import datetime
 from functools import wraps
 from typing import Any, Dict, Optional, Tuple
 
-from flask import g, jsonify, request
+from flask import Blueprint, g, jsonify, request
 from werkzeug.exceptions import BadRequest
 
 from ...infrastructure.external.glpi.metrics_adapter import GLPIConfig
@@ -86,10 +86,10 @@ class RefactoringController:
             end_date = None
 
             if start_date_str:
-                start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+                start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
 
             if end_date_str:
-                end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+                end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
 
             # Converter status
             status = None
@@ -128,6 +128,9 @@ class RefactoringController:
                 technician_id=technician_id_int,
                 category_id=category_id_int,
                 priority=priority_int,
+                level=None,
+                limit=None,
+                offset=0,
             )
 
         except Exception as e:
@@ -158,7 +161,11 @@ class RefactoringController:
 
         if response.success:
             # Converter DTO para dicionário
-            if hasattr(response.data, "dict"):
+            if response.data is None:
+                data = None
+            elif hasattr(response.data, "model_dump"):
+                data = response.data.model_dump()
+            elif hasattr(response.data, "dict"):
                 data = response.data.dict()
             elif hasattr(response.data, "__dict__"):
                 data = response.data.__dict__
@@ -169,7 +176,7 @@ class RefactoringController:
                 "success": True,
                 "data": data,
                 "timestamp": response.timestamp.isoformat() if response.timestamp else None,
-                "execution_time": response.execution_time,
+                "execution_time_ms": response.execution_time_ms,
             }
 
             return flask_response, 200
@@ -177,7 +184,7 @@ class RefactoringController:
         else:
             flask_response = {
                 "success": False,
-                "error": response.error,
+                "errors": response.errors,
                 "timestamp": response.timestamp.isoformat() if response.timestamp else None,
             }
 
@@ -303,10 +310,8 @@ def create_refactoring_controller(
 
 
 # Exemplo de integração com Flask Blueprint
-def create_refactoring_blueprint(controller: RefactoringController, blueprint_name: str = "refactoring_api") -> "Blueprint":
+def create_refactoring_blueprint(controller: RefactoringController, blueprint_name: str = "refactoring_api") -> Blueprint:
     """Cria Blueprint Flask com rotas de refatoração."""
-
-    from flask import Blueprint
 
     bp = Blueprint(blueprint_name, __name__)
 

@@ -1,36 +1,19 @@
-import { useState, useEffect, Profiler, Suspense, ProfilerOnRenderCallback } from 'react';
-import { Header } from './components/Header';
-import { NotificationSystem } from './components/NotificationSystem';
-import CacheNotification from './components/CacheNotification';
-import { ModernDashboard } from './components/dashboard/ModernDashboard';
-import {
-  LoadingSpinner,
-  SkeletonMetricsGrid,
-  SkeletonLevelsSection,
-  ErrorState,
-} from './components/LoadingSpinner';
-import { MetricsValidator } from './utils/metricsValidator';
-import { visualValidator } from './utils/visualValidator';
-import { dataIntegrityMonitor } from './utils/dataIntegrityMonitor';
-import { preDeliveryValidator } from './utils/preDeliveryValidator';
-import { workflowOptimizer } from './utils/workflowOptimizer';
-import { realTimeMonitor } from './utils/realTimeMonitor';
-
-// Componentes lazy centralizados
-import {
-  LazyDataIntegrityMonitor,
-  LazyPerformanceDashboard,
-  DashboardSkeleton,
-} from './components/LazyComponents';
-
+import { useEffect, Profiler, ProfilerOnRenderCallback } from 'react';
+import { NotificationProvider } from './contexts/NotificationContext';
+import { DashboardLayout } from './components/layout/DashboardLayout';
+import { OverlayManager } from './components/layout/OverlayManager';
+import { LoadingSpinner, SkeletonMetricsGrid, SkeletonLevelsSection, ErrorState } from './components/LoadingSpinner';
 import { useDashboard } from './hooks/useDashboard';
-
+import { useOverlayManager } from './hooks/useOverlayManager';
 import { useFilterPerformance } from './hooks/usePerformanceMonitoring';
 import { useCacheNotifications } from './hooks/useCacheNotifications';
 import { usePerformanceProfiler } from './utils/performanceMonitor';
 import { performanceMonitor } from './utils/performanceMonitor';
+import { alertIntegration } from './utils/alertIntegration';
+import { preDeliveryValidator } from './utils/preDeliveryValidator';
+import { workflowOptimizer } from './utils/workflowOptimizer';
+import { realTimeMonitor } from './utils/realTimeMonitor';
 import { TicketStatus, Theme } from './types';
-// import { clearAllCaches } from './services/api'; // Não utilizado
 
 function App() {
   const {
@@ -49,7 +32,6 @@ function App() {
     filterType,
     availableFilterTypes,
     loadData,
-    // forceRefresh, // Não utilizado
     updateFilters,
     updateFilterType,
     search,
@@ -57,10 +39,25 @@ function App() {
     removeNotification,
     changeTheme,
     updateDateRange,
+    clearFilterCache,
+    getCacheStats,
+    getPerformanceMetrics,
+    isFilterInProgress,
   } = useDashboard();
 
-  const [showIntegrityMonitor, setShowIntegrityMonitor] = useState(true);
-  const [showPerformanceDashboard, setShowPerformanceDashboard] = useState(false);
+  const {
+    overlayStates,
+    toggleIntegrityMonitor,
+    openPerformanceDashboard,
+    closePerformanceDashboard,
+    toggleChartExample,
+    toggleCacheStats,
+    togglePerformanceMonitor,
+    toggleAdvancedSettings,
+    toggleAlertCenter,
+    openAlertCenter,
+    closeAlertCenter,
+  } = useOverlayManager();
 
   // Performance monitoring hooks
   const { onRenderCallback } = usePerformanceProfiler();
@@ -85,126 +82,30 @@ function App() {
     );
   };
 
-  // Validação automática de métricas (DESABILITADA TEMPORARIAMENTE)
-  // useEffect(() => {
-  //   if (metrics) {
-  //     const frontendValidation = MetricsValidator.validateFrontendDataProcessing({
-  //       novos: metrics.novos,
-  //       pendentes: metrics.pendentes,
-  //       progresso: metrics.progresso,
-  //       resolvidos: metrics.resolvidos,
-  //     });
-  //
-  //     if (!frontendValidation.isValid) {
-  //       console.error('❌ VALIDAÇÃO FALHOU - Problemas encontrados:', frontendValidation.errors);
-  //     }
-  //   }
-  // }, [metrics]);
-
-  // Validação visual automática após renderização (DESABILITADA TEMPORARIAMENTE)
+  // Inicialização do sistema de alertas integrado
   useEffect(() => {
-    if (metrics) {
-      // Aguardar renderização completa antes de validar visualmente
-      const timer = setTimeout(async () => {
-        try {
-          console.log('🎯 App.tsx - Validação visual desabilitada temporariamente');
-          // const visualResult = await visualValidator.validateDashboardRendering();
-
-          // if (visualResult.isValid) {
-          //   console.log('✅ VALIDAÇÃO VISUAL PASSOU - Dashboard renderizado corretamente');
-          // } else {
-          //   console.error('❌ VALIDAÇÃO VISUAL FALHOU:', visualResult.errors);
-          //   // Em desenvolvimento, mostrar alerta para problemas críticos
-          //   if (process.env.NODE_ENV === 'development' && visualResult.errors.length > 0) {
-          //     console.warn('🚨 ATENÇÃO: Problemas de renderização detectados!');
-          //   }
-          // }
-        } catch (error) {
-          console.error('💥 Erro durante validação visual:', error);
-        }
-      }, 1500); // Aguardar 1.5s para renderização completa
-
-      return () => clearTimeout(timer);
-    }
-  }, [metrics]);
-
-  // Monitoramento de integridade de dados em tempo real (DESABILITADO TEMPORARIAMENTE)
-  // useEffect(() => {
-  //   // Configurar alertas para problemas críticos
-  //   dataIntegrityMonitor.onAlert(report => {
-  //     if (report.overallStatus === 'critical') {
-  //       console.error('🚨 ALERTA CRÍTICO: Problemas graves de integridade detectados!');
-  //       console.error('📋 Relatório:', report);
-
-  //       if (process.env.NODE_ENV === 'development') {
-  //         const criticalIssues = report.checks
-  //           .filter(c => !c.isValid && c.severity === 'critical')
-  //           .map(c => c.name)
-  //           .join(', ');
-  //         alert(
-  //           `🚨 PROBLEMAS CRÍTICOS DETECTADOS:\n${criticalIssues}\n\nVerifique o console para detalhes.`
-  //         );
-  //       }
-  //     } else if (report.overallStatus === 'warning') {
-  //       console.warn('⚠️ Avisos de integridade detectados:', report.summary);
-  //     }
-  //   });
-
-  //   // Iniciar monitoramento (já configurado para auto-start em desenvolvimento)
-  //   // Em produção, pode ser iniciado manualmente se necessário
-  //   // DESABILITADO TEMPORARIAMENTE
-  //   // if (process.env.NODE_ENV === 'production') {
-  //   //   dataIntegrityMonitor.startMonitoring();
-  //   // }
-
-  //   // Cleanup ao desmontar
-  //   return () => {
-  //     dataIntegrityMonitor.stopMonitoring();
-  //   };
-  // }, []);
+    // Inicializar integração de alertas
+    alertIntegration.initialize();
+    
+    return () => {
+      // Limpar recursos ao desmontar
+      alertIntegration.destroy();
+    };
+  }, []);
 
   // Configuração do validador pré-entrega
   useEffect(() => {
     // Disponibilizar validador globalmente para uso no console
     (window as any).preDeliveryValidator = preDeliveryValidator;
-
-    // Configurar validador para ambiente de desenvolvimento
-    if (process.env.NODE_ENV === 'development') {
-      preDeliveryValidator.configure({
-        requireFullPipeline: false, // Pipeline mais rápido em dev
-        allowConditionalDelivery: true,
-        minimumScore: 75, // Score mais baixo em dev
-        criticalIssueThreshold: 0,
-      });
-
-      console.log('🔧 Validador Pré-Entrega configurado para desenvolvimento');
-      console.log('Comandos disponíveis:');
-      console.log('  - validateForDelivery() - Validação completa');
-      console.log('  - quickValidation() - Validação rápida');
-      console.log('  - hasValidApproval() - Verificar aprovação válida');
-      console.log('  - getLastApproval() - Última aprovação');
-    } else {
-      // Configuração mais rigorosa para produção
-      preDeliveryValidator.configure({
-        requireFullPipeline: true,
-        allowConditionalDelivery: false,
-        minimumScore: 90,
-        criticalIssueThreshold: 0,
-      });
-    }
-  }, []);
-
-  // Configuração do monitor em tempo real
-  useEffect(() => {
-    // Disponibilizar ferramentas globalmente
     (window as any).workflowOptimizer = workflowOptimizer;
     (window as any).realTimeMonitor = realTimeMonitor;
 
-    // Configurar monitor para ambiente
+    // Configurar monitor em tempo real baseado no ambiente
     if (process.env.NODE_ENV === 'development') {
+      // Configuração mais rigorosa para desenvolvimento
       realTimeMonitor.configure({
         enabled: true,
-        checkInterval: 15000, // 15 segundos em dev
+        checkInterval: 10000, // 10 segundos em dev
         alertThresholds: {
           consecutiveFailures: 2,
           responseTimeMs: 3000,
@@ -212,7 +113,7 @@ function App() {
         },
         autoRecovery: {
           enabled: true,
-          maxAttempts: 2,
+          maxAttempts: 5,
           backoffMultiplier: 1.5,
         },
         notifications: {
@@ -228,18 +129,8 @@ function App() {
         },
       });
 
-      console.log('🔧 Monitor em Tempo Real configurado para desenvolvimento');
-      console.log('Comandos disponíveis:');
-      console.log('  - startMonitoring() - Iniciar monitoramento');
-      console.log('  - stopMonitoring() - Parar monitoramento');
-      console.log('  - getSystemStatus() - Status do sistema');
-      console.log('  - executeOptimizedWorkflow() - Executar workflow otimizado');
-      console.log('  - quickWorkflow() - Workflow rápido');
-
-      // Iniciar monitoramento automaticamente em dev (DESABILITADO TEMPORARIAMENTE)
-      // setTimeout(() => {
-      //   realTimeMonitor.startMonitoring();
-      // }, 2000); // Aguardar 2 segundos para o app carregar
+      // Real-time monitor configured for development
+      // Available commands: startMonitoring(), stopMonitoring(), getSystemStatus(), executeOptimizedWorkflow(), quickWorkflow()
     } else {
       // Configuração mais conservadora para produção
       realTimeMonitor.configure({
@@ -267,9 +158,6 @@ function App() {
           performance: true,
         },
       });
-
-      // Iniciar monitoramento em produção (DESABILITADO TEMPORARIAMENTE)
-      // realTimeMonitor.startMonitoring();
     }
 
     // Cleanup ao desmontar
@@ -367,156 +255,73 @@ function App() {
   }
 
   return (
-    <div className={`h-screen overflow-hidden transition-all duration-300 ${theme}`}>
-      {/* Header */}
-      <Header
-        currentTime={new Date().toLocaleTimeString('pt-BR')}
-        systemActive={true}
-        searchQuery={searchQuery}
-        searchResults={[]}
-        dateRange={
-          filters?.dateRange || { startDate: '', endDate: '', label: 'Selecionar período' }
-        }
-        filterType={filterType}
-        availableFilterTypes={availableFilterTypes}
-        onSearch={search}
-        theme={theme as Theme}
-        onThemeChange={(newTheme: Theme) => changeTheme(newTheme)}
-        onNotification={(title, message, type) =>
-          addNotification({
-            id: Date.now().toString(),
-            title,
-            message,
-            type,
-            timestamp: new Date(),
-            duration: 3000,
-          })
-        }
-        onDateRangeChange={updateDateRange}
-        onFilterTypeChange={updateFilterType}
-        onPerformanceDashboard={() => setShowPerformanceDashboard(true)}
-      />
-
-      {/* Dashboard Principal */}
-      <div className='flex-1 overflow-hidden'>
-        {levelMetrics ? (
-          <Profiler id='ModernDashboard' onRender={profilerCallback}>
-            {(() => {
-              const dashboardMetrics = {
-                novos: metrics?.novos || 0,
-                pendentes: metrics?.pendentes || 0,
-                progresso: metrics?.progresso || 0,
-                resolvidos: metrics?.resolvidos || 0,
-                tendencias: metrics?.tendencias || {},
-              };
-              console.log(
-                '🎯 App.tsx - Métricas sendo passadas para ModernDashboard:',
-                dashboardMetrics
-              );
-              console.log('🔍 App.tsx - Objeto metrics completo:', metrics);
-              return (
-                <ModernDashboard
-                  metrics={dashboardMetrics}
-                  levelMetrics={levelMetrics}
-                  systemStatus={systemStatus}
-                  technicianRanking={technicianRanking}
-                  onFilterByStatus={handleFilterByStatus}
-                  isLoading={isLoading}
-                  filters={filters}
-                />
-              );
-            })()}
-          </Profiler>
-        ) : (
-          // Fallback para quando não há dados
-          <div className='h-full bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center'>
-            <div className='text-center py-12'>
-              <div className='w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center'>
-                <svg
-                  className='w-12 h-12 text-gray-400'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'
-                  />
-                </svg>
-              </div>
-              <h3 className='text-lg font-semibold text-gray-900 mb-2'>Nenhum dado disponível</h3>
-              <p className='text-gray-600 mb-4'>Não foi possível carregar os dados do dashboard.</p>
-              <button
-                onClick={() => loadData()}
-                className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
-              >
-                Tentar Novamente
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Loading overlay for refresh */}
-      {isLoading && levelMetrics && (
-        <div className='fixed top-20 right-6 z-50'>
-          <div className='bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-4'>
-            <LoadingSpinner size='sm' text='Atualizando...' />
-          </div>
-        </div>
-      )}
-
-      {/* Pending overlay for transitions */}
-      {isPending && (
-        <div className='fixed top-20 left-1/2 transform -translate-x-1/2 z-50'>
-          <div className='bg-blue-500/90 backdrop-blur-sm rounded-xl shadow-lg p-3 text-white'>
-            <div className='flex items-center space-x-2'>
-              <div className='animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent'></div>
-              <span className='text-sm font-medium'>Processando...</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Notification System */}
-      <NotificationSystem notifications={notifications} onRemoveNotification={removeNotification} />
-
-      {/* Data Integrity Monitor */}
-      <Suspense fallback={<DashboardSkeleton />}>
-        <LazyDataIntegrityMonitor
-          report={dataIntegrityReport}
-          isVisible={showIntegrityMonitor}
-          onToggleVisibility={() => setShowIntegrityMonitor(!showIntegrityMonitor)}
+    <NotificationProvider>
+      <Profiler id='App' onRender={profilerCallback}>
+        <DashboardLayout
+          searchQuery={searchQuery}
+          dateRange={filters?.dateRange || { startDate: '', endDate: '', label: 'Selecionar período' }}
+          filterType={filterType}
+          availableFilterTypes={availableFilterTypes}
+          theme={theme as Theme}
+          metrics={metrics}
+          levelMetrics={levelMetrics}
+          systemStatus={systemStatus}
+          technicianRanking={technicianRanking}
+          filters={filters}
+          isLoading={isLoading}
+          isPending={isPending}
+          showChartExample={overlayStates.showChartExample}
+          notifications={notifications}
+          onSearch={search}
+          onThemeChange={(newTheme: Theme) => changeTheme(newTheme)}
+          onNotification={(title, message, type) =>
+            addNotification({
+              id: Date.now().toString(),
+              title,
+              message,
+              type,
+              timestamp: new Date(),
+              duration: 3000,
+            })
+          }
+          onDateRangeChange={updateDateRange}
+          onFilterTypeChange={updateFilterType}
+          onPerformanceDashboard={openPerformanceDashboard}
+          onChartExample={toggleChartExample}
+          onFilterByStatus={handleFilterByStatus}
+          onRemoveNotification={removeNotification}
+          onLoadData={loadData}
         />
-      </Suspense>
 
-      {/* Performance Dashboard */}
-      {showPerformanceDashboard && (
-        <Suspense fallback={<DashboardSkeleton />}>
-          <LazyPerformanceDashboard
-            isVisible={showPerformanceDashboard}
-            onClose={() => setShowPerformanceDashboard(false)}
-          />
-        </Suspense>
-      )}
-
-      {/* Cache Notifications */}
-      {cacheNotifications.map((notification, index) => (
-        <div
-          key={notification.id}
-          style={{ top: `${4 + index * 80}px` }}
-          className='fixed right-4 z-50'
-        >
-          <CacheNotification
-            message={notification.message}
-            isVisible={true}
-            onClose={() => removeCacheNotification(notification.id)}
-          />
-        </div>
-      ))}
-    </div>
+        <OverlayManager
+          dataIntegrityReport={dataIntegrityReport}
+          showIntegrityMonitor={overlayStates.showIntegrityMonitor}
+          onToggleIntegrityMonitor={toggleIntegrityMonitor}
+          showPerformanceDashboard={overlayStates.showPerformanceDashboard}
+          onClosePerformanceDashboard={closePerformanceDashboard}
+          cacheNotifications={cacheNotifications}
+          showCacheStats={overlayStates.showCacheStats}
+          onCloseCacheStats={() => toggleCacheStats()}
+          onRemoveCacheNotification={removeCacheNotification}
+          clearFilterCache={clearFilterCache}
+          getCacheStats={getCacheStats}
+          showPerformanceMonitor={overlayStates.showPerformanceMonitor}
+          onClosePerformanceMonitor={() => togglePerformanceMonitor()}
+          getPerformanceMetrics={getPerformanceMetrics}
+          isFilterInProgress={isFilterInProgress}
+          showAdvancedSettings={overlayStates.showAdvancedSettings}
+          onCloseAdvancedSettings={() => toggleAdvancedSettings()}
+          showAlertCenter={overlayStates.showAlertCenter}
+          onCloseAlertCenter={closeAlertCenter}
+          onOpenAlertCenter={openAlertCenter}
+          isDevelopment={process.env.NODE_ENV === 'development'}
+          onToggleCacheStats={toggleCacheStats}
+          onTogglePerformanceMonitor={togglePerformanceMonitor}
+          onToggleAdvancedSettings={toggleAdvancedSettings}
+          onToggleAlertCenter={toggleAlertCenter}
+        />
+      </Profiler>
+    </NotificationProvider>
   );
 }
 

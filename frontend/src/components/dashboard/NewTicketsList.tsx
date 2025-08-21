@@ -258,7 +258,7 @@ export const NewTicketsList = React.memo<NewTicketsListProps>(({ className, limi
           <div className='text-center py-8 flex-1 flex items-center justify-center'>
             <div>
               <AlertCircle className='w-12 h-12 mx-auto mb-4 text-red-400' />
-              <div className='text-sm text-red-600 font-medium'>{error}</div>
+              <div className='text-sm text-red-600 font-medium'>{typeof error === 'string' ? error : error?.message || 'Erro desconhecido'}</div>
               <Button variant='outline' size='sm' onClick={fetchTickets} className='mt-3'>
                 Tentar novamente
               </Button>

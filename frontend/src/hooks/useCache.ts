@@ -78,7 +78,7 @@ export const useCache = () => {
     try {
       clearAllCaches();
       updateStats();
-      console.log('🗑️ Todos os caches foram limpos');
+      // Todos os caches foram limpos
     } catch (error) {
       console.error('Erro ao limpar caches:', error);
     } finally {
@@ -105,7 +105,7 @@ export const useCache = () => {
             break;
         }
         updateStats();
-        console.log(`🗑️ Cache ${cacheType} foi limpo`);
+        // Cache foi limpo
       } catch (error) {
         console.error(`Erro ao limpar cache ${cacheType}:`, error);
       }
@@ -132,7 +132,7 @@ export const useCache = () => {
             break;
         }
         updateStats();
-        console.log(`🔄 Cache ${cacheType} foi atualizado`);
+        // Cache foi atualizado
       } catch (error) {
         console.error(`Erro ao atualizar cache ${cacheType}:`, error);
       }

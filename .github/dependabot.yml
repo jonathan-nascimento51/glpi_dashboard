@@ -1,5 +1,6 @@
-# Dependabot configuration for GLPI Dashboard
-# Automatically creates PRs to update dependencies
+# Enhanced Dependabot Configuration for GLPI Dashboard
+# Automatically creates PRs to update dependencies with security focus
+# Includes vulnerability alerts and automated security updates
 
 version: 2
 updates:
@@ -12,9 +13,9 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 5
     reviewers:
-      - "@your-username"  # Replace with actual GitHub username
+      - "jonathan-moletta"
     assignees:
-      - "@your-username"  # Replace with actual GitHub username
+      - "jonathan-moletta"
     commit-message:
       prefix: "deps(backend)"
       include: "scope"
@@ -22,15 +23,28 @@ updates:
       - "dependencies"
       - "backend"
       - "python"
+      - "security"
     allow:
-      - dependency-type: "direct"
-      - dependency-type: "indirect"
+      - dependency-type: "all"
+    # Group minor and patch updates
+    groups:
+      python-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      python-security:
+        patterns:
+          - "*"
+        dependency-type: "security"
     ignore:
-      # Ignore major version updates for critical dependencies
-      - dependency-name: "flask"
+      # Ignore major version updates for stability
+      - dependency-name: "*"
         update-types: ["version-update:semver-major"]
-      - dependency-name: "redis"
-        update-types: ["version-update:semver-major"]
+    # Enable vulnerability alerts
+    vulnerability-alerts:
+      enabled: true
 
   # Python dependencies (root)
   - package-ecosystem: "pip"
@@ -41,15 +55,30 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 3
     reviewers:
-      - "@your-username"  # Replace with actual GitHub username
+      - "jonathan-moletta"
     assignees:
-      - "@your-username"  # Replace with actual GitHub username
+      - "jonathan-moletta"
     commit-message:
       prefix: "deps(root)"
       include: "scope"
     labels:
       - "dependencies"
       - "python"
+      - "security"
+    allow:
+      - dependency-type: "all"
+    groups:
+      root-python-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    vulnerability-alerts:
+      enabled: true
 
   # NPM dependencies (frontend)
   - package-ecosystem: "npm"
@@ -60,9 +89,9 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 5
     reviewers:
-      - "@your-username"  # Replace with actual GitHub username
+      - "jonathan-moletta"
     assignees:
-      - "@your-username"  # Replace with actual GitHub username
+      - "jonathan-moletta"
     commit-message:
       prefix: "deps(frontend)"
       include: "scope"
@@ -70,19 +99,38 @@ updates:
       - "dependencies"
       - "frontend"
       - "javascript"
+      - "security"
     allow:
-      - dependency-type: "direct"
-      - dependency-type: "indirect"
+      - dependency-type: "all"
+    # Group updates for better management
+    groups:
+      react-ecosystem:
+        patterns:
+          - "react*"
+          - "@types/react*"
+        update-types:
+          - "minor"
+          - "patch"
+      build-tools:
+        patterns:
+          - "vite*"
+          - "@vitejs/*"
+          - "typescript"
+          - "eslint*"
+          - "prettier"
+        update-types:
+          - "minor"
+          - "patch"
+      security-updates:
+        patterns:
+          - "*"
+        dependency-type: "security"
     ignore:
-      # Ignore major version updates for critical dependencies
-      - dependency-name: "react"
+      # Ignore major version updates for stability
+      - dependency-name: "*"
         update-types: ["version-update:semver-major"]
-      - dependency-name: "react-dom"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "typescript"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "vite"
-        update-types: ["version-update:semver-major"]
+    vulnerability-alerts:
+      enabled: true
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
@@ -93,9 +141,9 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 3
     reviewers:
-      - "@your-username"  # Replace with actual GitHub username
+      - "jonathan-moletta"
     assignees:
-      - "@your-username"  # Replace with actual GitHub username
+      - "jonathan-moletta"
     commit-message:
       prefix: "ci"
       include: "scope"
@@ -103,6 +151,18 @@ updates:
       - "dependencies"
       - "github-actions"
       - "ci"
+      - "security"
+    allow:
+      - dependency-type: "all"
+    groups:
+      github-actions-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    vulnerability-alerts:
+      enabled: true
 
   # Docker (if using Docker in the future)
   - package-ecosystem: "docker"
@@ -113,12 +173,24 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 2
     reviewers:
-      - "@your-username"  # Replace with actual GitHub username
+      - "jonathan-moletta"
     assignees:
-      - "@your-username"  # Replace with actual GitHub username
+      - "jonathan-moletta"
     commit-message:
       prefix: "deps(docker)"
       include: "scope"
     labels:
       - "dependencies"
       - "docker"
+      - "security"
+    allow:
+      - dependency-type: "all"
+    groups:
+      docker-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    vulnerability-alerts:
+      enabled: true

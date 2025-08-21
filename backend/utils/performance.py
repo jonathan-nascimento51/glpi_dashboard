@@ -83,6 +83,84 @@ class PerformanceMonitor:
             logger.error(f"Erro ao calcular taxa de cache hit: {e}")
             return 0.0
 
+    def get_total_requests(self) -> int:
+        """Retorna total de requisições"""
+        return self.total_requests
+    
+    def get_cache_hits(self) -> int:
+        """Retorna total de cache hits"""
+        return self.cache_hits
+    
+    def get_cache_misses(self) -> int:
+        """Retorna total de cache misses"""
+        return self.cache_misses
+    
+    def get_cache_size(self) -> int:
+        """Retorna tamanho do cache (número de entradas)"""
+        # Implementação básica - pode ser expandida
+        return len(self.request_times)
+    
+    def get_last_operation_time(self) -> float:
+        """Retorna tempo da última operação em ms"""
+        if not self.request_times:
+            return 0.0
+        return self.request_times[-1] * 1000  # Converte para ms
+    
+    def get_recent_history(self, count: int = 10) -> List[float]:
+        """Retorna histórico recente de tempos de resposta em ms"""
+        if not self.request_times:
+            return []
+        recent = self.request_times[-count:] if len(self.request_times) >= count else self.request_times
+        return [t * 1000 for t in recent]  # Converte para ms
+    
+    def get_memory_usage(self) -> float:
+        """Retorna uso de memória do processo atual"""
+        try:
+            import psutil
+            process = psutil.Process()
+            return process.memory_percent()
+        except ImportError:
+            logger.warning("psutil não disponível para monitoramento de memória")
+            return 0.0
+        except Exception as e:
+            logger.error(f"Erro ao obter uso de memória: {e}")
+            return 0.0
+    
+    def get_cpu_usage(self) -> float:
+        """Retorna uso de CPU do processo atual"""
+        try:
+            import psutil
+            process = psutil.Process()
+            return process.cpu_percent()
+        except ImportError:
+            logger.warning("psutil não disponível para monitoramento de CPU")
+            return 0.0
+        except Exception as e:
+            logger.error(f"Erro ao obter uso de CPU: {e}")
+            return 0.0
+    
+    def get_active_connections(self) -> int:
+        """Retorna número de conexões ativas"""
+        try:
+            import psutil
+            process = psutil.Process()
+            connections = process.connections()
+            return len([conn for conn in connections if conn.status == 'ESTABLISHED'])
+        except ImportError:
+            logger.warning("psutil não disponível para monitoramento de conexões")
+            return 0
+        except Exception as e:
+            logger.error(f"Erro ao obter conexões ativas: {e}")
+            return 0
+    
+    def clear_cache(self):
+        """Limpa dados de cache e métricas"""
+        self.request_times.clear()
+        self.cache_hits = 0
+        self.cache_misses = 0
+        # Não limpa total_requests para manter histórico
+        logger.info("Cache de performance limpo")
+
     def get_stats(self) -> Dict[str, Any]:
         """Retorna estatísticas completas"""
         return {

@@ -29,7 +29,7 @@ export function formatPercentage(value: number): string {
   }).format(value / 100);
 }
 
-// Cores baseadas no status
+// Cores baseadas no status (mantido para compatibilidade)
 export function getStatusColor(status: string): string {
   const colors = {
     new: 'text-blue-600 bg-blue-50 border-blue-200',
@@ -41,6 +41,37 @@ export function getStatusColor(status: string): string {
     maintenance: 'text-yellow-600 bg-yellow-50 border-yellow-200',
   };
   return colors[status as keyof typeof colors] || 'text-gray-600 bg-gray-50 border-gray-200';
+}
+
+// Mapear status para variantes de badge com contraste otimizado
+export function getStatusBadgeVariant(status: string): 'success' | 'warning' | 'error' | 'info' | 'pending' | 'progress' | 'resolved' | 'new' | 'default' {
+  const statusMap = {
+    // Status de tickets
+    'novos': 'new',
+    'new': 'new',
+    'progresso': 'progress',
+    'progress': 'progress',
+    'pendentes': 'pending',
+    'pending': 'pending',
+    'resolvidos': 'resolved',
+    'resolved': 'resolved',
+    // Status de sistema
+    'online': 'success',
+    'offline': 'error',
+    'maintenance': 'warning',
+    'manutencao': 'warning',
+    // Status gerais
+    'success': 'success',
+    'error': 'error',
+    'warning': 'warning',
+    'info': 'info',
+    // Outros
+    'aberto': 'info',
+    'fechado': 'resolved',
+    'atrasado': 'error',
+  } as const;
+  
+  return statusMap[status.toLowerCase() as keyof typeof statusMap] || 'default';
 }
 
 // Ícones baseados no status

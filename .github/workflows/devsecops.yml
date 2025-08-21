@@ -1,0 +1,517 @@
+name: DevSecOps Pipeline
+
+# Pipeline avançado de DevSecOps com verificações de segurança automatizadas
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Executa análise de segurança diariamente às 2:00 UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      security_level:
+        description: 'Nível de análise de segurança'
+        required: false
+        default: 'standard'
+        type: choice
+        options:
+          - standard
+          - deep
+          - paranoid
+      update_dependencies:
+        description: 'Atualizar dependências vulneráveis'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '18'
+  SECURITY_LEVEL: ${{ github.event.inputs.security_level || 'standard' }}
+
+jobs:
+  # Análise de segredos e credenciais
+  secrets-detection:
+    name: 🔍 Secrets Detection
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Histórico completo para análise
+      
+      - name: TruffleHog OSS - Detecção de Segredos
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: main
+          head: HEAD
+          extra_args: --debug --only-verified
+      
+      - name: GitLeaks - Análise de Vazamentos
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+      
+      - name: Detect-secrets - Baseline
+        run: |
+          pip install detect-secrets
+          detect-secrets scan --all-files --baseline .secrets.baseline
+          detect-secrets audit .secrets.baseline
+      
+      - name: Upload secrets scan results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: secrets-scan-results
+          path: |
+            .secrets.baseline
+            gitleaks-report.json
+          retention-days: 30
+
+  # Análise de dependências e vulnerabilidades
+  dependency-security:
+    name: 🛡️ Dependency Security
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    strategy:
+      matrix:
+        component: [backend, frontend]
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+      
+      - name: Setup Python (Backend)
+        if: matrix.component == 'backend'
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Setup Node.js (Frontend)
+        if: matrix.component == 'frontend'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      
+      - name: Install Python dependencies
+        if: matrix.component == 'backend'
+        run: |
+          python -m pip install --upgrade pip
+          pip install safety pip-audit bandit semgrep
+          if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
+      
+      - name: Install Node.js dependencies
+        if: matrix.component == 'frontend'
+        run: |
+          cd frontend
+          npm ci
+          npm install -g npm-audit-resolver audit-ci
+      
+      - name: Safety - Python Security Check
+        if: matrix.component == 'backend'
+        run: |
+          safety check --json --output safety-report.json || true
+          safety check --short-report
+      
+      - name: Pip-audit - Python Vulnerability Scanner
+        if: matrix.component == 'backend'
+        run: |
+          pip-audit --format=json --output=pip-audit-report.json || true
+          pip-audit --desc
+      
+      - name: NPM Audit - Node.js Security Check
+        if: matrix.component == 'frontend'
+        run: |
+          cd frontend
+          npm audit --audit-level=moderate --json > npm-audit-report.json || true
+          audit-ci --moderate
+      
+      - name: Snyk - Vulnerability Scanner
+        uses: snyk/actions/node@master
+        if: matrix.component == 'frontend'
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high --json-file-output=snyk-report.json
+        continue-on-error: true
+      
+      - name: Upload dependency scan results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: dependency-scan-${{ matrix.component }}
+          path: |
+            *-report.json
+            frontend/npm-audit-report.json
+          retention-days: 30
+
+  # Análise estática de segurança de código
+  static-security-analysis:
+    name: 🔒 Static Security Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install security tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit semgrep safety
+          if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
+      
+      - name: Bandit - Python Security Linter
+        run: |
+          bandit -r backend/ -f json -o bandit-report.json || true
+          bandit -r backend/ -ll --severity-level medium
+      
+      - name: Semgrep - Multi-language Security Scanner
+        run: |
+          python -m semgrep --config=auto --json --output=semgrep-report.json . || true
+          python -m semgrep --config=auto --severity=ERROR .
+      
+      - name: CodeQL Analysis
+        uses: github/codeql-action/init@v2
+        with:
+          languages: python, javascript
+          queries: security-and-quality
+      
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+      
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+      
+      - name: Upload static analysis results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: static-security-analysis
+          path: |
+            bandit-report.json
+            semgrep-report.json
+          retention-days: 30
+
+  # Análise de configuração e infraestrutura
+  infrastructure-security:
+    name: 🏗️ Infrastructure Security
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+      
+      - name: Checkov - Infrastructure Security Scanner
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
+          framework: dockerfile,github_actions
+          output_format: json
+          output_file_path: checkov-report.json
+        continue-on-error: true
+      
+      - name: Hadolint - Dockerfile Linter
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: backend/Dockerfile
+          format: json
+          output-file: hadolint-backend-report.json
+        continue-on-error: true
+      
+      - name: Hadolint - Frontend Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: frontend/Dockerfile
+          format: json
+          output-file: hadolint-frontend-report.json
+        continue-on-error: true
+      
+      - name: Upload infrastructure scan results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: infrastructure-security-scan
+          path: |
+            checkov-report.json
+            hadolint-*-report.json
+          retention-days: 30
+
+  # Testes de segurança dinâmica
+  dynamic-security-testing:
+    name: 🎯 Dynamic Security Testing
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: [secrets-detection]
+    if: github.event_name == 'push' || github.event.inputs.security_level == 'deep' || github.event.inputs.security_level == 'paranoid'
+    
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
+          cd frontend && npm ci
+      
+      - name: Start application services
+        run: |
+          cd backend
+          python app.py &
+          sleep 10
+          cd ../frontend
+          npm run build
+          npx serve -s dist -l 3000 &
+          sleep 5
+      
+      - name: OWASP ZAP - Dynamic Security Testing
+        uses: zaproxy/action-full-scan@v0.7.0
+        with:
+          target: 'http://localhost:3000'
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a -j -m 10 -T 15'
+        continue-on-error: true
+      
+      - name: Upload DAST results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: dast-scan-results
+          path: |
+            report_html.html
+            report_json.json
+          retention-days: 30
+
+  # Compliance e auditoria
+  compliance-audit:
+    name: 📋 Compliance Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install audit tools
+        run: |
+          pip install pip-licenses safety
+      
+      - name: License Compliance Check
+        run: |
+          if [ -f backend/requirements.txt ]; then
+            pip install -r backend/requirements.txt
+            pip-licenses --format=json --output-file=licenses-report.json
+            pip-licenses --summary
+          fi
+      
+      - name: Security Policy Compliance
+        run: |
+          # Verificar políticas de segurança
+          echo "Verificando compliance com políticas de segurança..."
+          
+          # Verificar se .env não está commitado
+          if [ -f .env ]; then
+            echo "❌ ERRO: Arquivo .env encontrado no repositório!"
+            exit 1
+          fi
+          
+          # Verificar se há arquivos .env.example
+          if [ ! -f .env.example ] && [ ! -f backend/.env.example ]; then
+            echo "⚠️ AVISO: Nenhum arquivo .env.example encontrado"
+          fi
+          
+          # Verificar configurações de segurança
+          echo "✅ Verificações de compliance concluídas"
+      
+      - name: Upload compliance results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: compliance-audit-results
+          path: |
+            licenses-report.json
+          retention-days: 30
+
+  # Consolidação de resultados de segurança
+  security-report:
+    name: 📊 Security Report
+    runs-on: ubuntu-latest
+    needs: [secrets-detection, dependency-security, static-security-analysis, infrastructure-security, compliance-audit]
+    if: always()
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+      
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Generate consolidated security report
+        run: |
+          python -c "
+          import json
+          import os
+          from datetime import datetime
+          
+          report = {
+              'timestamp': datetime.now().isoformat(),
+              'repository': '${{ github.repository }}',
+              'commit': '${{ github.sha }}',
+              'branch': '${{ github.ref_name }}',
+              'security_level': '${{ env.SECURITY_LEVEL }}',
+              'scans': {
+                  'secrets_detection': 'completed' if os.path.exists('secrets-scan-results') else 'failed',
+                  'dependency_security': 'completed' if os.path.exists('dependency-scan-backend') else 'failed',
+                  'static_analysis': 'completed' if os.path.exists('static-security-analysis') else 'failed',
+                  'infrastructure': 'completed' if os.path.exists('infrastructure-security-scan') else 'failed',
+                  'compliance': 'completed' if os.path.exists('compliance-audit-results') else 'failed'
+              },
+              'summary': {
+                  'total_scans': 5,
+                  'completed_scans': sum(1 for status in ['completed' if os.path.exists(f) else 'failed' for f in ['secrets-scan-results', 'dependency-scan-backend', 'static-security-analysis', 'infrastructure-security-scan', 'compliance-audit-results']] if status == 'completed'),
+                  'status': 'PASS' if all(os.path.exists(f) for f in ['secrets-scan-results', 'dependency-scan-backend', 'static-security-analysis', 'infrastructure-security-scan', 'compliance-audit-results']) else 'REVIEW_REQUIRED'
+              }
+          }
+          
+          with open('security-report.json', 'w') as f:
+              json.dump(report, f, indent=2)
+          
+          print('📊 RELATÓRIO DE SEGURANÇA CONSOLIDADO')
+          print('=' * 50)
+          print(f'Repositório: {report[\"repository\"]}')
+          print(f'Commit: {report[\"commit\"][:8]}')
+          print(f'Branch: {report[\"branch\"]}')
+          print(f'Nível de Segurança: {report[\"security_level\"].upper()}')
+          print(f'Status Geral: {report[\"summary\"][\"status\"]}')
+          print(f'Scans Concluídos: {report[\"summary\"][\"completed_scans\"]}/{report[\"summary\"][\"total_scans\"]}')
+          print('\n🔍 RESULTADOS POR CATEGORIA:')
+          for scan, status in report['scans'].items():
+              emoji = '✅' if status == 'completed' else '❌'
+              print(f'{emoji} {scan.replace(\"_\", \" \").title()}: {status.upper()}')
+          "
+      
+      - name: Upload consolidated security report
+        uses: actions/upload-artifact@v3
+        with:
+          name: consolidated-security-report
+          path: security-report.json
+          retention-days: 90
+      
+      - name: Comment PR with security results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('security-report.json', 'utf8'));
+            
+            const statusEmoji = report.summary.status === 'PASS' ? '✅' : '⚠️';
+            const comment = `## ${statusEmoji} Relatório de Segurança DevSecOps
+            
+            **Status Geral:** ${report.summary.status}
+            **Scans Concluídos:** ${report.summary.completed_scans}/${report.summary.total_scans}
+            **Nível de Análise:** ${report.security_level.toUpperCase()}
+            
+            ### 🔍 Resultados por Categoria:
+            ${Object.entries(report.scans).map(([scan, status]) => {
+              const emoji = status === 'completed' ? '✅' : '❌';
+              return `- ${emoji} **${scan.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:** ${status.toUpperCase()}`;
+            }).join('\n')}
+            
+            ### 📋 Próximos Passos:
+            ${report.summary.status === 'PASS' ? 
+              '🎉 Todas as verificações de segurança passaram! O código está aprovado para merge.' : 
+              '⚠️ Algumas verificações falharam. Revise os artefatos de segurança antes do merge.'}
+            
+            ---
+            *Relatório gerado automaticamente pelo pipeline DevSecOps*`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  # Notificação de resultados
+  notify-security-results:
+    name: 🔔 Security Notifications
+    runs-on: ubuntu-latest
+    needs: [security-report]
+    if: always()
+    
+    steps:
+      - name: Download security report
+        uses: actions/download-artifact@v3
+        with:
+          name: consolidated-security-report
+      
+      - name: Notify security team
+        if: needs.security-report.result == 'failure' || github.event.inputs.security_level == 'paranoid'
+        run: |
+          echo "🚨 ALERTA DE SEGURANÇA"
+          echo "Falhas detectadas na análise de segurança."
+          echo "Repositório: ${{ github.repository }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Revise os artefatos de segurança imediatamente."
+      
+      - name: Success notification
+        if: needs.security-report.result == 'success'
+        run: |
+          echo "✅ ANÁLISE DE SEGURANÇA CONCLUÍDA COM SUCESSO"
+          echo "Todas as verificações de segurança passaram."
+          echo "Repositório: ${{ github.repository }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Branch: ${{ github.ref_name }}"

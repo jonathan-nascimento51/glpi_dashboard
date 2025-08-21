@@ -1,0 +1,228 @@
+{
+  "collection_interval": 30,
+  "retention_days": 30,
+  "redis_url": "redis://localhost:6379/0",
+  "glpi_api_url": "http://localhost:5000/api",
+  "prometheus_port": 8090,
+  "alert_thresholds": {
+    "cpu_percent": 80.0,
+    "memory_percent": 85.0,
+    "disk_usage": 90.0,
+    "error_rate": 5.0,
+    "response_time_p95": 2.0,
+    "response_time_p99": 5.0,
+    "failed_logins_per_hour": 10,
+    "suspicious_requests_per_hour": 50,
+    "vulnerability_count": 0,
+    "ssl_cert_expiry_days": 30,
+    "security_headers_score": 80.0,
+    "database_connections": 50,
+    "queue_size": 100,
+    "cache_hit_rate_min": 70.0
+  },
+  "security_checks": {
+    "ssl_cert_check": true,
+    "security_headers_check": true,
+    "vulnerability_scan": true,
+    "dependency_check": true,
+    "secret_detection": true,
+    "compliance_check": true
+  },
+  "business_metrics": {
+    "sla_target": 95.0,
+    "resolution_time_target": 24.0,
+    "customer_satisfaction_target": 4.0,
+    "technician_utilization_target": 80.0
+  },
+  "notification_channels": {
+    "email": {
+      "enabled": true,
+      "smtp_server": "smtp.company.com",
+      "smtp_port": 587,
+      "username": "monitoring@company.com",
+      "recipients": [
+        "devops@company.com",
+        "security@company.com",
+        "management@company.com"
+      ]
+    },
+    "slack": {
+      "enabled": true,
+      "webhook_url": "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK",
+      "channel": "#alerts",
+      "username": "MonitoringBot"
+    },
+    "teams": {
+      "enabled": false,
+      "webhook_url": "https://outlook.office.com/webhook/YOUR/TEAMS/WEBHOOK"
+    },
+    "pagerduty": {
+      "enabled": false,
+      "integration_key": "YOUR_PAGERDUTY_INTEGRATION_KEY",
+      "severity_mapping": {
+        "critical": "critical",
+        "warning": "warning",
+        "info": "info"
+      }
+    }
+  },
+  "dashboards": {
+    "grafana": {
+      "enabled": true,
+      "url": "http://localhost:3000",
+      "api_key": "YOUR_GRAFANA_API_KEY",
+      "dashboard_ids": {
+        "system": "system-metrics",
+        "security": "security-metrics",
+        "application": "app-metrics",
+        "business": "business-metrics"
+      }
+    },
+    "kibana": {
+      "enabled": false,
+      "url": "http://localhost:5601",
+      "index_patterns": [
+        "glpi-logs-*",
+        "security-logs-*",
+        "application-logs-*"
+      ]
+    }
+  },
+  "data_sources": {
+    "elasticsearch": {
+      "enabled": false,
+      "hosts": ["http://localhost:9200"],
+      "username": "elastic",
+      "password": "changeme",
+      "indices": {
+        "logs": "glpi-logs",
+        "metrics": "glpi-metrics",
+        "security": "security-events"
+      }
+    },
+    "influxdb": {
+      "enabled": false,
+      "url": "http://localhost:8086",
+      "database": "glpi_monitoring",
+      "username": "admin",
+      "password": "admin"
+    },
+    "postgresql": {
+      "enabled": true,
+      "host": "localhost",
+      "port": 5432,
+      "database": "glpi",
+      "username": "glpi_user",
+      "password": "glpi_password"
+    }
+  },
+  "compliance": {
+    "frameworks": [
+      "ISO27001",
+      "SOC2",
+      "GDPR",
+      "LGPD"
+    ],
+    "audit_logs": {
+      "enabled": true,
+      "retention_days": 365,
+      "encryption": true
+    },
+    "data_classification": {
+      "enabled": true,
+      "levels": ["public", "internal", "confidential", "restricted"]
+    }
+  },
+  "performance": {
+    "profiling": {
+      "enabled": true,
+      "sample_rate": 0.1,
+      "memory_profiling": true,
+      "cpu_profiling": true
+    },
+    "tracing": {
+      "enabled": true,
+      "jaeger_endpoint": "http://localhost:14268/api/traces",
+      "sample_rate": 0.1
+    },
+    "apm": {
+      "enabled": false,
+      "service_name": "glpi-dashboard",
+      "environment": "production"
+    }
+  },
+  "backup_monitoring": {
+    "enabled": true,
+    "backup_locations": [
+      "/backup/database",
+      "/backup/files",
+      "s3://company-backups/glpi"
+    ],
+    "check_interval": 3600,
+    "retention_check": true,
+    "integrity_check": true
+  },
+  "capacity_planning": {
+    "enabled": true,
+    "prediction_days": 30,
+    "growth_rate_threshold": 20.0,
+    "resource_utilization_target": 70.0,
+    "auto_scaling": {
+      "enabled": false,
+      "min_instances": 2,
+      "max_instances": 10,
+      "scale_up_threshold": 80.0,
+      "scale_down_threshold": 30.0
+    }
+  },
+  "incident_management": {
+    "enabled": true,
+    "auto_create_tickets": true,
+    "severity_escalation": {
+      "critical": 15,
+      "warning": 60,
+      "info": 240
+    },
+    "runbooks": {
+      "HIGH_CPU": "runbooks/high_cpu.md",
+      "HIGH_MEMORY": "runbooks/high_memory.md",
+      "SECURITY_BREACH": "runbooks/security_incident.md",
+      "SLA_BREACH": "runbooks/sla_breach.md"
+    }
+  },
+  "maintenance_windows": {
+    "enabled": true,
+    "schedule": [
+      {
+        "name": "Weekly Maintenance",
+        "day": "sunday",
+        "start_time": "02:00",
+        "duration_hours": 4,
+        "suppress_alerts": true
+      },
+      {
+        "name": "Monthly Patching",
+        "day": "first_saturday",
+        "start_time": "01:00",
+        "duration_hours": 6,
+        "suppress_alerts": true
+      }
+    ]
+  },
+  "feature_flags": {
+    "advanced_analytics": true,
+    "ml_anomaly_detection": false,
+    "predictive_scaling": false,
+    "automated_remediation": false,
+    "chaos_engineering": false,
+    "synthetic_monitoring": true
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "json",
+    "file": "logs/monitoring.log",
+    "max_size_mb": 100,
+    "backup_count": 5,
+    "structured_logging": true
+  }
+}

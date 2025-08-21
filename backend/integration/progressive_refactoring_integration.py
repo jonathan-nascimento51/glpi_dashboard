@@ -28,10 +28,12 @@ from backend.core.infrastructure.external.glpi.metrics_adapter import GLPIConfig
 try:
     from backend.api.routes import api_bp  # Blueprint existente
     from backend.services.glpi_service import GLPIService
+    _legacy_imports_available = True
 except ImportError as e:
     print(f"Aviso: Não foi possível importar serviços legados: {e}")
-    GLPIService = None
-    api_bp = None
+    api_bp = None  # type: ignore
+    GLPIService = None  # type: ignore
+    _legacy_imports_available = False
 
 
 logger = logging.getLogger(__name__)
@@ -62,9 +64,9 @@ class ProgressiveRefactoringIntegration:
             base_url=os.getenv("GLPI_BASE_URL", "https://glpi.example.com"),
             app_token=os.getenv("GLPI_APP_TOKEN", ""),
             user_token=os.getenv("GLPI_USER_TOKEN", ""),
-            timeout=int(os.getenv("GLPI_TIMEOUT", "30")),
+            timeout_seconds=int(os.getenv("GLPI_TIMEOUT", "30")),
             max_retries=int(os.getenv("GLPI_MAX_RETRIES", "3")),
-            retry_delay=float(os.getenv("GLPI_RETRY_DELAY", "1.0")),
+            retry_delay_seconds=float(os.getenv("GLPI_RETRY_DELAY", "1.0")),
         )
 
     def _get_refactoring_phase(self) -> RefactoringPhase:
@@ -103,9 +105,9 @@ class ProgressiveRefactoringIntegration:
             glpi_user_token=self.glpi_config.user_token,
             legacy_service=self.legacy_service,
             phase=self.refactoring_phase,
-            timeout=self.glpi_config.timeout,
+            timeout=self.glpi_config.timeout_seconds,
             max_retries=self.glpi_config.max_retries,
-            retry_delay=self.glpi_config.retry_delay,
+            retry_delay=self.glpi_config.retry_delay_seconds,
         )
 
     def initialize(self) -> None:
@@ -311,7 +313,7 @@ class ProgressiveRefactoringIntegration:
             "initialized": self.is_initialized,
             "glpi_config": {
                 "base_url": self.glpi_config.base_url,
-                "timeout": self.glpi_config.timeout,
+                "timeout": self.glpi_config.timeout_seconds,
                 "max_retries": self.glpi_config.max_retries,
             },
         }

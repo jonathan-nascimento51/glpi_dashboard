@@ -127,11 +127,11 @@ class RealTimeMonitor {
    */
   startMonitoring(): void {
     if (this.isMonitoring) {
-      console.log('⚠️ Monitor já está ativo');
+      // Monitor já está ativo
       return;
     }
 
-    console.log('🔍 Iniciando monitoramento em tempo real...');
+    // Iniciando monitoramento em tempo real
 
     this.isMonitoring = true;
     this.startTime = Date.now();
@@ -149,7 +149,7 @@ class RealTimeMonitor {
     // Configurar listeners de eventos
     this.setupEventListeners();
 
-    console.log(`✅ Monitor ativo - verificações a cada ${this.config.checkInterval / 1000}s`);
+    // Monitor ativo
   }
 
   /**
@@ -157,11 +157,11 @@ class RealTimeMonitor {
    */
   stopMonitoring(): void {
     if (!this.isMonitoring) {
-      console.log('⚠️ Monitor não está ativo');
+      // Monitor não está ativo
       return;
     }
 
-    console.log('🛑 Parando monitoramento...');
+    // Parando monitoramento
 
     this.isMonitoring = false;
 
@@ -172,7 +172,7 @@ class RealTimeMonitor {
 
     this.removeEventListeners();
 
-    console.log('✅ Monitor parado');
+    // Monitor parado
   }
 
   /**
@@ -593,7 +593,7 @@ class RealTimeMonitor {
     };
 
     if (this.config.notifications.console) {
-      console.log(`${emoji[alert.type]} ${alert.title}: ${alert.message}`);
+      // Log de alerta removido para limpeza do código
     }
 
     if (this.config.notifications.visual && alert.type === 'critical') {

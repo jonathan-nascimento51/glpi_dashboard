@@ -159,9 +159,9 @@
 
   .figma-heading-large {
     font-family: 'Inter', sans-serif;
-    font-size: 32px;
+    font-size: 20px;
     font-weight: 600;
-    line-height: 1.2;
+    line-height: 1.3;
     transition: color 0.3s ease;
   }
 
@@ -730,8 +730,8 @@
   height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr auto auto;
-  gap: 1rem;
-  padding: 1rem;
+  gap: 0.75rem;
+  padding: 0.75rem;
   max-width: 100vw;
   overflow: hidden;
   box-sizing: border-box;
@@ -741,8 +741,8 @@
   height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  gap: 1rem;
-  padding: 1rem;
+  gap: 0.75rem;
+  padding: 0.75rem;
   max-width: 100vw;
   overflow: hidden;
   box-sizing: border-box;
@@ -756,8 +756,8 @@
 .dashboard-main-grid {
   grid-row: 2;
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 0.75rem;
+  grid-template-columns: 2.5fr 1fr;
+  gap: 0.5rem;
   min-height: 0;
   overflow: hidden;
 }
@@ -778,7 +778,7 @@
 
 .dashboard-ranking-section {
   grid-row: 3;
-  height: 260px;
+  height: fit-content;
   min-height: 260px;
   max-height: 300px;
   overflow: hidden;
@@ -795,7 +795,7 @@
 .dashboard-bottom-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem;
+  gap: 0.5rem;
   min-height: 0;
 }
 
@@ -803,39 +803,40 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 1rem;
-  height: 400px;
+  height: fit-content;
+  max-height: 300px;
 }
 
 /* Breakpoints responsivos otimizados */
 @media (max-width: 1279px) {
   .dashboard-fullscreen-container {
     grid-template-rows: auto 1fr auto auto;
-    gap: 0.75rem;
-    padding: 0.75rem;
+    gap: 0.5rem;
+    padding: 0.5rem;
   }
 
   .dashboard-main-grid {
     grid-template-columns: 1fr;
-    gap: 0.75rem;
+    gap: 0.5rem;
   }
 
   .dashboard-ranking-section {
-    height: 220px;
+    height: fit-content;
     min-height: 220px;
     max-height: 260px;
   }
 
   .dashboard-monitor-section {
-    height: 250px;
-    min-height: 250px;
-    max-height: 300px;
+    height: 220px;
+    min-height: 220px;
+    max-height: 280px;
   }
 }
 
 @media (min-width: 1280px) and (max-width: 1919px) {
   .dashboard-main-grid {
-    grid-template-columns: 2.2fr 1fr;
-    gap: 1rem;
+    grid-template-columns: 2.8fr 1fr;
+    gap: 0.75rem;
   }
 }
 
@@ -851,9 +852,9 @@
   }
 
   .dashboard-ranking-section {
-    height: 300px;
-    min-height: 300px;
-    max-height: 340px;
+    height: fit-content;
+    min-height: 200px;
+    max-height: 260px;
   }
 
   .dashboard-monitor-section {
@@ -875,9 +876,9 @@
   }
 
   .dashboard-ranking-section {
-    height: 360px;
-    min-height: 360px;
-    max-height: 400px;
+    height: fit-content;
+    min-height: 220px;
+    max-height: 280px;
   }
 
   .dashboard-monitor-section {
@@ -902,9 +903,9 @@
   }
 
   .dashboard-ranking-section {
-    height: 400px;
-    min-height: 400px;
-    max-height: 450px;
+    height: fit-content;
+    min-height: 240px;
+    max-height: 300px;
   }
 
   .dashboard-monitor-section {

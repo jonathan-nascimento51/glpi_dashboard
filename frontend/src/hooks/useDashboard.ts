@@ -3,6 +3,8 @@ import { fetchDashboardMetrics } from '../services/api';
 import type { DashboardMetrics, FilterParams } from '../types/api';
 import { SystemStatus, NotificationData } from '../types';
 import { useSmartRefresh } from './useSmartRefresh';
+import { useFilterCache } from './useFilterCache';
+import { useFilterPerformance } from './useFilterPerformance';
 // Removed unused imports
 
 interface UseDashboardReturn {
@@ -34,6 +36,15 @@ interface UseDashboardReturn {
   removeNotification: (id: string) => void;
   changeTheme: (theme: string) => void;
   updateDateRange: (dateRange: any) => void;
+  clearFilterCache: () => void;
+  getCacheStats: () => {
+    size: number;
+    hitRate: number;
+    totalRequests: number;
+    cacheHits: number;
+  };
+  getPerformanceMetrics: () => any;
+  isFilterInProgress: boolean;
 }
 
 // Removed unused initialFilterState
@@ -64,6 +75,28 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
   const [error, setError] = useState<string | null>(null);
   // Removed unused state variables
   const [filters, setFilters] = useState<FilterParams>(initialFilters);
+  
+  // Cache para otimização de performance
+  const { getCachedData, setCachedData, clearCache, getCacheStats } = useFilterCache({
+    maxCacheSize: 30,
+    cacheExpirationMs: 5 * 60 * 1000, // 5 minutos
+    enableCache: true,
+  });
+  
+  // Performance monitoring para filtros
+  const { 
+    debouncedFilter, 
+    metrics: performanceMetrics, 
+    startFilterTimer, 
+    endFilterTimer,
+    clearMetrics: clearPerformanceMetrics,
+    isFilterInProgress 
+  } = useFilterPerformance({
+    debounceDelay: 500,
+    throttleDelay: 100,
+    maxHistorySize: 100,
+    enableMetrics: true,
+  });
   // Derivar dados dos resultados da API
   const levelMetrics = data?.niveis
     ? {
@@ -89,13 +122,28 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
   >([]);
 
   const loadData = useCallback(
-    async (newFilters?: FilterParams) => {
+    async (newFilters?: FilterParams, forceRefresh: boolean = false) => {
       const filtersToUse = newFilters || filters;
+      const timerId = startFilterTimer('dashboard-load');
+
+      // Verificar cache primeiro (se não for refresh forçado)
+      if (!forceRefresh) {
+        const cachedData = getCachedData(filtersToUse);
+        if (cachedData) {
+          // Dados carregados do cache
+          setData(cachedData);
+          setLoading(false);
+          setError(null);
+          endFilterTimer(timerId, true); // Marcar como cached
+          return;
+        }
+      }
 
       setLoading(true);
       setError(null);
 
       try {
+        // Carregando dados da API
         // Fazer chamadas paralelas para todos os endpoints
         const [metricsResult, systemStatusResult, technicianRankingResult] = await Promise.all([
           fetchDashboardMetrics(filtersToUse),
@@ -127,20 +175,33 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
             technicianRanking: technicianRankingResult || [],
           };
 
-          // console.log('✅ useDashboard - Definindo dados combinados no estado:', combinedData);
+          // Combined data set in state
           setData(combinedData);
           setError(null);
+          
+          // Armazenar no cache
+          setCachedData(filtersToUse, combinedData);
+          // Dados armazenados no cache
+          
+          endFilterTimer(timerId, false); // Marcar como não cached
         } else {
           setError('Falha ao carregar dados do dashboard');
+          endFilterTimer(timerId, false);
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Erro desconhecido');
+        endFilterTimer(timerId, false);
       } finally {
         setLoading(false);
       }
     },
-    [filters]
+    [filters, getCachedData, setCachedData, startFilterTimer, endFilterTimer]
   );
+
+  // Debounced version of loadData para filtros usando performance hook
+  const debouncedLoadData = debouncedFilter((newFilters: FilterParams) => {
+    loadData(newFilters, false);
+  });
 
   // Removed unused forceRefresh function
 
@@ -175,7 +236,7 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
         }
       }
     } catch (error) {
-      console.error('Erro ao buscar tipos de filtro:', error);
+      // Failed to fetch filter types - using fallback
       // Fallback para tipos padrão
       setAvailableFilterTypes([
         {
@@ -205,15 +266,15 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     fetchFilterTypes();
   }, [fetchFilterTypes]);
 
-  // Função para atualizar o tipo de filtro
+  // Função para atualizar o tipo de filtro (com debounce)
   const updateFilterType = useCallback(
     (type: string) => {
       setFilterType(type);
       const updatedFilters = { ...filters, filterType: type };
       setFilters(updatedFilters);
-      loadData(updatedFilters);
+      debouncedLoadData(updatedFilters);
     },
-    [filters, loadData]
+    [filters, debouncedLoadData]
   );
 
   const returnData: UseDashboardReturn = {
@@ -236,7 +297,12 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     updateFilters: (newFilters: FilterParams) => {
       const updatedFilters = { ...filters, ...newFilters };
       setFilters(updatedFilters);
-      loadData(updatedFilters);
+      // Usar debounce para filtros normais, mas não para dateRange
+      if (newFilters.dateRange) {
+        loadData(updatedFilters, false); // Sem debounce para mudanças de data
+      } else {
+        debouncedLoadData(updatedFilters); // Com debounce para outros filtros
+      }
     },
     updateFilterType,
     search: (query: string) => setSearchQuery(query),
@@ -256,13 +322,23 @@ export const useDashboard = (initialFilters: FilterParams = {}): UseDashboardRet
     updateDateRange: (dateRange: any) => {
       const updatedFilters = { ...filters, dateRange };
       setFilters(updatedFilters);
-      // Forçar recarregamento imediato com os novos filtros
-      loadData(updatedFilters);
+      // Forçar recarregamento imediato com os novos filtros (sem cache)
+      loadData(updatedFilters, true);
     },
+    // Adicionar função para limpar cache quando necessário
+    clearFilterCache: () => {
+      clearCache();
+      clearPerformanceMetrics();
+    },
+    // Adicionar função para obter estatísticas do cache
+    getCacheStats,
+    // Adicionar função para obter métricas de performance
+    getPerformanceMetrics: () => performanceMetrics,
+    // Adicionar indicador de filtro em progresso
+    isFilterInProgress,
   };
 
-  // Debug logs comentados para evitar erros de sintaxe
-  // console.log('useDashboard - Retornando dados:', returnData);
+  // Debug logs removidos para limpeza do código
 
   return returnData;
 };

@@ -17,8 +17,9 @@ import {
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-// import { cn } from "@/lib/utils"
-import { TrendingUp, BarChart3, PieChart as PieChartIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { TrendingUp, BarChart3, PieChart as PieChartIcon, MousePointer } from 'lucide-react';
+import { useChartNavigation, createDrillDownData } from '@/hooks/useChartNavigation';
 
 interface ChartData {
   name: string;
@@ -34,6 +35,7 @@ interface TicketChartProps {
   type?: 'area' | 'bar' | 'pie';
   title?: string;
   className?: string;
+  enableDrillDown?: boolean;
 }
 
 const COLORS = {
@@ -71,7 +73,9 @@ export const TicketChart = React.memo<TicketChartProps>(function TicketChart({
   type = 'area',
   title = 'Evolução dos Tickets',
   className,
+  enableDrillDown = true,
 }) {
+  const { createClickHandler, isClickable } = useChartNavigation();
   // Tooltip customizado memoizado
   const CustomTooltip = useCallback(({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -80,7 +84,7 @@ export const TicketChart = React.memo<TicketChartProps>(function TicketChart({
           <p className='figma-body font-medium'>{label}</p>
           {payload.map((entry: any, index: number) => (
             <p key={`tooltip-entry-${index}`} className='text-sm' style={{ color: entry.color }}>
-              {entry.name}: <span className='font-semibold'>{entry.value}</span>
+              {entry.name}: <span className='font-semibold'>{typeof entry.value === 'object' ? JSON.stringify(entry.value) : entry.value}</span>
             </p>
           ))}
         </div>
@@ -127,12 +131,51 @@ export const TicketChart = React.memo<TicketChartProps>(function TicketChart({
     }
   }, [type]);
 
+  // Handlers de clique para drill-down
+  const handleBarClick = useCallback(
+    (data: any, index: number) => {
+      if (!enableDrillDown) return;
+      
+      const clickHandler = createClickHandler('status', {
+        filters: { period: data.name },
+        metadata: { chartType: 'bar', dataIndex: index },
+      });
+      clickHandler(data);
+    },
+    [enableDrillDown, createClickHandler]
+  );
+
+  const handlePieClick = useCallback(
+    (data: any, index: number) => {
+      if (!enableDrillDown) return;
+      
+      const statusMap: Record<string, string> = {
+        'Novos': 'new',
+        'Em Progresso': 'progress', 
+        'Pendentes': 'pending',
+        'Resolvidos': 'resolved',
+      };
+      
+      const clickHandler = createClickHandler('status', {
+        name: statusMap[data.name] || data.name,
+        filters: { status: statusMap[data.name] || data.name },
+        metadata: { chartType: 'pie', dataIndex: index },
+      });
+      clickHandler(data);
+    },
+    [enableDrillDown, createClickHandler]
+  );
+
   const renderChart = () => {
     switch (type) {
       case 'bar':
         return (
           <ResponsiveContainer width='100%' height={300}>
-            <BarChart data={data} margin={chartMargins}>
+            <BarChart 
+              data={data} 
+              margin={chartMargins}
+              onClick={enableDrillDown ? handleBarClick : undefined}
+            >
               <CartesianGrid strokeDasharray='3 3' stroke='#f0f0f0' />
               <XAxis
                 dataKey='name'
@@ -144,24 +187,33 @@ export const TicketChart = React.memo<TicketChartProps>(function TicketChart({
               <YAxis stroke='#6b7280' fontSize={12} tickLine={false} axisLine={false} />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
-              <Bar dataKey='novos' fill={COLORS.novos} name='Novos' radius={[2, 2, 0, 0]} />
+              <Bar 
+                dataKey='novos' 
+                fill={COLORS.novos} 
+                name='Novos' 
+                radius={[2, 2, 0, 0]}
+                className={enableDrillDown ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}
+              />
               <Bar
                 dataKey='progresso'
                 fill={COLORS.progresso}
                 name='Em Progresso'
                 radius={[2, 2, 0, 0]}
+                className={enableDrillDown ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}
               />
               <Bar
                 dataKey='pendentes'
                 fill={COLORS.pendentes}
                 name='Pendentes'
                 radius={[2, 2, 0, 0]}
+                className={enableDrillDown ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}
               />
               <Bar
                 dataKey='resolvidos'
                 fill={COLORS.resolvidos}
                 name='Resolvidos'
                 radius={[2, 2, 0, 0]}
+                className={enableDrillDown ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}
               />
             </BarChart>
           </ResponsiveContainer>
@@ -179,9 +231,15 @@ export const TicketChart = React.memo<TicketChartProps>(function TicketChart({
                 outerRadius={120}
                 paddingAngle={2}
                 dataKey='value'
+                onClick={enableDrillDown ? handlePieClick : undefined}
+                className={enableDrillDown ? 'cursor-pointer' : ''}
               >
                 {pieData.map((_, index) => (
-                  <Cell key={`pie-cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                  <Cell 
+                    key={`pie-cell-${index}`} 
+                    fill={PIE_COLORS[index % PIE_COLORS.length]}
+                    className={enableDrillDown ? 'hover:opacity-80 transition-opacity' : ''}
+                  />
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip />} />
@@ -193,7 +251,12 @@ export const TicketChart = React.memo<TicketChartProps>(function TicketChart({
       default: // area
         return (
           <ResponsiveContainer width='100%' height={300}>
-            <AreaChart data={data} margin={chartMargins}>
+            <AreaChart 
+              data={data} 
+              margin={chartMargins}
+              onClick={enableDrillDown ? handleBarClick : undefined}
+              className={enableDrillDown ? 'cursor-pointer' : ''}
+            >
               <defs>
                 <linearGradient id='colorNovos' x1='0' y1='0' x2='0' y2='1'>
                   <stop offset='5%' stopColor={COLORS.novos} stopOpacity={0.3} />
@@ -230,6 +293,7 @@ export const TicketChart = React.memo<TicketChartProps>(function TicketChart({
                 stroke={COLORS.novos}
                 fill='url(#colorNovos)'
                 name='Novos'
+                className={enableDrillDown ? 'hover:opacity-80 transition-opacity' : ''}
               />
               <Area
                 type='monotone'
@@ -238,6 +302,7 @@ export const TicketChart = React.memo<TicketChartProps>(function TicketChart({
                 stroke={COLORS.progresso}
                 fill='url(#colorProgresso)'
                 name='Em Progresso'
+                className={enableDrillDown ? 'hover:opacity-80 transition-opacity' : ''}
               />
               <Area
                 type='monotone'
@@ -246,6 +311,7 @@ export const TicketChart = React.memo<TicketChartProps>(function TicketChart({
                 stroke={COLORS.pendentes}
                 fill='url(#colorPendentes)'
                 name='Pendentes'
+                className={enableDrillDown ? 'hover:opacity-80 transition-opacity' : ''}
               />
               <Area
                 type='monotone'
@@ -254,6 +320,7 @@ export const TicketChart = React.memo<TicketChartProps>(function TicketChart({
                 stroke={COLORS.resolvidos}
                 fill='url(#colorResolvidos)'
                 name='Resolvidos'
+                className={enableDrillDown ? 'hover:opacity-80 transition-opacity' : ''}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -263,17 +330,25 @@ export const TicketChart = React.memo<TicketChartProps>(function TicketChart({
 
   return (
     <motion.div variants={chartVariants} initial='hidden' animate='visible' className={className}>
-      <Card className='figma-glass-card border-0 shadow-none'>
+      <Card className={cn('figma-glass-card border-0 shadow-none', enableDrillDown && 'hover:shadow-md transition-shadow')}>
         <CardHeader>
           <div className='flex items-center justify-between'>
             <CardTitle className='figma-heading-large flex items-center gap-2'>
               {chartIcon}
               {title}
+              {enableDrillDown && (
+                <MousePointer className='h-4 w-4 text-muted-foreground' title='Clique para navegar' />
+              )}
             </CardTitle>
             <div className='flex gap-2'>
               <Badge variant='outline' className='text-xs'>
                 {typeLabel}
               </Badge>
+              {enableDrillDown && (
+                <Badge variant='outline' className='text-xs'>
+                  Interativo
+                </Badge>
+              )}
             </div>
           </div>
         </CardHeader>

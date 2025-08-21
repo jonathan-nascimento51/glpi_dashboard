@@ -147,7 +147,7 @@ class TestGetMetricsByLevelInternal:
         # Arrange
         service = mock_authenticated_service
         service._ensure_authenticated = Mock(return_value=True)
-        
+
         # Mock dos atributos necessários para evitar validações que retornam 0
         service.glpi_url = "http://test-glpi.com"
         service.field_ids = {"GROUP": "8", "STATUS": "12"}

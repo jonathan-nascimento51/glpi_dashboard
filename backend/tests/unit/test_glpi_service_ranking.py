@@ -290,7 +290,7 @@ class TestGLPIServiceRanking:
         assert result == []
 
     @patch("services.glpi_service.GLPIService._authenticate_with_retry")
-@patch("services.glpi_service.requests.get")
+    @patch("services.glpi_service.requests.get")
     def test_get_technician_ranking_with_filters_invalid_dates(self, mock_get, mock_auth, glpi_service):
         """Testa o ranking com datas inválidas"""
         # Mock da autenticação

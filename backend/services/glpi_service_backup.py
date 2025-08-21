@@ -310,10 +310,8 @@ class GLPIService:
 
         # Usar função utilitária para filtros de data
         criteria_index = 2
-        date_criteria_dict = DateValidator.construir_criterios_filtro_data(
-            start_date, end_date, criteria_index
-        )
-        
+        date_criteria_dict = DateValidator.construir_criterios_filtro_data(start_date, end_date, criteria_index)
+
         # Adicionar critérios de data se existirem
         if date_criteria_dict:
             search_params.update(date_criteria_dict)
@@ -414,10 +412,8 @@ class GLPIService:
 
             # Usar função utilitária para filtros de data
             criteria_index = 1
-            date_criteria_dict = DateValidator.construir_criterios_filtro_data(
-                start_date, end_date, criteria_index
-            )
-            
+            date_criteria_dict = DateValidator.construir_criterios_filtro_data(start_date, end_date, criteria_index)
+
             # Adicionar critérios de data se existirem
             if date_criteria_dict:
                 search_params.update(date_criteria_dict)
@@ -556,10 +552,8 @@ class GLPIService:
 
             # Usar função utilitária para filtros de data
             criteria_index = 1
-            date_criteria_dict = DateValidator.construir_criterios_filtro_data(
-                start_date, end_date, criteria_index
-            )
-            
+            date_criteria_dict = DateValidator.construir_criterios_filtro_data(start_date, end_date, criteria_index)
+
             # Adicionar critérios de data se existirem
             if date_criteria_dict:
                 search_params.update(date_criteria_dict)
@@ -2007,19 +2001,18 @@ class GLPIService:
             date_criteria_dict = {}
             if start_date or end_date:
                 from utils.date_validator import DateValidator
+
                 try:
                     date_criteria_dict = DateValidator.construir_criterios_filtro_data(
-                        start_date=start_date,
-                        end_date=end_date,
-                        field_id="15",
-                        criteria_start_index=criteria_index
+                        start_date=start_date, end_date=end_date, field_id="15", criteria_start_index=criteria_index
                     )
                     # Atualizar criteria_index baseado nos critérios adicionados
                     import re
+
                     max_index = criteria_index - 1
                     for key in date_criteria_dict.keys():
-                        if key.startswith('criteria['):
-                            match = re.search(r'criteria\[(\d+)\]', key)
+                        if key.startswith("criteria["):
+                            match = re.search(r"criteria\[(\d+)\]", key)
                             if match:
                                 idx = int(match.group(1))
                                 max_index = max(max_index, idx)
@@ -2038,7 +2031,7 @@ class GLPIService:
             # Adicionar critérios aos parâmetros
             for criterion in criteria:
                 search_params.update(criterion)
-            
+
             # Adicionar critérios de data se existirem
             if date_criteria_dict:
                 search_params.update(date_criteria_dict)
@@ -2119,14 +2112,12 @@ class GLPIService:
             criteria_index += 1
 
             # Usar função utilitária para filtros de data
-            date_criteria_dict = DateValidator.construir_criterios_filtro_data(
-                start_date, end_date, criteria_index
-            )
-            
+            date_criteria_dict = DateValidator.construir_criterios_filtro_data(start_date, end_date, criteria_index)
+
             # Atualizar o índice de critérios com base nos critérios de data adicionados
             if date_criteria_dict:
                 # Contar quantos critérios de data foram adicionados
-                date_criteria_count = len([k for k in date_criteria_dict.keys() if 'criteria[' in k and '][field]' in k])
+                date_criteria_count = len([k for k in date_criteria_dict.keys() if "criteria[" in k and "][field]" in k])
                 criteria_index += date_criteria_count
 
             # Construir parâmetros
@@ -2135,7 +2126,7 @@ class GLPIService:
             # Adicionar critérios
             for criterion in criteria:
                 search_params.update(criterion)
-            
+
             # Adicionar critérios de data se existirem
             if date_criteria_dict:
                 search_params.update(date_criteria_dict)

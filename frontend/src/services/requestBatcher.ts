@@ -68,9 +68,7 @@ class RequestBatcher {
       const requests = this.pendingRequests.get(batchKey)!;
       requests.push(request);
 
-      console.log(
-        `📦 Batcher: Adicionada requisição ${requestId} ao batch ${batchKey} (${requests.length}/${this.config.maxBatchSize})`
-      );
+      // Adicionando requisição ao batch
 
       // Verificar se deve executar o batch imediatamente
       if (requests.length >= this.config.maxBatchSize) {
@@ -109,7 +107,7 @@ class RequestBatcher {
 
     this.pendingRequests.delete(batchKey);
 
-    console.log(`🚀 Batcher: Executando batch ${batchKey} com ${requests.length} requisições`);
+    // Executando batch
 
     try {
       // Extrair parâmetros de todas as requisições
@@ -120,7 +118,7 @@ class RequestBatcher {
       const results = await fetchFn(batchedParams);
       const duration = Date.now() - startTime;
 
-      console.log(`✅ Batcher: Batch ${batchKey} concluído em ${duration}ms`);
+      // Batch concluído
 
       // Resolver cada requisição individual com seu resultado correspondente
       requests.forEach((request, index) => {
@@ -163,7 +161,7 @@ class RequestBatcher {
     for (const batchKey of batchKeys) {
       // Para flush, precisamos de uma função fetch genérica
       // Isso será implementado quando integrarmos com o sistema de API
-      console.log(`🔄 Batcher: Flushing batch ${batchKey}`);
+      // Flushing batch
     }
   }
 
@@ -209,7 +207,7 @@ class RequestBatcher {
     }
     this.pendingRequests.clear();
 
-    console.log('🧹 Batcher: Todos os batches foram limpos');
+    // Todos os batches foram limpos
   }
 }
 

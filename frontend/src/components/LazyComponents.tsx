@@ -18,6 +18,14 @@ export const LazyTicketChart = lazy(() =>
   import('./dashboard/TicketChart').then(module => ({ default: module.TicketChart }))
 );
 
+export const LazyInteractiveChart = lazy(() =>
+  import('./dashboard/InteractiveChart').then(module => ({ default: module.InteractiveChart }))
+);
+
+export const LazyChartDashboardExample = lazy(() =>
+  import('./dashboard/ChartDashboardExample').then(module => ({ default: module.ChartDashboardExample }))
+);
+
 export const LazyNewTicketsList = lazy(() =>
   import('./dashboard/NewTicketsList').then(module => ({ default: module.NewTicketsList }))
 );

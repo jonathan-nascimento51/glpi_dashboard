@@ -207,7 +207,8 @@ class GeneralMetricsQuery(BaseMetricsQuery):
                 correlation_id=context.correlation_id,
                 message="Métricas gerais obtidas com sucesso",
             )
-            response.set_execution_time(context.start_time)
+            if context.start_time:
+                response.set_execution_time(context.start_time)
 
             return response
 
@@ -312,7 +313,8 @@ class TechnicianRankingQuery(BaseMetricsQuery):
                 correlation_id=context.correlation_id,
                 message="Ranking de técnicos obtido com sucesso",
             )
-            response.set_execution_time(context.start_time)
+            if context.start_time:
+                response.set_execution_time(context.start_time)
 
             return response
 
@@ -334,6 +336,8 @@ class TechnicianRankingQuery(BaseMetricsQuery):
 
         for idx, tech_data in enumerate(technician_data, 1):
             tech_id = tech_data.get("id")
+            if not isinstance(tech_id, int):
+                continue  # Pular se ID não for válido
             tech_level = technician_hierarchy.get(tech_id, TechnicianLevel.UNKNOWN.value)
 
             # Criar métricas de tickets
@@ -354,7 +358,7 @@ class TechnicianRankingQuery(BaseMetricsQuery):
 
             # Criar DTO do técnico
             technician_dto = TechnicianMetricsDTO(
-                id=tech_id,
+                id=tech_id,  # tech_id já foi validado como int
                 name=tech_data.get("name", "Desconhecido"),
                 level=TechnicianLevel(tech_level)
                 if tech_level in [l.value for l in TechnicianLevel]
@@ -421,10 +425,13 @@ class DashboardMetricsQuery(BaseMetricsQuery):
             recent_tickets = await self._get_recent_tickets(filters, context)
 
             # Criar dashboard DTO
+            metrics_data = general_response.data if isinstance(general_response.data, MetricsDTO) else create_empty_metrics_dto()
+            technicians_data = ranking_response.data if isinstance(ranking_response.data, list) else []
+            
             dashboard_dto = DashboardMetricsDTO(
-                metrics=general_response.data,
-                technicians=ranking_response.data,
-                top_performers=ranking_response.data[:10] if ranking_response.data else [],
+                metrics=metrics_data,
+                technicians=technicians_data,
+                top_performers=technicians_data[:10] if technicians_data else [],
                 recent_tickets=recent_tickets,
                 response_time_ms=general_response.execution_time_ms,
                 cache_hit=False,  # TODO: implementar cache
@@ -438,7 +445,8 @@ class DashboardMetricsQuery(BaseMetricsQuery):
                 correlation_id=context.correlation_id,
                 message="Métricas do dashboard obtidas com sucesso",
             )
-            response.set_execution_time(context.start_time)
+            if context.start_time:
+                response.set_execution_time(context.start_time)
 
             return response
 
@@ -455,14 +463,20 @@ class DashboardMetricsQuery(BaseMetricsQuery):
             recent_filter = MetricsFilterDTO(
                 start_date=datetime.now() - timedelta(days=7),
                 end_date=datetime.now(),
+                status=None,
+                level=None,
+                technician_id=None,
+                category_id=None,
+                priority=None,
                 limit=20,
+                offset=0,
             )
 
             # Se já há filtros, combinar com os existentes
             if filters:
-                if filters.start_date and filters.start_date > recent_filter.start_date:
+                if filters.start_date and recent_filter.start_date and filters.start_date > recent_filter.start_date:
                     recent_filter.start_date = filters.start_date
-                if filters.end_date and filters.end_date < recent_filter.end_date:
+                if filters.end_date and recent_filter.end_date and filters.end_date < recent_filter.end_date:
                     recent_filter.end_date = filters.end_date
 
             ticket_data = await self.data_source.get_ticket_metrics(filters=recent_filter, context=context)

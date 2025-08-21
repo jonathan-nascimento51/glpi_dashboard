@@ -175,7 +175,7 @@ export const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({
       setNewTickets(tickets);
       setTicketsLoading(false);
     } catch (error) {
-      console.error('Erro ao buscar tickets novos:', error);
+      // Erro ao buscar tickets novos
       setTicketsLoading(false);
     }
   }, 2000); // 2 second throttle

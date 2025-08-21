@@ -150,7 +150,7 @@ export const apiService = {
           metricsCache.set(cacheParams, data);
           return data;
         } else {
-          console.error('API returned unsuccessful response:', response.data);
+          // API returned unsuccessful response
           // Return fallback data
           const fallbackData: import('../types/api').DashboardMetrics = {
             niveis: {
@@ -184,13 +184,13 @@ export const apiService = {
       cacheKey,
       async () => {
         const startTime = Date.now();
-        console.log('🔍 Buscando status do sistema');
+        // Buscando status do sistema
 
         const response = await api.get<ApiResponse<SystemStatus>>('/status');
 
         // Monitora performance
         const responseTime = Date.now() - startTime;
-        console.log(`⏱️ Status do sistema obtido em ${responseTime}ms`);
+        // Status do sistema obtido
         const cacheKeyInternal = JSON.stringify(cacheParams);
         systemStatusCache.recordRequestTime(cacheKeyInternal, responseTime);
 
@@ -200,7 +200,7 @@ export const apiService = {
           systemStatusCache.set(cacheParams, data);
           return data;
         } else {
-          console.error('API returned unsuccessful response:', response.data);
+          // API returned unsuccessful response
           // Return fallback data (não cachear)
           return {
             api: 'offline',
@@ -229,7 +229,7 @@ export const apiService = {
       await api.head('/status');
       return true;
     } catch (error) {
-      console.error('Health check failed:', error);
+      // Health check failed
       return false;
     }
   },
@@ -255,7 +255,7 @@ export const apiService = {
     // Verificar cache primeiro
     const cachedData = technicianRankingCache.get(cacheParams);
     if (cachedData) {
-      console.log('📦 Retornando dados do cache para ranking de técnicos');
+      // Retornando dados do cache
       return cachedData;
     }
 
@@ -276,15 +276,13 @@ export const apiService = {
         }
       }
 
-      console.log('🔍 Buscando ranking de técnicos:', url);
+      // Buscando ranking de técnicos
 
       // Usar timeout maior para ranking com filtros de data (3 minutos)
       const hasDateFilters = filters?.start_date || filters?.end_date;
       const timeoutConfig = hasDateFilters ? { timeout: 180000 } : {}; // 3 minutos para filtros de data
 
-      console.log(
-        `⏱️ Usando timeout de ${hasDateFilters ? '180' : '30'} segundos para ranking de técnicos`
-      );
+      // Using appropriate timeout for technician ranking
       const response = await api.get<ApiResponse<any[]>>(url, timeoutConfig);
 
       // Monitora performance
@@ -296,14 +294,14 @@ export const apiService = {
         const data = response.data.data;
         // Armazenar no cache
         technicianRankingCache.set(cacheParams, data);
-        console.log('✅ Ranking de técnicos obtido com sucesso:', data.length, 'técnicos');
+        // Ranking de técnicos obtido com sucesso
         return data;
       } else {
-        console.error('API returned unsuccessful response:', response.data);
+        // API returned unsuccessful response
         return [];
       }
     } catch (error) {
-      console.error('Error fetching technician ranking:', error);
+      // Error fetching technician ranking
       return [];
     }
   },
@@ -316,7 +314,7 @@ export const apiService = {
     // Verificar cache primeiro
     const cachedData = newTicketsCache.get(cacheParams);
     if (cachedData) {
-      console.log('📦 Retornando dados do cache para novos tickets');
+      // Retornando dados do cache
       return cachedData;
     }
 
@@ -334,7 +332,7 @@ export const apiService = {
         newTicketsCache.set(cacheParams, data);
         return data;
       } else {
-        console.error('API returned unsuccessful response:', response.data);
+        // API returned unsuccessful response
         // Return mock data as fallback (não cachear)
         return [
           {
@@ -361,7 +359,7 @@ export const apiService = {
         ];
       }
     } catch (error) {
-      console.error('Error fetching new tickets:', error);
+      // Error fetching new tickets
       // Return mock data instead of throwing error (não cachear)
       return [
         {
@@ -397,7 +395,7 @@ export const apiService = {
     // Verificar cache primeiro
     const cachedData = metricsCache.get(cacheParams);
     if (cachedData) {
-      console.log('📦 Retornando dados do cache para busca');
+      // Retornando dados do cache
       return cachedData;
     }
 
@@ -433,19 +431,19 @@ export const apiService = {
       metricsCache.set(cacheParams, data);
       return data;
     } catch (error) {
-      console.error('Error searching:', error);
+      // Error searching
       throw new Error('Falha na busca');
     }
   },
 
   // Clear all caches
   clearAllCaches(): void {
-    console.log('🧹 Limpando todos os caches...');
+    // Limpando todos os caches
     metricsCache.clear();
     systemStatusCache.clear();
     technicianRankingCache.clear();
     newTicketsCache.clear();
-    console.log('✅ Todos os caches foram limpos');
+    // Todos os caches foram limpos
   },
 };
 
@@ -515,14 +513,11 @@ export const fetchDashboardMetrics = async (
 
     // Processar dateRange se presente
     if (filters.dateRange && filters.dateRange.startDate && filters.dateRange.endDate) {
-      console.log('📅 Processando dateRange:', filters.dateRange);
-      console.log('📅 Start date:', filters.dateRange.startDate);
-      console.log('📅 End date:', filters.dateRange.endDate);
+      // Processando dateRange
       queryParams.append('start_date', filters.dateRange.startDate);
       queryParams.append('end_date', filters.dateRange.endDate);
     } else {
-      console.log('⚠️ dateRange não encontrado ou incompleto:', filters.dateRange);
-      console.log('⚠️ Filtros completos recebidos:', JSON.stringify(filters, null, 2));
+      // dateRange não encontrado ou incompleto
     }
 
     // Adicionar filtros como parâmetros de query com validação de tipos
@@ -541,10 +536,7 @@ export const fetchDashboardMetrics = async (
       ? `${API_BASE_URL}/metrics?${queryParams.toString()}`
       : `${API_BASE_URL}/metrics`;
 
-    console.log('🔍 Filtros originais:', filters);
-    console.log('🔍 Query params construídos:', queryParams.toString());
-    console.log('🔍 Fazendo requisição para:', url);
-    console.log('🌐 URL final da requisição:', url);
+    // Fazendo requisição para API
 
     const startTime = performance.now();
 
@@ -566,7 +558,7 @@ export const fetchDashboardMetrics = async (
     }
 
     const result: ApiResult<DashboardMetrics> = await response.json();
-    console.log('Resposta da API recebida:', result);
+    // Resposta da API recebida
 
     // Log de performance
     const perfMetrics: PerformanceMetrics = {
@@ -575,11 +567,11 @@ export const fetchDashboardMetrics = async (
       timestamp: new Date(),
       endpoint: '/metrics',
     };
-    console.log('Métricas de performance:', perfMetrics);
+    // Métricas de performance registradas
 
     // Verificar se a resposta é um erro
     if (isApiError(result)) {
-      console.error('API retornou erro:', result.error);
+      // API returned error
       return null;
     }
 
@@ -587,18 +579,15 @@ export const fetchDashboardMetrics = async (
     if (isApiResponse(result)) {
       // Processar dados para garantir estrutura consistente
       const processedData = transformLegacyData(result.data);
-      console.log('Dados processados:', processedData);
+      // Dados processados
 
       return processedData;
     }
 
-    console.error('Resposta da API em formato inesperado:', result);
+    // Resposta da API em formato inesperado
     return null;
   } catch (error) {
-    console.error('Erro ao buscar métricas:', error);
-    console.error('Tipo do erro:', typeof error);
-    console.error('Stack trace:', error instanceof Error ? error.stack : 'N/A');
-    console.error('URL tentada:', url);
+    // Error fetching metrics - check network connection and API availability
     return null;
   }
 };

@@ -42,14 +42,14 @@ class RequestCoordinator {
     // Verificar cache primeiro
     const cached = this.cache.get(key);
     if (cached && now - cached.timestamp < finalConfig.cacheMs!) {
-      console.log(`📦 Cache hit para ${key}`);
+      // Cache hit
       return cached.data;
     }
 
     // Verificar se já existe uma requisição pendente para a mesma chave
     const existing = this.pendingRequests.get(key);
     if (existing) {
-      console.log(`⏳ Reutilizando requisição pendente para ${key}`);
+      // Reutilizando requisição pendente
       return existing.promise;
     }
 
@@ -58,7 +58,7 @@ class RequestCoordinator {
     const timeSinceLastRequest = now - lastRequestTime;
     if (timeSinceLastRequest < finalConfig.throttleMs!) {
       const waitTime = finalConfig.throttleMs! - timeSinceLastRequest;
-      console.log(`🚦 Throttling ${key} - aguardando ${waitTime}ms`);
+      // Throttling - aguardando
       await new Promise(resolve => setTimeout(resolve, waitTime));
     }
 
@@ -73,7 +73,7 @@ class RequestCoordinator {
     }
 
     // Executar a requisição
-    console.log(`🚀 Executando requisição para ${key}`);
+    // Executando requisição
     const promise = this.executeRequest(key, requestFn, finalConfig);
 
     this.pendingRequests.set(key, {
@@ -98,7 +98,7 @@ class RequestCoordinator {
       const result = await requestFn();
       const duration = Date.now() - startTime;
 
-      console.log(`✅ Requisição ${key} concluída em ${duration}ms`);
+      // Requisição concluída
 
       // Armazenar no cache
       if (config.cacheMs! > 0) {
@@ -151,7 +151,7 @@ class RequestCoordinator {
    */
   invalidateCache(key: string): void {
     this.cache.delete(key);
-    console.log(`🗑️ Cache invalidado para ${key}`);
+    // Cache invalidado
   }
 
   /**
@@ -159,7 +159,7 @@ class RequestCoordinator {
    */
   cancelAllRequests(): void {
     this.pendingRequests.clear();
-    console.log('🛑 Todas as requisições pendentes foram canceladas');
+    // Todas as requisições pendentes foram canceladas
   }
 }
 

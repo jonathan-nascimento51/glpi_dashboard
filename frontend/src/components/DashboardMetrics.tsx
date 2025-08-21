@@ -3,6 +3,7 @@ import { useDashboard } from '../hooks/useDashboard';
 import { useThrottledCallback } from '../hooks/useDebounce';
 import type { DashboardMetrics as DashboardMetricsType, FilterParams } from '../types/api';
 import { isValidLevelMetrics, isValidNiveisMetrics } from '../types/api';
+import { ActiveFilters } from './ui/ActiveFilters';
 
 interface DashboardMetricsProps {
   initialFilters?: FilterParams;
@@ -241,7 +242,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
           <div className='ml-3'>
             <h3 className='text-sm font-medium text-red-800'>Erro ao carregar dados</h3>
             <div className='mt-2 text-sm text-red-700'>
-              <p>{error}</p>
+              <p>{typeof error === 'string' ? error : error?.message || 'Erro desconhecido'}</p>
             </div>
             <div className='mt-4'>
               <button
@@ -319,27 +320,19 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
         </div>
       )}
 
-      {/* Applied Filters Info */}
-      {useMemo(() => {
-        if (!data.filtros_aplicados || Object.keys(data.filtros_aplicados).length === 0)
-          return null;
-
-        return (
-          <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>
-            <h3 className='text-sm font-medium text-blue-800 mb-2'>Filtros Aplicados:</h3>
-            <div className='flex flex-wrap gap-2'>
-              {Object.entries(data.filtros_aplicados).map(([key, value]) => (
-                <span
-                  key={key}
-                  className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800'
-                >
-                  {key}: {String(value)}
-                </span>
-              ))}
-            </div>
-          </div>
-        );
-      }, [data.filtros_aplicados])}
+      {/* Active Filters */}
+      <ActiveFilters
+        filters={filters}
+        onRemoveFilter={(filterKey) => {
+          const updatedFilters = { ...filters };
+          delete updatedFilters[filterKey as keyof FilterParams];
+          handleFilterChange(updatedFilters);
+        }}
+        onClearAll={() => {
+          const clearedFilters = {};
+          handleFilterChange(clearedFilters);
+        }}
+      />
     </div>
   );
 };

@@ -1,53 +1,88 @@
 # 🤝 Guia de Contribuição - GLPI Dashboard
 
-Obrigado por considerar contribuir para o GLPI Dashboard! Este documento fornece diretrizes e instruções para contribuir com o projeto.
+Obrigado por seu interesse em contribuir com o GLPI Dashboard! Este documento fornece diretrizes para contribuições efetivas e colaboração produtiva.
 
 ## 📋 Índice
 
 - [Código de Conduta](#código-de-conduta)
 - [Como Contribuir](#como-contribuir)
-- [Fluxo de Trabalho](#fluxo-de-trabalho)
-- [Convenções de Branch](#convenções-de-branch)
-- [Convenções de Commit](#convenções-de-commit)
 - [Configuração do Ambiente](#configuração-do-ambiente)
-- [Executando Testes](#executando-testes)
-- [Enviando Pull Requests](#enviando-pull-requests)
-- [Checklist de Revisão de Código](#checklist-de-revisão-de-código)
-- [Padrões de Código](#padrões-de-código)
+- [Padrões de Desenvolvimento](#padrões-de-desenvolvimento)
+- [Processo de Pull Request](#processo-de-pull-request)
+- [Reportando Bugs](#reportando-bugs)
+- [Sugerindo Funcionalidades](#sugerindo-funcionalidades)
+- [Documentação](#documentação)
 
-## 📜 Código de Conduta
+## 🤝 Código de Conduta
 
-Este projeto segue um código de conduta. Ao participar, você concorda em manter um ambiente respeitoso e inclusivo para todos.
+Este projeto adere ao [Contributor Covenant](https://www.contributor-covenant.org/). Ao participar, você concorda em manter um ambiente respeitoso e inclusivo.
+
+### Comportamentos Esperados:
+- Uso de linguagem acolhedora e inclusiva
+- Respeito por diferentes pontos de vista
+- Aceitação construtiva de críticas
+- Foco no que é melhor para a comunidade
 
 ## 🚀 Como Contribuir
 
-Existem várias maneiras de contribuir:
+### Tipos de Contribuição
 
-- 🐛 **Reportar bugs**: Use os templates de issue
-- ✨ **Sugerir funcionalidades**: Abra uma feature request
-- 📝 **Melhorar documentação**: Corrija ou adicione documentação
-- 🔧 **Corrigir bugs**: Implemente correções
-- ⚡ **Adicionar funcionalidades**: Desenvolva novas features
-- 🧪 **Escrever testes**: Melhore a cobertura de testes
+1. **🐛 Correção de Bugs**
+2. **✨ Novas Funcionalidades**
+3. **📚 Documentação**
+4. **🧪 Testes**
+5. **🎨 Melhorias de UI/UX**
+6. **⚡ Otimizações de Performance**
 
-## 🔄 Fluxo de Trabalho
+### Fluxo de Contribuição
 
-### 1. Fork e Clone
+1. **Fork** o repositório
+2. **Clone** seu fork localmente
+3. **Crie** uma branch para sua contribuição
+4. **Desenvolva** seguindo os padrões
+5. **Teste** suas alterações
+6. **Commit** com mensagens descritivas
+7. **Push** para seu fork
+8. **Abra** um Pull Request
+
+## 🛠️ Configuração do Ambiente
+
+### Pré-requisitos
+
+- **Python 3.9+**
+- **Node.js 18+**
+- **Git**
+- **Redis** (opcional, para desenvolvimento)
+- **GLPI 10.0+** (para testes de integração)
+
+### Setup Inicial
 
 ```bash
-# Fork o repositório no GitHub
-# Clone seu fork
-git clone https://github.com/SEU_USERNAME/glpi_dashboard.git
+# 1. Fork e clone o repositório
+git clone https://github.com/SEU_USUARIO/glpi_dashboard.git
 cd glpi_dashboard
 
-# Adicione o repositório original como upstream
+# 2. Configure o upstream
 git remote add upstream https://github.com/ORIGINAL_OWNER/glpi_dashboard.git
-```
 
-### 2. Configuração do Ambiente
+# 3. Configure o backend
+cd backend
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
 
-```bash
-# Backend (Python)
+# 4. Configure o frontend
+cd ../frontend
+npm install
+
+# 5. Configure pre-commit hooks
+cd ..
+pre-commit install
+
+# 6. Configure variáveis de ambiente
+cp backend/.env.example backend/.env
+# Edite backend/.env com suas configurações
 cd backend
 python -m venv venv
 source venv/bin/activate  # Linux/Mac

@@ -19,6 +19,7 @@ from typing import Any, Dict, List, Optional, Union
 from ...infrastructure.external.glpi.metrics_adapter import GLPIConfig, GLPIMetricsAdapter, create_glpi_metrics_adapter
 from ..dto.metrics_dto import (
     DashboardMetricsDTO,
+    MetricsDTO,
     MetricsFilterDTO,
     MetricsResponseDTO,
     create_error_response,
@@ -52,7 +53,7 @@ class RefactoringConfig:
 
     # Configurações de migração gradual
     migration_percentage: float = 0.0  # % de requests para nova arquitetura
-    endpoints_to_migrate: List[str] = None  # Endpoints específicos para migrar
+    endpoints_to_migrate: Optional[List[str]] = None  # Endpoints específicos para migrar
 
     # Configurações de validação
     enable_validation: bool = False  # Executar ambas implementações
@@ -113,7 +114,6 @@ class ProgressiveRefactoringService:
         context = QueryContext(
             correlation_id=correlation_id,
             user_id=None,
-            request_timestamp=datetime.now(),
         )
 
         endpoint = "dashboard_metrics"
@@ -149,7 +149,6 @@ class ProgressiveRefactoringService:
         context = QueryContext(
             correlation_id=correlation_id,
             user_id=None,
-            request_timestamp=datetime.now(),
         )
 
         endpoint = "technician_ranking"
@@ -184,7 +183,6 @@ class ProgressiveRefactoringService:
         context = QueryContext(
             correlation_id=correlation_id,
             user_id=None,
-            request_timestamp=datetime.now(),
         )
 
         endpoint = "general_metrics"
@@ -220,7 +218,7 @@ class ProgressiveRefactoringService:
 
         if self.config.phase == RefactoringPhase.STRANGLER_FIG:
             # Verificar se endpoint está na lista de migração
-            if endpoint in self.config.endpoints_to_migrate:
+            if self.config.endpoints_to_migrate and endpoint in self.config.endpoints_to_migrate:
                 return True
 
             # Usar percentual de migração
@@ -239,19 +237,15 @@ class ProgressiveRefactoringService:
 
         try:
             # Criar query para dashboard
-            dashboard_query = self.query_factory.create_dashboard_query()
+            dashboard_query = self.query_factory.create_dashboard_metrics_query()
 
             # Executar query
             result = await dashboard_query.execute(filters, context)
 
-            # Converter para DTO de resposta
-            dashboard_dto = DashboardMetricsDTO(
-                general=result.get("general", {}),
-                levels=result.get("levels", {}),
-                trends=result.get("trends", {}),
-                recent_tickets=result.get("recent_tickets", []),
-                timestamp=datetime.now(),
-            )
+            # O result já é um MetricsResponseDTO, então retornamos diretamente
+            # Apenas atualizamos o tempo de execução
+            if result.data and isinstance(result.data, DashboardMetricsDTO):
+                result.data.response_time_ms = (time.time() - start_time) * 1000
 
             execution_time = time.time() - start_time
 
@@ -266,7 +260,8 @@ class ProgressiveRefactoringService:
                 },
             )
 
-            return create_success_response(data=dashboard_dto, execution_time=execution_time)
+            result.execution_time_ms = execution_time * 1000  # Converter para ms
+            return result
 
         except Exception as e:
             if self.config.enable_fallback:
@@ -315,7 +310,9 @@ class ProgressiveRefactoringService:
                 },
             )
 
-            return create_success_response(data=dashboard_dto, execution_time=execution_time)
+            response = create_success_response(data=dashboard_dto, correlation_id=context.correlation_id)
+            response.execution_time_ms = execution_time * 1000  # Converter para ms
+            return response
 
         except Exception as e:
             self.logger.error(
@@ -400,13 +397,13 @@ class ProgressiveRefactoringService:
             legacy_params["status"] = filters.status.value
 
         if filters.technician_id:
-            legacy_params["technician_id"] = filters.technician_id
+            legacy_params["technician_id"] = str(filters.technician_id)
 
         if filters.category_id:
-            legacy_params["category_id"] = filters.category_id
+            legacy_params["category_id"] = str(filters.category_id)
 
         if filters.priority:
-            legacy_params["priority"] = filters.priority
+            legacy_params["priority"] = str(filters.priority)
 
         return legacy_params
 
@@ -414,28 +411,52 @@ class ProgressiveRefactoringService:
         """Converte resultado legado para DTO."""
 
         if not legacy_result or not isinstance(legacy_result, dict):
+            # Criar MetricsDTO vazio
+            empty_metrics = MetricsDTO(
+                total=0,
+                novos=0,
+                pendentes=0,
+                progresso=0,
+                resolvidos=0,
+                period_start=None,
+                period_end=None,
+                total_technicians=0,
+                avg_tickets_per_technician=None,
+            )
             return DashboardMetricsDTO(
-                general={},
-                levels={},
-                trends={},
+                metrics=empty_metrics,
+                technicians=[],
+                top_performers=[],
                 recent_tickets=[],
-                timestamp=datetime.now(),
+                response_time_ms=None,
+                cache_hit=None,
+                data_freshness=None,
             )
 
         # Extrair dados do resultado legado
         data = legacy_result.get("data", {})
 
+        # Criar MetricsDTO com os dados principais
+        metrics_data = MetricsDTO(
+            total=data.get("geral", {}).get("total", 0),
+            novos=data.get("geral", {}).get("novos", 0),
+            pendentes=data.get("geral", {}).get("pendentes", 0),
+            progresso=data.get("geral", {}).get("progresso", 0),
+            resolvidos=data.get("geral", {}).get("resolvidos", 0),
+            period_start=None,
+            period_end=None,
+            total_technicians=0,
+            avg_tickets_per_technician=None,
+        )
+        
         return DashboardMetricsDTO(
-            general=data.get("geral", {}),
-            levels={
-                "n1": data.get("niveis", {}).get("n1", {}),
-                "n2": data.get("niveis", {}).get("n2", {}),
-                "n3": data.get("niveis", {}).get("n3", {}),
-                "n4": data.get("niveis", {}).get("n4", {}),
-            },
-            trends=data.get("tendencias", {}),
+            metrics=metrics_data,
+            technicians=[],
+            top_performers=[],
             recent_tickets=data.get("recent_tickets", []),
-            timestamp=datetime.now(),
+            response_time_ms=None,
+            cache_hit=None,
+            data_freshness=None,
         )
 
     async def _compare_results(
@@ -492,13 +513,11 @@ class ProgressiveRefactoringService:
             if not isinstance(new_data, DashboardMetricsDTO) or not isinstance(legacy_data, DashboardMetricsDTO):
                 return False
 
-            # Comparação básica de totais
-            new_general = new_data.general
-            legacy_general = legacy_data.general
+            # Comparação básica de totais usando metrics
+            new_metrics = new_data.metrics
+            legacy_metrics = legacy_data.metrics
 
-            return new_general.get("total", 0) == legacy_general.get("total", 0) and new_general.get(
-                "novos", 0
-            ) == legacy_general.get("novos", 0)
+            return new_metrics.total == legacy_metrics.total and new_metrics.novos == legacy_metrics.novos
 
         except Exception as e:
             self.logger.warning(f"Erro na comparação de dados: {str(e)}")

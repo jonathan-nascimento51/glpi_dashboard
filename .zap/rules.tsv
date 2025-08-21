@@ -1,0 +1,97 @@
+# OWASP ZAP Rules Configuration for GLPI Dashboard
+# Format: IGNORE|WARN|FAIL	RULE_ID	URL_REGEX	PARAMETER	OTHER
+
+# Ignorar alertas de desenvolvimento local
+IGNORE	10021	.*localhost.*	.*	# X-Content-Type-Options header missing
+IGNORE	10020	.*localhost.*	.*	# X-Frame-Options header missing
+IGNORE	10016	.*localhost.*	.*	# Web Browser XSS Protection Not Enabled
+
+# Alertas críticos que devem falhar o build
+FAIL	40012	.*	.*	# Cross Site Scripting (Reflected)
+FAIL	40014	.*	.*	# Cross Site Scripting (Persistent)
+FAIL	40018	.*	.*	# SQL Injection
+FAIL	90019	.*	.*	# Server Side Code Injection
+FAIL	90020	.*	.*	# Remote OS Command Injection
+FAIL	10095	.*	.*	# Backup File Disclosure
+FAIL	10098	.*	.*	# Cross-Domain Misconfiguration
+
+# Avisos para problemas de segurança moderados
+WARN	10017	.*	.*	# Cross-Domain JavaScript Source File Inclusion
+WARN	10019	.*	.*	# Content-Type Header Missing
+WARN	10027	.*	.*	# Information Disclosure - Suspicious Comments
+WARN	10028	.*	.*	# Open Redirect
+WARN	10029	.*	.*	# Cookie Poisoning
+WARN	10030	.*	.*	# User Controllable Charset
+WARN	10031	.*	.*	# User Controllable HTML Element Attribute
+WARN	10032	.*	.*	# Viewstate Scanner
+WARN	10033	.*	.*	# Directory Browsing
+WARN	10034	.*	.*	# Heartbleed OpenSSL Vulnerability
+WARN	10035	.*	.*	# Strict-Transport-Security Header Not Set
+WARN	10036	.*	.*	# Server Leaks Version Information via "Server" HTTP Response Header Field
+WARN	10037	.*	.*	# Server Leaks Information via "X-Powered-By" HTTP Response Header Field
+WARN	10040	.*	.*	# Secure Pages Include Mixed Content
+WARN	10041	.*	.*	# HTTP to HTTPS Insecure Transition in Form Post
+WARN	10042	.*	.*	# HTTPS to HTTP Insecure Transition in Form Post
+WARN	10043	.*	.*	# User Controllable JavaScript Event
+WARN	10044	.*	.*	# Big Redirect Detected
+WARN	10045	.*	.*	# Source Code Disclosure - /WEB-INF folder
+WARN	10046	.*	.*	# Shortcut Icon is Vulnerable to Cross-Site Request Forgery
+WARN	10047	.*	.*	# CSRF Countermeasures
+WARN	10048	.*	.*	# Remote Code Execution - Shell Shock
+WARN	10049	.*	.*	# Content Cacheability
+WARN	10050	.*	.*	# Retrieved from Cache
+WARN	10051	.*	.*	# Relative Path Confusion
+WARN	10052	.*	.*	# X-ChromeLogger-Data Header Information Leak
+WARN	10054	.*	.*	# Cookie Without SameSite Attribute
+WARN	10055	.*	.*	# CSP Scanner
+WARN	10056	.*	.*	# X-Debug-Token Information Leak
+WARN	10057	.*	.*	# Username Hash Found
+WARN	10061	.*	.*	# X-AspNet-Version Response Header
+WARN	10062	.*	.*	# PII Scanner
+WARN	10063	.*	.*	# Feature Policy Header Not Set
+WARN	10096	.*	.*	# Timestamp Disclosure
+WARN	10097	.*	.*	# Hash Disclosure
+WARN	10099	.*	.*	# Source Code Disclosure
+WARN	10104	.*	.*	# User Agent Fuzzer
+WARN	10105	.*	.*	# Weak Authentication Method
+WARN	10106	.*	.*	# HTTP Only Site
+WARN	10107	.*	.*	# Httpoxy - Proxy Header Misuse
+WARN	10108	.*	.*	# Reverse Tabnabbing
+WARN	10109	.*	.*	# Modern Web Application
+WARN	10110	.*	.*	# Dangerous JS Functions
+WARN	10202	.*	.*	# Absence of Anti-CSRF Tokens
+
+# Ignorar alertas específicos para desenvolvimento
+IGNORE	10015	.*localhost:3000.*	.*	# Incomplete or No Cache-control and Pragma HTTP Header Set
+IGNORE	10015	.*localhost:5000.*	.*	# Incomplete or No Cache-control and Pragma HTTP Header Set
+IGNORE	10023	.*localhost.*	.*	# Information Disclosure - Debug Error Messages
+IGNORE	10024	.*localhost.*	.*	# Information Disclosure - Sensitive Information in URL
+IGNORE	10025	.*localhost.*	.*	# Information Disclosure - Sensitive Information in HTTP Referrer Header
+IGNORE	10026	.*localhost.*	.*	# HTTP Parameter Override
+
+# Regras específicas para APIs GLPI
+WARN	40013	.*/api/.*	.*	# Session Fixation
+WARN	40016	.*/api/.*	.*	# Cross Site Scripting (Persistent) - Prime
+WARN	40017	.*/api/.*	.*	# Cross Site Scripting (Persistent) - Spider
+WARN	40019	.*/api/.*	.*	# SQL Injection - MySQL
+WARN	40020	.*/api/.*	.*	# SQL Injection - Hypersonic SQL
+WARN	40021	.*/api/.*	.*	# SQL Injection - Oracle
+WARN	40022	.*/api/.*	.*	# SQL Injection - PostgreSQL
+WARN	40023	.*/api/.*	.*	# Possible Username Enumeration
+WARN	40024	.*/api/.*	.*	# SQL Injection - SQLite
+WARN	40025	.*/api/.*	.*	# Proxy Disclosure
+WARN	40026	.*/api/.*	.*	# Cross Site Scripting (DOM Based)
+WARN	40027	.*/api/.*	.*	# SQL Injection - MsSQL
+WARN	40028	.*/api/.*	.*	# CRLF Injection
+WARN	40029	.*/api/.*	.*	# LDAP Injection
+
+# Configurações específicas para autenticação
+FAIL	10011	.*/login.*	.*	# Cookie Without Secure Flag
+FAIL	10012	.*/login.*	.*	# Password Autocomplete in Browser
+FAIL	10013	.*/login.*	.*	# Weak Authentication Method
+FAIL	10014	.*/login.*	.*	# HTTP Parameter Pollution
+
+# Alertas para arquivos estáticos
+IGNORE	10015	.*\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$	.*	# Cache control for static files
+IGNORE	10020	.*\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$	.*	# X-Frame-Options for static files
+IGNORE	10021	.*\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$	.*	# X-Content-Type-Options for static files
