@@ -1,7 +1,7 @@
 # Development dependencies for code quality and testing
 
 # Code formatting and linting
-black==23.12.1
+black==25.1.0
 isort==5.13.2
 pylint==3.0.3
 flake8==7.0.0
