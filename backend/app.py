@@ -44,7 +44,10 @@ def create_app():
     app.register_blueprint(api_bp, url_prefix='/api')
     app.register_blueprint(demo_bp)  # Demo routes for benchmarking
     app.register_blueprint(metrics_bp)  # Server metrics for performance monitoring
-    app.register_blueprint(cache_test_bp)  # Cache testing endpoints
+    
+    # Register cache test endpoints only in debug mode for security
+    if app.config.get('DEBUG', False):
+        app.register_blueprint(cache_test_bp)  # Cache testing endpoints (debug only)
     
     # Setup observability middleware
     ObservabilityMiddleware(app)

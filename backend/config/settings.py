@@ -273,17 +273,29 @@ class Config:
 
     def get_config_summary(self) -> Dict[str, Any]:
         """Retorna um resumo das configurações (sem dados sensíveis)"""
-        return {
-            "debug": self.DEBUG,
-            "port": self.PORT,
-            "host": self.HOST,
-            "glpi_url": self.GLPI_URL,
-            "log_level": self.LOG_LEVEL,
-            "cache_type": self.CACHE_TYPE,
-            "cache_timeout": self.CACHE_DEFAULT_TIMEOUT,
-            "performance_target": self.PERFORMANCE_TARGET_P95,
-            "api_timeout": self.API_TIMEOUT,
-        }
+        # Usar o redator de dados sensíveis para criar resumo seguro
+        try:
+            from utils.structured_logging import SensitiveDataRedactor
+            return SensitiveDataRedactor.create_safe_config_summary(self)
+        except ImportError:
+            # Fallback para resumo básico sem dados sensíveis
+            return {
+                "debug": self.DEBUG,
+                "port": self.PORT,
+                "host": self.HOST if self.HOST != "0.0.0.0" else "***REDACTED_HOST***",
+                "glpi_url": "***REDACTED_GLPI_URL***" if not self.DEBUG else self.GLPI_URL,
+                "log_level": self.LOG_LEVEL,
+                "cache_type": self.CACHE_TYPE,
+                "cache_timeout": self.CACHE_DEFAULT_TIMEOUT,
+                "performance_target": self.PERFORMANCE_TARGET_P95,
+                "api_timeout": self.API_TIMEOUT,
+                "credentials_configured": {
+                    "glpi_user_token": bool(self.GLPI_USER_TOKEN),
+                    "glpi_app_token": bool(self.GLPI_APP_TOKEN),
+                    "secret_key": bool(getattr(self, 'SECRET_KEY', None)),
+                    "api_key": bool(self.API_KEY)
+                }
+            }
 
 
 # Configuração de desenvolvimento

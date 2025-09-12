@@ -618,8 +618,8 @@ class GLPIMetricsAdapter:
         # Calcular tempo médio de resolução (simulado)
         resolved_tickets = [t for t in tickets if t.get("status") == 5]
         if resolved_tickets:
-            # TODO: Implementar cálculo real baseado em datas
-            metrics["avg_resolution_time"] = 2.5  # Placeholder
+            # Usando valor padrão até implementação completa de cálculo de datas
+            metrics["avg_resolution_time"] = 2.5
 
         # Última atividade
         if tickets:

@@ -6,12 +6,14 @@ contexto e integração com métricas Prometheus.
 
 import json
 import logging
+import re
 import time
 import uuid
 from contextvars import ContextVar
 from datetime import datetime
 from functools import wraps
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, Pattern
+from urllib.parse import urlparse, parse_qs
 
 from .prometheus_metrics import prometheus_metrics
 
@@ -51,12 +53,15 @@ class JSONFormatter(logging.Formatter):
         if operation_context:
             log_data["operation"] = operation_context
 
-        # Adicionar informações de exceção
+        # Adicionar informações de exceção com redação
         if record.exc_info:
+            exception_message = str(record.exc_info[1]) if record.exc_info[1] else None
+            traceback_text = self.formatException(record.exc_info)
+            
             log_data["exception"] = {
                 "type": record.exc_info[0].__name__ if record.exc_info[0] else None,
-                "message": str(record.exc_info[1]) if record.exc_info[1] else None,
-                "traceback": self.formatException(record.exc_info),
+                "message": SensitiveDataRedactor.redact_exception_message(exception_message) if exception_message else None,
+                "traceback": SensitiveDataRedactor.redact_traceback(traceback_text),
             }
 
         # Adicionar campos extras do record
@@ -103,34 +108,449 @@ class JSONFormatter(logging.Formatter):
         return json.dumps(log_data, ensure_ascii=False, separators=(",", ":"))
 
     def _sanitize_sensitive_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Remove ou anonimiza dados sensíveis dos logs."""
-        sensitive_fields = {
-            "password",
-            "token",
-            "secret",
-            "key",
-            "authorization",
-            "cookie",
-            "session",
-            "csrf",
-            "api_key",
-            "access_token",
-        }
+        """Remove ou anonimiza dados sensíveis dos logs com redação abrangente."""
+        return SensitiveDataRedactor.redact_data(data)
 
-        def sanitize_value(key: str, value: Any) -> Any:
-            if isinstance(key, str) and any(field in key.lower() for field in sensitive_fields):
-                if isinstance(value, str) and len(value) > 8:
-                    return f"{value[:4]}***{value[-4:]}"
-                return "***"
 
-            if isinstance(value, dict):
-                return {k: sanitize_value(k, v) for k, v in value.items()}
-            elif isinstance(value, list):
-                return [sanitize_value(f"item_{i}", item) for i, item in enumerate(value)]
-
+class SensitiveDataRedactor:
+    """Sistema de redação de dados sensíveis para logs estruturados."""
+    
+    # Cache para compilação de padrões regex (otimização de performance)
+    _compiled_patterns_cache = None
+    _redaction_enabled = True
+    _max_redaction_depth = 10
+    _performance_mode = False
+    
+    # Padrões de campos sensíveis (expansivo)
+    SENSITIVE_FIELD_PATTERNS = {
+        r'.*password.*': '***REDACTED_PASSWORD***',
+        r'.*token.*': '***REDACTED_TOKEN***', 
+        r'.*secret.*': '***REDACTED_SECRET***',
+        r'.*key.*': '***REDACTED_KEY***',
+        r'.*auth.*': '***REDACTED_AUTH***',
+        r'.*credential.*': '***REDACTED_CREDENTIAL***',
+        r'.*cookie.*': '***REDACTED_COOKIE***',
+        r'.*session.*': '***REDACTED_SESSION***',
+        r'.*csrf.*': '***REDACTED_CSRF***',
+        r'.*bearer.*': '***REDACTED_BEARER***',
+        r'.*api[_-]key.*': '***REDACTED_API_KEY***',
+        r'.*access[_-]token.*': '***REDACTED_ACCESS_TOKEN***',
+        r'.*refresh[_-]token.*': '***REDACTED_REFRESH_TOKEN***',
+        r'.*client[_-]secret.*': '***REDACTED_CLIENT_SECRET***',
+        r'.*private[_-]key.*': '***REDACTED_PRIVATE_KEY***',
+        r'.*ssh[_-]key.*': '***REDACTED_SSH_KEY***',
+        r'.*x[_-]api[_-]key.*': '***REDACTED_X_API_KEY***',
+        r'.*glpi[_-]user[_-]token.*': '***REDACTED_GLPI_USER_TOKEN***',
+        r'.*glpi[_-]app[_-]token.*': '***REDACTED_GLPI_APP_TOKEN***',
+        r'.*database[_-]url.*': '***REDACTED_DB_URL***',
+        r'.*db[_-]password.*': '***REDACTED_DB_PASSWORD***',
+        r'.*redis[_-]url.*': '***REDACTED_REDIS_URL***',
+        r'.*aws[_-]secret.*': '***REDACTED_AWS_SECRET***',
+        r'.*azure[_-]key.*': '***REDACTED_AZURE_KEY***',
+        r'.*gcp[_-]key.*': '***REDACTED_GCP_KEY***',
+        r'.*encryption[_-]key.*': '***REDACTED_ENCRYPTION_KEY***',
+        r'.*signing[_-]key.*': '***REDACTED_SIGNING_KEY***',
+        r'.*webhook[_-]secret.*': '***REDACTED_WEBHOOK_SECRET***',
+        r'.*oauth[_-]secret.*': '***REDACTED_OAUTH_SECRET***',
+        r'.*jwt[_-]secret.*': '***REDACTED_JWT_SECRET***',
+    }
+    
+    # Padrões de valores sensíveis (detecta por conteúdo)
+    SENSITIVE_VALUE_PATTERNS: List[Pattern] = [
+        # Tokens Bearer
+        re.compile(r'bearer\s+[a-z0-9_\-\.]+', re.IGNORECASE),
+        # API Keys (formato comum)
+        re.compile(r'[a-z0-9]{32,}', re.IGNORECASE),
+        # JWT Tokens (formato padrão)
+        re.compile(r'ey[a-z0-9]+\.[a-z0-9]+\.[a-z0-9_\-]+', re.IGNORECASE),
+        # UUIDs em contexto de token/secret
+        re.compile(r'[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}', re.IGNORECASE),
+        # Base64 encoded strings (potenciais secrets)
+        re.compile(r'^[a-z0-9+/]{40,}={0,2}$', re.IGNORECASE),
+        # Database URLs com credenciais
+        re.compile(r'\w+://[^:/]+:[^@/]+@[^/]+', re.IGNORECASE),
+        # URLs Redis com auth
+        re.compile(r'redis://[^:/]+:[^@/]+@[^/]+', re.IGNORECASE),
+        # SSH Keys (começos típicos)
+        re.compile(r'-----BEGIN\s+(RSA\s+)?PRIVATE\s+KEY-----', re.IGNORECASE),
+        # AWS Access Keys
+        re.compile(r'AKIA[0-9A-Z]{16}', re.IGNORECASE),
+        # AWS Secret Keys
+        re.compile(r'[a-z0-9+/]{40}', re.IGNORECASE),
+        # Azure Keys
+        re.compile(r'[a-z0-9]{88}', re.IGNORECASE),
+        # Google Cloud Keys (JSON key files)
+        re.compile(r'"type":\s*"service_account"', re.IGNORECASE),
+        # Flask Secret Keys (development patterns)
+        re.compile(r'dev-secret-key[\w\-]*', re.IGNORECASE),
+        # Common password patterns
+        re.compile(r'password[=:]\s*["\']?[\w@#$%^&*()]+["\']?', re.IGNORECASE),
+        # Environment variables with credentials
+        re.compile(r'[A-Z_]*(?:TOKEN|KEY|SECRET|PASSWORD|AUTH)[A-Z_]*=[\w\-@#$%^&*()]+', re.IGNORECASE),
+        # GLPI specific tokens (long alphanumeric strings)
+        re.compile(r'[a-z0-9]{20,}', re.IGNORECASE),
+    ]
+    
+    # Headers HTTP sensíveis
+    SENSITIVE_HEADERS = {
+        'authorization', 'cookie', 'set-cookie', 'x-api-key', 'x-auth-token',
+        'x-access-token', 'x-csrf-token', 'x-session-token', 'x-user-token',
+        'authentication', 'proxy-authorization', 'www-authenticate',
+        'x-glpi-user-token', 'x-glpi-app-token', 'x-webhook-signature',
+        'x-hub-signature', 'x-github-token', 'x-gitlab-token'
+    }
+    
+    # Parâmetros de query sensíveis
+    SENSITIVE_QUERY_PARAMS = {
+        'token', 'api_key', 'apikey', 'key', 'secret', 'password', 'auth',
+        'access_token', 'refresh_token', 'client_secret', 'user_token',
+        'app_token', 'session_id', 'csrf_token', 'state', 'code',
+        'glpi_user_token', 'glpi_app_token', 'backend_api_key'
+    }
+    
+    # Variáveis de ambiente sensíveis (para configuração)
+    SENSITIVE_ENV_VARS = {
+        'SECRET_KEY', 'FLASK_SECRET_KEY', 'GLPI_USER_TOKEN', 'GLPI_APP_TOKEN',
+        'API_KEY', 'BACKEND_API_KEY', 'REDIS_URL', 'CACHE_REDIS_URL', 
+        'DATABASE_URL', 'DB_PASSWORD', 'DB_USER', 'POSTGRES_PASSWORD',
+        'AWS_SECRET_ACCESS_KEY', 'AWS_ACCESS_KEY_ID', 'AZURE_CLIENT_SECRET',
+        'GCP_SERVICE_ACCOUNT_KEY', 'PROMETHEUS_GATEWAY_URL', 'WEBHOOK_SECRET',
+        'OAUTH_CLIENT_SECRET', 'JWT_SECRET_KEY', 'ENCRYPTION_KEY'
+    }
+    
+    @classmethod
+    def configure_performance(cls, enabled: bool = True, performance_mode: bool = False, max_depth: int = 10):
+        """Configura as opções de performance do redator."""
+        cls._redaction_enabled = enabled
+        cls._performance_mode = performance_mode
+        cls._max_redaction_depth = max_depth
+        
+        # Em modo de performance, compilar padrões uma vez
+        if performance_mode and cls._compiled_patterns_cache is None:
+            cls._compiled_patterns_cache = {
+                'field_patterns': {pattern: re.compile(pattern, re.IGNORECASE) 
+                                 for pattern in cls.SENSITIVE_FIELD_PATTERNS.keys()},
+                'value_patterns': cls.SENSITIVE_VALUE_PATTERNS.copy()
+            }
+    
+    @classmethod
+    def redact_data(cls, data: Any, max_depth: int = None) -> Any:
+        """Redacta dados sensíveis de forma recursiva com otimizações."""
+        # Verificação rápida se redação está desabilitada
+        if not cls._redaction_enabled:
+            return data
+            
+        if max_depth is None:
+            max_depth = cls._max_redaction_depth
+            
+        if max_depth <= 0:
+            return "***MAX_DEPTH_REACHED***"
+        
+        # Otimização: retornar rapidamente para tipos simples
+        if data is None or isinstance(data, (bool, int, float)):
+            return data
+        
+        if isinstance(data, dict):
+            return cls._redact_dict(data, max_depth - 1)
+        elif isinstance(data, list):
+            return cls._redact_list(data, max_depth - 1)
+        elif isinstance(data, str):
+            return cls._redact_string_value(data)
+        else:
+            return data
+    
+    @classmethod
+    def _redact_dict(cls, data: Dict[str, Any], max_depth: int) -> Dict[str, Any]:
+        """Redacta um dicionário."""
+        redacted = {}
+        
+        for key, value in data.items():
+            redacted_key = str(key)
+            
+            # Verificar se a chave é sensível
+            if cls._is_sensitive_field(redacted_key):
+                redacted[redacted_key] = cls._get_redacted_placeholder(redacted_key, value)
+            else:
+                redacted[redacted_key] = cls.redact_data(value, max_depth)
+                
+        return redacted
+    
+    @classmethod
+    def _redact_list(cls, data: List[Any], max_depth: int) -> List[Any]:
+        """Redacta uma lista."""
+        return [cls.redact_data(item, max_depth) for item in data]
+    
+    @classmethod
+    def _is_sensitive_field(cls, field_name: str) -> bool:
+        """Verifica se um nome de campo é sensível (otimizado)."""
+        if not cls._redaction_enabled:
+            return False
+            
+        field_lower = field_name.lower()
+        
+        # Otimização: verificação rápida para campos comuns
+        quick_checks = ['password', 'token', 'secret', 'key', 'auth']
+        if any(check in field_lower for check in quick_checks):
+            return True
+        
+        # Usa cache compilado se disponível (modo performance)
+        if cls._performance_mode and cls._compiled_patterns_cache:
+            compiled_patterns = cls._compiled_patterns_cache['field_patterns']
+            for pattern_regex in compiled_patterns.values():
+                if pattern_regex.match(field_lower):
+                    return True
+        else:
+            # Verificação padrão
+            for pattern in cls.SENSITIVE_FIELD_PATTERNS:
+                if re.match(pattern, field_lower):
+                    return True
+                
+        return False
+    
+    @classmethod
+    def _get_redacted_placeholder(cls, field_name: str, value: Any) -> str:
+        """Obtém o placeholder apropriado para redação."""
+        field_lower = field_name.lower()
+        
+        for pattern, placeholder in cls.SENSITIVE_FIELD_PATTERNS.items():
+            if re.match(pattern, field_lower):
+                return placeholder
+                
+        # Fallback genérico com preservação parcial para debugging
+        if isinstance(value, str) and len(value) > 8:
+            return f"{value[:3]}***{value[-3:]}"
+        return "***REDACTED***"
+    
+    @classmethod
+    def _redact_string_value(cls, value: str) -> str:
+        """Redacta valores string que podem conter dados sensíveis (otimizado)."""
+        if not cls._redaction_enabled or not isinstance(value, str) or len(value) < 8:
             return value
-
-        return {k: sanitize_value(k, v) for k, v in data.items()}
+        
+        # Otimização: evita redação para strings muito longas em modo performance
+        if cls._performance_mode and len(value) > 10000:
+            return value
+            
+        # Cache de padrões compilados se disponível
+        patterns_to_check = (cls._compiled_patterns_cache['value_patterns'] 
+                           if cls._performance_mode and cls._compiled_patterns_cache 
+                           else cls.SENSITIVE_VALUE_PATTERNS)
+        
+        # Verificar padrões de valores sensíveis
+        for pattern in patterns_to_check:
+            if pattern.search(value):
+                # Se encontrar padrão sensível, redactar preservando formato
+                if len(value) > 20:
+                    return f"{value[:4]}***REDACTED***{value[-4:]}"
+                else:
+                    return "***REDACTED***"
+                    
+        return value
+    
+    @classmethod
+    def redact_http_headers(cls, headers: Dict[str, Any]) -> Dict[str, Any]:
+        """Redacta headers HTTP sensíveis."""
+        if not isinstance(headers, dict):
+            return headers
+            
+        redacted = {}
+        for key, value in headers.items():
+            if isinstance(key, str) and key.lower() in cls.SENSITIVE_HEADERS:
+                redacted[key] = "***REDACTED_HEADER***"
+            else:
+                redacted[key] = cls.redact_data(value)
+                
+        return redacted
+    
+    @classmethod
+    def redact_query_params(cls, params: Dict[str, Any]) -> Dict[str, Any]:
+        """Redacta parâmetros de query sensíveis."""
+        if not isinstance(params, dict):
+            return params
+            
+        redacted = {}
+        for key, value in params.items():
+            if isinstance(key, str) and key.lower() in cls.SENSITIVE_QUERY_PARAMS:
+                redacted[key] = "***REDACTED_PARAM***"
+            else:
+                redacted[key] = cls.redact_data(value)
+                
+        return redacted
+    
+    @classmethod
+    def redact_url(cls, url: str) -> str:
+        """Redacta URLs que podem conter credenciais."""
+        if not isinstance(url, str):
+            return url
+            
+        try:
+            parsed = urlparse(url)
+            
+            # Redactar credenciais na URL
+            if parsed.username or parsed.password:
+                # Reconstruir URL sem credenciais
+                netloc = parsed.hostname
+                if parsed.port:
+                    netloc += f":{parsed.port}"
+                    
+                redacted_url = f"{parsed.scheme}://***REDACTED_CREDENTIALS***@{netloc}{parsed.path}"
+                if parsed.query:
+                    redacted_url += f"?{parsed.query}"
+                if parsed.fragment:
+                    redacted_url += f"#{parsed.fragment}"
+                    
+                return redacted_url
+                
+            # Redactar query parameters sensíveis
+            if parsed.query:
+                query_params = parse_qs(parsed.query, keep_blank_values=True)
+                redacted_params = cls.redact_query_params(query_params)
+                
+                # Reconstruir query string se houve redação
+                if redacted_params != query_params:
+                    from urllib.parse import urlencode
+                    redacted_query = urlencode(redacted_params, doseq=True)
+                    return f"{parsed.scheme}://{parsed.netloc}{parsed.path}?{redacted_query}"
+                    
+        except Exception:
+            # Em caso de erro no parsing, aplicar redação básica
+            for pattern in cls.SENSITIVE_VALUE_PATTERNS:
+                if pattern.search(url):
+                    return "***REDACTED_URL***"
+                    
+        return url
+    
+    @classmethod
+    def redact_traceback(cls, traceback_text: str) -> str:
+        """Redacta tracebacks que podem conter dados sensíveis."""
+        if not isinstance(traceback_text, str):
+            return traceback_text
+            
+        lines = traceback_text.split('\n')
+        redacted_lines = []
+        
+        for line in lines:
+            redacted_line = line
+            
+            # Redactar valores sensíveis na linha
+            for pattern in cls.SENSITIVE_VALUE_PATTERNS:
+                redacted_line = pattern.sub('***REDACTED***', redacted_line)
+            
+            # Redactar URLs com credenciais
+            redacted_line = cls.redact_url(redacted_line)
+            
+            redacted_lines.append(redacted_line)
+            
+        return '\n'.join(redacted_lines)
+    
+    @classmethod
+    def redact_exception_message(cls, message: str) -> str:
+        """Redacta mensagens de exceção que podem conter dados sensíveis."""
+        if not isinstance(message, str):
+            return message
+            
+        redacted_message = message
+        
+        # Aplicar redação de valores sensíveis
+        for pattern in cls.SENSITIVE_VALUE_PATTERNS:
+            redacted_message = pattern.sub('***REDACTED***', redacted_message)
+            
+        # Redactar URLs com credenciais
+        redacted_message = cls.redact_url(redacted_message)
+        
+        return redacted_message
+    
+    @classmethod
+    def redact_configuration_data(cls, config_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Redacta dados de configuração que podem conter informações sensíveis."""
+        if not isinstance(config_data, dict):
+            return config_data
+            
+        redacted = {}
+        
+        for key, value in config_data.items():
+            key_str = str(key).upper()
+            
+            # Verificar se é uma variável de ambiente sensível
+            if any(env_var in key_str for env_var in cls.SENSITIVE_ENV_VARS):
+                redacted[key] = "***REDACTED_CONFIG***"
+            # Verificar padrões sensíveis no nome da chave
+            elif cls._is_sensitive_field(key_str):
+                redacted[key] = cls._get_redacted_placeholder(key_str, value)
+            # Redactar valores que podem conter dados sensíveis
+            elif isinstance(value, str):
+                redacted[key] = cls._redact_string_value(value)
+            # Recursivamente redactar objetos aninhados
+            else:
+                redacted[key] = cls.redact_data(value)
+                
+        return redacted
+    
+    @classmethod
+    def redact_environment_variables(cls, env_vars: Dict[str, str]) -> Dict[str, str]:
+        """Redacta variáveis de ambiente sensíveis."""
+        if not isinstance(env_vars, dict):
+            return env_vars
+            
+        redacted = {}
+        
+        for key, value in env_vars.items():
+            key_upper = str(key).upper()
+            
+            if key_upper in cls.SENSITIVE_ENV_VARS:
+                redacted[key] = "***REDACTED_ENV_VAR***"
+            elif any(sensitive in key_upper for sensitive in ['TOKEN', 'KEY', 'SECRET', 'PASSWORD', 'AUTH']):
+                redacted[key] = "***REDACTED_ENV_VAR***"
+            else:
+                # Ainda aplicar redação de valores para detectar padrões sensíveis
+                redacted[key] = cls._redact_string_value(str(value)) if value else value
+                
+        return redacted
+    
+    @classmethod
+    def create_safe_config_summary(cls, config_obj: Any) -> Dict[str, Any]:
+        """Cria um resumo seguro de configuração sem dados sensíveis."""
+        safe_summary = {}
+        
+        # Lista de atributos seguros para incluir no resumo
+        safe_attributes = {
+            'DEBUG', 'HOST', 'PORT', 'LOG_LEVEL', 'CACHE_TYPE', 
+            'CACHE_DEFAULT_TIMEOUT', 'PERFORMANCE_TARGET_P95', 'API_TIMEOUT',
+            'CORS_ORIGINS', 'MAX_CONTENT_LENGTH', 'RATE_LIMIT_PER_MINUTE'
+        }
+        
+        # URLs podem ser incluídas mas devem ser redactadas
+        url_attributes = {
+            'GLPI_URL', 'BACKEND_API_URL', 'PROMETHEUS_GATEWAY_URL'
+        }
+        
+        try:
+            for attr in safe_attributes:
+                if hasattr(config_obj, attr):
+                    value = getattr(config_obj, attr)
+                    safe_summary[attr.lower()] = value
+                    
+            for attr in url_attributes:
+                if hasattr(config_obj, attr):
+                    value = getattr(config_obj, attr)
+                    safe_summary[attr.lower()] = cls.redact_url(str(value)) if value else None
+                    
+            # Adicionar informações sobre presença de configurações sensíveis (sem valores)
+            sensitive_config_status = {}
+            for env_var in ['GLPI_USER_TOKEN', 'GLPI_APP_TOKEN', 'SECRET_KEY', 'API_KEY']:
+                if hasattr(config_obj, env_var):
+                    value = getattr(config_obj, env_var)
+                    sensitive_config_status[f"{env_var.lower()}_configured"] = bool(value)
+                    
+            safe_summary['sensitive_config_status'] = sensitive_config_status
+            
+        except Exception as e:
+            safe_summary = {
+                'error': 'Failed to create config summary',
+                'error_type': type(e).__name__
+            }
+            
+        return safe_summary
 
 
 class StructuredLogger:

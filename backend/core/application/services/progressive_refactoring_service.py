@@ -500,36 +500,6 @@ class ProgressiveRefactoringService:
             self.logger.warning(f"Erro na comparação de dados: {str(e)}")
             return False
 
-    # Métodos específicos para ranking e métricas gerais (implementação similar)
-    async def _execute_new_architecture_ranking(self, filters, context):
-        """Implementação específica para ranking usando nova arquitetura."""
-        # TODO: Implementar usando TechnicianRankingQuery
-        pass
-
-    async def _execute_legacy_ranking_with_fallback(self, filters, context):
-        """Implementação específica para ranking usando arquitetura legada."""
-        # TODO: Implementar usando método legado
-        pass
-
-    async def _execute_validation_mode_ranking(self, filters, context):
-        """Implementação específica para validação de ranking."""
-        # TODO: Implementar validação específica
-        pass
-
-    async def _execute_new_architecture_general(self, filters, context):
-        """Implementação específica para métricas gerais usando nova arquitetura."""
-        # TODO: Implementar usando GeneralMetricsQuery
-        pass
-
-    async def _execute_legacy_general_with_fallback(self, filters, context):
-        """Implementação específica para métricas gerais usando arquitetura legada."""
-        # TODO: Implementar usando método legado
-        pass
-
-    async def _execute_validation_mode_general(self, filters, context):
-        """Implementação específica para validação de métricas gerais."""
-        # TODO: Implementar validação específica
-        pass
 
     def get_performance_metrics(self) -> Dict[str, Any]:
         """Retorna métricas de performance da refatoração."""

@@ -14,7 +14,7 @@ from werkzeug.exceptions import HTTPException
 
 from .alerting_system import alert_manager, record_api_response_time
 from .prometheus_metrics import monitor_api_endpoint, prometheus_metrics
-from .structured_logging import StructuredLogger, api_logger, correlation_id_var, log_api_request
+from .structured_logging import StructuredLogger, api_logger, correlation_id_var, log_api_request, SensitiveDataRedactor
 
 
 class ObservabilityMiddleware:
@@ -47,34 +47,52 @@ class ObservabilityMiddleware:
         self.logger.logger.info("Middleware de observabilidade inicializado")
 
     def _before_request(self):
-        """Executado antes de cada request."""
+        """Executado antes de cada request com filtragem de dados sensíveis."""
         # Gerar correlation ID
         correlation_id = self._get_or_generate_correlation_id()
         correlation_id_var.set(correlation_id)
 
-        # Armazenar dados do request no contexto
+        # Armazenar dados do request no contexto (com redação)
         g.start_time = time.time()
         g.correlation_id = correlation_id
+        
+        # Filtrar headers sensíveis
+        filtered_headers = self._filter_request_headers()
+        
+        # Filtrar query parameters sensíveis
+        filtered_query_params = self._filter_query_parameters()
+        
+        # Filtrar dados do corpo da requisição se aplicável
+        filtered_form_data = self._filter_request_body()
+        
         g.request_data = {
             "method": request.method,
             "endpoint": request.endpoint or "unknown",
-            "path": request.path,
+            "path": SensitiveDataRedactor.redact_url(request.path),
             "remote_addr": request.remote_addr,
             "user_agent": request.headers.get("User-Agent", "unknown"),
+            "headers": filtered_headers,
+            "query_params": filtered_query_params,
+            "form_data": filtered_form_data,
+            "content_type": request.content_type,
+            "content_length": request.content_length
         }
 
-        # Log início do request
+        # Log início do request (dados já filtrados)
         api_logger.log_operation_start(
             "api_request",
             correlation_id=correlation_id,
             method=request.method,
             endpoint=request.endpoint,
-            path=request.path,
+            path=SensitiveDataRedactor.redact_url(request.path),
             remote_addr=request.remote_addr,
+            headers_count=len(filtered_headers),
+            has_query_params=len(filtered_query_params) > 0,
+            has_form_data=len(filtered_form_data) > 0
         )
 
     def _after_request(self, response):
-        """Executado após cada request."""
+        """Executado após cada request com filtragem de dados sensíveis."""
         if not hasattr(g, "start_time"):
             return response
 
@@ -84,6 +102,12 @@ class ObservabilityMiddleware:
         # Obter dados do request
         request_data = getattr(g, "request_data", {})
         correlation_id = getattr(g, "correlation_id", "unknown")
+
+        # Filtrar headers de resposta sensíveis
+        filtered_response_headers = self._filter_response_headers(response.headers)
+        
+        # Filtrar dados de resposta se necessário
+        filtered_response_data = self._filter_response_data(response)
 
         # Registrar métricas
         prometheus_metrics.record_api_request(
@@ -96,7 +120,7 @@ class ObservabilityMiddleware:
         # Registrar no sistema de alertas
         record_api_response_time(duration, endpoint=request_data.get("endpoint", "unknown"))
 
-        # Log estruturado
+        # Log estruturado com dados filtrados
         log_api_request(
             method=request_data.get("method", "unknown"),
             endpoint=request_data.get("endpoint", "unknown"),
@@ -105,18 +129,28 @@ class ObservabilityMiddleware:
             correlation_id=correlation_id,
             remote_addr=request_data.get("remote_addr"),
             user_agent=request_data.get("user_agent"),
+            request_headers_filtered=len(request_data.get("headers", {})),
+            response_headers_filtered=len(filtered_response_headers),
+            response_content_type=response.content_type
         )
 
-        # Log fim do request
+        # Log fim do request com dados filtrados
         api_logger.log_operation_end(
             "api_request",
             success=200 <= response.status_code < 400,
             status_code=response.status_code,
             duration=duration,
             response_size=len(response.get_data()),
+            response_headers_count=len(filtered_response_headers),
+            response_content_type=response.content_type,
+            request_summary={
+                "headers_count": len(request_data.get("headers", {})),
+                "query_params_count": len(request_data.get("query_params", {})),
+                "has_form_data": len(request_data.get("form_data", {})) > 0
+            }
         )
 
-        # Adicionar headers de observabilidade
+        # Adicionar headers de observabilidade (não sensíveis)
         response.headers["X-Correlation-ID"] = correlation_id
         response.headers["X-Response-Time"] = f"{duration:.3f}s"
 
@@ -143,22 +177,24 @@ class ObservabilityMiddleware:
         # Registrar erro nas métricas
         prometheus_metrics.record_error(error_type, request_data.get("endpoint", "unknown"))
 
-        # Log estruturado do erro
+        # Log estruturado do erro com redação
         api_logger.log_error_with_context(
             error_type,
-            f"Erro na API: {str(error)}",
+            f"Erro na API: {SensitiveDataRedactor.redact_exception_message(str(error))}",
             exception=error,
             correlation_id=correlation_id,
             endpoint=request_data.get("endpoint"),
             method=request_data.get("method"),
             status_code=status_code,
+            request_path=SensitiveDataRedactor.redact_url(request_data.get("path", "")),
+            headers_count=len(request_data.get("headers", {})),
         )
 
-        # Retornar resposta de erro estruturada
+        # Retornar resposta de erro estruturada (com redação)
         error_response = {
             "error": {
                 "type": error_type,
-                "message": str(error),
+                "message": SensitiveDataRedactor.redact_exception_message(str(error)),
                 "correlation_id": correlation_id,
                 "timestamp": time.time(),
             }
@@ -176,6 +212,82 @@ class ObservabilityMiddleware:
             correlation_id = api_logger.generate_correlation_id()
 
         return correlation_id
+    
+    def _filter_request_headers(self) -> Dict[str, str]:
+        """Filtra headers sensíveis da requisição."""
+        if not hasattr(request, 'headers'):
+            return {}
+            
+        headers_dict = dict(request.headers)
+        return SensitiveDataRedactor.redact_http_headers(headers_dict)
+    
+    def _filter_query_parameters(self) -> Dict[str, Any]:
+        """Filtra parâmetros de query sensíveis."""
+        if not hasattr(request, 'args'):
+            return {}
+            
+        query_params = dict(request.args)
+        return SensitiveDataRedactor.redact_query_params(query_params)
+    
+    def _filter_request_body(self) -> Dict[str, Any]:
+        """Filtra dados do corpo da requisição sensíveis."""
+        filtered_data = {}
+        
+        try:
+            # Verificar form data
+            if hasattr(request, 'form') and request.form:
+                form_data = dict(request.form)
+                filtered_data['form'] = SensitiveDataRedactor.redact_data(form_data)
+            
+            # Verificar JSON data
+            if hasattr(request, 'json') and request.json:
+                json_data = request.json
+                filtered_data['json'] = SensitiveDataRedactor.redact_data(json_data)
+            
+            # Verificar files
+            if hasattr(request, 'files') and request.files:
+                files_info = {name: {'filename': file.filename, 'content_type': file.content_type} 
+                             for name, file in request.files.items()}
+                filtered_data['files'] = files_info
+                
+        except Exception as e:
+            # Em caso de erro, registrar sem expor dados sensíveis
+            filtered_data = {'error': f'Failed to parse request body: {type(e).__name__}'}
+            
+        return filtered_data
+    
+    def _filter_response_headers(self, headers) -> Dict[str, str]:
+        """Filtra headers sensíveis da resposta."""
+        if not headers:
+            return {}
+            
+        headers_dict = dict(headers)
+        return SensitiveDataRedactor.redact_http_headers(headers_dict)
+    
+    def _filter_response_data(self, response) -> Dict[str, Any]:
+        """Filtra dados sensíveis da resposta."""
+        filtered_data = {
+            'content_type': response.content_type,
+            'content_length': len(response.get_data()) if response.get_data() else 0,
+            'status_code': response.status_code
+        }
+        
+        # Não logar o conteúdo da resposta por padrão para evitar vazamentos
+        # Se necessário para debugging, pode ser habilitado com configuração específica
+        try:
+            if response.content_type and 'application/json' in response.content_type:
+                # Para responses JSON pequenas, podemos logar um resumo filtrado
+                data = response.get_json()
+                if data and len(str(data)) < 1000:  # Limit size
+                    filtered_data['json_summary'] = {
+                        'keys': list(data.keys()) if isinstance(data, dict) else 'non_dict',
+                        'size': len(str(data))
+                    }
+        except Exception:
+            # Falhar silenciosamente para não afetar a resposta
+            pass
+            
+        return filtered_data
 
     def _metrics_endpoint(self):
         """Endpoint para métricas Prometheus."""
