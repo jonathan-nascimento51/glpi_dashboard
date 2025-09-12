@@ -14,11 +14,8 @@ from utils.performance import cache_with_filters, monitor_performance, performan
 from utils.prometheus_metrics import monitor_api_endpoint
 from utils.response_formatter import ResponseFormatter
 
-# Usar cache unificado da nova arquitetura
-from core.infrastructure.cache.unified_cache import UnifiedCache
-
-# Instanciar cache unificado
-unified_cache = UnifiedCache()
+# Usar cache unificado da nova arquitetura (singleton)
+from core.infrastructure.cache.unified_cache import unified_cache
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -187,11 +184,19 @@ def get_metrics_v2():
                 correlation_id=correlation_id
             )
         
-        # Add architecture info for debugging
-        metrics_data["_architecture"] = "new_v2"
-        metrics_data["_facade"] = "MetricsFacade"
+        # Convert Pydantic model to dict and add architecture info for debugging
+        if hasattr(metrics_data, 'model_dump'):
+            metrics_dict = metrics_data.model_dump()
+        elif hasattr(metrics_data, 'dict'):
+            metrics_dict = metrics_data.dict()
+        else:
+            metrics_dict = metrics_data  # Already a dict
         
-        return jsonify(metrics_data)
+        # Add debugging info
+        metrics_dict["_architecture"] = "new_v2"
+        metrics_dict["_facade"] = "MetricsFacade"
+        
+        return jsonify(metrics_dict)
         
     except Exception as e:
         logger.error(f"Error in new metrics endpoint: {e}")
@@ -228,13 +233,29 @@ def get_metrics(validated_start_date=None, validated_end_date=None, validated_fi
     
     cached_data = unified_cache.get("api_metrics", cache_key)
     if cached_data:
+        # Handle cached data safely
         if isinstance(cached_data, dict):
-            cached_data["cached"] = True
-            cached_data["correlation_id"] = correlation_id
+            cached_response = cached_data.copy()
+            cached_response["cached"] = True
+            cached_response["correlation_id"] = correlation_id
+        else:
+            # If cached data is a Pydantic model, convert to dict
+            if hasattr(cached_data, 'model_dump'):
+                cached_response = cached_data.model_dump()
+            elif hasattr(cached_data, 'dict'):
+                cached_response = cached_data.dict()
+            else:
+                cached_response = {"data": cached_data}
+            
+            cached_response.update({
+                "cached": True,
+                "correlation_id": correlation_id,
+                "success": True
+            })
         
         response_time = (time.time() - start_time) * 1000
         logger.info(f"[{correlation_id}] Métricas retornadas do cache em {response_time:.2f}ms")
-        return jsonify(cached_data)
+        return jsonify(cached_response)
 
     try:
         # Usar datas já validadas pelo decorador
@@ -358,20 +379,38 @@ def get_metrics(validated_start_date=None, validated_end_date=None, validated_fi
 
         # Validar dados com Pydantic (opcional, para garantir estrutura)
         try:
-            if "data" in metrics_data:
-                DashboardMetrics(**metrics_data["data"])
+            if hasattr(metrics_data, 'model_dump') or hasattr(metrics_data, 'dict'):
+                # Already a Pydantic model, validation passed
+                pass
+            elif isinstance(metrics_data, dict):
+                if "data" in metrics_data:
+                    DashboardMetrics(**metrics_data["data"])
+                else:
+                    DashboardMetrics(**metrics_data)
         except ValidationError as ve:
             logger.warning(f"[{correlation_id}] Dados não seguem o schema esperado: {ve}")
 
-        # Adicionar correlation_id à resposta se metrics_data for um dict
-        if isinstance(metrics_data, dict) and "data" in metrics_data:
-            metrics_data["correlation_id"] = correlation_id
-            metrics_data["cached"] = False
+        # Convert Pydantic model to dict for proper serialization
+        if hasattr(metrics_data, 'model_dump'):
+            metrics_dict = metrics_data.model_dump()
+        elif hasattr(metrics_data, 'dict'):
+            metrics_dict = metrics_data.dict()
+        else:
+            metrics_dict = metrics_data if isinstance(metrics_data, dict) else {}
+        
+        # Add metadata to response
+        response_data = {
+            "success": True,
+            "data": metrics_dict,
+            "correlation_id": correlation_id,
+            "cached": False,
+            "timestamp": datetime.now().isoformat()
+        }
         
         # Salvar no cache usando unified_cache
-        unified_cache.set("api_metrics", cache_key, metrics_data, ttl_seconds=180)
+        unified_cache.set("api_metrics", cache_key, response_data, ttl_seconds=180)
 
-        return jsonify(metrics_data)
+        return jsonify(response_data)
 
     except Exception as e:
         logger.error(f"[{correlation_id}] Erro inesperado ao buscar métricas: {e}", exc_info=True)
@@ -482,16 +521,35 @@ def get_filtered_metrics(validated_start_date=None, validated_end_date=None, val
 
         # Validar dados com Pydantic (opcional, para garantir estrutura)
         try:
-            if "data" in metrics_data:
-                DashboardMetrics(**metrics_data["data"])
+            if hasattr(metrics_data, 'model_dump') or hasattr(metrics_data, 'dict'):
+                # Already a Pydantic model, validation passed
+                pass
+            elif isinstance(metrics_data, dict):
+                if "data" in metrics_data:
+                    DashboardMetrics(**metrics_data["data"])
+                else:
+                    DashboardMetrics(**metrics_data)
         except ValidationError as ve:
             logger.warning(f"[{correlation_id}] Dados não seguem o schema esperado: {ve}")
 
-        # Adicionar correlation_id à resposta se metrics_data for um dict
-        if isinstance(metrics_data, dict) and "data" in metrics_data:
-            metrics_data["correlation_id"] = correlation_id
+        # Convert Pydantic model to dict for proper serialization
+        if hasattr(metrics_data, 'model_dump'):
+            metrics_dict = metrics_data.model_dump()
+        elif hasattr(metrics_data, 'dict'):
+            metrics_dict = metrics_data.dict()
+        else:
+            metrics_dict = metrics_data if isinstance(metrics_data, dict) else {}
+        
+        # Add metadata to response
+        response_data = {
+            "success": True,
+            "data": metrics_dict,
+            "correlation_id": correlation_id,
+            "cached": False,
+            "timestamp": datetime.now().isoformat()
+        }
 
-        return jsonify(metrics_data)
+        return jsonify(response_data)
 
     except Exception as e:
         logger.error(
@@ -662,9 +720,26 @@ def get_technician_ranking(validated_start_date=None, validated_end_date=None, v
         cached_data = unified_cache.get("technician_ranking", cache_key)
         if cached_data:
             print("[CACHE HIT] Retornando dados do cache para ranking de técnicos")
-            cached_data["cached"] = True
-            cached_data["correlation_id"] = correlation_id
-            return jsonify(cached_data)
+            # Handle cached data safely
+            if isinstance(cached_data, dict):
+                cached_response = cached_data.copy()
+                cached_response["cached"] = True
+                cached_response["correlation_id"] = correlation_id
+            else:
+                # If cached data is a Pydantic model, convert to dict
+                if hasattr(cached_data, 'model_dump'):
+                    cached_response = cached_data.model_dump()
+                elif hasattr(cached_data, 'dict'):
+                    cached_response = cached_data.dict()
+                else:
+                    cached_response = {"data": cached_data}
+                
+                cached_response.update({
+                    "cached": True,
+                    "correlation_id": correlation_id,
+                    "success": True
+                })
+            return jsonify(cached_response)
 
         # Log início do pipeline
         obs_logger.log_pipeline_start(
