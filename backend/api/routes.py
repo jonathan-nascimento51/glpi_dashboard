@@ -9,8 +9,7 @@ from pydantic import ValidationError
 from config.settings import active_config
 from schemas.dashboard import DashboardMetrics
 from services.api_service import APIService
-from services.legacy.glpi_service_facade import GLPIServiceFacade
-from core.application.services.refactoring_integration import get_refactoring_integration_service
+from core.application.services.metrics_facade import MetricsFacade
 from utils.date_decorators import standard_date_validation
 from utils.performance import cache_with_filters, monitor_performance, performance_monitor
 from utils.prometheus_metrics import monitor_api_endpoint
@@ -26,12 +25,7 @@ api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 # Inicializa serviços
 api_service = APIService()
-glpi_service = GLPIServiceFacade()  # Using decomposed facade with backward compatibility
-
-# Function to get new service lazily
-def get_new_glpi_service():
-    """Get the new architecture service via refactoring integration."""
-    return get_refactoring_integration_service().get_service()
+metrics_facade = MetricsFacade()  # Clean Architecture metrics service
 
 # Obtém logger configurado
 logger = logging.getLogger("api")
@@ -156,10 +150,7 @@ DEFAULT_METRICS = {
 }
 
 
-# Cache para métricas do GLPI (evita chamadas frequentes) - Cache por 180 segundos (3 minutos) para melhor performance
-_metrics_cache = {"data": None, "timestamp": 0, "ttl": 180, "filters_hash": None}
-# Cache para ranking de técnicos (evita chamadas frequentes)
-_ranking_cache = {"data": None, "timestamp": 0, "ttl": 60, "filters_hash": None}  # Cache por 60 segundos
+# All caching now handled by unified_cache from new architecture
 
 @api_bp.route("/")
 def api_root():
@@ -188,13 +179,13 @@ def get_metrics_v2():
         
         # Use new architecture
         if start_date or end_date:
-            metrics_data = get_new_glpi_service().get_dashboard_metrics_with_date_filter(
+            metrics_data = metrics_facade.get_dashboard_metrics_with_date_filter(
                 start_date=start_date,
                 end_date=end_date,
                 correlation_id=correlation_id
             )
         else:
-            metrics_data = get_new_glpi_service().get_dashboard_metrics(
+            metrics_data = metrics_facade.get_dashboard_metrics(
                 correlation_id=correlation_id
             )
         
@@ -230,20 +221,15 @@ def get_metrics(validated_start_date=None, validated_end_date=None, validated_fi
 
     start_time = time.time()
     
-    # Verificar cache baseado nos filtros
-    filters_str = json.dumps({
+    # Verificar cache usando unified_cache
+    cache_key = {
         "start_date": validated_start_date.isoformat() if validated_start_date else None,
         "end_date": validated_end_date.isoformat() if validated_end_date else None,
         "filters": validated_filters or {}
-    }, sort_keys=True)
-    filters_hash = hashlib.md5(filters_str.encode()).hexdigest()
+    }
     
-    current_time = time.time()
-    if (_metrics_cache["data"] is not None and 
-        current_time - _metrics_cache["timestamp"] < _metrics_cache["ttl"] and
-        _metrics_cache["filters_hash"] == filters_hash):
-        
-        cached_data = _metrics_cache["data"].copy()
+    cached_data = unified_cache.get("api_metrics", cache_key)
+    if cached_data:
         if isinstance(cached_data, dict):
             cached_data["cached"] = True
             cached_data["correlation_id"] = correlation_id
@@ -292,7 +278,7 @@ def get_metrics(validated_start_date=None, validated_end_date=None, validated_fi
                     },
                 )
                 # Service function accepts None values, cast for type safety
-                metrics_data = glpi_service.get_dashboard_metrics_with_modification_date_filter(
+                metrics_data = metrics_facade.get_dashboard_metrics_with_modification_date_filter(
                     start_date=cast(str, safe_date_string(start_date)),
                     end_date=cast(str, safe_date_string(end_date)),
                     correlation_id=correlation_id,
@@ -307,7 +293,7 @@ def get_metrics(validated_start_date=None, validated_end_date=None, validated_fi
                     },
                 )
                 # Service function accepts None values, cast for type safety
-                metrics_data = glpi_service.get_dashboard_metrics_with_date_filter(
+                metrics_data = metrics_facade.get_dashboard_metrics_with_date_filter(
                     start_date=cast(str, safe_date_string(start_date)),
                     end_date=cast(str, safe_date_string(end_date)),
                     correlation_id=correlation_id,
@@ -323,12 +309,11 @@ def get_metrics(validated_start_date=None, validated_end_date=None, validated_fi
                 },
             )
             # Service function accepts None values, cast for type safety
-            metrics_data = glpi_service.get_dashboard_metrics_with_filters(
+            metrics_data = metrics_facade.get_dashboard_metrics_with_filters(
                 start_date=cast(str, safe_date_string(start_date)),
                 end_date=cast(str, safe_date_string(end_date)),
                 status=cast(str, safe_filter_string(status)),
                 priority=cast(str, safe_filter_string(priority)),
-                level=cast(str, safe_filter_string(level)),
                 technician=cast(str, safe_filter_string(technician)),
                 category=cast(str, safe_filter_string(category)),
                 correlation_id=correlation_id,
@@ -339,7 +324,7 @@ def get_metrics(validated_start_date=None, validated_end_date=None, validated_fi
                 step="calling_get_dashboard_metrics",
                 data={"method": "get_dashboard_metrics", "filters": filters},
             )
-            metrics_data = glpi_service.get_dashboard_metrics(correlation_id=correlation_id)
+            metrics_data = metrics_facade.get_dashboard_metrics(correlation_id=correlation_id)
 
         # Verificar se houve erro no serviço
         if isinstance(metrics_data, dict) and metrics_data.get("success") is False:
@@ -385,10 +370,8 @@ def get_metrics(validated_start_date=None, validated_end_date=None, validated_fi
             metrics_data["correlation_id"] = correlation_id
             metrics_data["cached"] = False
         
-        # Salvar no cache para próximas requisições
-        _metrics_cache["data"] = metrics_data.copy() if isinstance(metrics_data, dict) else metrics_data
-        _metrics_cache["timestamp"] = current_time
-        _metrics_cache["filters_hash"] = filters_hash
+        # Salvar no cache usando unified_cache
+        unified_cache.set("api_metrics", cache_key, metrics_data, ttl_seconds=180)
 
         return jsonify(metrics_data)
 
@@ -457,12 +440,11 @@ def get_filtered_metrics(validated_start_date=None, validated_end_date=None, val
             data={"method": "get_dashboard_metrics_with_filters", "filters": filters},
         )
         # Service function accepts None values, cast for type safety
-        metrics_data = glpi_service.get_dashboard_metrics_with_filters(
+        metrics_data = metrics_facade.get_dashboard_metrics_with_filters(
             start_date=cast(str, safe_date_string(start_date)),
             end_date=cast(str, safe_date_string(end_date)),
             status=cast(str, safe_filter_string(status)),
             priority=cast(str, safe_filter_string(priority)),
-            level=cast(str, safe_filter_string(level)),
             technician=cast(str, safe_filter_string(technician)),
             category=cast(str, safe_filter_string(category)),
             correlation_id=correlation_id,
@@ -598,12 +580,13 @@ def get_technicians():
         
         # Buscar técnicos usando método correto
         # Service function accepts None values, cast for type safety
-        technician_ids, technician_names = glpi_service._get_all_technician_ids_and_names(entity_id=cast(int, safe_entity_id(entity_id)))
+        technician_ids, technician_names = metrics_facade.get_all_technician_ids_and_names(entity_id=cast(int, safe_entity_id(entity_id)))
         
         # Converter para formato de lista de dicionários
         technicians = []
-        for tech_id in technician_ids:
-            tech_name = technician_names.get(tech_id, f"Técnico {tech_id}")
+        for i, tech_id in enumerate(technician_ids):
+            # technician_names is List[str], use positional access
+            tech_name = technician_names[i] if i < len(technician_names) else f"Técnico {tech_id}"
             technicians.append({
                 "id": tech_id,
                 "name": tech_name
@@ -669,17 +652,18 @@ def get_technician_ranking(validated_start_date=None, validated_end_date=None, v
         except (ValueError, TypeError):
             limit = 100  # Padrão aumentado para 100
 
-        # Verificar cache
-        current_time = time.time()
-        filters_hash = hash(str(sorted(filters.items())) + str(start_date) + str(end_date) + str(limit) + str(entity_id))
+        # Verificar cache usando unified_cache
+        cache_key = {
+            "start_date": start_date,
+            "end_date": end_date,
+            "filters": filters,
+            "limit": limit,
+            "entity_id": entity_id
+        }
         
-        if (
-            _ranking_cache["data"] is not None
-            and current_time - _ranking_cache["timestamp"] < _ranking_cache["ttl"]
-            and _ranking_cache["filters_hash"] == filters_hash
-        ):
+        cached_data = unified_cache.get("technician_ranking", cache_key)
+        if cached_data:
             print("[CACHE HIT] Retornando dados do cache para ranking de técnicos")
-            cached_data = _ranking_cache["data"].copy()
             cached_data["cached"] = True
             cached_data["correlation_id"] = correlation_id
             return jsonify(cached_data)
@@ -727,16 +711,16 @@ def get_technician_ranking(validated_start_date=None, validated_end_date=None, v
         print(f"[ROUTES DEBUG] Chamando get_technician_ranking_with_filters com start_date={start_date}, end_date={end_date}, entity_id={entity_id}")
         if any([start_date, end_date, level, entity_id]):
             # Service function accepts None values, cast for type safety
-            ranking_data = glpi_service.get_technician_ranking_with_filters(
+            ranking_data = metrics_facade.get_technician_ranking_with_filters(
                 start_date=cast(str, safe_date_string(start_date)),
                 end_date=cast(str, safe_date_string(end_date)),
                 level=cast(str, safe_filter_string(level)),
                 limit=limit,
                 correlation_id=correlation_id,
-                entity_id=cast(str, safe_filter_string(entity_id)),
+                entity_id=safe_entity_id(entity_id),
             )
         else:
-            ranking_data = glpi_service.get_technician_ranking(limit=limit)
+            ranking_data = metrics_facade.get_technician_ranking(limit=limit)
 
         # Log contagem após consulta GLPI
         obs_logger.log_pipeline_step(
@@ -782,17 +766,18 @@ def get_technician_ranking(validated_start_date=None, validated_end_date=None, v
             correlation_id,
             "data_normalization",
             {
-                "final_count": len(ranking_data),
-                "sample_data": ranking_data[:3] if len(ranking_data) > 0 else [],
+                "final_count": len(ranking_data.get("data", [])),
+                "sample_data": ranking_data.get("data", [])[:3] if len(ranking_data.get("data", [])) > 0 else [],
             },
         )
 
         # Verificações de anomalias
-        obs_logger.check_technician_cardinality(correlation_id, len(ranking_data))
-        obs_logger.check_technician_names(correlation_id, ranking_data)
+        technician_data = ranking_data.get("data", [])
+        obs_logger.check_technician_cardinality(correlation_id, len(technician_data))
+        obs_logger.check_technician_names(correlation_id, technician_data)
         obs_logger.check_zero_totals(
             correlation_id,
-            ranking_data,
+            technician_data,
             {
                 "start_date": start_date,
                 "end_date": end_date,
@@ -837,10 +822,8 @@ def get_technician_ranking(validated_start_date=None, validated_end_date=None, v
             },
         }
         
-        # Salvar no cache
-        _ranking_cache["data"] = response_data.copy()
-        _ranking_cache["timestamp"] = current_time
-        _ranking_cache["filters_hash"] = filters_hash
+        # Salvar no cache usando unified_cache
+        unified_cache.set("technician_ranking", cache_key, response_data, ttl_seconds=60)
         
         return jsonify(response_data)
 
@@ -885,7 +868,7 @@ def get_new_tickets(validated_start_date=None, validated_end_date=None, validate
         # Buscar tickets novos com ou sem filtros
         if any([priority, category, technician, start_date, end_date]):
             # Service function accepts None values, cast for type safety
-            new_tickets = glpi_service.get_new_tickets_with_filters(
+            new_tickets = metrics_facade.get_new_tickets_with_filters(
                 limit=limit,
                 priority=cast(str, safe_filter_string(priority)),
                 category=cast(str, safe_filter_string(category)),
@@ -894,7 +877,7 @@ def get_new_tickets(validated_start_date=None, validated_end_date=None, validate
                 end_date=cast(str, safe_date_string(end_date)),
             )
         else:
-            new_tickets = glpi_service.get_new_tickets(limit)
+            new_tickets = metrics_facade.get_new_tickets(limit)
 
         # Verificar resultado
         if new_tickets is None:
@@ -971,7 +954,7 @@ def get_alerts():
 
         # Verifica status do GLPI para alertas dinâmicos
         try:
-            glpi_status = glpi_service.get_system_status()
+            glpi_status = metrics_facade.get_system_status()
 
             if glpi_status and glpi_status.get("status") == "online":
                 # Sistema funcionando normalmente
@@ -1091,10 +1074,7 @@ def get_performance_stats():
         )
 
 
-# Cache para status do GLPI (evita chamadas frequentes)
-_status_cache = {"data": None, "timestamp": 0, "ttl": 30}  # Cache por 30 segundos
-# Cache completo da resposta para máxima performance
-_response_cache = {"data": None, "timestamp": 0, "ttl": 30}
+# All status caching now handled by unified_cache from new architecture
 
 @api_bp.route("/status")
 def get_status():
@@ -1104,28 +1084,20 @@ def get_status():
     try:
         current_time_unix = time.time()
         
-        # Verificar cache completo da resposta primeiro (máxima performance)
-        response_cache_valid = (
-            _response_cache["data"] is not None and 
-            (current_time_unix - _response_cache["timestamp"]) < _response_cache["ttl"]
-        )
+        # Verificar cache usando unified_cache
+        response_cache_key = "status_response"
+        status_cache_key = "glpi_status"
         
-        if response_cache_valid:
-            cached_response = _response_cache["data"].copy()
+        cached_response = unified_cache.get("api_status", response_cache_key)
+        if cached_response:
             # Atualizar apenas o response_time para refletir a performance atual
             response_time = (time.time() - start_time) * 1000
             cached_response["response_time_ms"] = round(response_time, 2)
             return jsonify(cached_response)
 
         # Verificar cache do status do GLPI
-        cache_valid = (
-            _status_cache["data"] is not None and 
-            (current_time_unix - _status_cache["timestamp"]) < _status_cache["ttl"]
-        )
-
-        if cache_valid:
-            glpi_info = _status_cache["data"]
-        else:
+        glpi_info = unified_cache.get("api_status", status_cache_key)
+        if not glpi_info:
             # Verificação simplificada do GLPI (sem autenticação completa)
             try:
                 import requests
@@ -1157,9 +1129,8 @@ def get_status():
                     "response_time": 0,
                 }
                 
-            # Atualizar cache
-            _status_cache["data"] = glpi_info
-            _status_cache["timestamp"] = current_time_unix
+            # Atualizar cache usando unified_cache
+            unified_cache.set("api_status", status_cache_key, glpi_info, ttl_seconds=30)
 
         # Dados do status do sistema (otimizado)
         current_time = datetime.now().isoformat()
@@ -1171,7 +1142,7 @@ def get_status():
             "last_update": current_time,
             "version": "1.0.0",
             "uptime": "Sistema operacional",
-            "cached": cache_valid,
+            "cached": bool(unified_cache.get("api_status", status_cache_key)),
         }
 
         # Determinar status geral do sistema
@@ -1186,9 +1157,8 @@ def get_status():
             "response_time_ms": round(response_time, 2),
         }
         
-        # Cache da resposta completa para máxima performance
-        _response_cache["data"] = response_data
-        _response_cache["timestamp"] = current_time_unix
+        # Cache da resposta completa usando unified_cache
+        unified_cache.set("api_status", response_cache_key, response_data, ttl_seconds=30)
         
         return jsonify(response_data)
 
@@ -1264,7 +1234,7 @@ def glpi_health_check():
     """Endpoint de health check da conexão GLPI"""
     try:
         # Testa autenticação GLPI
-        auth_result = glpi_service._authenticate_with_retry()
+        auth_result = metrics_facade.authenticate_with_retry()
 
         if auth_result:
             return jsonify(
