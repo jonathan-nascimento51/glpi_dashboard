@@ -1,6 +1,7 @@
 import logging
 import time
 from datetime import datetime
+from typing import Optional, Union, Any, cast
 
 from flask import Blueprint, jsonify, request
 from pydantic import ValidationError
@@ -34,6 +35,109 @@ def get_new_glpi_service():
 
 # Obtém logger configurado
 logger = logging.getLogger("api")
+
+# Parameter validation helper functions
+def safe_string_param(value: Union[str, Any, None], default: Optional[str] = None) -> Optional[str]:
+    """Safely convert parameter to string or return default."""
+    if value is None or value == "":
+        return default
+    try:
+        return str(value) if value is not None else default
+    except (ValueError, TypeError):
+        return default
+
+def safe_int_param(value: Union[int, str, Any, None], default: Optional[int] = None) -> Optional[int]:
+    """Safely convert parameter to integer or return default."""
+    if value is None or value == "":
+        return default
+    try:
+        if isinstance(value, int):
+            return value
+        return int(str(value)) if value is not None else default
+    except (ValueError, TypeError):
+        return default
+
+def validate_optional_string_for_service(value: Union[str, Any, None]) -> Optional[str]:
+    """
+    Validate and convert optional parameter for service functions that expect str or None.
+    Returns None for None/empty values, valid string otherwise.
+    """
+    if value is None or value == "":
+        return None
+    try:
+        return str(value)
+    except (ValueError, TypeError):
+        return None
+
+def safe_string_for_service_call(value: Union[str, Any, None]) -> str:
+    """
+    Safely convert parameter to string for service functions that require str.
+    Returns empty string for None/empty values, valid string otherwise.
+    This ensures service functions that expect str get valid strings.
+    """
+    if value is None or value == "":
+        return ""
+    try:
+        return str(value)
+    except (ValueError, TypeError):
+        return ""
+
+def safe_date_string(date_value: Any) -> Optional[str]:
+    """
+    Safely convert date value to ISO string for service functions.
+    Handles datetime objects, None values, and strings.
+    """
+    if date_value is None:
+        return None
+    try:
+        # If it's already a string, return as-is (assume it's properly formatted)
+        if isinstance(date_value, str):
+            return date_value if date_value.strip() else None
+        # If it has isoformat method (datetime object), use it
+        if hasattr(date_value, 'isoformat'):
+            return date_value.isoformat()
+        # Try to convert to string
+        str_val = str(date_value)
+        return str_val if str_val.strip() else None
+    except (ValueError, TypeError, AttributeError):
+        return None
+
+def safe_filter_string(filter_value: Any) -> Optional[str]:
+    """
+    Safely convert filter parameter to string for service functions.
+    Returns None for None/empty values, valid string otherwise.
+    """
+    if filter_value is None:
+        return None
+    try:
+        str_val = str(filter_value).strip()
+        return str_val if str_val else None
+    except (ValueError, TypeError):
+        return None
+
+def safe_entity_id(entity_value: Any) -> Optional[int]:
+    """
+    Safely convert entity_id parameter to int for service functions.
+    Returns None for None/empty/invalid values, valid int otherwise.
+    """
+    if entity_value is None or entity_value == "":
+        return None
+    try:
+        return int(entity_value)
+    except (ValueError, TypeError):
+        return None
+
+def validate_required_string_for_service(value: Union[str, Any, None], param_name: str) -> str:
+    """
+    Validate and convert required parameter for service functions that expect str.
+    Raises ValueError if value is None/empty or cannot be converted.
+    """
+    if value is None or value == "":
+        raise ValueError(f"Parameter '{param_name}' is required and cannot be None or empty")
+    try:
+        return str(value)
+    except (ValueError, TypeError):
+        raise ValueError(f"Parameter '{param_name}' must be a valid string")
 
 # Estrutura de dados padrão para métricas em caso de falha ou ausência de dados
 DEFAULT_METRICS = {
@@ -187,9 +291,10 @@ def get_metrics(validated_start_date=None, validated_end_date=None, validated_fi
                         "filters": filters,
                     },
                 )
+                # Service function accepts None values, cast for type safety
                 metrics_data = glpi_service.get_dashboard_metrics_with_modification_date_filter(
-                    start_date=start_date,
-                    end_date=end_date,
+                    start_date=cast(str, safe_date_string(start_date)),
+                    end_date=cast(str, safe_date_string(end_date)),
                     correlation_id=correlation_id,
                 )
             else:  # filter_type == 'creation' (padrão)
@@ -201,9 +306,10 @@ def get_metrics(validated_start_date=None, validated_end_date=None, validated_fi
                         "filters": filters,
                     },
                 )
+                # Service function accepts None values, cast for type safety
                 metrics_data = glpi_service.get_dashboard_metrics_with_date_filter(
-                    start_date=start_date,
-                    end_date=end_date,
+                    start_date=cast(str, safe_date_string(start_date)),
+                    end_date=cast(str, safe_date_string(end_date)),
                     correlation_id=correlation_id,
                 )
         elif any([status, priority, level, technician, category]):
@@ -216,14 +322,15 @@ def get_metrics(validated_start_date=None, validated_end_date=None, validated_fi
                     "filters": filters,
                 },
             )
+            # Service function accepts None values, cast for type safety
             metrics_data = glpi_service.get_dashboard_metrics_with_filters(
-                start_date=start_date,
-                end_date=end_date,
-                status=status,
-                priority=priority,
-                level=level,
-                technician=technician,
-                category=category,
+                start_date=cast(str, safe_date_string(start_date)),
+                end_date=cast(str, safe_date_string(end_date)),
+                status=cast(str, safe_filter_string(status)),
+                priority=cast(str, safe_filter_string(priority)),
+                level=cast(str, safe_filter_string(level)),
+                technician=cast(str, safe_filter_string(technician)),
+                category=cast(str, safe_filter_string(category)),
                 correlation_id=correlation_id,
             )
         else:
@@ -349,14 +456,15 @@ def get_filtered_metrics(validated_start_date=None, validated_end_date=None, val
             step="calling_get_dashboard_metrics_with_filters",
             data={"method": "get_dashboard_metrics_with_filters", "filters": filters},
         )
+        # Service function accepts None values, cast for type safety
         metrics_data = glpi_service.get_dashboard_metrics_with_filters(
-            start_date=start_date,
-            end_date=end_date,
-            status=status,
-            priority=priority,
-            level=level,
-            technician=technician,
-            category=category,
+            start_date=cast(str, safe_date_string(start_date)),
+            end_date=cast(str, safe_date_string(end_date)),
+            status=cast(str, safe_filter_string(status)),
+            priority=cast(str, safe_filter_string(priority)),
+            level=cast(str, safe_filter_string(level)),
+            technician=cast(str, safe_filter_string(technician)),
+            category=cast(str, safe_filter_string(category)),
             correlation_id=correlation_id,
         )
 
@@ -489,7 +597,8 @@ def get_technicians():
                 entity_id = None
         
         # Buscar técnicos usando método correto
-        technician_ids, technician_names = glpi_service._get_all_technician_ids_and_names(entity_id=entity_id)
+        # Service function accepts None values, cast for type safety
+        technician_ids, technician_names = glpi_service._get_all_technician_ids_and_names(entity_id=cast(int, safe_entity_id(entity_id)))
         
         # Converter para formato de lista de dicionários
         technicians = []
@@ -617,13 +726,14 @@ def get_technician_ranking(validated_start_date=None, validated_end_date=None, v
         # Buscar ranking com ou sem filtros
         print(f"[ROUTES DEBUG] Chamando get_technician_ranking_with_filters com start_date={start_date}, end_date={end_date}, entity_id={entity_id}")
         if any([start_date, end_date, level, entity_id]):
+            # Service function accepts None values, cast for type safety
             ranking_data = glpi_service.get_technician_ranking_with_filters(
-                start_date=start_date,
-                end_date=end_date,
-                level=level,
+                start_date=cast(str, safe_date_string(start_date)),
+                end_date=cast(str, safe_date_string(end_date)),
+                level=cast(str, safe_filter_string(level)),
                 limit=limit,
                 correlation_id=correlation_id,
-                entity_id=entity_id,
+                entity_id=cast(str, safe_filter_string(entity_id)),
             )
         else:
             ranking_data = glpi_service.get_technician_ranking(limit=limit)
@@ -774,13 +884,14 @@ def get_new_tickets(validated_start_date=None, validated_end_date=None, validate
 
         # Buscar tickets novos com ou sem filtros
         if any([priority, category, technician, start_date, end_date]):
+            # Service function accepts None values, cast for type safety
             new_tickets = glpi_service.get_new_tickets_with_filters(
                 limit=limit,
-                priority=priority,
-                category=category,
-                technician=technician,
-                start_date=start_date,
-                end_date=end_date,
+                priority=cast(str, safe_filter_string(priority)),
+                category=cast(str, safe_filter_string(category)),
+                technician=cast(str, safe_filter_string(technician)),
+                start_date=cast(str, safe_date_string(start_date)),
+                end_date=cast(str, safe_date_string(end_date)),
             )
         else:
             new_tickets = glpi_service.get_new_tickets(limit)
