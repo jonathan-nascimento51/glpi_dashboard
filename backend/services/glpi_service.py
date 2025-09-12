@@ -18,6 +18,20 @@ from utils.structured_logging import glpi_logger, log_glpi_request
 class GLPIService:
     """Serviço para integração com a API do GLPI com autenticação robusta"""
 
+    def _normalize_glpi_url(self, url: str) -> str:
+        """Normaliza a URL do GLPI removendo duplicação de /apirest.php"""
+        if not url or not isinstance(url, str):
+            return url
+            
+        url = url.rstrip('/')
+        
+        # Se a URL já termina com /apirest.php, usar como base removendo essa parte
+        if url.endswith('/apirest.php'):
+            return url.rsplit('/apirest.php', 1)[0]
+        
+        # Caso contrário, usar a URL como está
+        return url
+
     def __init__(self):
         try:
             # Validar configurações obrigatórias
@@ -36,7 +50,8 @@ class GLPIService:
                     raise ValueError("GLPI_USER_TOKEN não está configurado")
 
             # Configurar valores com fallbacks para desenvolvimento
-            self.glpi_url = getattr(config_obj, "GLPI_URL", "http://localhost:9999") or "http://localhost:9999"
+            raw_url = getattr(config_obj, "GLPI_URL", "http://localhost:9999") or "http://localhost:9999"
+            self.glpi_url = self._normalize_glpi_url(raw_url)
             self.app_token = getattr(config_obj, "GLPI_APP_TOKEN", None)
             self.user_token = getattr(config_obj, "GLPI_USER_TOKEN", None)
 
@@ -382,7 +397,7 @@ class GLPIService:
                 "Authorization": f"user_token {self.user_token}",
             }
 
-            auth_url = f"{self.glpi_url.rstrip('/')}/initSession"
+            auth_url = f"{self.glpi_url.rstrip('/')}/apirest.php/initSession"
             self.logger.info(f"Autenticando na API do GLPI: {auth_url}")
 
             response = requests.get(

@@ -965,7 +965,11 @@ def get_status():
             try:
                 import requests
                 glpi_start = time.time()
-                response = requests.get(f"{active_config.GLPI_URL}/apirest.php", timeout=1)
+                # Normalizar URL para evitar duplicação de /apirest.php
+                glpi_base_url = active_config.GLPI_URL.rstrip('/')
+                if glpi_base_url.endswith('/apirest.php'):
+                    glpi_base_url = glpi_base_url.rsplit('/apirest.php', 1)[0]
+                response = requests.get(f"{glpi_base_url}/apirest.php", timeout=1)
                 glpi_response_time = (time.time() - glpi_start) * 1000
                 
                 if response.status_code == 200:
