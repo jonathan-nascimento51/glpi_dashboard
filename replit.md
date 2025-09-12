@@ -1,6 +1,8 @@
 # Overview
 
-The GLPI Dashboard is a comprehensive web application that provides real-time monitoring and metrics visualization for GLPI (IT Service Management) systems. The application consists of a Python Flask backend that integrates with GLPI APIs and a React TypeScript frontend for data visualization. The dashboard displays technician rankings, ticket metrics by service levels (N1-N4), and provides filtering capabilities by date ranges and entities.
+GLPI Dashboard is a comprehensive business intelligence system for monitoring and analyzing IT service management (ITSM) data from GLPI (Gestionnaire Libre de Parc Informatique). The project provides a React-based frontend dashboard with a Flask backend API that integrates with GLPI's REST API to deliver real-time metrics, technician performance rankings, and operational insights.
+
+The system focuses on tracking ticket metrics across different service levels (N1-N4), technician performance analysis, and providing detailed monitoring capabilities for IT support operations.
 
 # User Preferences
 
@@ -8,108 +10,84 @@ Preferred communication style: Simple, everyday language.
 
 # System Architecture
 
-## Backend Architecture (Python Flask)
+## Frontend Architecture
+- **React 18** with TypeScript for type safety
+- **Vite** as the build tool and development server
+- **TailwindCSS** with shadcn/ui components for UI design
+- **Tanstack Query** for server state management and caching
+- **Chart.js & Recharts** for data visualization
+- **Framer Motion** for animations and transitions
 
-The backend follows a service-oriented architecture with clear separation of concerns:
+## Backend Architecture
+- **Flask** web framework with Blueprint-based route organization
+- **Clean Architecture** principles with progressive refactoring pattern
+- **Pydantic** for data validation and serialization
+- **Redis** for caching and session management
+- **Structured logging** with JSON format for observability
+- **Prometheus metrics** integration for monitoring
 
-### Core Components
-- **Flask Application (`app.py`)**: Main entry point with observability middleware, CORS configuration, and cache setup
-- **API Routes (`api/routes.py`)**: RESTful endpoints for metrics, technician rankings, and status checks
-- **GLPI Service (`services/glpi_service.py`)**: Handles all interactions with GLPI REST API, including authentication, data fetching, and field mapping
-- **Configuration Management (`config/settings.py`)**: Environment-based configuration with support for development, testing, and production
+## Data Flow Pattern
+The system implements a multi-layered data flow:
+1. Frontend requests data through API service layer
+2. Flask routes handle HTTP requests with validation
+3. GLPI service layer manages authentication and API calls
+4. Response formatting and caching layers optimize performance
+5. Structured logging tracks all operations with correlation IDs
 
-### Key Design Patterns
-- **Service Layer Pattern**: Business logic encapsulated in service classes, particularly the GLPIService
-- **Repository Pattern**: Data access abstracted through service methods that interact with GLPI API
-- **Middleware Pattern**: Observability and monitoring implemented as Flask middleware
-- **Decorator Pattern**: Date validation and logging implemented using Python decorators
+## Authentication & Security
+- GLPI API token-based authentication (App Token + User Token)
+- Session management with automatic token refresh
+- CORS configuration for cross-origin requests
+- Input validation and sanitization at multiple layers
 
-### Data Processing
-- **Field ID Discovery**: Dynamic field mapping to handle GLPI schema variations
-- **Technician Identification**: Multiple strategies for finding active technicians (Profile_User table, ticket assignments)
-- **Service Level Mapping**: Configurable mapping of technicians to N1-N4 service levels
-- **Caching Strategy**: Flask-Caching with Redis support for performance optimization
+## Performance Optimization
+- **Multi-level caching**: Redis backend cache + React Query frontend cache
+- **Request debouncing** and throttling for API calls
+- **Connection pooling** for database connections
+- **Lazy loading** for components and data
+- **Response compression** and optimization
 
-### Monitoring and Observability
-- **Structured Logging**: Comprehensive logging with timestamps and operation tracking
-- **Prometheus Metrics**: Performance metrics collection for monitoring
-- **Alert System**: Automated alerting for data consistency issues
-- **Health Checks**: API endpoints for system status monitoring
+## Service Level Mapping
+The system maps GLPI data to service levels:
+- **N1**: Basic support (Group ID 89)
+- **N2**: Intermediate support (Group ID 90) 
+- **N3**: Advanced support (Group ID 91)
+- **N4**: Expert support (Group ID 92)
 
-## Frontend Architecture (React TypeScript)
-
-The frontend uses modern React patterns with TypeScript for type safety:
-
-### Core Structure
-- **Component-Based Architecture**: Reusable UI components (StatusCard, MetricsGrid, LevelMetricsGrid)
-- **Custom Hooks**: Data fetching and state management through custom React hooks
-- **API Integration**: HTTP client with proper error handling and loading states
-- **Responsive Design**: Mobile-first CSS with Grid and Flexbox layouts
-
-### State Management
-- **Local Component State**: React useState for component-specific data
-- **API State Management**: Custom hooks for server state synchronization
-- **Loading States**: Comprehensive loading and error state handling
-
-### Testing Strategy
-- **Unit Testing**: Vitest for component and utility testing
-- **Integration Testing**: API integration tests with mock data
-- **Accessibility Testing**: WCAG compliance validation
-- **Visual Regression Testing**: Snapshot testing for UI consistency
-
-## Data Flow Architecture
-
-### API Communication
-- **RESTful Design**: Standard HTTP methods with JSON payloads
-- **Error Handling**: Consistent error response format with proper HTTP status codes
-- **Request Validation**: Input validation using decorators and middleware
-- **Response Normalization**: Standardized API response structure
-
-### Caching Strategy
-- **Multi-Level Caching**: Application-level caching with Redis backend
-- **Cache Invalidation**: Time-based and event-based cache invalidation
-- **Performance Optimization**: Reduced GLPI API calls through intelligent caching
-
-## Security Architecture
-
-### Authentication and Authorization
-- **GLPI Session Management**: Secure session handling with GLPI API
-- **Request Validation**: Input sanitization and validation
-- **CORS Configuration**: Proper cross-origin resource sharing setup
-
-### Data Protection
-- **Environment Variables**: Sensitive configuration stored in environment variables
-- **Input Sanitization**: Protection against injection attacks
-- **Rate Limiting**: API rate limiting to prevent abuse
+## Observability & Monitoring
+- **Structured logging** with correlation IDs for request tracing
+- **Prometheus metrics** collection for performance monitoring
+- **Health check endpoints** for system status
+- **Automated alerting** system for data inconsistencies
+- **Progressive refactoring** monitoring for architecture migration
 
 # External Dependencies
 
-## Backend Dependencies
-- **Flask 2.3.3**: Web framework for API development
-- **Flask-CORS**: Cross-origin resource sharing support
-- **Flask-Caching**: Caching framework with Redis support
-- **Requests**: HTTP client for GLPI API integration
-- **Python-dotenv**: Environment variable management
-- **Gunicorn**: WSGI server for production deployment
-
-## Frontend Dependencies
-- **React 18**: Frontend framework with hooks and modern features
-- **TypeScript**: Type-safe JavaScript superset
-- **Vite**: Build tool and development server
-- **Vitest**: Testing framework for unit and integration tests
-
-## External Services and APIs
-- **GLPI REST API**: Primary data source for tickets, users, and metrics
-- **Redis**: Caching backend for performance optimization
+## Core Infrastructure
+- **GLPI API**: Primary data source at `http://10.73.0.79/glpi/apirest.php`
+- **Redis**: Caching layer and session storage
 - **Prometheus**: Metrics collection and monitoring (optional)
 
-## Development and Testing Tools
-- **pytest**: Python testing framework with async support
-- **Bandit**: Security vulnerability scanner
-- **Black, flake8, isort**: Python code formatting and linting
-- **ESLint, Prettier**: TypeScript/JavaScript code quality tools
+## GLPI Integration
+- **API Authentication**: Requires GLPI_APP_TOKEN and GLPI_USER_TOKEN
+- **REST API Endpoints**: Uses GLPI's search API for tickets, users, and groups
+- **Session Management**: Maintains authenticated sessions with automatic refresh
+- **Field Discovery**: Automatically discovers GLPI schema field mappings
 
-## Infrastructure Dependencies
-- **Docker**: Containerization support (optional)
-- **Node.js 18+**: JavaScript runtime for frontend development
-- **Python 3.9+**: Backend runtime environment
+## Development Tools
+- **Node.js ecosystem**: React, Vite, TypeScript toolchain
+- **Python ecosystem**: Flask, Pydantic, Redis client libraries  
+- **Testing frameworks**: Vitest (frontend), pytest (backend), Playwright (E2E)
+- **Code quality**: ESLint, Prettier, Black, isort for formatting
+
+## Monitoring & Alerting
+- **ELK Stack** compatibility for log aggregation (optional)
+- **Grafana Loki** integration for log visualization (optional)
+- **Email/Slack notifications** for critical alerts (configurable)
+- **Automated reporting** system for data consistency monitoring
+
+## Optional Extensions
+- **PostgreSQL**: Database support for extended analytics
+- **Docker**: Containerization support
+- **CI/CD pipelines**: GitHub Actions integration
+- **Performance profiling**: py-spy and memory-profiler tools
