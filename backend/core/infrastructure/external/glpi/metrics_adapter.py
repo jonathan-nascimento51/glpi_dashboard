@@ -6,21 +6,59 @@ Este módulo implementa o padrão Adapter para abstrair o acesso à API do GLPI,
 fornecendo uma interface limpa e testável para consultas de métricas.
 """
 
-import asyncio
 import json
 import logging
+import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 from urllib.parse import urlencode
 
-import aiohttp
-import backoff
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
-from ...application.dto.metrics_dto import MetricsFilterDTO, TechnicianLevel
-from ...application.queries.metrics_query import MetricsDataSource, QueryContext
+# Definições locais mínimas para compatibilidade
+from dataclasses import dataclass
+from typing import Optional
+from datetime import datetime
+
+@dataclass
+class MetricsFilterDTO:
+    """DTO mínimo para filtros de métricas."""
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
+    technician_id: Optional[int] = None
+    status: Optional[str] = None
+    category_id: Optional[int] = None
+    priority: Optional[int] = None
+    limit: Optional[int] = None
+    offset: Optional[int] = None
+    
+    def copy(self):
+        return MetricsFilterDTO(
+            start_date=self.start_date,
+            end_date=self.end_date,
+            technician_id=self.technician_id,
+            status=self.status,
+            category_id=self.category_id,
+            priority=self.priority,
+            limit=self.limit,
+            offset=self.offset
+        )
+
+@dataclass 
+class QueryContext:
+    """Contexto mínimo para queries."""
+    correlation_id: Optional[str] = None
+
+class TechnicianLevel(Enum):
+    """Níveis de técnicos."""
+    N1 = "N1"
+    N2 = "N2"
+    N3 = "N3"
+    N4 = "N4"
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +88,7 @@ class GLPIConfig:
     base_url: str
     app_token: str
     user_token: str
-    timeout_seconds: int = 30
+    timeout: int = 30  # Changed parameter name to match usage
     max_retries: int = 3
     retry_delay_seconds: float = 1.0
     session_timeout_minutes: int = 60
@@ -69,12 +107,12 @@ class GLPISessionManager:
         self.session_expires_at: Optional[datetime] = None
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
-    async def get_session_token(self, correlation_id: Optional[str] = None) -> str:
+    def get_session_token(self, correlation_id: Optional[str] = None) -> str:
         """Obtém token de sessão válido, renovando se necessário."""
         if self._is_session_valid():
             return self.session_token
 
-        await self._create_new_session(correlation_id)
+        self._create_new_session(correlation_id)
         return self.session_token
 
     def _is_session_valid(self) -> bool:
@@ -86,12 +124,7 @@ class GLPISessionManager:
         buffer_time = timedelta(minutes=5)
         return datetime.now() < (self.session_expires_at - buffer_time)
 
-    @retry(
-        stop=stop_after_attempt(3),
-        wait=wait_exponential(multiplier=1, min=1, max=10),
-        retry=retry_if_exception_type((GLPIConnectionError, GLPIAPIError)),
-    )
-    async def _create_new_session(self, correlation_id: Optional[str] = None) -> None:
+    def _create_new_session(self, correlation_id: Optional[str] = None) -> None:
         """Cria nova sessão GLPI."""
         headers = {
             "Content-Type": "application/json",
@@ -105,33 +138,31 @@ class GLPISessionManager:
         url = f"{self.config.base_url}/apirest.php/initSession"
 
         try:
-            timeout = aiohttp.ClientTimeout(total=self.config.timeout_seconds)
-            async with aiohttp.ClientSession(timeout=timeout) as session:
-                async with session.get(url, headers=headers) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        self.session_token = data.get("session_token")
+            response = requests.get(url, headers=headers, timeout=self.config.timeout)
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.session_token = data.get("session_token")
 
-                        # Definir expiração da sessão
-                        self.session_expires_at = datetime.now() + timedelta(minutes=self.config.session_timeout_minutes)
+                # Definir expiração da sessão
+                self.session_expires_at = datetime.now() + timedelta(minutes=self.config.session_timeout_minutes)
 
-                        self.logger.info(
-                            "Nova sessão GLPI criada",
-                            extra={
-                                "correlation_id": correlation_id,
-                                "expires_at": self.session_expires_at.isoformat(),
-                            },
-                        )
-                    else:
-                        error_text = await response.text()
-                        raise GLPIAuthenticationError(f"Falha na autenticação GLPI: {response.status} - {error_text}")
+                self.logger.info(
+                    "Nova sessão GLPI criada",
+                    extra={
+                        "correlation_id": correlation_id,
+                        "expires_at": self.session_expires_at.isoformat(),
+                    },
+                )
+            else:
+                raise GLPIAuthenticationError(f"Falha na autenticação GLPI: {response.status_code} - {response.text}")
 
-        except aiohttp.ClientError as e:
+        except requests.exceptions.RequestException as e:
             raise GLPIConnectionError(f"Erro de conexão com GLPI: {str(e)}")
         except Exception as e:
             raise GLPIAPIError(f"Erro inesperado na autenticação GLPI: {str(e)}")
 
-    async def close_session(self, correlation_id: Optional[str] = None) -> None:
+    def close_session(self, correlation_id: Optional[str] = None) -> None:
         """Fecha sessão GLPI."""
         if not self.session_token:
             return
@@ -147,14 +178,12 @@ class GLPISessionManager:
         url = f"{self.config.base_url}/apirest.php/killSession"
 
         try:
-            timeout = aiohttp.ClientTimeout(total=self.config.timeout_seconds)
-            async with aiohttp.ClientSession(timeout=timeout) as session:
-                async with session.get(url, headers=headers) as response:
-                    if response.status == 200:
-                        self.logger.info(
-                            "Sessão GLPI fechada",
-                            extra={"correlation_id": correlation_id},
-                        )
+            response = requests.get(url, headers=headers, timeout=self.config.timeout)
+            if response.status_code == 200:
+                self.logger.info(
+                    "Sessão GLPI fechada",
+                    extra={"correlation_id": correlation_id},
+                )
         except Exception as e:
             self.logger.warning(
                 f"Erro ao fechar sessão GLPI: {str(e)}",
@@ -173,12 +202,7 @@ class GLPIAPIClient:
         self.session_manager = session_manager
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
-    @retry(
-        stop=stop_after_attempt(3),
-        wait=wait_exponential(multiplier=1, min=1, max=10),
-        retry=retry_if_exception_type((GLPIConnectionError, GLPIAPIError)),
-    )
-    async def make_request(
+    def make_request(
         self,
         endpoint: str,
         method: str = "GET",
@@ -188,7 +212,7 @@ class GLPIAPIClient:
     ) -> Dict[str, Any]:
         """Faz requisição autenticada para API GLPI."""
 
-        session_token = await self.session_manager.get_session_token(correlation_id)
+        session_token = self.session_manager.get_session_token(correlation_id)
 
         headers = {
             "Content-Type": "application/json",
@@ -216,42 +240,40 @@ class GLPIAPIClient:
         )
 
         try:
-            timeout = aiohttp.ClientTimeout(total=self.config.timeout_seconds)
-            async with aiohttp.ClientSession(timeout=timeout) as session:
-                request_kwargs = {"headers": headers}
+            request_kwargs = {"headers": headers, "timeout": self.config.timeout}
 
-                if data:
-                    request_kwargs["json"] = data
+            if data:
+                request_kwargs["json"] = data
 
-                async with session.request(method, url, **request_kwargs) as response:
-                    response_text = await response.text()
+            response = requests.request(method, url, **request_kwargs)
+            response_text = response.text
 
-                    # Log da resposta
-                    self.logger.debug(
-                        f"GLPI API Response: {response.status}",
-                        extra={
-                            "correlation_id": correlation_id,
-                            "status_code": response.status,
-                            "response_size": len(response_text),
-                        },
-                    )
+            # Log da resposta
+            self.logger.debug(
+                f"GLPI API Response: {response.status_code}",
+                extra={
+                    "correlation_id": correlation_id,
+                    "status_code": response.status_code,
+                    "response_size": len(response_text),
+                },
+            )
 
-                    if response.status == 200:
-                        try:
-                            return await response.json()
-                        except json.JSONDecodeError:
-                            # Algumas respostas podem não ser JSON
-                            return {"raw_response": response_text}
+            if response.status_code == 200:
+                try:
+                    return response.json()
+                except json.JSONDecodeError:
+                    # Algumas respostas podem não ser JSON
+                    return {"raw_response": response_text}
 
-                    elif response.status == 401:
-                        # Token expirado, forçar renovação
-                        self.session_manager.session_token = None
-                        raise GLPIAuthenticationError(f"Token expirado: {response_text}")
+            elif response.status_code == 401:
+                # Token expirado, forçar renovação
+                self.session_manager.session_token = None
+                raise GLPIAuthenticationError(f"Token expirado: {response_text}")
 
-                    else:
-                        raise GLPIAPIError(f"Erro na API GLPI: {response.status} - {response_text}")
+            else:
+                raise GLPIAPIError(f"Erro na API GLPI: {response.status_code} - {response_text}")
 
-        except aiohttp.ClientError as e:
+        except requests.exceptions.RequestException as e:
             raise GLPIConnectionError(f"Erro de conexão com GLPI: {str(e)}")
         except Exception as e:
             if isinstance(e, (GLPIConnectionError, GLPIAuthenticationError, GLPIAPIError)):
@@ -259,7 +281,7 @@ class GLPIAPIClient:
             raise GLPIAPIError(f"Erro inesperado na API GLPI: {str(e)}")
 
 
-class GLPIMetricsAdapter(MetricsDataSource):
+class GLPIMetricsAdapter:
     """Adaptador para métricas do GLPI."""
 
     def __init__(self, config: GLPIConfig):
@@ -272,7 +294,7 @@ class GLPIMetricsAdapter(MetricsDataSource):
         self._technician_hierarchy_cache: Optional[Dict[int, str]] = None
         self._hierarchy_cache_expires_at: Optional[datetime] = None
 
-    async def get_ticket_count_by_hierarchy(
+    def get_ticket_count_by_hierarchy(
         self,
         filters: Optional[MetricsFilterDTO] = None,
         context: Optional[QueryContext] = None,
@@ -282,16 +304,16 @@ class GLPIMetricsAdapter(MetricsDataSource):
 
         try:
             # Obter hierarquia de técnicos
-            technician_hierarchy = await self.get_technician_hierarchy(context)
+            technician_hierarchy = self.get_technician_hierarchy(context)
 
             # Construir parâmetros da consulta
             params = self._build_ticket_query_params(filters)
 
             # Fazer requisição para tickets
-            tickets_data = await self.api_client.make_request(endpoint="Ticket", params=params, correlation_id=correlation_id)
+            tickets_data = self.api_client.make_request(endpoint="Ticket", params=params, correlation_id=correlation_id)
 
             # Processar dados por hierarquia
-            hierarchy_metrics = await self._process_tickets_by_hierarchy(tickets_data, technician_hierarchy, correlation_id)
+            hierarchy_metrics = self._process_tickets_by_hierarchy(tickets_data, technician_hierarchy, correlation_id)
 
             return {"levels": hierarchy_metrics}
 
@@ -302,7 +324,7 @@ class GLPIMetricsAdapter(MetricsDataSource):
             )
             raise
 
-    async def get_technician_metrics(
+    def get_technician_metrics(
         self,
         technician_id: Optional[int] = None,
         filters: Optional[MetricsFilterDTO] = None,
@@ -313,7 +335,7 @@ class GLPIMetricsAdapter(MetricsDataSource):
 
         try:
             # Obter lista de técnicos
-            technicians_data = await self._get_technicians_list(technician_id, correlation_id)
+            technicians_data = self._get_technicians_list(technician_id, correlation_id)
 
             # Para cada técnico, obter suas métricas
             technician_metrics = []
@@ -328,10 +350,10 @@ class GLPIMetricsAdapter(MetricsDataSource):
                 tech_filter.technician_id = tech_id
 
                 # Obter tickets do técnico
-                tech_tickets = await self._get_technician_tickets(tech_id, tech_filter, correlation_id)
+                tech_tickets = self._get_technician_tickets(tech_id, tech_filter, correlation_id)
 
                 # Processar métricas
-                metrics = await self._process_technician_metrics(technician, tech_tickets, correlation_id)
+                metrics = self._process_technician_metrics(technician, tech_tickets, correlation_id)
 
                 technician_metrics.append(metrics)
 
@@ -351,7 +373,7 @@ class GLPIMetricsAdapter(MetricsDataSource):
             )
             raise
 
-    async def get_ticket_metrics(
+    def get_ticket_metrics(
         self,
         filters: Optional[MetricsFilterDTO] = None,
         context: Optional[QueryContext] = None,
@@ -364,10 +386,10 @@ class GLPIMetricsAdapter(MetricsDataSource):
             params = self._build_ticket_query_params(filters)
 
             # Obter tickets
-            tickets_data = await self.api_client.make_request(endpoint="Ticket", params=params, correlation_id=correlation_id)
+            tickets_data = self.api_client.make_request(endpoint="Ticket", params=params, correlation_id=correlation_id)
 
             # Processar métricas gerais
-            metrics = await self._process_ticket_metrics(tickets_data, filters, correlation_id)
+            metrics = self._process_ticket_metrics(tickets_data, filters, correlation_id)
 
             return metrics
 
@@ -378,7 +400,7 @@ class GLPIMetricsAdapter(MetricsDataSource):
             )
             raise
 
-    async def get_technician_hierarchy(self, context: Optional[QueryContext] = None) -> Dict[int, str]:
+    def get_technician_hierarchy(self, context: Optional[QueryContext] = None) -> Dict[int, str]:
         """Obtém mapeamento de técnico para nível hierárquico."""
         correlation_id = context.correlation_id if context else None
 
@@ -388,7 +410,7 @@ class GLPIMetricsAdapter(MetricsDataSource):
 
         try:
             # Obter usuários/técnicos do GLPI
-            users_data = await self.api_client.make_request(
+            users_data = self.api_client.make_request(
                 endpoint="User",
                 params={
                     "range": "0-9999",  # Limite alto para pegar todos
@@ -399,7 +421,7 @@ class GLPIMetricsAdapter(MetricsDataSource):
             )
 
             # Processar hierarquia
-            hierarchy = await self._process_technician_hierarchy(users_data, correlation_id)
+            hierarchy = self._process_technician_hierarchy(users_data, correlation_id)
 
             # Atualizar cache
             self._technician_hierarchy_cache = hierarchy
@@ -473,7 +495,7 @@ class GLPIMetricsAdapter(MetricsDataSource):
 
         return params
 
-    async def _process_tickets_by_hierarchy(
+    def _process_tickets_by_hierarchy(
         self,
         tickets_data: Dict[str, Any],
         technician_hierarchy: Dict[int, str],
@@ -554,23 +576,23 @@ class GLPIMetricsAdapter(MetricsDataSource):
 
         return levels
 
-    async def _get_technicians_list(self, technician_id: Optional[int], correlation_id: Optional[str]) -> List[Dict[str, Any]]:
+    def _get_technicians_list(self, technician_id: Optional[int], correlation_id: Optional[str]) -> List[Dict[str, Any]]:
         """Obtém lista de técnicos."""
 
         if technician_id:
             # Obter técnico específico
-            user_data = await self.api_client.make_request(endpoint=f"User/{technician_id}", correlation_id=correlation_id)
+            user_data = self.api_client.make_request(endpoint=f"User/{technician_id}", correlation_id=correlation_id)
             return [user_data] if user_data else []
         else:
             # Obter todos os técnicos ativos
-            users_data = await self.api_client.make_request(
+            users_data = self.api_client.make_request(
                 endpoint="User",
                 params={"range": "0-999", "is_active": 1, "expand_dropdowns": True},
                 correlation_id=correlation_id,
             )
             return users_data if isinstance(users_data, list) else []
 
-    async def _get_technician_tickets(
+    def _get_technician_tickets(
         self,
         technician_id: int,
         filters: MetricsFilterDTO,
@@ -581,11 +603,11 @@ class GLPIMetricsAdapter(MetricsDataSource):
         params = self._build_ticket_query_params(filters)
         params["users_id_assign"] = technician_id
 
-        tickets_data = await self.api_client.make_request(endpoint="Ticket", params=params, correlation_id=correlation_id)
+        tickets_data = self.api_client.make_request(endpoint="Ticket", params=params, correlation_id=correlation_id)
 
         return tickets_data if isinstance(tickets_data, list) else []
 
-    async def _process_technician_metrics(
+    def _process_technician_metrics(
         self,
         technician: Dict[str, Any],
         tickets: List[Dict[str, Any]],
@@ -634,7 +656,7 @@ class GLPIMetricsAdapter(MetricsDataSource):
 
         return metrics
 
-    async def _process_ticket_metrics(
+    def _process_ticket_metrics(
         self,
         tickets_data: Dict[str, Any],
         filters: Optional[MetricsFilterDTO],
@@ -663,7 +685,7 @@ class GLPIMetricsAdapter(MetricsDataSource):
 
         return {"recent_tickets": recent_tickets}
 
-    async def _process_technician_hierarchy(self, users_data: Dict[str, Any], correlation_id: Optional[str]) -> Dict[int, str]:
+    def _process_technician_hierarchy(self, users_data: Dict[str, Any], correlation_id: Optional[str]) -> Dict[int, str]:
         """Processa hierarquia de técnicos."""
 
         hierarchy = {}
@@ -720,8 +742,47 @@ class GLPIMetricsAdapter(MetricsDataSource):
 
 
 # Factory para criação do adapter
-def create_glpi_metrics_adapter(base_url: str, app_token: str, user_token: str, **kwargs) -> GLPIMetricsAdapter:
-    """Cria instância do GLPIMetricsAdapter."""
+def create_glpi_metrics_adapter(*args, **kwargs) -> GLPIMetricsAdapter:
+    """
+    Cria instância do GLPIMetricsAdapter.
+    
+    Tolerante a diferentes estilos de chamada:
+    - create_glpi_metrics_adapter(config)  # GLPIConfig object
+    - create_glpi_metrics_adapter(base_url, app_token, user_token, **kwargs)
+    - create_glpi_metrics_adapter(base_url="...", app_token="...", user_token="...", **kwargs)
+    """
+    logger = logging.getLogger(__name__)
+    
+    # Se primeiro argumento é GLPIConfig, use-o diretamente
+    if args and isinstance(args[0], GLPIConfig):
+        if len(args) > 1 or kwargs:
+            logger.warning("GLPIConfig provided but additional args/kwargs ignored: %s %s", args[1:], kwargs)
+        return GLPIMetricsAdapter(args[0])
+    
+    # Resolve parâmetros de diferentes fontes
+    base_url = args[0] if len(args) > 0 else kwargs.pop('base_url', None)
+    app_token = args[1] if len(args) > 1 else kwargs.pop('app_token', None)
+    user_token = args[2] if len(args) > 2 else kwargs.pop('user_token', None)
+    
+    # Validar parâmetros obrigatórios
+    if not all([base_url, app_token, user_token]):
+        raise ValueError(f"Missing required parameters: base_url={base_url}, app_token={bool(app_token)}, user_token={bool(user_token)}")
+    
+    # Log warning se parâmetros duplicados foram detectados
+    duplicate_params = []
+    if 'base_url' in kwargs:
+        duplicate_params.append('base_url')
+        kwargs.pop('base_url')
+    if 'app_token' in kwargs:
+        duplicate_params.append('app_token')
+        kwargs.pop('app_token')
+    if 'user_token' in kwargs:
+        duplicate_params.append('user_token')
+        kwargs.pop('user_token')
+    
+    if duplicate_params:
+        logger.warning("Duplicate parameters resolved: %s", duplicate_params)
+    
     config = GLPIConfig(base_url=base_url, app_token=app_token, user_token=user_token, **kwargs)
     return GLPIMetricsAdapter(config)
 

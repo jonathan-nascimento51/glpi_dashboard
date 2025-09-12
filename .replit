@@ -54,6 +54,10 @@ localPort = 8000
 externalPort = 8000
 exposeLocalhost = true
 
+[[ports]]
+localPort = 40541
+externalPort = 3000
+
 [deployment]
 deploymentTarget = "autoscale"
 run = ["bash", "-c", "cd backend && gunicorn --bind=0.0.0.0:5000 --reuse-port app:app & cd frontend && npm run preview"]

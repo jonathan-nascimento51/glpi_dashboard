@@ -14,7 +14,7 @@ from ...application.services.progressive_refactoring_service import (
     RefactoringPhase
 )
 from ...infrastructure.external.glpi.metrics_adapter import GLPIConfig
-from ....config.settings import active_config
+from config.settings import active_config
 from ..contracts.metrics_contracts import UnifiedGLPIServiceContract
 from .metrics_facade import MetricsFacade
 
@@ -49,7 +49,7 @@ class RefactoringIntegrationService:
             phase=RefactoringPhase.VALIDATION,
             glpi_config=self.glpi_config,
             legacy_service=None,  # Will be injected when needed
-            validation_percentage=100,  # Validate all requests initially
+            validation_sampling=1.0,  # Validate all requests initially (100%)
         )
         
         self.logger.info("RefactoringIntegrationService initialized in VALIDATION phase")
@@ -93,5 +93,12 @@ class RefactoringIntegrationService:
         )
 
 
-# Global instance
-refactoring_integration_service = RefactoringIntegrationService()
+# Lazy initialization to avoid import-time side effects
+_refactoring_integration_service = None
+
+def get_refactoring_integration_service() -> RefactoringIntegrationService:
+    """Get singleton instance of RefactoringIntegrationService."""
+    global _refactoring_integration_service
+    if _refactoring_integration_service is None:
+        _refactoring_integration_service = RefactoringIntegrationService()
+    return _refactoring_integration_service

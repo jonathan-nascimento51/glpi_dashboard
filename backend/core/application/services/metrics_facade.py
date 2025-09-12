@@ -19,10 +19,10 @@ from ...application.queries.metrics_query import (
 )
 from ...infrastructure.cache.unified_cache import unified_cache
 from ...infrastructure.external.glpi.metrics_adapter import (
-    create_glpi_metrics_adapter,
+    GLPIMetricsAdapter,
     GLPIConfig
 )
-from ....config.settings import active_config
+from config.settings import active_config
 
 
 class MetricsFacade(UnifiedGLPIServiceContract):
@@ -44,14 +44,12 @@ class MetricsFacade(UnifiedGLPIServiceContract):
             base_url=config.GLPI_URL,
             app_token=config.GLPI_APP_TOKEN,
             user_token=config.GLPI_USER_TOKEN,
-            timeout=config.API_TIMEOUT
+            timeout=getattr(config, 'API_TIMEOUT', 30)
         )
         
-        self.glpi_adapter = create_glpi_metrics_adapter(
-            base_url=self.glpi_config.base_url,
-            app_token=self.glpi_config.app_token,
-            user_token=self.glpi_config.user_token,
-        )
+        # Import GLPIMetricsAdapter directly instead of using factory
+        from ...infrastructure.external.glpi.metrics_adapter import GLPIMetricsAdapter
+        self.glpi_adapter = GLPIMetricsAdapter(self.glpi_config)
         
         self.query_factory = MetricsQueryFactory(self.glpi_adapter)
         

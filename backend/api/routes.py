@@ -6,15 +6,14 @@ from flask import Blueprint, jsonify, request
 from pydantic import ValidationError
 
 from config.settings import active_config
-from schemas.dashboard import ApiError, DashboardMetrics
+from schemas.dashboard import DashboardMetrics
 from services.api_service import APIService
 from services.glpi_service import GLPIService
-from utils.alerting_system import alert_manager
+from core.application.services.refactoring_integration import get_refactoring_integration_service
 from utils.date_decorators import standard_date_validation
-from utils.performance import cache_with_filters, extract_filter_params, monitor_performance, performance_monitor
-from utils.prometheus_metrics import monitor_api_endpoint, prometheus_metrics
+from utils.performance import cache_with_filters, monitor_performance, performance_monitor
+from utils.prometheus_metrics import monitor_api_endpoint
 from utils.response_formatter import ResponseFormatter
-from utils.structured_logging import api_logger
 
 # Importar cache do app principal
 try:
@@ -27,7 +26,12 @@ api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 # Inicializa serviços
 api_service = APIService()
-glpi_service = GLPIService()
+glpi_service = GLPIService()  # Legacy service - kept for fallback
+
+# Function to get new service lazily
+def get_new_glpi_service():
+    """Get the new architecture service via refactoring integration."""
+    return get_refactoring_integration_service().get_service()
 
 # Obtém logger configurado
 logger = logging.getLogger("api")
@@ -53,6 +57,45 @@ DEFAULT_METRICS = {
 _metrics_cache = {"data": None, "timestamp": 0, "ttl": 180, "filters_hash": None}
 # Cache para ranking de técnicos (evita chamadas frequentes)
 _ranking_cache = {"data": None, "timestamp": 0, "ttl": 60, "filters_hash": None}  # Cache por 60 segundos
+
+@api_bp.route("/metrics/v2")
+@monitor_api_endpoint("get_metrics_v2")
+@monitor_performance  
+def get_metrics_v2():
+    """New architecture metrics endpoint for testing and validation."""
+    try:
+        correlation_id = f"metrics_v2_{int(time.time())}"
+        
+        # Extract parameters
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+        
+        # Use new architecture
+        if start_date or end_date:
+            metrics_data = get_new_glpi_service().get_dashboard_metrics_with_date_filter(
+                start_date=start_date,
+                end_date=end_date,
+                correlation_id=correlation_id
+            )
+        else:
+            metrics_data = get_new_glpi_service().get_dashboard_metrics(
+                correlation_id=correlation_id
+            )
+        
+        # Add architecture info for debugging
+        metrics_data["_architecture"] = "new_v2"
+        metrics_data["_facade"] = "MetricsFacade"
+        
+        return jsonify(metrics_data)
+        
+    except Exception as e:
+        logger.error(f"Error in new metrics endpoint: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "_architecture": "new_v2"
+        }), 500
+
 
 @api_bp.route("/metrics")
 @monitor_api_endpoint("get_metrics")
@@ -478,7 +521,7 @@ def get_technicians():
 @standard_date_validation(support_predefined=True, log_usage=True)
 def get_technician_ranking(validated_start_date=None, validated_end_date=None, validated_filters=None):
     """Endpoint para obter ranking de técnicos com filtros avançados de forma robusta"""
-    print(f"[ENDPOINT DEBUG] Requisição recebida no endpoint /technicians/ranking")
+    print("[ENDPOINT DEBUG] Requisição recebida no endpoint /technicians/ranking")
     from datetime import datetime
 
     from utils.observability import ObservabilityLogger
@@ -514,7 +557,7 @@ def get_technician_ranking(validated_start_date=None, validated_end_date=None, v
             and current_time - _ranking_cache["timestamp"] < _ranking_cache["ttl"]
             and _ranking_cache["filters_hash"] == filters_hash
         ):
-            print(f"[CACHE HIT] Retornando dados do cache para ranking de técnicos")
+            print("[CACHE HIT] Retornando dados do cache para ranking de técnicos")
             cached_data = _ranking_cache["data"].copy()
             cached_data["cached"] = True
             cached_data["correlation_id"] = correlation_id
@@ -1138,7 +1181,6 @@ def glpi_health_check():
 @api_bp.route("/docs", methods=["GET"])
 def swagger_ui():
     """Serve Swagger UI for API documentation"""
-    from flask import send_from_directory
     import os
     
     # Caminho para o arquivo HTML do Swagger UI
@@ -1198,7 +1240,7 @@ def swagger_ui():
 def openapi_spec():
     """Serve OpenAPI specification file"""
     import os
-    from flask import send_file, Response
+    from flask import Response
     
     # Caminho para o arquivo openapi.yaml
     openapi_path = os.path.join(

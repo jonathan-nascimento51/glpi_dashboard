@@ -73,7 +73,7 @@ class TicketMetricsDTO(BaseModel):
     fechados: NonNegativeInt = Field(0, description="Tickets fechados")
     cancelados: NonNegativeInt = Field(0, description="Tickets cancelados")
 
-    @root_validator
+    @root_validator(skip_on_failure=True)
     def validate_totals(cls, values):
         """Valida que a soma dos status não excede o total."""
         total = values.get("total", 0)
@@ -171,7 +171,7 @@ class MetricsDTO(BaseModel):
                 raise ValueError(f"Nível inválido: {level_key}. Deve ser um de: {valid_levels}")
         return v
 
-    @root_validator
+    @root_validator(skip_on_failure=True)
     def calculate_derived_metrics(cls, values):
         """Calcula métricas derivadas."""
         # Calcular total de técnicos

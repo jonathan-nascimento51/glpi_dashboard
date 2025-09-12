@@ -16,7 +16,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
-from ...infrastructure.external.glpi.metrics_adapter import GLPIConfig, GLPIMetricsAdapter, create_glpi_metrics_adapter
+from ...infrastructure.external.glpi.metrics_adapter import GLPIConfig, GLPIMetricsAdapter
 from ..dto.metrics_dto import (
     DashboardMetricsDTO,
     MetricsFilterDTO,
@@ -84,13 +84,9 @@ class ProgressiveRefactoringService:
         self.legacy_service = legacy_service
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
-        # Inicializar nova arquitetura
-        self.glpi_adapter = create_glpi_metrics_adapter(
-            base_url=glpi_config.base_url,
-            app_token=glpi_config.app_token,
-            user_token=glpi_config.user_token,
-            **glpi_config.__dict__,
-        )
+        # Inicializar nova arquitetura  
+        from core.infrastructure.external.glpi.metrics_adapter import GLPIMetricsAdapter
+        self.glpi_adapter = GLPIMetricsAdapter(glpi_config)
 
         self.query_factory = MetricsQueryFactory(self.glpi_adapter)
 
