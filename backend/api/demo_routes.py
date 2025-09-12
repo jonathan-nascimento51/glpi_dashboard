@@ -93,7 +93,7 @@ def generate_mock_technician_ranking(limit: int = 10) -> List[Dict[str, Any]]:
 @monitor_api_endpoint("demo_metrics_legacy") 
 @monitor_performance
 def demo_metrics_legacy():
-    """Demo endpoint simulating legacy GLPIService architecture."""
+    """Demo endpoint simulating legacy architecture (now using decomposed facade)."""
     start_time = time.time()
     
     # Extract parameters
@@ -108,7 +108,7 @@ def demo_metrics_legacy():
     
     # Add legacy-specific metadata
     metrics_data["architecture"] = "legacy_simulation"
-    metrics_data["service_type"] = "GLPIService"
+    metrics_data["service_type"] = "GLPIServiceFacade"
     metrics_data["processing_layers"] = ["route", "service", "glpi_api", "cache"]
     metrics_data["response_time_ms"] = round((time.time() - start_time) * 1000, 2)
     
@@ -172,7 +172,7 @@ def demo_technician_ranking_legacy():
         "ranking": ranking_data,
         "total_technicians": len(ranking_data),
         "architecture": "legacy_simulation",
-        "service_type": "GLPIService",
+        "service_type": "GLPIServiceFacade",
         "response_time_ms": round((time.time() - start_time) * 1000, 2),
         "cached": False
     }

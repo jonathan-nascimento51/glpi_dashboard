@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 import requests
 
 from config.settings import active_config
-from services.glpi_service import GLPIService
+from services.legacy.glpi_service_facade import GLPIServiceFacade
 from utils.response_formatter import ResponseFormatter
 
 
@@ -19,8 +19,8 @@ class APIService:
         self.timeout = config_obj.API_TIMEOUT
         self.logger = logging.getLogger("services")
 
-        # Initialize GLPI service
-        self.glpi_service = GLPIService()
+        # Initialize GLPI service using decomposed facade
+        self.glpi_service = GLPIServiceFacade()
 
         # Default headers for API requests
         self.headers = {

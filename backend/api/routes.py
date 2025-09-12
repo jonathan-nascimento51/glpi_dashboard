@@ -9,7 +9,7 @@ from pydantic import ValidationError
 from config.settings import active_config
 from schemas.dashboard import DashboardMetrics
 from services.api_service import APIService
-from services.glpi_service import GLPIService
+from services.legacy.glpi_service_facade import GLPIServiceFacade
 from core.application.services.refactoring_integration import get_refactoring_integration_service
 from utils.date_decorators import standard_date_validation
 from utils.performance import cache_with_filters, monitor_performance, performance_monitor
@@ -26,7 +26,7 @@ api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 # Inicializa serviços
 api_service = APIService()
-glpi_service = GLPIService()  # Legacy service - kept for fallback
+glpi_service = GLPIServiceFacade()  # Using decomposed facade with backward compatibility
 
 # Function to get new service lazily
 def get_new_glpi_service():
