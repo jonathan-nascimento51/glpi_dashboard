@@ -15,7 +15,8 @@ from ...application.contracts.metrics_contracts import UnifiedGLPIServiceContrac
 from ...application.dto.metrics_dto import MetricsFilterDTO
 from ...application.queries.metrics_query import (
     MetricsQueryFactory,
-    QueryContext
+    QueryContext,
+    MetricsDataSource
 )
 from ...infrastructure.cache.unified_cache import unified_cache
 from ...infrastructure.external.glpi.metrics_adapter import (
@@ -35,7 +36,9 @@ from schemas.dashboard import (
     DashboardMetrics,
     TechnicianRanking,
     NewTicket,
-    ApiResponse
+    ApiResponse,
+    TicketStatus,
+    TechnicianLevel
 )
 
 
@@ -129,14 +132,34 @@ class MetricsFacade(UnifiedGLPIServiceContract):
             except ValueError:
                 self.logger.warning(f"Invalid end_date format: {end_date}")
         
+        # Convert string values to proper enum types
+        status_enum = None
+        if status:
+            try:
+                status_enum = TicketStatus(status.lower())
+            except ValueError:
+                self.logger.warning(f"Invalid status: {status}")
+        
+        level_enum = None
+        if level:
+            try:
+                level_enum = TechnicianLevel(level.upper())
+            except ValueError:
+                self.logger.warning(f"Invalid level: {level}")
+        
+        # Convert priority string to int
+        priority_int = None
+        if priority and priority.isdigit():
+            priority_int = int(priority)
+        
         return MetricsFilterDTO(
             start_date=start_datetime,
             end_date=end_datetime,
-            status=status,
-            priority=priority,
+            status=status_enum,
+            priority=priority_int,
             category_id=int(category) if category and category.isdigit() else None,
             technician_id=int(technician) if technician and technician.isdigit() else None,
-            level=level,
+            level=level_enum,
             service_level=None,
             use_modification_date=modification_date,
             limit=None,
@@ -310,13 +333,21 @@ class MetricsFacade(UnifiedGLPIServiceContract):
             return await query.execute(filters=filters, context=context)
         
         try:
-            result = self._run_async(_get_metrics())
-            unified_cache.set(self.METRICS_CACHE_NS, cache_key, result, ttl_seconds=180)
-            return result
+            api_response = self._run_async(_get_metrics())
+            
+            # Extract DashboardMetrics from ApiResponse
+            if hasattr(api_response, 'data') and api_response.data:
+                result = api_response.data
+                unified_cache.set(self.METRICS_CACHE_NS, cache_key, result, ttl_seconds=180)
+                return result
+            else:
+                from ..dto.metrics_dto import create_empty_dashboard_metrics
+                return create_empty_dashboard_metrics()
             
         except Exception as e:
             self.logger.error(f"Error getting dashboard metrics with filters: {e}")
-            return {"success": False, "error": str(e)}
+            from ..dto.metrics_dto import create_empty_dashboard_metrics
+            return create_empty_dashboard_metrics()
     
     # Technician Service Methods
     
@@ -349,7 +380,7 @@ class MetricsFacade(UnifiedGLPIServiceContract):
             self.logger.error(f"Error getting technician IDs and names: {e}")
             return [], []
     
-    def get_technician_ranking(self, limit: int = 50) -> Dict[str, Any]:
+    def get_technician_ranking(self, limit: int = 50) -> List[TechnicianRanking]:
         """Get technician ranking."""
         cache_key = {"method": "technician_ranking", "limit": limit}
         
@@ -359,17 +390,23 @@ class MetricsFacade(UnifiedGLPIServiceContract):
         
         async def _get_ranking():
             query = self.query_factory.create_technician_ranking_query()
-            context = QueryContext(limit=limit)
+            context = QueryContext(correlation_id=None)
             return await query.execute(context=context)
         
         try:
-            result = self._run_async(_get_ranking())
-            unified_cache.set(self.TECHNICIANS_CACHE_NS, cache_key, result, ttl_seconds=300)
-            return result
+            api_response = self._run_async(_get_ranking())
+            
+            # Extract List[TechnicianRanking] from ApiResponse
+            if hasattr(api_response, 'data') and api_response.data:
+                result = api_response.data
+                unified_cache.set(self.TECHNICIANS_CACHE_NS, cache_key, result, ttl_seconds=300)
+                return result
+            else:
+                return []
             
         except Exception as e:
             self.logger.error(f"Error getting technician ranking: {e}")
-            return {"success": False, "error": str(e)}
+            return []
     
     def get_technician_ranking_with_filters(
         self,
@@ -379,7 +416,7 @@ class MetricsFacade(UnifiedGLPIServiceContract):
         limit: int = 50,
         entity_id: Optional[int] = None,
         correlation_id: Optional[str] = None,
-    ) -> Dict[str, Any]:
+    ) -> List[TechnicianRanking]:
         """Get technician ranking with filters."""
         cache_key = {
             "method": "technician_ranking_filters",
@@ -403,21 +440,27 @@ class MetricsFacade(UnifiedGLPIServiceContract):
                 entity_id=entity_id
             )
             query = self.query_factory.create_technician_ranking_query()
-            context = QueryContext(limit=limit, correlation_id=correlation_id)
+            context = QueryContext(correlation_id=correlation_id)
             return await query.execute(filters=filters, context=context)
         
         try:
-            result = self._run_async(_get_ranking())
-            unified_cache.set(self.TECHNICIANS_CACHE_NS, cache_key, result, ttl_seconds=300)
-            return result
+            api_response = self._run_async(_get_ranking())
+            
+            # Extract List[TechnicianRanking] from ApiResponse
+            if hasattr(api_response, 'data') and api_response.data:
+                result = api_response.data
+                unified_cache.set(self.TECHNICIANS_CACHE_NS, cache_key, result, ttl_seconds=300)
+                return result
+            else:
+                return []
             
         except Exception as e:
             self.logger.error(f"Error getting technician ranking with filters: {e}")
-            return {"success": False, "error": str(e)}
+            return []
     
     # Ticket Service Methods (Simplified implementations)
     
-    def get_new_tickets(self, limit: int = 20) -> List[Dict[str, Any]]:
+    def get_new_tickets(self, limit: int = 20) -> List[NewTicket]:
         """Get new tickets."""
         # For now, return basic structure - can be expanded later
         return []
@@ -430,14 +473,14 @@ class MetricsFacade(UnifiedGLPIServiceContract):
         technician: Optional[str] = None,
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
-    ) -> List[Dict[str, Any]]:
+    ) -> List[NewTicket]:
         """Get new tickets with filters."""
         # For now, return basic structure - can be expanded later
         return []
     
     # System Service Methods (Simplified implementations)
     
-    def get_system_status(self) -> Dict[str, Any]:
+    def get_system_status(self) -> ApiResponse:
         """Get system status."""
         cache_key = {"method": "system_status"}
         
@@ -446,7 +489,9 @@ class MetricsFacade(UnifiedGLPIServiceContract):
             return cached_result
         
         # For now, return basic structure - can be expanded later
-        result = {"status": "online", "message": "System operational"}
+        from ..dto.metrics_dto import create_success_response
+        status_data = {"status": "online", "message": "System operational"}
+        result = create_success_response(status_data, message="System operational")
         unified_cache.set(self.SYSTEM_CACHE_NS, cache_key, result, ttl_seconds=60)
         return result
     

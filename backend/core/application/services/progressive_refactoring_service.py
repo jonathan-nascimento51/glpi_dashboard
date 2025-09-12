@@ -28,6 +28,9 @@ from schemas.dashboard import (
     DashboardMetrics,
     ApiResponse,
     ApiError,
+    LevelMetrics,
+    NiveisMetrics,
+    TendenciasMetrics,
 )
 from ..queries.metrics_query import (
     DashboardMetricsQuery,
@@ -57,7 +60,7 @@ class RefactoringConfig:
 
     # Configurações de migração gradual
     migration_percentage: float = 0.0  # % de requests para nova arquitetura
-    endpoints_to_migrate: List[str] = None  # Endpoints específicos para migrar
+    endpoints_to_migrate: Optional[List[str]] = None  # Endpoints específicos para migrar
 
     # Configurações de validação
     enable_validation: bool = False  # Executar ambas implementações
@@ -114,7 +117,6 @@ class ProgressiveRefactoringService:
         context = QueryContext(
             correlation_id=correlation_id,
             user_id=None,
-            request_timestamp=datetime.now(),
         )
 
         endpoint = "dashboard_metrics"
@@ -150,7 +152,6 @@ class ProgressiveRefactoringService:
         context = QueryContext(
             correlation_id=correlation_id,
             user_id=None,
-            request_timestamp=datetime.now(),
         )
 
         endpoint = "technician_ranking"
@@ -159,13 +160,13 @@ class ProgressiveRefactoringService:
             use_new_architecture = self._should_use_new_architecture(endpoint)
 
             if self.config.phase == RefactoringPhase.VALIDATION:
-                return await self._execute_validation_mode_ranking(filters, context)
+                return await self._execute_validation_mode(filters, context)
 
             elif use_new_architecture:
-                return await self._execute_new_architecture_ranking(filters, context)
+                return await self._execute_new_architecture(filters, context)
 
             else:
-                return await self._execute_legacy_ranking_with_fallback(filters, context)
+                return await self._execute_legacy_with_fallback(filters, context)
 
         except Exception as e:
             self.logger.error(
@@ -185,7 +186,6 @@ class ProgressiveRefactoringService:
         context = QueryContext(
             correlation_id=correlation_id,
             user_id=None,
-            request_timestamp=datetime.now(),
         )
 
         endpoint = "general_metrics"
@@ -194,13 +194,13 @@ class ProgressiveRefactoringService:
             use_new_architecture = self._should_use_new_architecture(endpoint)
 
             if self.config.phase == RefactoringPhase.VALIDATION:
-                return await self._execute_validation_mode_general(filters, context)
+                return await self._execute_validation_mode(filters, context)
 
             elif use_new_architecture:
-                return await self._execute_new_architecture_general(filters, context)
+                return await self._execute_new_architecture(filters, context)
 
             else:
-                return await self._execute_legacy_general_with_fallback(filters, context)
+                return await self._execute_legacy_with_fallback(filters, context)
 
         except Exception as e:
             self.logger.error(
@@ -240,19 +240,18 @@ class ProgressiveRefactoringService:
 
         try:
             # Criar query para dashboard
-            dashboard_query = self.query_factory.create_dashboard_query()
+            dashboard_query = self.query_factory.create_dashboard_metrics_query()
 
             # Executar query
             result = await dashboard_query.execute(filters, context)
 
-            # Converter para DTO de resposta
-            dashboard_dto = DashboardMetrics(
-                general=result.get("general", {}),
-                levels=result.get("levels", {}),
-                trends=result.get("trends", {}),
-                recent_tickets=result.get("recent_tickets", []),
-                timestamp=datetime.now(),
-            )
+            # Extract DashboardMetrics from ApiResponse
+            if hasattr(result, 'data') and result.data:
+                dashboard_dto = result.data
+            else:
+                # Create empty dashboard metrics
+                from ..dto.metrics_dto import create_empty_dashboard_metrics
+                dashboard_dto = create_empty_dashboard_metrics()
 
             execution_time = time.time() - start_time
 
@@ -267,7 +266,7 @@ class ProgressiveRefactoringService:
                 },
             )
 
-            return create_success_response(data=dashboard_dto, execution_time=execution_time)
+            return create_success_response(data=dashboard_dto)
 
         except Exception as e:
             if self.config.enable_fallback:
@@ -316,7 +315,7 @@ class ProgressiveRefactoringService:
                 },
             )
 
-            return create_success_response(data=dashboard_dto, execution_time=execution_time)
+            return create_success_response(data=dashboard_dto)
 
         except Exception as e:
             self.logger.error(
@@ -415,28 +414,62 @@ class ProgressiveRefactoringService:
         """Converte resultado legado para DTO."""
 
         if not legacy_result or not isinstance(legacy_result, dict):
-            return DashboardMetrics(
-                general={},
-                levels={},
-                trends={},
-                recent_tickets=[],
-                timestamp=datetime.now(),
-            )
+            from ..dto.metrics_dto import create_empty_dashboard_metrics
+            return create_empty_dashboard_metrics()
 
         # Extrair dados do resultado legado
         data = legacy_result.get("data", {})
 
+        # Extract and convert legacy data to proper DashboardMetrics
+        niveis_data = data.get("niveis", {})
+        niveis = NiveisMetrics(
+            n1=LevelMetrics(
+                novos=niveis_data.get("n1", {}).get("novos", 0),
+                pendentes=niveis_data.get("n1", {}).get("pendentes", 0),
+                progresso=niveis_data.get("n1", {}).get("progresso", 0),
+                resolvidos=niveis_data.get("n1", {}).get("resolvidos", 0),
+                total=niveis_data.get("n1", {}).get("total", 0)
+            ),
+            n2=LevelMetrics(
+                novos=niveis_data.get("n2", {}).get("novos", 0),
+                pendentes=niveis_data.get("n2", {}).get("pendentes", 0),
+                progresso=niveis_data.get("n2", {}).get("progresso", 0),
+                resolvidos=niveis_data.get("n2", {}).get("resolvidos", 0),
+                total=niveis_data.get("n2", {}).get("total", 0)
+            ),
+            n3=LevelMetrics(
+                novos=niveis_data.get("n3", {}).get("novos", 0),
+                pendentes=niveis_data.get("n3", {}).get("pendentes", 0),
+                progresso=niveis_data.get("n3", {}).get("progresso", 0),
+                resolvidos=niveis_data.get("n3", {}).get("resolvidos", 0),
+                total=niveis_data.get("n3", {}).get("total", 0)
+            ),
+            n4=LevelMetrics(
+                novos=niveis_data.get("n4", {}).get("novos", 0),
+                pendentes=niveis_data.get("n4", {}).get("pendentes", 0),
+                progresso=niveis_data.get("n4", {}).get("progresso", 0),
+                resolvidos=niveis_data.get("n4", {}).get("resolvidos", 0),
+                total=niveis_data.get("n4", {}).get("total", 0)
+            )
+        )
+        
+        tendencias_data = data.get("tendencias", {})
+        tendencias = TendenciasMetrics(
+            novos=str(tendencias_data.get("novos", "0")),
+            pendentes=str(tendencias_data.get("pendentes", "0")),
+            progresso=str(tendencias_data.get("progresso", "0")),
+            resolvidos=str(tendencias_data.get("resolvidos", "0"))
+        )
+        
         return DashboardMetrics(
-            general=data.get("geral", {}),
-            levels={
-                "n1": data.get("niveis", {}).get("n1", {}),
-                "n2": data.get("niveis", {}).get("n2", {}),
-                "n3": data.get("niveis", {}).get("n3", {}),
-                "n4": data.get("niveis", {}).get("n4", {}),
-            },
-            trends=data.get("tendencias", {}),
-            recent_tickets=data.get("recent_tickets", []),
-            timestamp=datetime.now(),
+            novos=data.get("novos", 0),
+            pendentes=data.get("pendentes", 0),
+            progresso=data.get("progresso", 0),
+            resolvidos=data.get("resolvidos", 0),
+            total=data.get("total", 0),
+            niveis=niveis,
+            tendencias=tendencias,
+            timestamp=datetime.now()
         )
 
     async def _compare_results(
@@ -494,12 +527,7 @@ class ProgressiveRefactoringService:
                 return False
 
             # Comparação básica de totais
-            new_general = new_data.general
-            legacy_general = legacy_data.general
-
-            return new_general.get("total", 0) == legacy_general.get("total", 0) and new_general.get(
-                "novos", 0
-            ) == legacy_general.get("novos", 0)
+            return new_data.total == legacy_data.total and new_data.novos == legacy_data.novos
 
         except Exception as e:
             self.logger.warning(f"Erro na comparação de dados: {str(e)}")
@@ -575,7 +603,20 @@ async def example_usage():
 
     try:
         # Obter métricas do dashboard
-        filters = MetricsFilterDTO()
+        from schemas.dashboard import TicketStatus, TechnicianLevel
+        filters = MetricsFilterDTO(
+            start_date=None,
+            end_date=None,
+            status=None,
+            level=None,
+            service_level=None,
+            use_modification_date=False,
+            technician_id=None,
+            category_id=None,
+            priority=None,
+            limit=None,
+            offset=0
+        )
         result = await refactoring_service.get_dashboard_metrics(filters=filters, correlation_id="example-123")
 
         print(f"Sucesso: {result.success}")
