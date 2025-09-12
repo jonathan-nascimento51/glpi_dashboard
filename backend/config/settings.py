@@ -24,8 +24,33 @@ class Config:
         self._validate_required_configs()
         self._validate_config_values()
 
-    # Flask
-    SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-production")
+    # Flask Security Configuration
+    @property
+    def SECRET_KEY(self) -> str:
+        """Secret key with security validation"""
+        secret_key = os.environ.get("SECRET_KEY")
+        if not secret_key:
+            if not self.DEBUG:
+                raise ConfigValidationError(
+                    "SECRET_KEY environment variable is required in production"
+                )
+            # Development fallback with warning
+            import warnings
+            warnings.warn(
+                "Using development SECRET_KEY. Set SECRET_KEY environment variable for production."
+            )
+            return "dev-secret-key-DO-NOT-USE-IN-PRODUCTION"
+        
+        # Validate secret key strength in production
+        if not self.DEBUG:
+            if len(secret_key) < 32:
+                raise ConfigValidationError("SECRET_KEY must be at least 32 characters long in production")
+            if secret_key in ["dev-secret-key-change-in-production", "dev-secret-key-DO-NOT-USE-IN-PRODUCTION"]:
+                raise ConfigValidationError("Default development SECRET_KEY cannot be used in production")
+        
+        return secret_key
+    
+    # Debug mode - Secure by default
     DEBUG = os.environ.get("FLASK_DEBUG", "False").lower() == "true"
 
     @property
@@ -54,7 +79,22 @@ class Config:
     PROMETHEUS_GATEWAY_URL = os.environ.get("PROMETHEUS_GATEWAY_URL", "http://localhost:9091")
     PROMETHEUS_JOB_NAME = os.environ.get("PROMETHEUS_JOB_NAME", "glpi_dashboard")
     STRUCTURED_LOGGING = os.environ.get("STRUCTURED_LOGGING", "True").lower() == "true"
-    LOG_FILE_PATH = os.environ.get("LOG_FILE_PATH", "logs/app.log")
+    
+    @property
+    def LOG_FILE_PATH(self) -> str:
+        """Log file path with directory validation"""
+        log_path = os.environ.get("LOG_FILE_PATH", "logs/app.log")
+        
+        # Ensure log directory exists
+        log_dir = os.path.dirname(log_path)
+        if log_dir and not os.path.exists(log_dir):
+            try:
+                os.makedirs(log_dir, mode=0o755, exist_ok=True)
+            except OSError as e:
+                raise ConfigValidationError(f"Cannot create log directory '{log_dir}': {e}")
+        
+        return log_path
+    
     LOG_MAX_BYTES = int(os.environ.get("LOG_MAX_BYTES", "10485760"))  # 10MB
     LOG_BACKUP_COUNT = int(os.environ.get("LOG_BACKUP_COUNT", "5"))
 
@@ -78,8 +118,31 @@ class Config:
     LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
     LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
-    # CORS
-    CORS_ORIGINS = ["*"]
+    # CORS - Security: Use environment-configurable allowlist
+    @property
+    def CORS_ORIGINS(self) -> list:
+        """CORS origins with security validation"""
+        origins = os.environ.get("CORS_ORIGINS", "").strip()
+        if not origins:
+            # Secure default: no wildcards in production
+            if not self.DEBUG:
+                raise ConfigValidationError(
+                    "CORS_ORIGINS must be explicitly set in production. "
+                    "Use comma-separated list of allowed origins."
+                )
+            # Development default - still restricted
+            return ["http://localhost:3000", "http://localhost:5000", "http://127.0.0.1:3000", "http://127.0.0.1:5000"]
+        
+        # Parse and validate origins
+        origin_list = [origin.strip() for origin in origins.split(",") if origin.strip()]
+        
+        # Security validation: no wildcards in production
+        if not self.DEBUG and "*" in origin_list:
+            raise ConfigValidationError(
+                "Wildcard CORS origins (*) are not allowed in production for security reasons"
+            )
+            
+        return origin_list
 
     # Redis Cache
     REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
@@ -155,9 +218,22 @@ class Config:
             warnings.warn(f"LOG_LEVEL inválido '{self.LOG_LEVEL}', usando 'INFO'")
             self.LOG_LEVEL = "INFO"
 
-        # Validar chave secreta em produção
-        if not self.DEBUG and self.SECRET_KEY == "dev-secret-key-change-in-production":
-            raise ConfigValidationError("SECRET_KEY deve ser alterada em ambiente de produção")
+        # Additional production security validations
+        if not self.DEBUG:
+            # Validate HTTPS is enforced in production URLs
+            if self.BACKEND_API_URL.startswith("http://") and not self.BACKEND_API_URL.startswith("http://localhost"):
+                import warnings
+                warnings.warn(f"BACKEND_API_URL should use HTTPS in production: {self.BACKEND_API_URL}")
+            
+            # Validate Redis security in production
+            if self.REDIS_URL.startswith("redis://") and not self.REDIS_URL.startswith("redis://localhost"):
+                import warnings
+                warnings.warn("Consider using Redis with TLS (rediss://) in production")
+                
+            # Ensure production logging is properly configured
+            if self.LOG_LEVEL == "DEBUG":
+                import warnings
+                warnings.warn("DEBUG logging level may expose sensitive information in production")
 
     @classmethod
     def configure_logging(cls) -> logging.Logger:
@@ -219,10 +295,48 @@ class DevelopmentConfig(Config):
 
 # Configuração de produção
 class ProductionConfig(Config):
-    """Configuração para ambiente de produção"""
+    """Configuração para ambiente de produção com segurança aprimorada"""
 
     DEBUG = False
-    CORS_ORIGINS = ["https://dashboard.example.com"]
+    
+    # Security: Require explicit CORS configuration in production
+    @property
+    def CORS_ORIGINS(self) -> list:
+        """CORS origins - must be explicitly configured in production"""
+        origins = os.environ.get("CORS_ORIGINS", "").strip()
+        if not origins:
+            raise ConfigValidationError(
+                "CORS_ORIGINS environment variable is required in production. "
+                "Set to comma-separated list of allowed origins (e.g., 'https://app.example.com,https://dashboard.example.com')"
+            )
+        
+        origin_list = [origin.strip() for origin in origins.split(",") if origin.strip()]
+        
+        # Security validation: no wildcards or insecure protocols in production
+        for origin in origin_list:
+            if "*" in origin:
+                raise ConfigValidationError(f"Wildcard CORS origin not allowed in production: {origin}")
+            if origin.startswith("http://") and not origin.startswith("http://localhost"):
+                import warnings
+                warnings.warn(f"HTTP (non-HTTPS) CORS origin in production is insecure: {origin}")
+        
+        return origin_list
+    
+    # Production security settings
+    @property  
+    def HOST(self) -> str:
+        """Production host binding - default to all interfaces"""
+        return os.environ.get("HOST", "0.0.0.0")
+    
+    # Security headers configuration
+    SECURITY_HEADERS = {
+        "STRICT_TRANSPORT_SECURITY": "max-age=31536000; includeSubDomains; preload",
+        "X_CONTENT_TYPE_OPTIONS": "nosniff", 
+        "X_FRAME_OPTIONS": "DENY",
+        "X_XSS_PROTECTION": "1; mode=block",
+        "REFERRER_POLICY": "strict-origin-when-cross-origin",
+        "CONTENT_SECURITY_POLICY": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'",
+    }
 
 
 # Configuração de teste
