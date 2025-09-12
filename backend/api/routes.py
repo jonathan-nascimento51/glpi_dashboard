@@ -8,7 +8,6 @@ from pydantic import ValidationError
 
 from config.settings import active_config
 from schemas.dashboard import DashboardMetrics
-from services.api_service import APIService
 from core.application.services.metrics_facade import MetricsFacade
 from utils.date_decorators import standard_date_validation
 from utils.performance import cache_with_filters, monitor_performance, performance_monitor
@@ -24,7 +23,6 @@ unified_cache = UnifiedCache()
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 # Inicializa serviços
-api_service = APIService()
 metrics_facade = MetricsFacade()  # Clean Architecture metrics service
 
 # Obtém logger configurado

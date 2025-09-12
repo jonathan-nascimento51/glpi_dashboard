@@ -56,11 +56,6 @@ def get_logging_config(log_level: str = "INFO", log_file: Optional[str] = None) 
                 "handlers": ["console"],
                 "propagate": False,
             },
-            "api_service": {
-                "level": log_level,
-                "handlers": ["console"],
-                "propagate": False,
-            },
             "structured_logger": {
                 "level": log_level,
                 "handlers": ["console"],
