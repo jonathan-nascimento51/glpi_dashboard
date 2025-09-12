@@ -19,3 +19,4 @@ psycopg2-binary==2.9.7
 
 # Development dependencies
 werkzeug==2.3.7
+httpx

@@ -15,50 +15,12 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 from urllib.parse import urlencode
 
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
+import httpx
+import asyncio
 
-# Definições locais mínimas para compatibilidade
-from dataclasses import dataclass
-from typing import Optional
-from datetime import datetime
-
-@dataclass
-class MetricsFilterDTO:
-    """DTO mínimo para filtros de métricas."""
-    start_date: Optional[datetime] = None
-    end_date: Optional[datetime] = None
-    technician_id: Optional[int] = None
-    status: Optional[str] = None
-    category_id: Optional[int] = None
-    priority: Optional[int] = None
-    limit: Optional[int] = None
-    offset: Optional[int] = None
-    
-    def copy(self):
-        return MetricsFilterDTO(
-            start_date=self.start_date,
-            end_date=self.end_date,
-            technician_id=self.technician_id,
-            status=self.status,
-            category_id=self.category_id,
-            priority=self.priority,
-            limit=self.limit,
-            offset=self.offset
-        )
-
-@dataclass 
-class QueryContext:
-    """Contexto mínimo para queries."""
-    correlation_id: Optional[str] = None
-
-class TechnicianLevel(Enum):
-    """Níveis de técnicos."""
-    N1 = "N1"
-    N2 = "N2"
-    N3 = "N3"
-    N4 = "N4"
+# Importar DTOs centrais para evitar duplicação
+from ....application.dto.metrics_dto import MetricsFilterDTO, TechnicianLevel
+from ....application.queries.metrics_query import QueryContext
 
 logger = logging.getLogger(__name__)
 
@@ -107,12 +69,16 @@ class GLPISessionManager:
         self.session_expires_at: Optional[datetime] = None
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
-    def get_session_token(self, correlation_id: Optional[str] = None) -> str:
+    async def get_session_token(self, correlation_id: Optional[str] = None) -> str:
         """Obtém token de sessão válido, renovando se necessário."""
         if self._is_session_valid():
+            if self.session_token is None:
+                raise GLPIAuthenticationError("Token de sessão inválido")
             return self.session_token
 
-        self._create_new_session(correlation_id)
+        await self._create_new_session(correlation_id)
+        if self.session_token is None:
+            raise GLPIAuthenticationError("Falha ao obter token de sessão")
         return self.session_token
 
     def _is_session_valid(self) -> bool:
@@ -124,7 +90,7 @@ class GLPISessionManager:
         buffer_time = timedelta(minutes=5)
         return datetime.now() < (self.session_expires_at - buffer_time)
 
-    def _create_new_session(self, correlation_id: Optional[str] = None) -> None:
+    async def _create_new_session(self, correlation_id: Optional[str] = None) -> None:
         """Cria nova sessão GLPI."""
         headers = {
             "Content-Type": "application/json",
@@ -138,31 +104,32 @@ class GLPISessionManager:
         url = f"{self.config.base_url}/apirest.php/initSession"
 
         try:
-            response = requests.get(url, headers=headers, timeout=self.config.timeout)
-            
-            if response.status_code == 200:
-                data = response.json()
-                self.session_token = data.get("session_token")
+            async with httpx.AsyncClient(timeout=self.config.timeout) as client:
+                response = await client.get(url, headers=headers)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    self.session_token = data.get("session_token")
 
-                # Definir expiração da sessão
-                self.session_expires_at = datetime.now() + timedelta(minutes=self.config.session_timeout_minutes)
+                    # Definir expiração da sessão
+                    self.session_expires_at = datetime.now() + timedelta(minutes=self.config.session_timeout_minutes)
 
-                self.logger.info(
-                    "Nova sessão GLPI criada",
-                    extra={
-                        "correlation_id": correlation_id,
-                        "expires_at": self.session_expires_at.isoformat(),
-                    },
-                )
-            else:
-                raise GLPIAuthenticationError(f"Falha na autenticação GLPI: {response.status_code} - {response.text}")
+                    self.logger.info(
+                        "Nova sessão GLPI criada",
+                        extra={
+                            "correlation_id": correlation_id,
+                            "expires_at": self.session_expires_at.isoformat(),
+                        },
+                    )
+                else:
+                    raise GLPIAuthenticationError(f"Falha na autenticação GLPI: {response.status_code} - {response.text}")
 
-        except requests.exceptions.RequestException as e:
+        except httpx.RequestError as e:
             raise GLPIConnectionError(f"Erro de conexão com GLPI: {str(e)}")
         except Exception as e:
             raise GLPIAPIError(f"Erro inesperado na autenticação GLPI: {str(e)}")
 
-    def close_session(self, correlation_id: Optional[str] = None) -> None:
+    async def close_session(self, correlation_id: Optional[str] = None) -> None:
         """Fecha sessão GLPI."""
         if not self.session_token:
             return
@@ -178,12 +145,13 @@ class GLPISessionManager:
         url = f"{self.config.base_url}/apirest.php/killSession"
 
         try:
-            response = requests.get(url, headers=headers, timeout=self.config.timeout)
-            if response.status_code == 200:
-                self.logger.info(
-                    "Sessão GLPI fechada",
-                    extra={"correlation_id": correlation_id},
-                )
+            async with httpx.AsyncClient(timeout=self.config.timeout) as client:
+                response = await client.get(url, headers=headers)
+                if response.status_code == 200:
+                    self.logger.info(
+                        "Sessão GLPI fechada",
+                        extra={"correlation_id": correlation_id},
+                    )
         except Exception as e:
             self.logger.warning(
                 f"Erro ao fechar sessão GLPI: {str(e)}",
@@ -202,7 +170,7 @@ class GLPIAPIClient:
         self.session_manager = session_manager
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
-    def make_request(
+    async def make_request(
         self,
         endpoint: str,
         method: str = "GET",
@@ -212,7 +180,7 @@ class GLPIAPIClient:
     ) -> Dict[str, Any]:
         """Faz requisição autenticada para API GLPI."""
 
-        session_token = self.session_manager.get_session_token(correlation_id)
+        session_token = await self.session_manager.get_session_token(correlation_id)
 
         headers = {
             "Content-Type": "application/json",
@@ -240,40 +208,41 @@ class GLPIAPIClient:
         )
 
         try:
-            request_kwargs = {"headers": headers, "timeout": self.config.timeout}
+            request_kwargs = {"headers": headers}
 
             if data:
                 request_kwargs["json"] = data
 
-            response = requests.request(method, url, **request_kwargs)
-            response_text = response.text
+            async with httpx.AsyncClient(timeout=self.config.timeout) as client:
+                response = await client.request(method, url, **request_kwargs)
+                response_text = response.text
 
-            # Log da resposta
-            self.logger.debug(
-                f"GLPI API Response: {response.status_code}",
-                extra={
-                    "correlation_id": correlation_id,
-                    "status_code": response.status_code,
-                    "response_size": len(response_text),
-                },
-            )
+                # Log da resposta
+                self.logger.debug(
+                    f"GLPI API Response: {response.status_code}",
+                    extra={
+                        "correlation_id": correlation_id,
+                        "status_code": response.status_code,
+                        "response_size": len(response_text),
+                    },
+                )
 
-            if response.status_code == 200:
-                try:
-                    return response.json()
-                except json.JSONDecodeError:
-                    # Algumas respostas podem não ser JSON
-                    return {"raw_response": response_text}
+                if response.status_code == 200:
+                    try:
+                        return response.json()
+                    except json.JSONDecodeError:
+                        # Algumas respostas podem não ser JSON
+                        return {"raw_response": response_text}
 
-            elif response.status_code == 401:
-                # Token expirado, forçar renovação
-                self.session_manager.session_token = None
-                raise GLPIAuthenticationError(f"Token expirado: {response_text}")
+                elif response.status_code == 401:
+                    # Token expirado, forçar renovação
+                    self.session_manager.session_token = None
+                    raise GLPIAuthenticationError(f"Token expirado: {response_text}")
 
-            else:
-                raise GLPIAPIError(f"Erro na API GLPI: {response.status_code} - {response_text}")
+                else:
+                    raise GLPIAPIError(f"Erro na API GLPI: {response.status_code} - {response_text}")
 
-        except requests.exceptions.RequestException as e:
+        except httpx.RequestError as e:
             raise GLPIConnectionError(f"Erro de conexão com GLPI: {str(e)}")
         except Exception as e:
             if isinstance(e, (GLPIConnectionError, GLPIAuthenticationError, GLPIAPIError)):
@@ -294,7 +263,7 @@ class GLPIMetricsAdapter:
         self._technician_hierarchy_cache: Optional[Dict[int, str]] = None
         self._hierarchy_cache_expires_at: Optional[datetime] = None
 
-    def get_ticket_count_by_hierarchy(
+    async def get_ticket_count_by_hierarchy(
         self,
         filters: Optional[MetricsFilterDTO] = None,
         context: Optional[QueryContext] = None,
@@ -304,13 +273,13 @@ class GLPIMetricsAdapter:
 
         try:
             # Obter hierarquia de técnicos
-            technician_hierarchy = self.get_technician_hierarchy(context)
+            technician_hierarchy = await self.get_technician_hierarchy(context)
 
             # Construir parâmetros da consulta
             params = self._build_ticket_query_params(filters)
 
             # Fazer requisição para tickets
-            tickets_data = self.api_client.make_request(endpoint="Ticket", params=params, correlation_id=correlation_id)
+            tickets_data = await self.api_client.make_request(endpoint="Ticket", params=params, correlation_id=correlation_id)
 
             # Processar dados por hierarquia
             hierarchy_metrics = self._process_tickets_by_hierarchy(tickets_data, technician_hierarchy, correlation_id)
@@ -324,7 +293,7 @@ class GLPIMetricsAdapter:
             )
             raise
 
-    def get_technician_metrics(
+    async def get_technician_metrics(
         self,
         technician_id: Optional[int] = None,
         filters: Optional[MetricsFilterDTO] = None,
@@ -335,7 +304,7 @@ class GLPIMetricsAdapter:
 
         try:
             # Obter lista de técnicos
-            technicians_data = self._get_technicians_list(technician_id, correlation_id)
+            technicians_data = await self._get_technicians_list(technician_id, correlation_id)
 
             # Para cada técnico, obter suas métricas
             technician_metrics = []
@@ -350,7 +319,7 @@ class GLPIMetricsAdapter:
                 tech_filter.technician_id = tech_id
 
                 # Obter tickets do técnico
-                tech_tickets = self._get_technician_tickets(tech_id, tech_filter, correlation_id)
+                tech_tickets = await self._get_technician_tickets(tech_id, tech_filter, correlation_id)
 
                 # Processar métricas
                 metrics = self._process_technician_metrics(technician, tech_tickets, correlation_id)
@@ -373,7 +342,7 @@ class GLPIMetricsAdapter:
             )
             raise
 
-    def get_ticket_metrics(
+    async def get_ticket_metrics(
         self,
         filters: Optional[MetricsFilterDTO] = None,
         context: Optional[QueryContext] = None,
@@ -386,7 +355,7 @@ class GLPIMetricsAdapter:
             params = self._build_ticket_query_params(filters)
 
             # Obter tickets
-            tickets_data = self.api_client.make_request(endpoint="Ticket", params=params, correlation_id=correlation_id)
+            tickets_data = await self.api_client.make_request(endpoint="Ticket", params=params, correlation_id=correlation_id)
 
             # Processar métricas gerais
             metrics = self._process_ticket_metrics(tickets_data, filters, correlation_id)
@@ -400,17 +369,19 @@ class GLPIMetricsAdapter:
             )
             raise
 
-    def get_technician_hierarchy(self, context: Optional[QueryContext] = None) -> Dict[int, str]:
+    async def get_technician_hierarchy(self, context: Optional[QueryContext] = None) -> Dict[int, str]:
         """Obtém mapeamento de técnico para nível hierárquico."""
         correlation_id = context.correlation_id if context else None
 
         # Verificar cache
         if self._is_hierarchy_cache_valid():
+            if self._technician_hierarchy_cache is None:
+                raise GLPIAPIError("Cache de hierarquia inválido")
             return self._technician_hierarchy_cache
 
         try:
             # Obter usuários/técnicos do GLPI
-            users_data = self.api_client.make_request(
+            users_data = await self.api_client.make_request(
                 endpoint="User",
                 params={
                     "range": "0-9999",  # Limite alto para pegar todos
@@ -577,23 +548,23 @@ class GLPIMetricsAdapter:
 
         return levels
 
-    def _get_technicians_list(self, technician_id: Optional[int], correlation_id: Optional[str]) -> List[Dict[str, Any]]:
+    async def _get_technicians_list(self, technician_id: Optional[int], correlation_id: Optional[str]) -> List[Dict[str, Any]]:
         """Obtém lista de técnicos."""
 
         if technician_id:
             # Obter técnico específico
-            user_data = self.api_client.make_request(endpoint=f"User/{technician_id}", correlation_id=correlation_id)
+            user_data = await self.api_client.make_request(endpoint=f"User/{technician_id}", correlation_id=correlation_id)
             return [user_data] if user_data else []
         else:
             # Obter todos os técnicos ativos
-            users_data = self.api_client.make_request(
+            users_data = await self.api_client.make_request(
                 endpoint="User",
                 params={"range": "0-999", "is_active": 1, "expand_dropdowns": True},
                 correlation_id=correlation_id,
             )
             return users_data if isinstance(users_data, list) else []
 
-    def _get_technician_tickets(
+    async def _get_technician_tickets(
         self,
         technician_id: int,
         filters: MetricsFilterDTO,
@@ -604,7 +575,7 @@ class GLPIMetricsAdapter:
         params = self._build_ticket_query_params(filters)
         params["users_id_assign"] = technician_id
 
-        tickets_data = self.api_client.make_request(endpoint="Ticket", params=params, correlation_id=correlation_id)
+        tickets_data = await self.api_client.make_request(endpoint="Ticket", params=params, correlation_id=correlation_id)
 
         return tickets_data if isinstance(tickets_data, list) else []
 
@@ -751,7 +722,7 @@ class GLPIMetricsAdapter:
             params = self._build_search_params_for_new_tickets(filters, field_ids)
             
             # Fazer requisição para tickets via search endpoint
-            tickets_response = self.api_client.make_request(
+            tickets_response = await self.api_client.make_request(
                 endpoint="search/Ticket", 
                 params=params, 
                 correlation_id=correlation_id
@@ -774,7 +745,7 @@ class GLPIMetricsAdapter:
         try:
             # Verificar status da sessão - usar endpoint simples que sempre funciona
             start_time = time.time()
-            session_response = self.api_client.make_request(
+            session_response = await self.api_client.make_request(
                 endpoint="getMyProfiles", 
                 params={}, 
                 correlation_id=correlation_id
@@ -803,7 +774,7 @@ class GLPIMetricsAdapter:
 
         try:
             # Obter opções de busca para tickets
-            search_options = self.api_client.make_request(
+            search_options = await self.api_client.make_request(
                 endpoint="listSearchOptions/Ticket", 
                 params={}, 
                 correlation_id=correlation_id
@@ -1157,7 +1128,7 @@ async def example_usage():
 
     try:
         # Criar contexto
-        from ...application.queries.metrics_query import QueryContext
+        from ....application.queries.metrics_query import QueryContext
 
         context = QueryContext(correlation_id="example-123")
 

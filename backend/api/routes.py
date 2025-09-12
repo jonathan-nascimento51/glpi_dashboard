@@ -15,12 +15,11 @@ from utils.performance import cache_with_filters, monitor_performance, performan
 from utils.prometheus_metrics import monitor_api_endpoint
 from utils.response_formatter import ResponseFormatter
 
-# Importar cache do app principal
-try:
-    from app import cache
-except ImportError:
-    # Fallback caso não consiga importar
-    cache = None
+# Usar cache unificado da nova arquitetura
+from core.infrastructure.cache.unified_cache import UnifiedCache
+
+# Instanciar cache unificado
+unified_cache = UnifiedCache()
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -955,12 +954,11 @@ def get_performance_stats():
     try:
         stats = performance_monitor.get_stats()
 
-        # Adiciona informações do cache
+        # Adiciona informações do cache unificado
         cache_info = {
-            "cache_type": "Redis" if hasattr(cache, "cache") and "Redis" in str(type(cache.cache)) else "Simple",
-            "cache_timeout": getattr(cache, "config", {}).get("CACHE_DEFAULT_TIMEOUT", 300)
-            if hasattr(cache, "config")
-            else 300,
+            "cache_type": "Unified Redis Cache",
+            "cache_timeout": 300,  # Default TTL do cache unificado
+            "cache_status": "active" if unified_cache else "disabled"
         }
 
         return jsonify(
