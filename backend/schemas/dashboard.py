@@ -1,16 +1,52 @@
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, root_validator, validator
+from pydantic.types import NonNegativeInt, PositiveInt
+
+
+class TicketStatus(str, Enum):
+    """Enum para status de tickets."""
+    NOVO = "novo"
+    PENDENTE = "pendente"
+    PROGRESSO = "progresso"
+    RESOLVIDO = "resolvido"
+    FECHADO = "fechado"
+    CANCELADO = "cancelado"
+
+
+class TechnicianLevel(str, Enum):
+    """Enum para níveis de técnicos."""
+    N1 = "N1"
+    N2 = "N2"
+    N3 = "N3"
+    N4 = "N4"
+    UNKNOWN = "UNKNOWN"
 
 
 class LevelMetrics(BaseModel):
     """Métricas de um nível específico (N1, N2, N3, N4)"""
 
-    novos: int = Field(ge=0, description="Número de tickets novos")
-    pendentes: int = Field(ge=0, description="Número de tickets pendentes")
-    progresso: int = Field(ge=0, description="Número de tickets em progresso")
-    resolvidos: int = Field(ge=0, description="Número de tickets resolvidos")
+    novos: NonNegativeInt = Field(0, description="Número de tickets novos")
+    pendentes: NonNegativeInt = Field(0, description="Número de tickets pendentes")
+    progresso: NonNegativeInt = Field(0, description="Número de tickets em progresso")
+    resolvidos: NonNegativeInt = Field(0, description="Número de tickets resolvidos")
+    total: NonNegativeInt = Field(0, description="Total de tickets no nível")
+
+    @root_validator(skip_on_failure=True)
+    def calculate_total(cls, values):
+        """Calcula o total baseado nos status individuais."""
+        total_calculated = (
+            values.get('novos', 0) +
+            values.get('pendentes', 0) +
+            values.get('progresso', 0) +
+            values.get('resolvidos', 0)
+        )
+        # Se total não foi fornecido, calcula automaticamente
+        if values.get('total', 0) == 0:
+            values['total'] = total_calculated
+        return values
 
 
 class NiveisMetrics(BaseModel):

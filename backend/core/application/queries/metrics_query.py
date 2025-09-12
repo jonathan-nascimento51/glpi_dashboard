@@ -15,18 +15,22 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from ..dto.metrics_dto import (
-    DashboardMetricsDTO,
-    LevelMetricsDTO,
-    MetricsDTO,
     MetricsFilterDTO,
-    MetricsResponseDTO,
-    TechnicianLevel,
-    TechnicianMetricsDTO,
-    TicketMetricsDTO,
-    TicketStatus,
-    create_empty_metrics_dto,
+    create_empty_dashboard_metrics,
     create_error_response,
     create_success_response,
+)
+
+# Import consolidated models from schemas (API boundary types)
+from schemas.dashboard import (
+    DashboardMetrics,
+    TechnicianRanking,
+    NewTicket,
+    LevelMetrics,
+    ApiResponse,
+    ApiError,
+    TicketStatus,
+    TechnicianLevel,
 )
 
 logger = logging.getLogger(__name__)
@@ -187,7 +191,7 @@ class BaseMetricsQuery(ABC):
         self,
         filters: Optional[MetricsFilterDTO] = None,
         context: Optional[QueryContext] = None,
-    ) -> MetricsResponseDTO:
+    ) -> ApiResponse:
         """Executa a query e retorna o resultado."""
         pass
 
@@ -199,7 +203,7 @@ class GeneralMetricsQuery(BaseMetricsQuery):
         self,
         filters: Optional[MetricsFilterDTO] = None,
         context: Optional[QueryContext] = None,
-    ) -> MetricsResponseDTO:
+    ) -> ApiResponse:
         """Executa query para métricas gerais."""
         if context is None:
             context = QueryContext()
@@ -241,11 +245,11 @@ class GeneralMetricsQuery(BaseMetricsQuery):
         ticket_data: Dict[str, Any],
         technician_hierarchy: Dict[int, str],
         filters: Optional[MetricsFilterDTO],
-    ) -> MetricsDTO:
+    ) -> DashboardMetrics:
         """Processa dados brutos em DTO de métricas."""
 
         # Inicializar DTO vazio
-        metrics = create_empty_metrics_dto()
+        metrics = create_empty_dashboard_metrics()
 
         # Processar dados por nível
         level_data = ticket_data.get("levels", {})
@@ -304,7 +308,7 @@ class TechnicianRankingQuery(BaseMetricsQuery):
         self,
         filters: Optional[MetricsFilterDTO] = None,
         context: Optional[QueryContext] = None,
-    ) -> MetricsResponseDTO:
+    ) -> ApiResponse:
         """Executa query para ranking de técnicos."""
         if context is None:
             context = QueryContext()
@@ -346,7 +350,7 @@ class TechnicianRankingQuery(BaseMetricsQuery):
         technician_data: List[Dict[str, Any]],
         technician_hierarchy: Dict[int, str],
         filters: Optional[MetricsFilterDTO],
-    ) -> List[TechnicianMetricsDTO]:
+    ) -> List[TechnicianRanking]:
         """Processa dados de técnicos em ranking."""
 
         ranking = []
@@ -408,7 +412,7 @@ class NewTicketsQuery(BaseMetricsQuery):
         self,
         filters: Optional[MetricsFilterDTO] = None,
         context: Optional[QueryContext] = None,
-    ) -> MetricsResponseDTO:
+    ) -> ApiResponse:
         """Executa query para tickets novos."""
         if context is None:
             context = QueryContext()
@@ -456,7 +460,7 @@ class SystemStatusQuery(BaseMetricsQuery):
         self,
         filters: Optional[MetricsFilterDTO] = None,
         context: Optional[QueryContext] = None,
-    ) -> MetricsResponseDTO:
+    ) -> ApiResponse:
         """Executa query para status do sistema."""
         if context is None:
             context = QueryContext()
@@ -493,7 +497,7 @@ class FieldDiscoveryQuery(BaseMetricsQuery):
         self,
         filters: Optional[MetricsFilterDTO] = None,
         context: Optional[QueryContext] = None,
-    ) -> MetricsResponseDTO:
+    ) -> ApiResponse:
         """Executa query para descobrir IDs dos campos."""
         if context is None:
             context = QueryContext()
@@ -535,7 +539,7 @@ class DashboardMetricsQuery(BaseMetricsQuery):
         self,
         filters: Optional[MetricsFilterDTO] = None,
         context: Optional[QueryContext] = None,
-    ) -> MetricsResponseDTO:
+    ) -> ApiResponse:
         """Executa query para métricas completas do dashboard."""
         if context is None:
             context = QueryContext()

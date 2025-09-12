@@ -7,34 +7,51 @@ fornecendo estruturas de dados padronizadas e validadas.
 """
 
 from .metrics_dto import (
-    DashboardMetricsDTO,
-    LevelMetricsDTO,
-    MetricsDTO,
     MetricsFilterDTO,
-    MetricsResponseDTO,
-    TechnicianLevel,
-    TechnicianMetricsDTO,
-    TicketMetricsDTO,
-    TicketStatus,
-    create_empty_metrics_dto,
+    create_empty_dashboard_metrics,
     create_error_response,
     create_success_response,
 )
 
+# Import consolidated models from schemas (single source of truth)
+from schemas.dashboard import (
+    DashboardMetrics,
+    TechnicianRanking,
+    NewTicket,
+    LevelMetrics,
+    ApiResponse,
+    ApiError,
+    TicketStatus,
+    TechnicianLevel,
+)
+
 __all__ = [
-    # Enums
+    # Enums from schemas (consolidated)
     "TicketStatus",
     "TechnicianLevel",
-    # DTOs principais
-    "MetricsDTO",
-    "LevelMetricsDTO",
-    "TechnicianMetricsDTO",
-    "TicketMetricsDTO",
-    "DashboardMetricsDTO",
+    # Consolidated schemas (API boundary models)
+    "DashboardMetrics",
+    "TechnicianRanking", 
+    "NewTicket",
+    "LevelMetrics",
+    "ApiResponse",
+    "ApiError",
+    # Internal DTOs (unique types)
     "MetricsFilterDTO",
-    "MetricsResponseDTO",
     # Factory functions
-    "create_empty_metrics_dto",
+    "create_empty_dashboard_metrics",
     "create_error_response",
     "create_success_response",
+    # Backward compatibility aliases
+    "MetricsDTO",  # -> DashboardMetrics
+    "TechnicianMetricsDTO",  # -> TechnicianRanking
+    "MetricsResponseDTO",  # -> ApiResponse
 ]
+
+# Backward compatibility aliases
+MetricsDTO = DashboardMetrics
+TechnicianMetricsDTO = TechnicianRanking
+MetricsResponseDTO = ApiResponse
+LevelMetricsDTO = LevelMetrics
+TicketMetricsDTO = LevelMetrics
+DashboardMetricsDTO = DashboardMetrics

@@ -18,11 +18,16 @@ from typing import Any, Dict, List, Optional, Union
 
 from ...infrastructure.external.glpi.metrics_adapter import GLPIConfig, GLPIMetricsAdapter
 from ..dto.metrics_dto import (
-    DashboardMetricsDTO,
     MetricsFilterDTO,
-    MetricsResponseDTO,
     create_error_response,
     create_success_response,
+)
+
+# Import consolidated models from schemas
+from schemas.dashboard import (
+    DashboardMetrics,
+    ApiResponse,
+    ApiError,
 )
 from ..queries.metrics_query import (
     DashboardMetricsQuery,
@@ -103,7 +108,7 @@ class ProgressiveRefactoringService:
         self,
         filters: Optional[MetricsFilterDTO] = None,
         correlation_id: Optional[str] = None,
-    ) -> MetricsResponseDTO:
+    ) -> ApiResponse:
         """Obtém métricas do dashboard usando refatoração progressiva."""
 
         context = QueryContext(
@@ -139,7 +144,7 @@ class ProgressiveRefactoringService:
         self,
         filters: Optional[MetricsFilterDTO] = None,
         correlation_id: Optional[str] = None,
-    ) -> MetricsResponseDTO:
+    ) -> ApiResponse:
         """Obtém ranking de técnicos usando refatoração progressiva."""
 
         context = QueryContext(
@@ -174,7 +179,7 @@ class ProgressiveRefactoringService:
         self,
         filters: Optional[MetricsFilterDTO] = None,
         correlation_id: Optional[str] = None,
-    ) -> MetricsResponseDTO:
+    ) -> ApiResponse:
         """Obtém métricas gerais usando refatoração progressiva."""
 
         context = QueryContext(
@@ -228,7 +233,7 @@ class ProgressiveRefactoringService:
 
     async def _execute_new_architecture(
         self, filters: Optional[MetricsFilterDTO], context: QueryContext
-    ) -> MetricsResponseDTO:
+    ) -> ApiResponse:
         """Executa usando nova arquitetura."""
 
         start_time = time.time()
@@ -241,7 +246,7 @@ class ProgressiveRefactoringService:
             result = await dashboard_query.execute(filters, context)
 
             # Converter para DTO de resposta
-            dashboard_dto = DashboardMetricsDTO(
+            dashboard_dto = DashboardMetrics(
                 general=result.get("general", {}),
                 levels=result.get("levels", {}),
                 trends=result.get("trends", {}),
@@ -276,7 +281,7 @@ class ProgressiveRefactoringService:
 
     async def _execute_legacy_with_fallback(
         self, filters: Optional[MetricsFilterDTO], context: QueryContext
-    ) -> MetricsResponseDTO:
+    ) -> ApiResponse:
         """Executa usando arquitetura legada."""
 
         start_time = time.time()
@@ -320,7 +325,7 @@ class ProgressiveRefactoringService:
             )
             raise
 
-    async def _execute_validation_mode(self, filters: Optional[MetricsFilterDTO], context: QueryContext) -> MetricsResponseDTO:
+    async def _execute_validation_mode(self, filters: Optional[MetricsFilterDTO], context: QueryContext) -> ApiResponse:
         """Executa ambas implementações e compara resultados."""
 
         import random
@@ -351,9 +356,9 @@ class ProgressiveRefactoringService:
             await self._compare_results(new_result, legacy_result, context, execution_time)
 
             # Retornar resultado da nova arquitetura se bem-sucedido
-            if isinstance(new_result, MetricsResponseDTO) and new_result.success:
+            if isinstance(new_result, ApiResponse) and new_result.success:
                 return new_result
-            elif isinstance(legacy_result, MetricsResponseDTO) and legacy_result.success:
+            elif isinstance(legacy_result, ApiResponse) and legacy_result.success:
                 return legacy_result
             else:
                 return create_error_response("Ambas implementações falharam")
@@ -366,7 +371,7 @@ class ProgressiveRefactoringService:
             # Fallback para arquitetura legada
             return await self._execute_legacy_with_fallback(filters, context)
 
-    async def _execute_legacy_fallback(self, filters: Optional[MetricsFilterDTO], context: QueryContext) -> MetricsResponseDTO:
+    async def _execute_legacy_fallback(self, filters: Optional[MetricsFilterDTO], context: QueryContext) -> ApiResponse:
         """Executa fallback para arquitetura legada."""
 
         self.performance_metrics["fallback_calls"] += 1
@@ -406,11 +411,11 @@ class ProgressiveRefactoringService:
 
         return legacy_params
 
-    def _convert_legacy_result_to_dto(self, legacy_result: Dict[str, Any]) -> DashboardMetricsDTO:
+    def _convert_legacy_result_to_dto(self, legacy_result: Dict[str, Any]) -> DashboardMetrics:
         """Converte resultado legado para DTO."""
 
         if not legacy_result or not isinstance(legacy_result, dict):
-            return DashboardMetricsDTO(
+            return DashboardMetrics(
                 general={},
                 levels={},
                 trends={},
@@ -421,7 +426,7 @@ class ProgressiveRefactoringService:
         # Extrair dados do resultado legado
         data = legacy_result.get("data", {})
 
-        return DashboardMetricsDTO(
+        return DashboardMetrics(
             general=data.get("geral", {}),
             levels={
                 "n1": data.get("niveis", {}).get("n1", {}),
@@ -446,8 +451,8 @@ class ProgressiveRefactoringService:
         comparison_data = {
             "correlation_id": context.correlation_id,
             "execution_time": execution_time,
-            "new_success": isinstance(new_result, MetricsResponseDTO) and new_result.success,
-            "legacy_success": isinstance(legacy_result, MetricsResponseDTO) and legacy_result.success,
+            "new_success": isinstance(new_result, ApiResponse) and new_result.success,
+            "legacy_success": isinstance(legacy_result, ApiResponse) and legacy_result.success,
         }
 
         if self.config.log_performance_comparison:
@@ -475,7 +480,7 @@ class ProgressiveRefactoringService:
 
         try:
             # Implementação básica - pode ser expandida
-            if not isinstance(new_result, MetricsResponseDTO) or not isinstance(legacy_result, MetricsResponseDTO):
+            if not isinstance(new_result, ApiResponse) or not isinstance(legacy_result, ApiResponse):
                 return False
 
             if not new_result.success or not legacy_result.success:
@@ -485,7 +490,7 @@ class ProgressiveRefactoringService:
             new_data = new_result.data
             legacy_data = legacy_result.data
 
-            if not isinstance(new_data, DashboardMetricsDTO) or not isinstance(legacy_data, DashboardMetricsDTO):
+            if not isinstance(new_data, DashboardMetrics) or not isinstance(legacy_data, DashboardMetrics):
                 return False
 
             # Comparação básica de totais
