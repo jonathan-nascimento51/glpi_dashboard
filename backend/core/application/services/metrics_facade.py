@@ -22,7 +22,21 @@ from ...infrastructure.external.glpi.metrics_adapter import (
     GLPIMetricsAdapter,
     GLPIConfig
 )
-from config.settings import active_config
+from config.settings import active_config, Config
+from utils.mock_data_generator import (
+    get_mock_dashboard_metrics,
+    get_mock_technician_ranking,
+    get_mock_new_tickets,
+    get_mock_system_status
+)
+
+# Import schema models
+from schemas.dashboard import (
+    DashboardMetrics,
+    TechnicianRanking,
+    NewTicket,
+    ApiResponse
+)
 
 
 class MetricsFacade(UnifiedGLPIServiceContract):
@@ -38,6 +52,7 @@ class MetricsFacade(UnifiedGLPIServiceContract):
         
         # Load configuration
         config = active_config()
+        self.use_mock_data = config.USE_MOCK_DATA
         
         # Create GLPI adapter and query factory
         self.glpi_config = GLPIConfig(
@@ -119,17 +134,22 @@ class MetricsFacade(UnifiedGLPIServiceContract):
             end_date=end_datetime,
             status=status,
             priority=priority,
-            category=category,
+            category_id=int(category) if category and category.isdigit() else None,
             technician_id=int(technician) if technician and technician.isdigit() else None,
-            entity_id=entity_id,
-            service_level=level,
-            use_modification_date=modification_date
+            level=level,
+            service_level=None,
+            use_modification_date=modification_date,
+            limit=None,
+            offset=0
         )
     
     # Metrics Service Methods
     
-    def get_dashboard_metrics(self, correlation_id: Optional[str] = None) -> Dict[str, Any]:
-        """Get general dashboard metrics."""
+    def get_dashboard_metrics(self, correlation_id: Optional[str] = None) -> DashboardMetrics:
+        """Obtém métricas gerais do dashboard"""
+        if self.use_mock_data:
+            self.logger.info("Using mock data for dashboard metrics")
+            return get_mock_dashboard_metrics()
         cache_key = {"method": "dashboard_metrics", "correlation_id": correlation_id}
         
         # Check cache first
@@ -143,23 +163,30 @@ class MetricsFacade(UnifiedGLPIServiceContract):
             return await query.execute(context=context)
         
         try:
-            result = self._run_async(_get_metrics())
+            api_response = self._run_async(_get_metrics())
             
-            # Cache result
-            unified_cache.set(self.METRICS_CACHE_NS, cache_key, result, ttl_seconds=180)
-            
-            return result
+            # Extract DashboardMetrics from ApiResponse
+            if hasattr(api_response, 'data') and api_response.data:
+                result = api_response.data
+                # Cache result
+                unified_cache.set(self.METRICS_CACHE_NS, cache_key, result, ttl_seconds=180)
+                return result
+            else:
+                # Return empty metrics on failure
+                from ..dto.metrics_dto import create_empty_dashboard_metrics
+                return create_empty_dashboard_metrics()
             
         except Exception as e:
             self.logger.error(f"Error getting dashboard metrics: {e}")
-            return {"success": False, "error": str(e)}
+            from ..dto.metrics_dto import create_empty_dashboard_metrics
+            return create_empty_dashboard_metrics()
     
     def get_dashboard_metrics_with_date_filter(
         self,
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
         correlation_id: Optional[str] = None,
-    ) -> Dict[str, Any]:
+    ) -> DashboardMetrics:
         """Get dashboard metrics with date filter."""
         cache_key = {
             "method": "dashboard_metrics_date_filter",
@@ -179,20 +206,28 @@ class MetricsFacade(UnifiedGLPIServiceContract):
             return await query.execute(filters=filters, context=context)
         
         try:
-            result = self._run_async(_get_metrics())
-            unified_cache.set(self.METRICS_CACHE_NS, cache_key, result, ttl_seconds=180)
-            return result
+            api_response = self._run_async(_get_metrics())
+            
+            # Extract DashboardMetrics from ApiResponse
+            if hasattr(api_response, 'data') and api_response.data:
+                result = api_response.data
+                unified_cache.set(self.METRICS_CACHE_NS, cache_key, result, ttl_seconds=180)
+                return result
+            else:
+                from ..dto.metrics_dto import create_empty_dashboard_metrics
+                return create_empty_dashboard_metrics()
             
         except Exception as e:
             self.logger.error(f"Error getting dashboard metrics with date filter: {e}")
-            return {"success": False, "error": str(e)}
+            from ..dto.metrics_dto import create_empty_dashboard_metrics
+            return create_empty_dashboard_metrics()
     
     def get_dashboard_metrics_with_modification_date_filter(
         self,
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
         correlation_id: Optional[str] = None,
-    ) -> Dict[str, Any]:
+    ) -> DashboardMetrics:
         """Get dashboard metrics with modification date filter."""
         cache_key = {
             "method": "dashboard_metrics_mod_date_filter",
@@ -216,13 +251,21 @@ class MetricsFacade(UnifiedGLPIServiceContract):
             return await query.execute(filters=filters, context=context)
         
         try:
-            result = self._run_async(_get_metrics())
-            unified_cache.set(self.METRICS_CACHE_NS, cache_key, result, ttl_seconds=180)
-            return result
+            api_response = self._run_async(_get_metrics())
+            
+            # Extract DashboardMetrics from ApiResponse
+            if hasattr(api_response, 'data') and api_response.data:
+                result = api_response.data
+                unified_cache.set(self.METRICS_CACHE_NS, cache_key, result, ttl_seconds=180)
+                return result
+            else:
+                from ..dto.metrics_dto import create_empty_dashboard_metrics
+                return create_empty_dashboard_metrics()
             
         except Exception as e:
             self.logger.error(f"Error getting dashboard metrics with modification date filter: {e}")
-            return {"success": False, "error": str(e)}
+            from ..dto.metrics_dto import create_empty_dashboard_metrics
+            return create_empty_dashboard_metrics()
     
     def get_dashboard_metrics_with_filters(
         self,
@@ -234,7 +277,7 @@ class MetricsFacade(UnifiedGLPIServiceContract):
         technician: Optional[str] = None,
         entity_id: Optional[int] = None,
         correlation_id: Optional[str] = None,
-    ) -> Dict[str, Any]:
+    ) -> DashboardMetrics:
         """Get dashboard metrics with multiple filters."""
         cache_key = {
             "method": "dashboard_metrics_filters",

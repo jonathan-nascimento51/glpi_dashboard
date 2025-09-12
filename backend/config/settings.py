@@ -70,6 +70,9 @@ class Config:
     GLPI_URL = os.environ.get("GLPI_URL", "http://10.73.0.79/glpi/apirest.php")
     GLPI_USER_TOKEN = os.environ.get("GLPI_USER_TOKEN")
     GLPI_APP_TOKEN = os.environ.get("GLPI_APP_TOKEN")
+    
+    # Mock Data Mode - Para desenvolvimento e testes da interface
+    USE_MOCK_DATA = os.environ.get("USE_MOCK_DATA", "False").lower() == "true"
 
     # Backend API
     BACKEND_API_URL = os.environ.get("BACKEND_API_URL", "http://localhost:8000")

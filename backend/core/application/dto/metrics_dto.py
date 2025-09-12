@@ -98,10 +98,10 @@ def create_empty_dashboard_metrics() -> DashboardMetrics:
         resolvidos=0,
         total=0,
         niveis=NiveisMetrics(
-            n1=LevelMetrics(novos=0, pendentes=0, progresso=0, resolvidos=0),
-            n2=LevelMetrics(novos=0, pendentes=0, progresso=0, resolvidos=0),
-            n3=LevelMetrics(novos=0, pendentes=0, progresso=0, resolvidos=0),
-            n4=LevelMetrics(novos=0, pendentes=0, progresso=0, resolvidos=0)
+            n1=LevelMetrics(novos=0, pendentes=0, progresso=0, resolvidos=0, total=0),
+            n2=LevelMetrics(novos=0, pendentes=0, progresso=0, resolvidos=0, total=0),
+            n3=LevelMetrics(novos=0, pendentes=0, progresso=0, resolvidos=0, total=0),
+            n4=LevelMetrics(novos=0, pendentes=0, progresso=0, resolvidos=0, total=0)
         ),
         tendencias=TendenciasMetrics()
     )
@@ -111,8 +111,7 @@ def create_error_response(error_message: str, correlation_id: Optional[str] = No
     """Cria uma resposta de erro padronizada."""
     return ApiError(
         message=error_message,
-        errors=[error_message],
-        correlation_id=correlation_id
+        errors=[error_message]
     )
 
 
@@ -124,6 +123,5 @@ def create_success_response(
     """Cria uma resposta de sucesso padronizada."""
     return ApiResponse(
         data=data,
-        message=message,
-        correlation_id=correlation_id
+        message=message
     )

@@ -56,6 +56,17 @@ class NiveisMetrics(BaseModel):
     n2: LevelMetrics
     n3: LevelMetrics
     n4: LevelMetrics
+    
+    def __setitem__(self, key: str, value: LevelMetrics):
+        """Allow setting level metrics using bracket notation."""
+        if hasattr(self, key):
+            setattr(self, key, value)
+        else:
+            raise KeyError(f"Invalid level key: {key}")
+    
+    def values(self):
+        """Return all level metrics values."""
+        return [self.n1, self.n2, self.n3, self.n4]
 
 
 class TendenciasMetrics(BaseModel):
@@ -91,6 +102,8 @@ class DashboardMetrics(BaseModel):
     tendencias: TendenciasMetrics
     filters_applied: Optional[FiltersApplied] = None
     timestamp: datetime = Field(default_factory=datetime.now)
+    period_start: Optional[datetime] = None
+    period_end: Optional[datetime] = None
 
 
 class TechnicianRanking(BaseModel):
@@ -125,14 +138,24 @@ class ApiResponse(BaseModel):
     errors: Optional[List[str]] = None
     timestamp: datetime = Field(default_factory=datetime.now)
     execution_time_ms: Optional[float] = None
+    
+    def set_execution_time(self, start_time: Optional[datetime] = None):
+        """Calculate and set execution time from start time."""
+        if start_time:
+            execution_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.execution_time_ms = execution_time
 
 
-class ApiError(BaseModel):
+class ApiError(ApiResponse):
     """Schema para erros da API"""
 
     success: bool = False
     data: None = None
-    message: str
-    errors: List[str]
-    timestamp: datetime = Field(default_factory=datetime.now)
+    message: Optional[str] = None
+    errors: Optional[List[str]] = None
     error_code: Optional[str] = None
+    
+    def __init__(self, message: str, errors: Optional[List[str]] = None, **kwargs):
+        if errors is None:
+            errors = [message]
+        super().__init__(success=False, data=None, message=message, errors=errors, **kwargs)

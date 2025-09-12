@@ -265,33 +265,32 @@ class GeneralMetricsQuery(BaseMetricsQuery):
             technicians_in_level = sum(1 for tech_level in technician_hierarchy.values() if tech_level == level_name)
 
             # Criar métricas de tickets para o nível
-            ticket_metrics = TicketMetricsDTO(
+            level_metrics = LevelMetrics(
                 total=level_info.get("total", 0),
                 novos=level_info.get("new", 0),
                 pendentes=level_info.get("pending", 0),
                 progresso=level_info.get("in_progress", 0),
-                resolvidos=level_info.get("resolved", 0),
-                fechados=level_info.get("closed", 0),
-                cancelados=level_info.get("cancelled", 0),
+                resolvidos=level_info.get("resolved", 0)
             )
 
-            # Criar métricas de nível
-            level_metrics = LevelMetricsDTO(
-                level=TechnicianLevel(level_name),
-                metrics=ticket_metrics,
-                technician_count=technicians_in_level,
-                avg_resolution_time=level_info.get("avg_resolution_time"),
-            )
+            # Atribuir às métricas por nível
+            if level_name == "N1":
+                metrics.niveis.n1 = level_metrics
+            elif level_name == "N2":
+                metrics.niveis.n2 = level_metrics
+            elif level_name == "N3":
+                metrics.niveis.n3 = level_metrics
+            elif level_name == "N4":
+                metrics.niveis.n4 = level_metrics
 
-            metrics.niveis[level_name] = level_metrics
-            total_tickets += ticket_metrics.total
+            total_tickets += level_metrics.total
 
         # Atualizar totais gerais
         metrics.total = total_tickets
-        metrics.novos = sum(level.metrics.novos for level in metrics.niveis.values())
-        metrics.pendentes = sum(level.metrics.pendentes for level in metrics.niveis.values())
-        metrics.progresso = sum(level.metrics.progresso for level in metrics.niveis.values())
-        metrics.resolvidos = sum(level.metrics.resolvidos for level in metrics.niveis.values())
+        metrics.novos = sum(level.novos for level in metrics.niveis.values())
+        metrics.pendentes = sum(level.pendentes for level in metrics.niveis.values())
+        metrics.progresso = sum(level.progresso for level in metrics.niveis.values())
+        metrics.resolvidos = sum(level.resolvidos for level in metrics.niveis.values())
 
         # Definir período se filtros foram aplicados
         if filters:
@@ -359,44 +358,26 @@ class TechnicianRankingQuery(BaseMetricsQuery):
             tech_id = tech_data.get("id")
             tech_level = technician_hierarchy.get(tech_id, TechnicianLevel.UNKNOWN.value)
 
-            # Criar métricas de tickets
-            ticket_metrics = TicketMetricsDTO(
-                total=tech_data.get("total", 0),
-                novos=tech_data.get("new", 0),
-                pendentes=tech_data.get("pending", 0),
-                progresso=tech_data.get("in_progress", 0),
-                resolvidos=tech_data.get("resolved", 0),
-                fechados=tech_data.get("closed", 0),
-                cancelados=tech_data.get("cancelled", 0),
-            )
-
             # Calcular score de eficiência (baseado em tickets resolvidos vs total)
+            total_tickets = tech_data.get("total", 0)
+            resolvidos = tech_data.get("resolved", 0)
             efficiency_score = None
-            if ticket_metrics.total > 0:
-                efficiency_score = (ticket_metrics.resolvidos / ticket_metrics.total) * 100
+            if total_tickets > 0:
+                efficiency_score = (resolvidos / total_tickets) * 100
 
-            # Criar DTO do técnico
-            technician_dto = TechnicianMetricsDTO(
-                id=tech_id,
+            # Criar DTO do técnico usando TechnicianRanking
+            technician_dto = TechnicianRanking(
+                id=tech_id or 0,
                 name=tech_data.get("name", "Desconhecido"),
-                level=TechnicianLevel(tech_level)
-                if tech_level in [l.value for l in TechnicianLevel]
-                else TechnicianLevel.UNKNOWN,
-                rank=idx,
-                metrics=ticket_metrics,
-                avg_resolution_time=tech_data.get("avg_resolution_time"),
-                efficiency_score=efficiency_score,
-                last_activity=tech_data.get("last_activity"),
+                ticket_count=total_tickets,
+                level=tech_level if tech_level in [l.value for l in TechnicianLevel] else TechnicianLevel.UNKNOWN.value,
+                performance_score=efficiency_score
             )
 
             ranking.append(technician_dto)
 
-        # Ordenar por total de tickets resolvidos (descendente)
-        ranking.sort(key=lambda x: x.metrics.resolvidos, reverse=True)
-
-        # Atualizar ranks após ordenação
-        for idx, tech in enumerate(ranking, 1):
-            tech.rank = idx
+        # Ordenar por total de tickets (descendente)
+        ranking.sort(key=lambda x: x.ticket_count, reverse=True)
 
         # Aplicar limite se especificado
         if filters and filters.limit:
@@ -430,6 +411,14 @@ class NewTicketsQuery(BaseMetricsQuery):
                     start_date=datetime.now() - timedelta(days=7),
                     end_date=datetime.now(),
                     limit=50,
+                    status=None,
+                    level=None,
+                    service_level=None,
+                    use_modification_date=False,
+                    technician_id=None,
+                    category_id=None,
+                    priority=None,
+                    offset=0
                 )
 
             # Obter tickets novos
