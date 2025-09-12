@@ -22,19 +22,26 @@ class GLPIService:
         try:
             # Validar configurações obrigatórias
             config_obj = active_config()
-            if not hasattr(config_obj, "GLPI_URL") or not config_obj.GLPI_URL:
-                raise ValueError("GLPI_URL não está configurado")
-            if not hasattr(config_obj, "GLPI_APP_TOKEN") or not config_obj.GLPI_APP_TOKEN:
-                raise ValueError("GLPI_APP_TOKEN não está configurado")
-            if not hasattr(config_obj, "GLPI_USER_TOKEN") or not config_obj.GLPI_USER_TOKEN:
-                raise ValueError("GLPI_USER_TOKEN não está configurado")
+            
+            # Em modo debug, permitir funcionamento sem GLPI configurado
+            self.dev_mode = getattr(config_obj, "DEBUG", False)
+            
+            if not self.dev_mode:
+                # Em produção, validar todas as configurações
+                if not hasattr(config_obj, "GLPI_URL") or not config_obj.GLPI_URL:
+                    raise ValueError("GLPI_URL não está configurado")
+                if not hasattr(config_obj, "GLPI_APP_TOKEN") or not config_obj.GLPI_APP_TOKEN:
+                    raise ValueError("GLPI_APP_TOKEN não está configurado")
+                if not hasattr(config_obj, "GLPI_USER_TOKEN") or not config_obj.GLPI_USER_TOKEN:
+                    raise ValueError("GLPI_USER_TOKEN não está configurado")
 
-            self.glpi_url = config_obj.GLPI_URL.rstrip("/")  # Remove trailing slash
-            self.app_token = config_obj.GLPI_APP_TOKEN
-            self.user_token = config_obj.GLPI_USER_TOKEN
+            # Configurar valores com fallbacks para desenvolvimento
+            self.glpi_url = getattr(config_obj, "GLPI_URL", "http://localhost:9999") or "http://localhost:9999"
+            self.app_token = getattr(config_obj, "GLPI_APP_TOKEN", None)
+            self.user_token = getattr(config_obj, "GLPI_USER_TOKEN", None)
 
-            # Validar formato da URL
-            if not self.glpi_url.startswith(("http://", "https://")):
+            # Em modo dev, não validar URL se estiver usando placeholder
+            if not self.dev_mode and not self.glpi_url.startswith(("http://", "https://")):
                 raise ValueError(f"GLPI_URL deve começar com http:// ou https://, recebido: {self.glpi_url}")
 
             # Inicializar loggers com tratamento de erro
@@ -46,7 +53,10 @@ class GLPIService:
                 logging.warning(f"Falha ao criar structured_logger: {e}")
 
             self.logger = logging.getLogger("glpi_service")
-            self.logger.info("GLPIService inicializado com sucesso")
+            if self.dev_mode and (not self.app_token or not self.user_token):
+                self.logger.warning("GLPIService em modo desenvolvimento - GLPI não configurado")
+            else:
+                self.logger.info("GLPIService inicializado com sucesso")
 
         except Exception as e:
             error_msg = f"Erro na inicialização do GLPIService: {e}"

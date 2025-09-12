@@ -32,14 +32,14 @@ class Config:
     def PORT(self) -> int:
         """Porta do servidor com validação"""
         try:
-            port = int(os.environ.get("PORT", 5000))
+            port = int(os.environ.get("PORT", 8000))
             if not (1 <= port <= 65535):
                 raise ValueError(f"Porta inválida: {port}")
             return port
         except ValueError as e:
             raise ConfigValidationError(f"Erro na configuração PORT: {e}")
 
-    HOST = os.environ.get("HOST", "0.0.0.0")
+    HOST = os.environ.get("HOST", "127.0.0.1")
 
     # GLPI API
     GLPI_URL = os.environ.get("GLPI_URL", "http://10.73.0.79/glpi/apirest.php")
@@ -124,6 +124,14 @@ class Config:
 
     def _validate_required_configs(self) -> None:
         """Valida configurações obrigatórias"""
+        # Em desenvolvimento, GLPI pode não estar configurado ainda
+        if self.DEBUG:
+            # Em modo debug, apenas avisa sobre configurações faltantes
+            if not self.GLPI_USER_TOKEN or not self.GLPI_APP_TOKEN:
+                import warnings
+                warnings.warn("GLPI credentials not configured. Some features may not work properly.")
+            return
+        
         required_configs = {
             "GLPI_URL": self.GLPI_URL,
             "GLPI_USER_TOKEN": self.GLPI_USER_TOKEN,
@@ -137,8 +145,8 @@ class Config:
 
     def _validate_config_values(self) -> None:
         """Valida valores das configurações"""
-        # Validar URL do GLPI
-        if not self.GLPI_URL.startswith(("http://", "https://")):
+        # Validar URL do GLPI (apenas em produção)
+        if not self.DEBUG and not self.GLPI_URL.startswith(("http://", "https://")):
             raise ConfigValidationError(f"GLPI_URL deve começar com http:// ou https://: {self.GLPI_URL}")
 
         # Validar nível de log
