@@ -583,10 +583,10 @@ async def example_usage():
         user_token="your-user-token",
     )
 
-    # Importar serviço legado
-    from backend.services.glpi_service import GLPIService
+    # Importar serviço refatorado (usando facade)
+    from backend.services.legacy.glpi_service_facade import GLPIServiceFacade
 
-    legacy_service = GLPIService()
+    legacy_service = GLPIServiceFacade()
 
     # Criar serviço de refatoração progressiva
     refactoring_service = create_progressive_refactoring_service(

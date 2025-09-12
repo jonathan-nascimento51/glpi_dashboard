@@ -358,10 +358,10 @@ def create_refactoring_blueprint(controller: RefactoringController, blueprint_na
 async def example_usage():
     """Exemplo de como usar o RefactoringController."""
 
-    # Importar serviço legado
-    from backend.services.glpi_service import GLPIService
+    # Importar serviço refatorado (usando facade)
+    from backend.services.legacy.glpi_service_facade import GLPIServiceFacade
 
-    legacy_service = GLPIService()
+    legacy_service = GLPIServiceFacade()
 
     # Criar controlador
     controller = create_refactoring_controller(
