@@ -226,7 +226,7 @@ class GLPIAPIClient:
         # Construir URL
         url = f"{self.config.base_url}/apirest.php/{endpoint.lstrip('/')}"
         if params:
-            url += f"?{urlencode(params)}"
+            url += f"?{urlencode(params, doseqs=True)}"
 
         # Log da requisição
         self.logger.debug(
@@ -457,10 +457,10 @@ class GLPIMetricsAdapter:
 
         # Filtros de data
         if filters.start_date:
-            params["date_creation"] = f">={filters.start_date.strftime('%Y-%m-%d %H:%M:%S')}"
+            params["date_creation_start"] = f">={filters.start_date.strftime('%Y-%m-%d %H:%M:%S')}"
 
         if filters.end_date:
-            params["date_creation"] = f"<={filters.end_date.strftime('%Y-%m-%d %H:%M:%S')}"
+            params["date_creation_end"] = f"<={filters.end_date.strftime('%Y-%m-%d %H:%M:%S')}"
 
         # Filtro de status
         if filters.status:
@@ -472,8 +472,9 @@ class GLPIMetricsAdapter:
                 "fechado": 6,
                 "cancelado": 3,
             }
-            if filters.status.value in status_map:
-                params["status"] = status_map[filters.status.value]
+            status_key = filters.status.lower() if isinstance(filters.status, str) else str(filters.status)
+            if status_key in status_map:
+                params["status"] = status_map[status_key]
 
         # Filtro de técnico
         if filters.technician_id:
@@ -734,9 +735,365 @@ class GLPIMetricsAdapter:
         }
         return status_map.get(status_id, "novo")
 
+    async def get_new_tickets(
+        self,
+        filters: Optional[MetricsFilterDTO] = None,
+        context: Optional[QueryContext] = None,
+    ) -> List[Dict[str, Any]]:
+        """Obtém tickets novos/recentes do GLPI."""
+        correlation_id = context.correlation_id if context else None
+
+        try:
+            # Descobrir field IDs primeiro para queries corretas
+            field_ids = await self.discover_field_ids(context)
+            
+            # Construir parâmetros para search API
+            params = self._build_search_params_for_new_tickets(filters, field_ids)
+            
+            # Fazer requisição para tickets via search endpoint
+            tickets_response = self.api_client.make_request(
+                endpoint="search/Ticket", 
+                params=params, 
+                correlation_id=correlation_id
+            )
+
+            # Processar resposta no formato search API
+            return self._process_search_tickets_response(tickets_response, correlation_id)
+
+        except Exception as e:
+            self.logger.error(
+                f"Erro ao obter tickets novos: {str(e)}",
+                extra={"correlation_id": correlation_id},
+            )
+            raise
+
+    async def get_system_status(self, context: Optional[QueryContext] = None) -> Dict[str, Any]:
+        """Obtém status do sistema GLPI."""
+        correlation_id = context.correlation_id if context else None
+
+        try:
+            # Verificar status da sessão - usar endpoint simples que sempre funciona
+            start_time = time.time()
+            session_response = self.api_client.make_request(
+                endpoint="getMyProfiles", 
+                params={}, 
+                correlation_id=correlation_id
+            )
+            response_time = (time.time() - start_time) * 1000
+
+            # Processar status
+            return self._process_system_status(session_response, response_time, correlation_id)
+
+        except Exception as e:
+            self.logger.error(
+                f"Erro ao obter status do sistema: {str(e)}",
+                extra={"correlation_id": correlation_id},
+            )
+            # Retornar status básico em caso de erro
+            return {
+                "api_status": "error",
+                "error_message": str(e),
+                "last_check": datetime.now().isoformat(),
+                "health_score": 0.0,
+            }
+
+    async def discover_field_ids(self, context: Optional[QueryContext] = None) -> Dict[str, int]:
+        """Descobre IDs dos campos GLPI."""
+        correlation_id = context.correlation_id if context else None
+
+        try:
+            # Obter opções de busca para tickets
+            search_options = self.api_client.make_request(
+                endpoint="listSearchOptions/Ticket", 
+                params={}, 
+                correlation_id=correlation_id
+            )
+
+            # Processar e mapear campos
+            return self._process_field_discovery(search_options, correlation_id)
+
+        except Exception as e:
+            self.logger.error(
+                f"Erro ao descobrir IDs dos campos: {str(e)}",
+                extra={"correlation_id": correlation_id},
+            )
+            # Retornar mapeamento padrão conhecido
+            return {
+                "group_id": 71,
+                "status_id": 12,
+                "priority_id": 3,
+                "category_id": 5,
+                "technician_id": 4,
+                "requester_id": 22,
+                "location_id": 83,
+                "created_date": 15,
+                "updated_date": 19,
+                "title": 1,
+                "description": 21,
+            }
+
+    def _build_search_params_for_new_tickets(self, filters: Optional[MetricsFilterDTO], field_ids: Dict[str, int]) -> Dict[str, Any]:
+        """Constrói parâmetros para search API de tickets novos."""
+        params = {
+            "range": "0-50",  # Limite para tickets novos
+        }
+        
+        # Forçar colunas necessárias
+        params["forcedisplay[0]"] = field_ids.get("title", 1)  # Name/title
+        params["forcedisplay[1]"] = field_ids.get("status_id", 12)  # Status
+        params["forcedisplay[2]"] = field_ids.get("created_date", 15)  # Date creation
+        params["forcedisplay[3]"] = field_ids.get("updated_date", 19)  # Date modification
+        params["forcedisplay[4]"] = field_ids.get("priority_id", 3)  # Priority
+        params["forcedisplay[5]"] = field_ids.get("technician_id", 4)  # Technician
+        params["forcedisplay[6]"] = field_ids.get("description", 21)  # Content
+        
+        criteria_idx = 0
+        
+        # Filtro de status - se não especificado, usar "novo"
+        if not filters or not filters.status:
+            status_value = "1"  # Status novo
+        else:
+            # Mapear status string para valor
+            status_map = {
+                "novo": "1",
+                "pendente": "4", 
+                "progresso": "2",
+                "resolvido": "5",
+                "fechado": "6",
+                "cancelado": "3",
+            }
+            status_value = status_map.get(filters.status.lower(), "1")
+        
+        params[f"criteria[{criteria_idx}][field]"] = str(field_ids.get("status_id", 12))
+        params[f"criteria[{criteria_idx}][searchtype]"] = "equals"
+        params[f"criteria[{criteria_idx}][value]"] = status_value
+        criteria_idx += 1
+        
+        # Filtros de data
+        if filters:
+            if filters.start_date:
+                params[f"criteria[{criteria_idx}][field]"] = str(field_ids.get("created_date", 15))
+                params[f"criteria[{criteria_idx}][searchtype]"] = "morethan"
+                params[f"criteria[{criteria_idx}][value]"] = filters.start_date.strftime('%Y-%m-%d %H:%M:%S')
+                criteria_idx += 1
+                
+            if filters.end_date:
+                params[f"criteria[{criteria_idx}][field]"] = str(field_ids.get("created_date", 15))
+                params[f"criteria[{criteria_idx}][searchtype]"] = "lessthan"
+                params[f"criteria[{criteria_idx}][value]"] = filters.end_date.strftime('%Y-%m-%d %H:%M:%S')
+                criteria_idx += 1
+                
+            if filters.limit:
+                params["range"] = f"0-{min(filters.limit, 100)}"
+        
+        # Ordenar por data de criação (mais recentes primeiro)
+        params["sort"] = str(field_ids.get("created_date", 15))
+        params["order"] = "DESC"
+        
+        return params
+
+    def _process_search_tickets_response(self, search_response: Dict[str, Any], correlation_id: Optional[str]) -> List[Dict[str, Any]]:
+        """Processa resposta da search API do GLPI."""
+        processed_tickets = []
+        
+        try:
+            # Search API retorna: {columns: [field_ids], data: [[row_values]]}
+            columns = search_response.get("columns", [])
+            data_rows = search_response.get("data", [])
+            
+            if not columns or not data_rows:
+                return []
+            
+            # Criar mapeamento de colunas para índices
+            col_map = {str(col): idx for idx, col in enumerate(columns)}
+            
+            for row in data_rows:
+                try:
+                    processed_ticket = {
+                        "id": self._get_col_value(row, col_map, "1", ""),  # ID is usually field 1
+                        "title": self._get_col_value(row, col_map, "1", "Sem título"),  # Name/title
+                        "description": self._get_col_value(row, col_map, "21", ""),  # Content
+                        "status": self._map_ticket_status(int(self._get_col_value(row, col_map, "12", 1))),  # Status
+                        "priority": int(self._get_col_value(row, col_map, "3", 3)),  # Priority
+                        "technician_id": self._get_col_value(row, col_map, "4", None),  # Technician
+                        "created_at": self._parse_glpi_datetime(self._get_col_value(row, col_map, "15", None)),  # Date creation
+                        "updated_at": self._parse_glpi_datetime(self._get_col_value(row, col_map, "19", None)),  # Date mod
+                        "category": None,  # Not included in forcedisplay
+                        "requester": None,  # Not included in forcedisplay  
+                        "location": None,  # Not included in forcedisplay
+                    }
+                    processed_tickets.append(processed_ticket)
+
+                except Exception as e:
+                    self.logger.warning(
+                        f"Erro ao processar linha de ticket: {str(e)}, row: {row}",
+                        extra={"correlation_id": correlation_id},
+                    )
+                    continue
+                    
+        except Exception as e:
+            self.logger.error(
+                f"Erro ao processar resposta de search: {str(e)}",
+                extra={"correlation_id": correlation_id},
+            )
+            
+        return processed_tickets
+
+    def _get_col_value(self, row: List[Any], col_map: Dict[str, int], field_id: str, default: Any) -> Any:
+        """Extrai valor de coluna da linha de dados."""
+        col_idx = col_map.get(field_id)
+        if col_idx is not None and col_idx < len(row):
+            return row[col_idx]
+        return default
+
+    def _process_new_tickets(self, tickets_data: List[Dict[str, Any]], correlation_id: Optional[str]) -> List[Dict[str, Any]]:
+        """Processa dados de tickets novos."""
+        processed_tickets = []
+
+        for ticket in tickets_data:
+            try:
+                processed_ticket = {
+                    "id": ticket.get("id"),
+                    "title": ticket.get("name", "Sem título"),
+                    "description": ticket.get("content", ""),
+                    "status": self._map_ticket_status(ticket.get("status", 1)),
+                    "priority": ticket.get("priority", 3),
+                    "category": ticket.get("itilcategories_id"),
+                    "technician_id": ticket.get("users_id_tech"),
+                    "created_at": self._parse_glpi_datetime(ticket.get("date")),
+                    "updated_at": self._parse_glpi_datetime(ticket.get("date_mod")),
+                    "requester": ticket.get("users_id_requester"),
+                    "location": ticket.get("locations_id"),
+                }
+                processed_tickets.append(processed_ticket)
+
+            except Exception as e:
+                self.logger.warning(
+                    f"Erro ao processar ticket {ticket.get('id', 'unknown')}: {str(e)}",
+                    extra={"correlation_id": correlation_id},
+                )
+                continue
+
+        return processed_tickets
+
+    def _process_system_status(
+        self, 
+        session_data: Dict[str, Any], 
+        response_time: float,
+        correlation_id: Optional[str]
+    ) -> Dict[str, Any]:
+        """Processa dados de status do sistema."""
+        try:
+            return {
+                "glpi_version": "10.0.x",  # Seria obtido de config endpoint
+                "api_version": "1.0",
+                "database_status": "connected" if session_data else "disconnected",
+                "api_status": "healthy",
+                "last_check": datetime.now().isoformat(),
+                "response_time_ms": response_time,
+                "active_sessions": len(session_data.get("myprofiles", [])) if session_data else 0,
+                "services": {
+                    "web_server": "running",
+                    "database": "running" if session_data else "error",
+                    "api": "running",
+                },
+                "health_score": 90.0 if session_data else 50.0,
+            }
+
+        except Exception as e:
+            self.logger.warning(
+                f"Erro ao processar status do sistema: {str(e)}",
+                extra={"correlation_id": correlation_id},
+            )
+            return {
+                "api_status": "partial",
+                "error_message": str(e),
+                "last_check": datetime.now().isoformat(),
+                "health_score": 70.0,
+            }
+
+    def _process_field_discovery(self, search_options: Dict[str, Any], correlation_id: Optional[str]) -> Dict[str, int]:
+        """Processa opções de busca para descobrir IDs dos campos."""
+        field_mapping = {}
+
+        try:
+            # GLPI retorna as opções de busca em formato diferente dependendo da versão
+            # Tentar diferentes estruturas de resposta
+            options = search_options
+            if isinstance(search_options, dict) and "options" in search_options:
+                options = search_options["options"]
+
+            # Mapeamento de nomes conhecidos para IDs
+            for field_id, field_info in options.items():
+                if isinstance(field_info, dict):
+                    field_name = field_info.get("name", "").lower()
+                    
+                    # Mapear campos conhecidos
+                    if "group" in field_name or "assign" in field_name:
+                        field_mapping["group_id"] = int(field_id)
+                    elif "status" in field_name:
+                        field_mapping["status_id"] = int(field_id)
+                    elif "priority" in field_name:
+                        field_mapping["priority_id"] = int(field_id)
+                    elif "category" in field_name:
+                        field_mapping["category_id"] = int(field_id)
+                    elif "tech" in field_name or "assigned" in field_name:
+                        field_mapping["technician_id"] = int(field_id)
+                    elif "requester" in field_name or "user" in field_name:
+                        field_mapping["requester_id"] = int(field_id)
+                    elif "location" in field_name:
+                        field_mapping["location_id"] = int(field_id)
+                    elif "date" in field_name and "creation" in field_name:
+                        field_mapping["created_date"] = int(field_id)
+                    elif "title" in field_name or "name" in field_name:
+                        field_mapping["title"] = int(field_id)
+                    elif "description" in field_name or "content" in field_name:
+                        field_mapping["description"] = int(field_id)
+
+        except Exception as e:
+            self.logger.warning(
+                f"Erro ao processar descoberta de campos: {str(e)}",
+                extra={"correlation_id": correlation_id},
+            )
+
+        # Adicionar campos padrão se não foram descobertos
+        default_mapping = {
+            "group_id": 71,
+            "status_id": 12,
+            "priority_id": 3,
+            "category_id": 5,
+            "technician_id": 4,
+            "requester_id": 22,
+            "location_id": 83,
+            "created_date": 15,
+            "title": 1,
+            "description": 21,
+        }
+
+        for key, default_value in default_mapping.items():
+            if key not in field_mapping:
+                field_mapping[key] = default_value
+
+        return field_mapping
+
+    def _parse_glpi_datetime(self, date_str: Optional[str]) -> Optional[datetime]:
+        """Converte string de data do GLPI para datetime."""
+        if not date_str:
+            return None
+
+        try:
+            # GLPI geralmente usa formato YYYY-MM-DD HH:MM:SS
+            return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+        except (ValueError, TypeError):
+            # Fallback para ISO format
+            try:
+                return datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+            except (ValueError, TypeError):
+                return None
+
     async def close(self) -> None:
         """Fecha conexões e limpa recursos."""
-        await self.session_manager.close_session()
+        self.session_manager.close_session()  # Remove await - método é síncrono
         self._technician_hierarchy_cache = None
         self._hierarchy_cache_expires_at = None
 

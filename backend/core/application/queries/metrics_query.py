@@ -96,6 +96,25 @@ class MetricsDataSource(ABC):
         """Obtém mapeamento de técnico para nível hierárquico."""
         pass
 
+    @abstractmethod
+    async def get_new_tickets(
+        self,
+        filters: Optional[MetricsFilterDTO] = None,
+        context: Optional[QueryContext] = None,
+    ) -> List[Dict[str, Any]]:
+        """Obtém tickets novos/recentes."""
+        pass
+
+    @abstractmethod
+    async def get_system_status(self, context: Optional[QueryContext] = None) -> Dict[str, Any]:
+        """Obtém status do sistema GLPI."""
+        pass
+
+    @abstractmethod
+    async def discover_field_ids(self, context: Optional[QueryContext] = None) -> Dict[str, int]:
+        """Descobre IDs dos campos GLPI."""
+        pass
+
 
 class BaseMetricsQuery(ABC):
     """Classe base para queries de métricas."""
@@ -382,6 +401,128 @@ class TechnicianRankingQuery(BaseMetricsQuery):
         return ranking
 
 
+class NewTicketsQuery(BaseMetricsQuery):
+    """Query para tickets novos/recentes."""
+
+    async def execute(
+        self,
+        filters: Optional[MetricsFilterDTO] = None,
+        context: Optional[QueryContext] = None,
+    ) -> MetricsResponseDTO:
+        """Executa query para tickets novos."""
+        if context is None:
+            context = QueryContext()
+
+        query_name = "new_tickets"
+        self._log_query_start(query_name, context)
+
+        try:
+            # Validar filtros
+            self._validate_filters(filters)
+
+            # Definir filtros padrão se não especificados
+            if filters is None:
+                filters = MetricsFilterDTO(
+                    start_date=datetime.now() - timedelta(days=7),
+                    end_date=datetime.now(),
+                    limit=50,
+                )
+
+            # Obter tickets novos
+            tickets_data = await self.data_source.get_new_tickets(filters=filters, context=context)
+
+            self._log_query_end(query_name, context, success=True)
+
+            response = create_success_response(
+                data=tickets_data,
+                correlation_id=context.correlation_id,
+                message="Tickets novos obtidos com sucesso",
+            )
+            response.set_execution_time(context.start_time)
+
+            return response
+
+        except Exception as e:
+            error_msg = f"Erro ao obter tickets novos: {str(e)}"
+            self._log_query_end(query_name, context, success=False, error=error_msg)
+
+            return create_error_response(error_message=error_msg, correlation_id=context.correlation_id)
+
+
+class SystemStatusQuery(BaseMetricsQuery):
+    """Query para status do sistema GLPI."""
+
+    async def execute(
+        self,
+        filters: Optional[MetricsFilterDTO] = None,
+        context: Optional[QueryContext] = None,
+    ) -> MetricsResponseDTO:
+        """Executa query para status do sistema."""
+        if context is None:
+            context = QueryContext()
+
+        query_name = "system_status"
+        self._log_query_start(query_name, context)
+
+        try:
+            # Obter status do sistema
+            status_data = await self.data_source.get_system_status(context=context)
+
+            self._log_query_end(query_name, context, success=True)
+
+            response = create_success_response(
+                data=status_data,
+                correlation_id=context.correlation_id,
+                message="Status do sistema obtido com sucesso",
+            )
+            response.set_execution_time(context.start_time)
+
+            return response
+
+        except Exception as e:
+            error_msg = f"Erro ao obter status do sistema: {str(e)}"
+            self._log_query_end(query_name, context, success=False, error=error_msg)
+
+            return create_error_response(error_message=error_msg, correlation_id=context.correlation_id)
+
+
+class FieldDiscoveryQuery(BaseMetricsQuery):
+    """Query para descoberta de IDs dos campos GLPI."""
+
+    async def execute(
+        self,
+        filters: Optional[MetricsFilterDTO] = None,
+        context: Optional[QueryContext] = None,
+    ) -> MetricsResponseDTO:
+        """Executa query para descobrir IDs dos campos."""
+        if context is None:
+            context = QueryContext()
+
+        query_name = "field_discovery"
+        self._log_query_start(query_name, context)
+
+        try:
+            # Descobrir IDs dos campos
+            field_ids = await self.data_source.discover_field_ids(context=context)
+
+            self._log_query_end(query_name, context, success=True)
+
+            response = create_success_response(
+                data=field_ids,
+                correlation_id=context.correlation_id,
+                message="IDs dos campos descobertos com sucesso",
+            )
+            response.set_execution_time(context.start_time)
+
+            return response
+
+        except Exception as e:
+            error_msg = f"Erro ao descobrir IDs dos campos: {str(e)}"
+            self._log_query_end(query_name, context, success=False, error=error_msg)
+
+            return create_error_response(error_message=error_msg, correlation_id=context.correlation_id)
+
+
 class DashboardMetricsQuery(BaseMetricsQuery):
     """Query para métricas completas do dashboard."""
 
@@ -495,12 +636,27 @@ class MetricsQueryFactory:
         """Cria query para métricas do dashboard."""
         return DashboardMetricsQuery(self.data_source)
 
+    def create_new_tickets_query(self) -> NewTicketsQuery:
+        """Cria query para tickets novos."""
+        return NewTicketsQuery(self.data_source)
+
+    def create_system_status_query(self) -> SystemStatusQuery:
+        """Cria query para status do sistema."""
+        return SystemStatusQuery(self.data_source)
+
+    def create_field_discovery_query(self) -> FieldDiscoveryQuery:
+        """Cria query para descoberta de campos."""
+        return FieldDiscoveryQuery(self.data_source)
+
     def create_query_by_type(self, query_type: str) -> BaseMetricsQuery:
         """Cria query baseada no tipo."""
         query_map = {
             "general": self.create_general_metrics_query,
             "ranking": self.create_technician_ranking_query,
             "dashboard": self.create_dashboard_metrics_query,
+            "new_tickets": self.create_new_tickets_query,
+            "system_status": self.create_system_status_query,
+            "field_discovery": self.create_field_discovery_query,
         }
 
         if query_type not in query_map:
@@ -630,6 +786,97 @@ class MockMetricsDataSource(MetricsDataSource):
     async def get_technician_hierarchy(self, context: Optional[QueryContext] = None) -> Dict[int, str]:
         """Mock de hierarquia de técnicos."""
         return {1: "N1", 2: "N1", 3: "N2", 4: "N2", 5: "N3", 6: "N4"}
+
+    async def get_new_tickets(
+        self,
+        filters: Optional[MetricsFilterDTO] = None,
+        context: Optional[QueryContext] = None,
+    ) -> List[Dict[str, Any]]:
+        """Mock de tickets novos."""
+        return [
+            {
+                "id": 1001,
+                "title": "Problema de conexão de rede",
+                "description": "Usuário relatou intermitência na conexão",
+                "status": "new",
+                "priority": "medium",
+                "category": "Network",
+                "technician_id": None,
+                "created_at": datetime.now() - timedelta(hours=2),
+                "updated_at": datetime.now() - timedelta(hours=2),
+                "requester": "João Silva",
+                "location": "Sala 201",
+            },
+            {
+                "id": 1002,
+                "title": "Solicitação de instalação de software",
+                "description": "Instalação do Office 365",
+                "status": "assigned",
+                "priority": "low",
+                "category": "Software",
+                "technician_id": 1,
+                "created_at": datetime.now() - timedelta(hours=4),
+                "updated_at": datetime.now() - timedelta(hours=1),
+                "requester": "Maria Santos",
+                "location": "Sala 105",
+            },
+            {
+                "id": 1003,
+                "title": "Computador não liga",
+                "description": "Equipamento apresentou falha crítica",
+                "status": "new",
+                "priority": "high",
+                "category": "Hardware",
+                "technician_id": None,
+                "created_at": datetime.now() - timedelta(minutes=30),
+                "updated_at": datetime.now() - timedelta(minutes=30),
+                "requester": "Carlos Lima",
+                "location": "Sala 302",
+            },
+        ]
+
+    async def get_system_status(self, context: Optional[QueryContext] = None) -> Dict[str, Any]:
+        """Mock de status do sistema."""
+        return {
+            "glpi_version": "10.0.8",
+            "api_version": "1.0",
+            "database_status": "connected",
+            "api_status": "healthy",
+            "last_check": datetime.now().isoformat(),
+            "response_time_ms": 45.2,
+            "active_sessions": 8,
+            "total_tickets": 375,
+            "total_users": 142,
+            "total_technicians": 12,
+            "uptime_hours": 72.5,
+            "memory_usage_mb": 256,
+            "disk_usage_percent": 68.3,
+            "services": {
+                "web_server": "running",
+                "database": "running",
+                "cron_jobs": "running",
+                "email_notifications": "running",
+            },
+            "health_score": 95.8,
+        }
+
+    async def discover_field_ids(self, context: Optional[QueryContext] = None) -> Dict[str, int]:
+        """Mock de descoberta de IDs dos campos."""
+        return {
+            "group_id": 71,  # Campo para grupo responsável
+            "status_id": 12,  # Campo para status do ticket
+            "priority_id": 3,  # Campo para prioridade
+            "category_id": 5,  # Campo para categoria
+            "technician_id": 4,  # Campo para técnico responsável
+            "requester_id": 22,  # Campo para solicitante
+            "location_id": 83,  # Campo para localização
+            "created_date": 15,  # Campo para data de criação
+            "updated_date": 19,  # Campo para data de atualização
+            "resolution_date": 61,  # Campo para data de resolução
+            "title": 1,  # Campo para título
+            "description": 21,  # Campo para descrição
+            "solution": 24,  # Campo para solução
+        }
 
 
 # Exemplo de uso

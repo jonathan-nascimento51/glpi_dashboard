@@ -58,6 +58,19 @@ _metrics_cache = {"data": None, "timestamp": 0, "ttl": 180, "filters_hash": None
 # Cache para ranking de técnicos (evita chamadas frequentes)
 _ranking_cache = {"data": None, "timestamp": 0, "ttl": 60, "filters_hash": None}  # Cache por 60 segundos
 
+@api_bp.route("/")
+def api_root():
+    """Root API endpoint for health checks"""
+    return jsonify({
+        "message": "GLPI Dashboard API",
+        "status": "healthy",
+        "version": "1.0.0",
+        "endpoints": [
+            "/status", "/health", "/metrics", "/technicians", 
+            "/tickets/new", "/alerts", "/docs"
+        ]
+    })
+
 @api_bp.route("/metrics/v2")
 @monitor_api_endpoint("get_metrics_v2")
 @monitor_performance  

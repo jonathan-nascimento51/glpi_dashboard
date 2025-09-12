@@ -23,8 +23,10 @@ def create_app():
     
     return app
 
+# Create app instance for imports
+app = create_app()
+
 if __name__ == '__main__':
-    app = create_app()
     config = Config()
     host = getattr(config, 'HOST', '127.0.0.1')
     port = getattr(config, 'PORT', 8000)
