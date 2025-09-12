@@ -1,0 +1,68 @@
+{
+  "timestamp": "2025-09-12T19:32:08.711775",
+  "benchmark_type": "cache_validation_final",
+  "cache_tests": {
+    "effectiveness": {
+      "cache_miss_time_ms": 10.73765754699707,
+      "avg_cache_hit_time_ms": 3.4980297088623047,
+      "cache_speedup_factor": 3.069630174893333,
+      "cache_improvement_percent": 67.42278570952772,
+      "cache_working": true,
+      "all_hits_cached": true,
+      "hit_times": [
+        3.496885299682617,
+        3.4666061401367188,
+        3.456592559814453,
+        3.0753612518310547,
+        3.9947032928466797
+      ]
+    },
+    "concurrent": {
+      "total_requests": 40,
+      "successful_requests": 40,
+      "cache_hits": 40,
+      "cache_hit_rate": 1.0,
+      "avg_response_time_ms": 19.988125562667847,
+      "response_time_stdev": 7.801890969383124,
+      "concurrency_level": 8
+    }
+  },
+  "performance_comparison": {
+    "no_cache_avg_ms": 33.30588340759277,
+    "cache_avg_ms": 5.281925201416016,
+    "speedup_factor": 6.3056332942132345,
+    "improvement_percent": 84.14116468019614,
+    "no_cache_times": [
+      32.5927734375,
+      31.924009323120117,
+      32.61089324951172,
+      33.38146209716797,
+      34.44480895996094,
+      34.77001190185547,
+      31.863927841186523,
+      33.74886512756348,
+      35.75634956359863,
+      31.96573257446289
+    ],
+    "cache_times": [
+      3.4341812133789062,
+      9.827613830566406,
+      5.613565444946289,
+      5.028486251831055,
+      5.625009536743164,
+      4.2438507080078125,
+      4.776954650878906,
+      5.004405975341797,
+      5.49769401550293,
+      3.7674903869628906
+    ]
+  },
+  "final_verdict": {
+    "cache_validated": true,
+    "cache_speedup_factor": 3.069630174893333,
+    "cache_improvement_percent": 67.42278570952772,
+    "concurrent_hit_rate": 1.0,
+    "performance_consistent": true,
+    "recommendation": "PASS"
+  }
+}
