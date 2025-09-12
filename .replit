@@ -21,13 +21,13 @@ args = "Backend"
 name = "Backend"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd backend && FLASK_DEBUG=true python app.py"
-waitForPort = 8000
-
 [workflows.workflow.metadata]
 outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd backend && PORT=8000 FLASK_DEBUG=true python app.py"
+waitForPort = 8000
 
 [[ports]]
 localPort = 5000
