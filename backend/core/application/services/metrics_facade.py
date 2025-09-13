@@ -69,7 +69,7 @@ class MetricsFacade(UnifiedGLPIServiceContract):
         from ...infrastructure.external.glpi.metrics_adapter import GLPIMetricsAdapter
         self.glpi_adapter = GLPIMetricsAdapter(self.glpi_config)
         
-        self.query_factory = MetricsQueryFactory(self.glpi_adapter)
+        self.query_factory = MetricsQueryFactory(data_source=self.glpi_adapter)
         
         # Cache namespaces
         self.METRICS_CACHE_NS = "metrics"
