@@ -10,13 +10,13 @@ Preferred communication style: Simple, everyday language.
 
 # System Architecture
 
-## Frontend Architecture
-- **React 18** with TypeScript for type safety
-- **Vite** as the build tool and development server
-- **TailwindCSS** with shadcn/ui components for UI design
-- **Tanstack Query** for server state management and caching
-- **Chart.js & Recharts** for data visualization
-- **Framer Motion** for animations and transitions
+## Frontend Architecture (Migração Completa - 13/09/2025)
+- **React 18** com TypeScript para type safety
+- **Vite** como build tool e servidor de desenvolvimento
+- **TailwindCSS** com shadcn/ui components para design moderno
+- **Design do Figma** implementado com cor primária #5A9BD4
+- **Integração completa** com dados reais do GLPI via API
+- **Auto-refresh** a cada 30 segundos para dados em tempo real
 
 ## Backend Architecture
 - **Flask** web framework with Blueprint-based route organization
