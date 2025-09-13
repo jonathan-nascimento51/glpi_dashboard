@@ -230,7 +230,7 @@ export default function App() {
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="flex items-center gap-1 text-xs text-gray-600">
+                      <span className="flex igatems-center gap-1 text-xs text-gray-600">
                         <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
                         Pendentes
                       </span>
