@@ -39,7 +39,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd frontend && npm run dev"
+args = "cd src && npm run dev"
 waitForPort = 5000
 
 [workflows.workflow.metadata]
@@ -50,9 +50,12 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 8000
-externalPort = 8000
-exposeLocalhost = true
+localPort = 5001
+externalPort = 3000
+
+[[ports]]
+localPort = 43039
+externalPort = 3001
 
 [deployment]
 deploymentTarget = "autoscale"

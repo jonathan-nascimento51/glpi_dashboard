@@ -11,14 +11,65 @@ import {
   CheckCircle,
   Activity,
   Award,
-  Ticket
+  Ticket,
+  Loader2
 } from "lucide-react";
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { Badge } from "./components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
+import { useMetrics } from "./hooks/useMetrics";
+import { useRanking } from "./hooks/useRanking";
+import { useTickets } from "./hooks/useTickets";
+import { formatNumber, formatDate, getStatusBgColor } from "./utils/formatters";
+import { useEffect, useState } from "react";
 
 export default function App() {
+  const { data: metrics, loading: metricsLoading, error: metricsError, refetch: refetchMetrics } = useMetrics();
+  const { data: ranking, loading: rankingLoading, error: rankingError } = useRanking();
+  const { data: tickets, loading: ticketsLoading, error: ticketsError } = useTickets();
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Atualizar horário a cada segundo
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Handler para refresh manual
+  const handleRefresh = () => {
+    refetchMetrics();
+  };
+
+  // Loading state
+  if (metricsLoading && !metrics) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-[#5A9BD4] animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Carregando dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Calcular totais gerais se não vieram da API
+  const totalGeral = metrics?.niveis?.geral || {
+    novos: (metrics?.niveis?.n1?.novos || 0) + (metrics?.niveis?.n2?.novos || 0) + 
+           (metrics?.niveis?.n3?.novos || 0) + (metrics?.niveis?.n4?.novos || 0),
+    progresso: (metrics?.niveis?.n1?.progresso || 0) + (metrics?.niveis?.n2?.progresso || 0) + 
+               (metrics?.niveis?.n3?.progresso || 0) + (metrics?.niveis?.n4?.progresso || 0),
+    pendentes: (metrics?.niveis?.n1?.pendentes || 0) + (metrics?.niveis?.n2?.pendentes || 0) + 
+               (metrics?.niveis?.n3?.pendentes || 0) + (metrics?.niveis?.n4?.pendentes || 0),
+    resolvidos: (metrics?.niveis?.n1?.resolvidos || 0) + (metrics?.niveis?.n2?.resolvidos || 0) + 
+                (metrics?.niveis?.n3?.resolvidos || 0) + (metrics?.niveis?.n4?.resolvidos || 0),
+    total: 0
+  };
+
+  totalGeral.total = totalGeral.novos + totalGeral.progresso + totalGeral.pendentes + totalGeral.resolvidos;
+
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
@@ -41,8 +92,14 @@ export default function App() {
               className="bg-transparent border-none text-white placeholder:text-white/70 flex-1"
             />
           </div>
-          <Button variant="ghost" size="sm" className="text-white hover:bg-blue-600">
-            <RotateCcw className="w-4 h-4" />
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-white hover:bg-blue-600"
+            onClick={handleRefresh}
+            disabled={metricsLoading}
+          >
+            <RotateCcw className={`w-4 h-4 ${metricsLoading ? 'animate-spin' : ''}`} />
           </Button>
           <Button variant="ghost" size="sm" className="text-white hover:bg-blue-600 relative">
             <Bell className="w-4 h-4" />
@@ -57,7 +114,9 @@ export default function App() {
             </div>
             <div className="text-sm">
               <p className="text-white font-medium">Admin</p>
-              <p className="text-blue-100 text-xs">17:38:57</p>
+              <p className="text-blue-100 text-xs">
+                {currentTime.toLocaleTimeString('pt-BR')}
+              </p>
             </div>
           </div>
         </div>
@@ -75,7 +134,9 @@ export default function App() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-600 mb-1">Novos</p>
-                      <p className="text-2xl font-semibold text-gray-900">3</p>
+                      <p className="text-2xl font-semibold text-gray-900">
+                        {totalGeral.novos}
+                      </p>
                     </div>
                     <div className="w-10 h-10 bg-[#5A9BD4]/10 rounded-lg flex items-center justify-center">
                       <TrendingUp className="w-5 h-5 text-[#5A9BD4]" />
@@ -89,7 +150,9 @@ export default function App() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-600 mb-1">Em Progresso</p>
-                      <p className="text-2xl font-semibold text-gray-900">45</p>
+                      <p className="text-2xl font-semibold text-gray-900">
+                        {totalGeral.progresso}
+                      </p>
                     </div>
                     <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
                       <AlertTriangle className="w-5 h-5 text-orange-600" />
@@ -103,7 +166,9 @@ export default function App() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-600 mb-1">Pendentes</p>
-                      <p className="text-2xl font-semibold text-gray-900">26</p>
+                      <p className="text-2xl font-semibold text-gray-900">
+                        {totalGeral.pendentes}
+                      </p>
                     </div>
                     <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
                       <Clock className="w-5 h-5 text-amber-600" />
@@ -117,7 +182,9 @@ export default function App() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-600 mb-1">Resolvidos</p>
-                      <p className="text-2xl font-semibold text-gray-900">10.2K</p>
+                      <p className="text-2xl font-semibold text-gray-900">
+                        {formatNumber(totalGeral.resolvidos)}
+                      </p>
                     </div>
                     <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                       <CheckCircle className="w-5 h-5 text-green-600" />
@@ -137,7 +204,9 @@ export default function App() {
                       <Activity className="w-4 h-4" />
                       Nível N1
                     </span>
-                    <span className="text-xl font-semibold text-gray-900">1.495</span>
+                    <span className="text-xl font-semibold text-gray-900">
+                      {metrics?.niveis?.n1?.total || 0}
+                    </span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
@@ -147,28 +216,36 @@ export default function App() {
                         <span className="w-2 h-2 bg-[#5A9BD4] rounded-full"></span>
                         Novos
                       </span>
-                      <span className="font-medium text-gray-900 text-sm">1</span>
+                      <span className="font-medium text-gray-900 text-sm">
+                        {metrics?.niveis?.n1?.novos || 0}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="flex items-center gap-1 text-xs text-gray-600">
                         <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
                         Em Progr.
                       </span>
-                      <span className="font-medium text-gray-900 text-sm">8</span>
+                      <span className="font-medium text-gray-900 text-sm">
+                        {metrics?.niveis?.n1?.progresso || 0}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="flex items-center gap-1 text-xs text-gray-600">
                         <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
                         Pendentes
                       </span>
-                      <span className="font-medium text-gray-900 text-sm">3</span>
+                      <span className="font-medium text-gray-900 text-sm">
+                        {metrics?.niveis?.n1?.pendentes || 0}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="flex items-center gap-1 text-xs text-gray-600">
                         <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                         Resolvidos
                       </span>
-                      <span className="font-medium text-gray-900 text-sm">1.483</span>
+                      <span className="font-medium text-gray-900 text-sm">
+                        {metrics?.niveis?.n1?.resolvidos || 0}
+                      </span>
                     </div>
                   </div>
                 </CardContent>
@@ -182,7 +259,9 @@ export default function App() {
                       <Activity className="w-4 h-4" />
                       Nível N2
                     </span>
-                    <span className="text-xl font-semibold text-gray-900">1.266</span>
+                    <span className="text-xl font-semibold text-gray-900">
+                      {metrics?.niveis?.n2?.total || 0}
+                    </span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
@@ -192,28 +271,36 @@ export default function App() {
                         <span className="w-2 h-2 bg-[#5A9BD4] rounded-full"></span>
                         Novos
                       </span>
-                      <span className="font-medium text-gray-900 text-sm">0</span>
+                      <span className="font-medium text-gray-900 text-sm">
+                        {metrics?.niveis?.n2?.novos || 0}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="flex items-center gap-1 text-xs text-gray-600">
                         <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
                         Em Progr.
                       </span>
-                      <span className="font-medium text-gray-900 text-sm">11</span>
+                      <span className="font-medium text-gray-900 text-sm">
+                        {metrics?.niveis?.n2?.progresso || 0}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="flex items-center gap-1 text-xs text-gray-600">
                         <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
                         Pendentes
                       </span>
-                      <span className="font-medium text-gray-900 text-sm">11</span>
+                      <span className="font-medium text-gray-900 text-sm">
+                        {metrics?.niveis?.n2?.pendentes || 0}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="flex items-center gap-1 text-xs text-gray-600">
                         <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                         Resolvidos
                       </span>
-                      <span className="font-medium text-gray-900 text-sm">1.244</span>
+                      <span className="font-medium text-gray-900 text-sm">
+                        {metrics?.niveis?.n2?.resolvidos || 0}
+                      </span>
                     </div>
                   </div>
                 </CardContent>
@@ -227,7 +314,9 @@ export default function App() {
                       <Activity className="w-4 h-4" />
                       Nível N3
                     </span>
-                    <span className="text-xl font-semibold text-gray-900">5.262</span>
+                    <span className="text-xl font-semibold text-gray-900">
+                      {metrics?.niveis?.n3?.total || 0}
+                    </span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
@@ -237,28 +326,36 @@ export default function App() {
                         <span className="w-2 h-2 bg-[#5A9BD4] rounded-full"></span>
                         Novos
                       </span>
-                      <span className="font-medium text-gray-900 text-sm">1</span>
+                      <span className="font-medium text-gray-900 text-sm">
+                        {metrics?.niveis?.n3?.novos || 0}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="flex items-center gap-1 text-xs text-gray-600">
                         <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
                         Em Progr.
                       </span>
-                      <span className="font-medium text-gray-900 text-sm">21</span>
+                      <span className="font-medium text-gray-900 text-sm">
+                        {metrics?.niveis?.n3?.progresso || 0}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="flex items-center gap-1 text-xs text-gray-600">
                         <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
                         Pendentes
                       </span>
-                      <span className="font-medium text-gray-900 text-sm">9</span>
+                      <span className="font-medium text-gray-900 text-sm">
+                        {metrics?.niveis?.n3?.pendentes || 0}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="flex items-center gap-1 text-xs text-gray-600">
                         <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                         Resolvidos
                       </span>
-                      <span className="font-medium text-gray-900 text-sm">5.231</span>
+                      <span className="font-medium text-gray-900 text-sm">
+                        {metrics?.niveis?.n3?.resolvidos || 0}
+                      </span>
                     </div>
                   </div>
                 </CardContent>
@@ -272,7 +369,9 @@ export default function App() {
                       <Activity className="w-4 h-4" />
                       Nível N4
                     </span>
-                    <span className="text-xl font-semibold text-gray-900">42</span>
+                    <span className="text-xl font-semibold text-gray-900">
+                      {metrics?.niveis?.n4?.total || 0}
+                    </span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
@@ -282,28 +381,36 @@ export default function App() {
                         <span className="w-2 h-2 bg-[#5A9BD4] rounded-full"></span>
                         Novos
                       </span>
-                      <span className="font-medium text-gray-900 text-sm">0</span>
+                      <span className="font-medium text-gray-900 text-sm">
+                        {metrics?.niveis?.n4?.novos || 0}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="flex items-center gap-1 text-xs text-gray-600">
                         <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
                         Em Progr.
                       </span>
-                      <span className="font-medium text-gray-900 text-sm">1</span>
+                      <span className="font-medium text-gray-900 text-sm">
+                        {metrics?.niveis?.n4?.progresso || 0}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="flex items-center gap-1 text-xs text-gray-600">
                         <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
                         Pendentes
                       </span>
-                      <span className="font-medium text-gray-900 text-sm">1</span>
+                      <span className="font-medium text-gray-900 text-sm">
+                        {metrics?.niveis?.n4?.pendentes || 0}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="flex items-center gap-1 text-xs text-gray-600">
                         <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                         Resolvidos
                       </span>
-                      <span className="font-medium text-gray-900 text-sm">40</span>
+                      <span className="font-medium text-gray-900 text-sm">
+                        {metrics?.niveis?.n4?.resolvidos || 0}
+                      </span>
                     </div>
                   </div>
                 </CardContent>
@@ -320,77 +427,68 @@ export default function App() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-4 gap-3">
-                  <div className="bg-gradient-to-br from-[#5A9BD4] to-[#4A8BC2] text-white p-3 rounded-lg shadow-sm">
-                    <div className="text-center">
-                      <Badge className="bg-yellow-500 text-yellow-900 mb-2 font-medium text-xs">#1</Badge>
-                      <p className="text-xs font-medium mb-1">Roberlâncio O.</p>
-                      <p className="text-xs text-blue-100 mb-2">Arquitetos da Silva V.</p>
-                      <div className="space-y-1">
-                        <div className="text-xs">
-                          <span className="text-blue-100">Total:</span>
-                          <span className="font-medium ml-1">2.723</span>
-                        </div>
-                        <div className="text-xs">
-                          <span className="text-blue-100">Resolvidos:</span>
-                          <span className="font-medium ml-1">2.710</span>
-                        </div>
-                      </div>
+                  {rankingLoading && !ranking?.length ? (
+                    <div className="col-span-4 text-center py-4">
+                      <Loader2 className="w-6 h-6 text-[#5A9BD4] animate-spin mx-auto" />
+                      <p className="text-sm text-gray-500 mt-2">Carregando ranking...</p>
                     </div>
-                  </div>
+                  ) : ranking?.length > 0 ? (
+                    ranking.slice(0, 4).map((tech, index) => {
+                      const gradientClass = index === 0 
+                        ? "from-[#5A9BD4] to-[#4A8BC2]" 
+                        : index === 1 
+                        ? "from-slate-600 to-slate-700"
+                        : index === 2
+                        ? "from-orange-600 to-orange-700"
+                        : "from-[#5A9BD4] to-[#4A8BC2]";
+                      
+                      const badgeClass = index === 0
+                        ? "bg-yellow-500 text-yellow-900"
+                        : index === 1
+                        ? "bg-gray-300 text-gray-800"
+                        : index === 2
+                        ? "bg-orange-200 text-orange-900"
+                        : "bg-blue-200 text-blue-900";
 
-                  <div className="bg-gradient-to-br from-slate-600 to-slate-700 text-white p-3 rounded-lg shadow-sm">
-                    <div className="text-center">
-                      <Badge className="bg-gray-300 text-gray-800 mb-2 font-medium text-xs">#2</Badge>
-                      <p className="text-xs font-medium mb-1">Silvia M.</p>
-                      <p className="text-xs text-slate-200 mb-2">Silvia Glediano Vale</p>
-                      <div className="space-y-1">
-                        <div className="text-xs">
-                          <span className="text-slate-200">Total:</span>
-                          <span className="font-medium ml-1">1.827</span>
-                        </div>
-                        <div className="text-xs">
-                          <span className="text-slate-200">Resolvidos:</span>
-                          <span className="font-medium ml-1">1.819</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                      const textColor = index === 1 
+                        ? "text-slate-200"
+                        : index === 2
+                        ? "text-orange-100"
+                        : "text-blue-100";
 
-                  <div className="bg-gradient-to-br from-orange-600 to-orange-700 text-white p-3 rounded-lg shadow-sm">
-                    <div className="text-center">
-                      <Badge className="bg-orange-200 text-orange-900 mb-2 font-medium text-xs">#3</Badge>
-                      <p className="text-xs font-medium mb-1">Jorge J.</p>
-                      <p className="text-xs text-orange-100 mb-2">Jorge Antônio Vicente Jr.</p>
-                      <div className="space-y-1">
-                        <div className="text-xs">
-                          <span className="text-orange-100">Total:</span>
-                          <span className="font-medium ml-1">1.792</span>
+                      return (
+                        <div key={tech.id || index} className={`bg-gradient-to-br ${gradientClass} text-white p-3 rounded-lg shadow-sm`}>
+                          <div className="text-center">
+                            <Badge className={`${badgeClass} mb-2 font-medium text-xs`}>
+                              #{index + 1}
+                            </Badge>
+                            <p className="text-xs font-medium mb-1 truncate">
+                              {tech.name || tech.nome || 'Técnico'}
+                            </p>
+                            <p className={`text-xs ${textColor} mb-2 truncate`}>
+                              {tech.level || 'N1'}
+                            </p>
+                            <div className="space-y-1">
+                              <div className="text-xs">
+                                <span className={textColor}>Total:</span>
+                                <span className="font-medium ml-1">{tech.total || 0}</span>
+                              </div>
+                              <div className="text-xs">
+                                <span className={textColor}>Resolvidos:</span>
+                                <span className="font-medium ml-1">
+                                  {tech.ticketsResolved || Math.floor((tech.total || 0) * 0.95)}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-xs">
-                          <span className="text-orange-100">Resolvidos:</span>
-                          <span className="font-medium ml-1">1.757</span>
-                        </div>
-                      </div>
+                      );
+                    })
+                  ) : (
+                    <div className="col-span-4 text-center py-4 text-gray-500">
+                      <p className="text-sm">Nenhum técnico encontrado</p>
                     </div>
-                  </div>
-
-                  <div className="bg-gradient-to-br from-[#5A9BD4] to-[#4A8BC2] text-white p-3 rounded-lg shadow-sm">
-                    <div className="text-center">
-                      <Badge className="bg-blue-200 text-blue-900 mb-2 font-medium text-xs">#4</Badge>
-                      <p className="text-xs font-medium mb-1">Pablo G.</p>
-                      <p className="text-xs text-blue-100 mb-2">Pablo Hetking Guimarães</p>
-                      <div className="space-y-1">
-                        <div className="text-xs">
-                          <span className="text-blue-100">Total:</span>
-                          <span className="font-medium ml-1">1.338</span>
-                        </div>
-                        <div className="text-xs">
-                          <span className="text-blue-100">Resolvidos:</span>
-                          <span className="font-medium ml-1">1.329</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -406,7 +504,9 @@ export default function App() {
                     Tickets Novos
                   </CardTitle>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded-md">8 tickets</span>
+                    <span className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded-md">
+                      {tickets?.length || 0} tickets
+                    </span>
                     <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700 hover:bg-gray-100">
                       <RotateCcw className="w-4 h-4" />
                     </Button>
@@ -422,108 +522,43 @@ export default function App() {
                   }}
                 >
                   <div className="space-y-3">
-                    <div className="border-l-4 border-[#5A9BD4] bg-[#5A9BD4]/5 p-3 rounded-r-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded">#10387</span>
-                        <Badge variant="outline" className="border-[#5A9BD4] text-[#5A9BD4] bg-[#5A9BD4]/10 text-xs">Nova</Badge>
+                    {ticketsLoading && !tickets?.length ? (
+                      <div className="text-center py-4">
+                        <Loader2 className="w-6 h-6 text-[#5A9BD4] animate-spin mx-auto" />
+                        <p className="text-sm text-gray-500 mt-2">Carregando tickets...</p>
                       </div>
-                      <h4 className="font-medium text-gray-900 mb-2 text-sm">Acesso a Sistema - Geral - LIBERAR ACESSO</h4>
-                      <p className="text-xs text-gray-600 mb-2 line-clamp-2">Dados do formulário/Dados Gerais/SOLICITAÇÃO É PARA SEU USUÁRIO? SIM/I TIPO: LIBERAR ACESSO/SISTEMA: Geral/ORGANIZAÇÃO: Cases...</p>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-gray-700 font-medium">Angelo Diego da Rosa</span>
-                        <span className="text-gray-500">11/09/2025</span>
+                    ) : tickets?.length > 0 ? (
+                      tickets.map((ticket) => (
+                        <div key={ticket.id} className="border-l-4 border-[#5A9BD4] bg-[#5A9BD4]/5 p-3 rounded-r-lg">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                              #{ticket.id}
+                            </span>
+                            <Badge variant="outline" className="border-[#5A9BD4] text-[#5A9BD4] bg-[#5A9BD4]/10 text-xs">
+                              {ticket.status || 'Nova'}
+                            </Badge>
+                          </div>
+                          <h4 className="font-medium text-gray-900 mb-2 text-sm line-clamp-2">
+                            {ticket.title}
+                          </h4>
+                          <p className="text-xs text-gray-600 mb-2 line-clamp-2">
+                            {ticket.description}
+                          </p>
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-gray-700 font-medium truncate max-w-[150px]">
+                              {ticket.requester}
+                            </span>
+                            <span className="text-gray-500">
+                              {formatDate(ticket.date)}
+                            </span>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-4 text-gray-500">
+                        <p className="text-sm">Nenhum ticket novo</p>
                       </div>
-                    </div>
-
-                    <div className="border-l-4 border-[#5A9BD4] bg-[#5A9BD4]/5 p-3 rounded-r-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded">#10366</span>
-                        <Badge variant="outline" className="border-[#5A9BD4] text-[#5A9BD4] bg-[#5A9BD4]/10 text-xs">Nova</Badge>
-                      </div>
-                      <h4 className="font-medium text-gray-900 mb-2 text-sm">Atendimento ao usuário Suporte - EDIFÍCIO GUAÍBA</h4>
-                      <p className="text-xs text-gray-600 mb-2 line-clamp-2">LOCALIZAÇÃO: EDIFÍCIO GUAÍBA - ITANDAR DIREÇÃO GERAL DO OVG RAMAL: 3245753 - MARILEA para solicitar documentos anexado.</p>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-gray-700 font-medium">Marileila Braun</span>
-                        <span className="text-gray-500">11/09/2025</span>
-                      </div>
-                    </div>
-
-                    <div className="border-l-4 border-[#5A9BD4] bg-[#5A9BD4]/5 p-3 rounded-r-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded">#10203</span>
-                        <Badge variant="outline" className="border-[#5A9BD4] text-[#5A9BD4] bg-[#5A9BD4]/10 text-xs">Nova</Badge>
-                      </div>
-                      <h4 className="font-medium text-gray-900 mb-2 text-sm">TESTE // NÃO MEXER</h4>
-                      <div className="flex items-center justify-between text-xs mt-2">
-                        <span className="text-gray-400">-</span>
-                        <span className="text-gray-400">-</span>
-                      </div>
-                    </div>
-
-                    <div className="border-l-4 border-[#5A9BD4] bg-[#5A9BD4]/5 p-3 rounded-r-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded">#10455</span>
-                        <Badge variant="outline" className="border-[#5A9BD4] text-[#5A9BD4] bg-[#5A9BD4]/10 text-xs">Nova</Badge>
-                      </div>
-                      <h4 className="font-medium text-gray-900 mb-2 text-sm">Solicitação de Suporte - Sistema ERP</h4>
-                      <p className="text-xs text-gray-600 mb-2 line-clamp-2">Usuário relatando problema de acesso ao módulo financeiro do sistema ERP. Erro apresentado ao tentar acessar relatórios...</p>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-gray-700 font-medium">Carlos Silva</span>
-                        <span className="text-gray-500">12/09/2025</span>
-                      </div>
-                    </div>
-
-                    <div className="border-l-4 border-[#5A9BD4] bg-[#5A9BD4]/5 p-3 rounded-r-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded">#10456</span>
-                        <Badge variant="outline" className="border-[#5A9BD4] text-[#5A9BD4] bg-[#5A9BD4]/10 text-xs">Nova</Badge>
-                      </div>
-                      <h4 className="font-medium text-gray-900 mb-2 text-sm">Instalação de Software - AutoCAD</h4>
-                      <p className="text-xs text-gray-600 mb-2 line-clamp-2">Solicitação para instalação do AutoCAD 2024 na estação de trabalho do setor de engenharia. Licença já aprovada...</p>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-gray-700 font-medium">Maria Santos</span>
-                        <span className="text-gray-500">12/09/2025</span>
-                      </div>
-                    </div>
-
-                    <div className="border-l-4 border-[#5A9BD4] bg-[#5A9BD4]/5 p-3 rounded-r-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded">#10457</span>
-                        <Badge variant="outline" className="border-[#5A9BD4] text-[#5A9BD4] bg-[#5A9BD4]/10 text-xs">Nova</Badge>
-                      </div>
-                      <h4 className="font-medium text-gray-900 mb-2 text-sm">Manutenção Preventiva - Servidor</h4>
-                      <p className="text-xs text-gray-600 mb-2 line-clamp-2">Agendamento de manutenção preventiva no servidor principal. Verificação de hardware e atualização de segurança...</p>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-gray-700 font-medium">João Oliveira</span>
-                        <span className="text-gray-500">12/09/2025</span>
-                      </div>
-                    </div>
-
-                    <div className="border-l-4 border-[#5A9BD4] bg-[#5A9BD4]/5 p-3 rounded-r-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded">#10458</span>
-                        <Badge variant="outline" className="border-[#5A9BD4] text-[#5A9BD4] bg-[#5A9BD4]/10 text-xs">Nova</Badge>
-                      </div>
-                      <h4 className="font-medium text-gray-900 mb-2 text-sm">Problema de Conectividade - Wi-Fi</h4>
-                      <p className="text-xs text-gray-600 mb-2 line-clamp-2">Usuários do 3º andar relatando instabilidade na conexão Wi-Fi. Verificar configuração do access point...</p>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-gray-700 font-medium">Ana Costa</span>
-                        <span className="text-gray-500">12/09/2025</span>
-                      </div>
-                    </div>
-
-                    <div className="border-l-4 border-[#5A9BD4] bg-[#5A9BD4]/5 p-3 rounded-r-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded">#10459</span>
-                        <Badge variant="outline" className="border-[#5A9BD4] text-[#5A9BD4] bg-[#5A9BD4]/10 text-xs">Nova</Badge>
-                      </div>
-                      <h4 className="font-medium text-gray-900 mb-2 text-sm">Backup de Dados - Departamento Financeiro</h4>
-                      <p className="text-xs text-gray-600 mb-2 line-clamp-2">Solicitação de backup completo dos dados do departamento financeiro antes da migração do sistema...</p>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-gray-700 font-medium">Roberto Lima</span>
-                        <span className="text-gray-500">12/09/2025</span>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </CardContent>
