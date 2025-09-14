@@ -79,13 +79,13 @@ MetricsResponseDTO = ApiResponse  # Use ApiResponse from schemas instead
 # Factory functions for creating consolidated schema models
 
 from schemas.dashboard import (
-    DashboardMetrics, 
-    TendenciasMetrics, 
-    NiveisMetrics, 
-    LevelMetrics, 
+    DashboardMetrics,
+    TendenciasMetrics,
+    NiveisMetrics,
+    LevelMetrics,
     FiltersApplied,
     ApiResponse,
-    ApiError
+    ApiError,
 )
 
 
@@ -101,18 +101,15 @@ def create_empty_dashboard_metrics() -> DashboardMetrics:
             n1=LevelMetrics(novos=0, pendentes=0, progresso=0, resolvidos=0, total=0),
             n2=LevelMetrics(novos=0, pendentes=0, progresso=0, resolvidos=0, total=0),
             n3=LevelMetrics(novos=0, pendentes=0, progresso=0, resolvidos=0, total=0),
-            n4=LevelMetrics(novos=0, pendentes=0, progresso=0, resolvidos=0, total=0)
+            n4=LevelMetrics(novos=0, pendentes=0, progresso=0, resolvidos=0, total=0),
         ),
-        tendencias=TendenciasMetrics()
+        tendencias=TendenciasMetrics(),
     )
 
 
 def create_error_response(error_message: str, correlation_id: Optional[str] = None) -> ApiError:
     """Cria uma resposta de erro padronizada."""
-    return ApiError(
-        message=error_message,
-        errors=[error_message]
-    )
+    return ApiError(message=error_message, errors=[error_message])
 
 
 def create_success_response(
@@ -121,7 +118,4 @@ def create_success_response(
     message: Optional[str] = None,
 ) -> ApiResponse:
     """Cria uma resposta de sucesso padronizada."""
-    return ApiResponse(
-        data=data,
-        message=message
-    )
+    return ApiResponse(data=data, message=message)

@@ -9,23 +9,17 @@ permitindo migração progressiva da arquitetura legada.
 from abc import ABC, abstractmethod
 from typing import Dict, List, Any, Optional, Tuple
 
-from schemas.dashboard import (
-    DashboardMetrics, 
-    TechnicianRanking, 
-    NewTicket, 
-    ApiResponse, 
-    ApiError
-)
+from schemas.dashboard import DashboardMetrics, TechnicianRanking, NewTicket, ApiResponse, ApiError
 
 
 class MetricsServiceContract(ABC):
     """Contrato principal para serviços de métricas."""
-    
+
     @abstractmethod
     def get_dashboard_metrics(self, correlation_id: Optional[str] = None) -> DashboardMetrics:
         """Obtém métricas gerais do dashboard."""
         pass
-    
+
     @abstractmethod
     def get_dashboard_metrics_with_date_filter(
         self,
@@ -35,7 +29,7 @@ class MetricsServiceContract(ABC):
     ) -> DashboardMetrics:
         """Obtém métricas do dashboard com filtro de data."""
         pass
-    
+
     @abstractmethod
     def get_dashboard_metrics_with_modification_date_filter(
         self,
@@ -45,7 +39,7 @@ class MetricsServiceContract(ABC):
     ) -> DashboardMetrics:
         """Obtém métricas do dashboard com filtro de data de modificação."""
         pass
-    
+
     @abstractmethod
     def get_dashboard_metrics_with_filters(
         self,
@@ -64,19 +58,17 @@ class MetricsServiceContract(ABC):
 
 class TechnicianServiceContract(ABC):
     """Contrato para serviços de técnicos."""
-    
+
     @abstractmethod
-    def get_all_technician_ids_and_names(
-        self, entity_id: Optional[int] = None
-    ) -> Tuple[List[int], List[str]]:
+    def get_all_technician_ids_and_names(self, entity_id: Optional[int] = None) -> Tuple[List[int], List[str]]:
         """Obtém IDs e nomes de todos os técnicos."""
         pass
-    
+
     @abstractmethod
     def get_technician_ranking(self, limit: int = 50) -> List[TechnicianRanking]:
         """Obtém ranking de técnicos."""
         pass
-    
+
     @abstractmethod
     def get_technician_ranking_with_filters(
         self,
@@ -93,12 +85,12 @@ class TechnicianServiceContract(ABC):
 
 class TicketServiceContract(ABC):
     """Contrato para serviços de tickets."""
-    
+
     @abstractmethod
     def get_new_tickets(self, limit: int = 20) -> List[NewTicket]:
         """Obtém tickets novos."""
         pass
-    
+
     @abstractmethod
     def get_new_tickets_with_filters(
         self,
@@ -115,12 +107,12 @@ class TicketServiceContract(ABC):
 
 class SystemServiceContract(ABC):
     """Contrato para serviços de sistema."""
-    
+
     @abstractmethod
     def get_system_status(self) -> ApiResponse:
         """Obtém status do sistema."""
         pass
-    
+
     @abstractmethod
     def authenticate_with_retry(self) -> bool:
         """Autentica com retry automático."""
@@ -128,10 +120,8 @@ class SystemServiceContract(ABC):
 
 
 class UnifiedGLPIServiceContract(
-    MetricsServiceContract,
-    TechnicianServiceContract, 
-    TicketServiceContract,
-    SystemServiceContract
+    MetricsServiceContract, TechnicianServiceContract, TicketServiceContract, SystemServiceContract
 ):
     """Contrato unificado que combina todos os serviços GLPI."""
+
     pass

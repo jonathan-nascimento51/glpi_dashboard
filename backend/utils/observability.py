@@ -3,7 +3,7 @@ import time
 import uuid
 from datetime import datetime
 from functools import wraps
-from typing import Any, Dict, Optional, Callable, List
+from typing import Any, Dict, Callable, List
 
 
 class ObservabilityLogger:
@@ -81,14 +81,21 @@ class ObservabilityLogger:
                 threshold=threshold,
             )
 
-    def check_technician_names(self, correlation_id: str, technicians: List[Dict[str, Any]]) -> None:
+    def check_technician_names(self, correlation_id: str, technicians: List[Any]) -> None:
         """Verifica nomes de técnicos suspeitos"""
         suspicious_names = []
         unresolved_ids = []
 
         for tech in technicians:
-            name = tech.get("name", "")
-            tech_id = tech.get("id")
+            # Handle both dict and Pydantic model formats
+            if isinstance(tech, dict):
+                # Dictionary format
+                name = tech.get("name", "")
+                tech_id = tech.get("id")
+            else:
+                # Pydantic model (TechnicianRanking)
+                name = getattr(tech, "name", "")
+                tech_id = getattr(tech, "id", None)
 
             # Verificar nomes contendo "TECNICO"
             if "TECNICO" in name.upper():
@@ -114,9 +121,20 @@ class ObservabilityLogger:
                 unresolved_ids=unresolved_ids,
             )
 
-    def check_zero_totals(self, correlation_id: str, technicians: List[Dict[str, Any]], filters_applied: Dict[str, Any]) -> None:
+    def check_zero_totals(self, correlation_id: str, technicians: List[Any], filters_applied: Dict[str, Any]) -> None:
         """Verifica se há totais zerados após filtros"""
-        zero_total_count = sum(1 for tech in technicians if tech.get("total", 0) == 0)
+        zero_total_count = 0
+        for tech in technicians:
+            # Handle both dict and Pydantic model formats
+            if isinstance(tech, dict):
+                # Dictionary format
+                total = tech.get("total", 0)
+            else:
+                # Pydantic model (TechnicianRanking)
+                total = getattr(tech, "total", 0)
+
+            if total == 0:
+                zero_total_count += 1
 
         if zero_total_count > 0:
             self.emit_warning(

@@ -8,6 +8,7 @@ from pydantic.types import NonNegativeInt, PositiveInt
 
 class TicketStatus(str, Enum):
     """Enum para status de tickets."""
+
     NOVO = "novo"
     PENDENTE = "pendente"
     PROGRESSO = "progresso"
@@ -18,6 +19,7 @@ class TicketStatus(str, Enum):
 
 class TechnicianLevel(str, Enum):
     """Enum para níveis de técnicos."""
+
     N1 = "N1"
     N2 = "N2"
     N3 = "N3"
@@ -38,14 +40,11 @@ class LevelMetrics(BaseModel):
     def calculate_total(cls, values):
         """Calcula o total baseado nos status individuais."""
         total_calculated = (
-            values.get('novos', 0) +
-            values.get('pendentes', 0) +
-            values.get('progresso', 0) +
-            values.get('resolvidos', 0)
+            values.get("novos", 0) + values.get("pendentes", 0) + values.get("progresso", 0) + values.get("resolvidos", 0)
         )
         # Se total não foi fornecido, calcula automaticamente
-        if values.get('total', 0) == 0:
-            values['total'] = total_calculated
+        if values.get("total", 0) == 0:
+            values["total"] = total_calculated
         return values
 
 
@@ -56,14 +55,14 @@ class NiveisMetrics(BaseModel):
     n2: LevelMetrics
     n3: LevelMetrics
     n4: LevelMetrics
-    
+
     def __setitem__(self, key: str, value: LevelMetrics):
         """Allow setting level metrics using bracket notation."""
         if hasattr(self, key):
             setattr(self, key, value)
         else:
             raise KeyError(f"Invalid level key: {key}")
-    
+
     def values(self):
         """Return all level metrics values."""
         return [self.n1, self.n2, self.n3, self.n4]
@@ -138,7 +137,7 @@ class ApiResponse(BaseModel):
     errors: Optional[List[str]] = None
     timestamp: datetime = Field(default_factory=datetime.now)
     execution_time_ms: Optional[float] = None
-    
+
     def set_execution_time(self, start_time: Optional[datetime] = None):
         """Calculate and set execution time from start time."""
         if start_time:
@@ -154,7 +153,7 @@ class ApiError(ApiResponse):
     message: Optional[str] = None
     errors: Optional[List[str]] = None
     error_code: Optional[str] = None
-    
+
     def __init__(self, message: str, errors: Optional[List[str]] = None, **kwargs):
         if errors is None:
             errors = [message]

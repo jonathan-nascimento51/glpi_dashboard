@@ -31,25 +31,22 @@ class Config:
         secret_key = os.environ.get("SECRET_KEY")
         if not secret_key:
             if not self.DEBUG:
-                raise ConfigValidationError(
-                    "SECRET_KEY environment variable is required in production"
-                )
+                raise ConfigValidationError("SECRET_KEY environment variable is required in production")
             # Development fallback with warning
             import warnings
-            warnings.warn(
-                "Using development SECRET_KEY. Set SECRET_KEY environment variable for production."
-            )
+
+            warnings.warn("Using development SECRET_KEY. Set SECRET_KEY environment variable for production.")
             return "dev-secret-key-DO-NOT-USE-IN-PRODUCTION"
-        
+
         # Validate secret key strength in production
         if not self.DEBUG:
             if len(secret_key) < 32:
                 raise ConfigValidationError("SECRET_KEY must be at least 32 characters long in production")
             if secret_key in ["dev-secret-key-change-in-production", "dev-secret-key-DO-NOT-USE-IN-PRODUCTION"]:
                 raise ConfigValidationError("Default development SECRET_KEY cannot be used in production")
-        
+
         return secret_key
-    
+
     # Debug mode - Secure by default
     DEBUG = os.environ.get("FLASK_DEBUG", "False").lower() == "true"
 
@@ -70,7 +67,7 @@ class Config:
     GLPI_URL = os.environ.get("GLPI_URL", "http://10.73.0.79/glpi/apirest.php")
     GLPI_USER_TOKEN = os.environ.get("GLPI_USER_TOKEN")
     GLPI_APP_TOKEN = os.environ.get("GLPI_APP_TOKEN")
-    
+
     # Mock Data Mode - Para desenvolvimento e testes da interface
     USE_MOCK_DATA = os.environ.get("USE_MOCK_DATA", "False").lower() == "true"
 
@@ -82,12 +79,12 @@ class Config:
     PROMETHEUS_GATEWAY_URL = os.environ.get("PROMETHEUS_GATEWAY_URL", "http://localhost:9091")
     PROMETHEUS_JOB_NAME = os.environ.get("PROMETHEUS_JOB_NAME", "glpi_dashboard")
     STRUCTURED_LOGGING = os.environ.get("STRUCTURED_LOGGING", "True").lower() == "true"
-    
+
     @property
     def LOG_FILE_PATH(self) -> str:
         """Log file path with directory validation"""
         log_path = os.environ.get("LOG_FILE_PATH", "logs/app.log")
-        
+
         # Ensure log directory exists
         log_dir = os.path.dirname(log_path)
         if log_dir and not os.path.exists(log_dir):
@@ -95,9 +92,9 @@ class Config:
                 os.makedirs(log_dir, mode=0o755, exist_ok=True)
             except OSError as e:
                 raise ConfigValidationError(f"Cannot create log directory '{log_dir}': {e}")
-        
+
         return log_path
-    
+
     LOG_MAX_BYTES = int(os.environ.get("LOG_MAX_BYTES", "10485760"))  # 10MB
     LOG_BACKUP_COUNT = int(os.environ.get("LOG_BACKUP_COUNT", "5"))
 
@@ -130,21 +127,18 @@ class Config:
             # Secure default: no wildcards in production
             if not self.DEBUG:
                 raise ConfigValidationError(
-                    "CORS_ORIGINS must be explicitly set in production. "
-                    "Use comma-separated list of allowed origins."
+                    "CORS_ORIGINS must be explicitly set in production. " "Use comma-separated list of allowed origins."
                 )
             # Development default - still restricted
             return ["http://localhost:3000", "http://localhost:5000", "http://127.0.0.1:3000", "http://127.0.0.1:5000"]
-        
+
         # Parse and validate origins
         origin_list = [origin.strip() for origin in origins.split(",") if origin.strip()]
-        
+
         # Security validation: no wildcards in production
         if not self.DEBUG and "*" in origin_list:
-            raise ConfigValidationError(
-                "Wildcard CORS origins (*) are not allowed in production for security reasons"
-            )
-            
+            raise ConfigValidationError("Wildcard CORS origins (*) are not allowed in production for security reasons")
+
         return origin_list
 
     # Redis Cache
@@ -195,9 +189,10 @@ class Config:
             # Em modo debug, apenas avisa sobre configurações faltantes
             if not self.GLPI_USER_TOKEN or not self.GLPI_APP_TOKEN:
                 import warnings
+
                 warnings.warn("GLPI credentials not configured. Some features may not work properly.")
             return
-        
+
         required_configs = {
             "GLPI_URL": self.GLPI_URL,
             "GLPI_USER_TOKEN": self.GLPI_USER_TOKEN,
@@ -226,16 +221,19 @@ class Config:
             # Validate HTTPS is enforced in production URLs
             if self.BACKEND_API_URL.startswith("http://") and not self.BACKEND_API_URL.startswith("http://localhost"):
                 import warnings
+
                 warnings.warn(f"BACKEND_API_URL should use HTTPS in production: {self.BACKEND_API_URL}")
-            
+
             # Validate Redis security in production
             if self.REDIS_URL.startswith("redis://") and not self.REDIS_URL.startswith("redis://localhost"):
                 import warnings
+
                 warnings.warn("Consider using Redis with TLS (rediss://) in production")
-                
+
             # Ensure production logging is properly configured
             if self.LOG_LEVEL == "DEBUG":
                 import warnings
+
                 warnings.warn("DEBUG logging level may expose sensitive information in production")
 
     @classmethod
@@ -279,6 +277,7 @@ class Config:
         # Usar o redator de dados sensíveis para criar resumo seguro
         try:
             from utils.structured_logging import SensitiveDataRedactor
+
             return SensitiveDataRedactor.create_safe_config_summary(self)
         except ImportError:
             # Fallback para resumo básico sem dados sensíveis
@@ -295,9 +294,9 @@ class Config:
                 "credentials_configured": {
                     "glpi_user_token": bool(self.GLPI_USER_TOKEN),
                     "glpi_app_token": bool(self.GLPI_APP_TOKEN),
-                    "secret_key": bool(getattr(self, 'SECRET_KEY', None)),
-                    "api_key": bool(self.API_KEY)
-                }
+                    "secret_key": bool(getattr(self, "SECRET_KEY", None)),
+                    "api_key": bool(self.API_KEY),
+                },
             }
 
 
@@ -313,7 +312,7 @@ class ProductionConfig(Config):
     """Configuração para ambiente de produção com segurança aprimorada"""
 
     DEBUG = False
-    
+
     # Security: Require explicit CORS configuration in production
     @property
     def CORS_ORIGINS(self) -> list:
@@ -324,29 +323,30 @@ class ProductionConfig(Config):
                 "CORS_ORIGINS environment variable is required in production. "
                 "Set to comma-separated list of allowed origins (e.g., 'https://app.example.com,https://dashboard.example.com')"
             )
-        
+
         origin_list = [origin.strip() for origin in origins.split(",") if origin.strip()]
-        
+
         # Security validation: no wildcards or insecure protocols in production
         for origin in origin_list:
             if "*" in origin:
                 raise ConfigValidationError(f"Wildcard CORS origin not allowed in production: {origin}")
             if origin.startswith("http://") and not origin.startswith("http://localhost"):
                 import warnings
+
                 warnings.warn(f"HTTP (non-HTTPS) CORS origin in production is insecure: {origin}")
-        
+
         return origin_list
-    
+
     # Production security settings
-    @property  
+    @property
     def HOST(self) -> str:
         """Production host binding - default to all interfaces"""
         return os.environ.get("HOST", "0.0.0.0")
-    
+
     # Security headers configuration
     SECURITY_HEADERS = {
         "STRICT_TRANSPORT_SECURITY": "max-age=31536000; includeSubDomains; preload",
-        "X_CONTENT_TYPE_OPTIONS": "nosniff", 
+        "X_CONTENT_TYPE_OPTIONS": "nosniff",
         "X_FRAME_OPTIONS": "DENY",
         "X_XSS_PROTECTION": "1; mode=block",
         "REFERRER_POLICY": "strict-origin-when-cross-origin",

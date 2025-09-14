@@ -270,7 +270,7 @@ class GeneralMetricsQuery(BaseMetricsQuery):
                 novos=level_info.get("new", 0),
                 pendentes=level_info.get("pending", 0),
                 progresso=level_info.get("in_progress", 0),
-                resolvidos=level_info.get("resolved", 0)
+                resolvidos=level_info.get("resolved", 0),
             )
 
             # Atribuir às métricas por nível
@@ -373,7 +373,7 @@ class TechnicianRankingQuery(BaseMetricsQuery):
                 name=tech_data.get("name", "Desconhecido"),
                 ticket_count=total_tickets,
                 level=tech_level if tech_level in [l.value for l in TechnicianLevel] else TechnicianLevel.UNKNOWN.value,
-                performance_score=efficiency_score
+                performance_score=efficiency_score,
             )
 
             ranking.append(technician_dto)
@@ -420,7 +420,7 @@ class NewTicketsQuery(BaseMetricsQuery):
                     technician_id=None,
                     category_id=None,
                     priority=None,
-                    offset=0
+                    offset=0,
                 )
 
             # Obter tickets novos
@@ -556,12 +556,13 @@ class DashboardMetricsQuery(BaseMetricsQuery):
             # Obter tickets recentes
             recent_tickets = await self._get_recent_tickets(filters, context)
 
-            # Return the dashboard metrics directly 
+            # Return the dashboard metrics directly
             # Combine the data from both queries into a DashboardMetrics object
             if isinstance(general_response.data, DashboardMetrics):
                 dashboard_dto = general_response.data
             else:
                 from ..dto.metrics_dto import create_empty_dashboard_metrics
+
                 dashboard_dto = create_empty_dashboard_metrics()
 
             self._log_query_end(query_name, context, success=True)
@@ -596,16 +597,14 @@ class DashboardMetricsQuery(BaseMetricsQuery):
                 category_id=None,
                 priority=None,
                 limit=20,
-                offset=0
+                offset=0,
             )
 
             # Se já há filtros, combinar com os existentes
             if filters:
-                if (filters.start_date and recent_filter.start_date and 
-                    filters.start_date > recent_filter.start_date):
+                if filters.start_date and recent_filter.start_date and filters.start_date > recent_filter.start_date:
                     recent_filter.start_date = filters.start_date
-                if (filters.end_date and recent_filter.end_date and 
-                    filters.end_date < recent_filter.end_date):
+                if filters.end_date and recent_filter.end_date and filters.end_date < recent_filter.end_date:
                     recent_filter.end_date = filters.end_date
 
             ticket_data = await self.data_source.get_ticket_metrics(filters=recent_filter, context=context)

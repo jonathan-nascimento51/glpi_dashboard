@@ -20,7 +20,7 @@ import asyncio
 
 # Importar DTOs centrais para evitar duplicação
 from ....application.dto.metrics_dto import MetricsFilterDTO, TechnicianLevel
-from ....application.queries.metrics_query import QueryContext
+from ....application.queries.metrics_query import QueryContext, MetricsDataSource
 
 logger = logging.getLogger(__name__)
 
@@ -106,7 +106,7 @@ class GLPISessionManager:
         try:
             async with httpx.AsyncClient(timeout=self.config.timeout) as client:
                 response = await client.get(url, headers=headers)
-                
+
                 if response.status_code == 200:
                     data = response.json()
                     self.session_token = data.get("session_token")
@@ -717,15 +717,13 @@ class GLPIMetricsAdapter:
         try:
             # Descobrir field IDs primeiro para queries corretas
             field_ids = await self.discover_field_ids(context)
-            
+
             # Construir parâmetros para search API
             params = self._build_search_params_for_new_tickets(filters, field_ids)
-            
+
             # Fazer requisição para tickets via search endpoint
             tickets_response = await self.api_client.make_request(
-                endpoint="search/Ticket", 
-                params=params, 
-                correlation_id=correlation_id
+                endpoint="search/Ticket", params=params, correlation_id=correlation_id
             )
 
             # Processar resposta no formato search API
@@ -746,9 +744,7 @@ class GLPIMetricsAdapter:
             # Verificar status da sessão - usar endpoint simples que sempre funciona
             start_time = time.time()
             session_response = await self.api_client.make_request(
-                endpoint="getMyProfiles", 
-                params={}, 
-                correlation_id=correlation_id
+                endpoint="getMyProfiles", params={}, correlation_id=correlation_id
             )
             response_time = (time.time() - start_time) * 1000
 
@@ -775,9 +771,7 @@ class GLPIMetricsAdapter:
         try:
             # Obter opções de busca para tickets
             search_options = await self.api_client.make_request(
-                endpoint="listSearchOptions/Ticket", 
-                params={}, 
-                correlation_id=correlation_id
+                endpoint="listSearchOptions/Ticket", params={}, correlation_id=correlation_id
             )
 
             # Processar e mapear campos
@@ -803,12 +797,14 @@ class GLPIMetricsAdapter:
                 "description": 21,
             }
 
-    def _build_search_params_for_new_tickets(self, filters: Optional[MetricsFilterDTO], field_ids: Dict[str, int]) -> Dict[str, Any]:
+    def _build_search_params_for_new_tickets(
+        self, filters: Optional[MetricsFilterDTO], field_ids: Dict[str, int]
+    ) -> Dict[str, Any]:
         """Constrói parâmetros para search API de tickets novos."""
         params = {
             "range": "0-50",  # Limite para tickets novos
         }
-        
+
         # Forçar colunas necessárias
         params["forcedisplay[0]"] = field_ids.get("title", 1)  # Name/title
         params["forcedisplay[1]"] = field_ids.get("status_id", 12)  # Status
@@ -817,9 +813,9 @@ class GLPIMetricsAdapter:
         params["forcedisplay[4]"] = field_ids.get("priority_id", 3)  # Priority
         params["forcedisplay[5]"] = field_ids.get("technician_id", 4)  # Technician
         params["forcedisplay[6]"] = field_ids.get("description", 21)  # Content
-        
+
         criteria_idx = 0
-        
+
         # Filtro de status - se não especificado, usar "novo"
         if not filters or not filters.status:
             status_value = "1"  # Status novo
@@ -827,57 +823,59 @@ class GLPIMetricsAdapter:
             # Mapear status string para valor
             status_map = {
                 "novo": "1",
-                "pendente": "4", 
+                "pendente": "4",
                 "progresso": "2",
                 "resolvido": "5",
                 "fechado": "6",
                 "cancelado": "3",
             }
             status_value = status_map.get(filters.status.lower(), "1")
-        
+
         params[f"criteria[{criteria_idx}][field]"] = str(field_ids.get("status_id", 12))
         params[f"criteria[{criteria_idx}][searchtype]"] = "equals"
         params[f"criteria[{criteria_idx}][value]"] = status_value
         criteria_idx += 1
-        
+
         # Filtros de data
         if filters:
             if filters.start_date:
                 params[f"criteria[{criteria_idx}][field]"] = str(field_ids.get("created_date", 15))
                 params[f"criteria[{criteria_idx}][searchtype]"] = "morethan"
-                params[f"criteria[{criteria_idx}][value]"] = filters.start_date.strftime('%Y-%m-%d %H:%M:%S')
+                params[f"criteria[{criteria_idx}][value]"] = filters.start_date.strftime("%Y-%m-%d %H:%M:%S")
                 criteria_idx += 1
-                
+
             if filters.end_date:
                 params[f"criteria[{criteria_idx}][field]"] = str(field_ids.get("created_date", 15))
                 params[f"criteria[{criteria_idx}][searchtype]"] = "lessthan"
-                params[f"criteria[{criteria_idx}][value]"] = filters.end_date.strftime('%Y-%m-%d %H:%M:%S')
+                params[f"criteria[{criteria_idx}][value]"] = filters.end_date.strftime("%Y-%m-%d %H:%M:%S")
                 criteria_idx += 1
-                
+
             if filters.limit:
                 params["range"] = f"0-{min(filters.limit, 100)}"
-        
+
         # Ordenar por data de criação (mais recentes primeiro)
         params["sort"] = str(field_ids.get("created_date", 15))
         params["order"] = "DESC"
-        
+
         return params
 
-    def _process_search_tickets_response(self, search_response: Dict[str, Any], correlation_id: Optional[str]) -> List[Dict[str, Any]]:
+    def _process_search_tickets_response(
+        self, search_response: Dict[str, Any], correlation_id: Optional[str]
+    ) -> List[Dict[str, Any]]:
         """Processa resposta da search API do GLPI."""
         processed_tickets = []
-        
+
         try:
             # Search API retorna: {columns: [field_ids], data: [[row_values]]}
             columns = search_response.get("columns", [])
             data_rows = search_response.get("data", [])
-            
+
             if not columns or not data_rows:
                 return []
-            
+
             # Criar mapeamento de colunas para índices
             col_map = {str(col): idx for idx, col in enumerate(columns)}
-            
+
             for row in data_rows:
                 try:
                     processed_ticket = {
@@ -887,10 +885,12 @@ class GLPIMetricsAdapter:
                         "status": self._map_ticket_status(int(self._get_col_value(row, col_map, "12", 1))),  # Status
                         "priority": int(self._get_col_value(row, col_map, "3", 3)),  # Priority
                         "technician_id": self._get_col_value(row, col_map, "4", None),  # Technician
-                        "created_at": self._parse_glpi_datetime(self._get_col_value(row, col_map, "15", None)),  # Date creation
+                        "created_at": self._parse_glpi_datetime(
+                            self._get_col_value(row, col_map, "15", None)
+                        ),  # Date creation
                         "updated_at": self._parse_glpi_datetime(self._get_col_value(row, col_map, "19", None)),  # Date mod
                         "category": None,  # Not included in forcedisplay
-                        "requester": None,  # Not included in forcedisplay  
+                        "requester": None,  # Not included in forcedisplay
                         "location": None,  # Not included in forcedisplay
                     }
                     processed_tickets.append(processed_ticket)
@@ -901,13 +901,13 @@ class GLPIMetricsAdapter:
                         extra={"correlation_id": correlation_id},
                     )
                     continue
-                    
+
         except Exception as e:
             self.logger.error(
                 f"Erro ao processar resposta de search: {str(e)}",
                 extra={"correlation_id": correlation_id},
             )
-            
+
         return processed_tickets
 
     def _get_col_value(self, row: List[Any], col_map: Dict[str, int], field_id: str, default: Any) -> Any:
@@ -948,10 +948,7 @@ class GLPIMetricsAdapter:
         return processed_tickets
 
     def _process_system_status(
-        self, 
-        session_data: Dict[str, Any], 
-        response_time: float,
-        correlation_id: Optional[str]
+        self, session_data: Dict[str, Any], response_time: float, correlation_id: Optional[str]
     ) -> Dict[str, Any]:
         """Processa dados de status do sistema."""
         try:
@@ -998,7 +995,7 @@ class GLPIMetricsAdapter:
             for field_id, field_info in options.items():
                 if isinstance(field_info, dict):
                     field_name = field_info.get("name", "").lower()
-                    
+
                     # Mapear campos conhecidos
                     if "group" in field_name or "assign" in field_name:
                         field_mapping["group_id"] = int(field_id)
@@ -1073,44 +1070,46 @@ class GLPIMetricsAdapter:
 def create_glpi_metrics_adapter(*args, **kwargs) -> GLPIMetricsAdapter:
     """
     Cria instância do GLPIMetricsAdapter.
-    
+
     Tolerante a diferentes estilos de chamada:
     - create_glpi_metrics_adapter(config)  # GLPIConfig object
     - create_glpi_metrics_adapter(base_url, app_token, user_token, **kwargs)
     - create_glpi_metrics_adapter(base_url="...", app_token="...", user_token="...", **kwargs)
     """
     logger = logging.getLogger(__name__)
-    
+
     # Se primeiro argumento é GLPIConfig, use-o diretamente
     if args and isinstance(args[0], GLPIConfig):
         if len(args) > 1 or kwargs:
             logger.warning("GLPIConfig provided but additional args/kwargs ignored: %s %s", args[1:], kwargs)
         return GLPIMetricsAdapter(args[0])
-    
+
     # Resolve parâmetros de diferentes fontes
-    base_url = args[0] if len(args) > 0 else kwargs.pop('base_url', None)
-    app_token = args[1] if len(args) > 1 else kwargs.pop('app_token', None)
-    user_token = args[2] if len(args) > 2 else kwargs.pop('user_token', None)
-    
+    base_url = args[0] if len(args) > 0 else kwargs.pop("base_url", None)
+    app_token = args[1] if len(args) > 1 else kwargs.pop("app_token", None)
+    user_token = args[2] if len(args) > 2 else kwargs.pop("user_token", None)
+
     # Validar parâmetros obrigatórios
     if not all([base_url, app_token, user_token]):
-        raise ValueError(f"Missing required parameters: base_url={base_url}, app_token={bool(app_token)}, user_token={bool(user_token)}")
-    
+        raise ValueError(
+            f"Missing required parameters: base_url={base_url}, app_token={bool(app_token)}, user_token={bool(user_token)}"
+        )
+
     # Log warning se parâmetros duplicados foram detectados
     duplicate_params = []
-    if 'base_url' in kwargs:
-        duplicate_params.append('base_url')
-        kwargs.pop('base_url')
-    if 'app_token' in kwargs:
-        duplicate_params.append('app_token')
-        kwargs.pop('app_token')
-    if 'user_token' in kwargs:
-        duplicate_params.append('user_token')
-        kwargs.pop('user_token')
-    
+    if "base_url" in kwargs:
+        duplicate_params.append("base_url")
+        kwargs.pop("base_url")
+    if "app_token" in kwargs:
+        duplicate_params.append("app_token")
+        kwargs.pop("app_token")
+    if "user_token" in kwargs:
+        duplicate_params.append("user_token")
+        kwargs.pop("user_token")
+
     if duplicate_params:
         logger.warning("Duplicate parameters resolved: %s", duplicate_params)
-    
+
     config = GLPIConfig(base_url=base_url, app_token=app_token, user_token=user_token, **kwargs)
     return GLPIMetricsAdapter(config)
 

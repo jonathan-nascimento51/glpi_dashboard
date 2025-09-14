@@ -25,6 +25,7 @@ metrics_facade = MetricsFacade()  # Clean Architecture metrics service
 # Obtém logger configurado
 logger = logging.getLogger("api")
 
+
 # Parameter validation helper functions
 def safe_string_param(value: Union[str, Any, None], default: Optional[str] = None) -> Optional[str]:
     """Safely convert parameter to string or return default."""
@@ -34,6 +35,7 @@ def safe_string_param(value: Union[str, Any, None], default: Optional[str] = Non
         return str(value) if value is not None else default
     except (ValueError, TypeError):
         return default
+
 
 def safe_int_param(value: Union[int, str, Any, None], default: Optional[int] = None) -> Optional[int]:
     """Safely convert parameter to integer or return default."""
@@ -46,6 +48,7 @@ def safe_int_param(value: Union[int, str, Any, None], default: Optional[int] = N
     except (ValueError, TypeError):
         return default
 
+
 def validate_optional_string_for_service(value: Union[str, Any, None]) -> Optional[str]:
     """
     Validate and convert optional parameter for service functions that expect str or None.
@@ -57,6 +60,7 @@ def validate_optional_string_for_service(value: Union[str, Any, None]) -> Option
         return str(value)
     except (ValueError, TypeError):
         return None
+
 
 def safe_string_for_service_call(value: Union[str, Any, None]) -> str:
     """
@@ -71,6 +75,7 @@ def safe_string_for_service_call(value: Union[str, Any, None]) -> str:
     except (ValueError, TypeError):
         return ""
 
+
 def safe_date_string(date_value: Any) -> Optional[str]:
     """
     Safely convert date value to ISO string for service functions.
@@ -83,13 +88,14 @@ def safe_date_string(date_value: Any) -> Optional[str]:
         if isinstance(date_value, str):
             return date_value if date_value.strip() else None
         # If it has isoformat method (datetime object), use it
-        if hasattr(date_value, 'isoformat'):
+        if hasattr(date_value, "isoformat"):
             return date_value.isoformat()
         # Try to convert to string
         str_val = str(date_value)
         return str_val if str_val.strip() else None
     except (ValueError, TypeError, AttributeError):
         return None
+
 
 def safe_filter_string(filter_value: Any) -> Optional[str]:
     """
@@ -104,6 +110,7 @@ def safe_filter_string(filter_value: Any) -> Optional[str]:
     except (ValueError, TypeError):
         return None
 
+
 def safe_entity_id(entity_value: Any) -> Optional[int]:
     """
     Safely convert entity_id parameter to int for service functions.
@@ -116,6 +123,7 @@ def safe_entity_id(entity_value: Any) -> Optional[int]:
     except (ValueError, TypeError):
         return None
 
+
 def validate_required_string_for_service(value: Union[str, Any, None], param_name: str) -> str:
     """
     Validate and convert required parameter for service functions that expect str.
@@ -127,6 +135,7 @@ def validate_required_string_for_service(value: Union[str, Any, None], param_nam
         return str(value)
     except (ValueError, TypeError):
         raise ValueError(f"Parameter '{param_name}' must be a valid string")
+
 
 # Estrutura de dados padrão para métricas em caso de falha ou ausência de dados
 DEFAULT_METRICS = {
@@ -147,64 +156,72 @@ DEFAULT_METRICS = {
 
 # All caching now handled by unified_cache from new architecture
 
+
 @api_bp.route("/")
 def api_root():
     """Root API endpoint for health checks"""
-    return jsonify({
-        "message": "GLPI Dashboard API",
-        "status": "healthy",
-        "version": "1.0.0",
-        "endpoints": [
-            "/status", "/health", "/metrics", "/technicians", 
-            "/tickets/new", "/alerts", "/docs"
-        ]
-    })
+    return jsonify(
+        {
+            "message": "GLPI Dashboard API",
+            "status": "healthy",
+            "version": "1.0.0",
+            "endpoints": ["/status", "/health", "/metrics", "/technicians", "/tickets/new", "/alerts", "/docs"],
+        }
+    )
+
 
 @api_bp.route("/metrics/v2")
 @monitor_api_endpoint("get_metrics_v2")
-@monitor_performance  
+@monitor_performance
 def get_metrics_v2():
     """New architecture metrics endpoint for testing and validation."""
     try:
         correlation_id = f"metrics_v2_{int(time.time())}"
-        
+
         # Extract parameters
-        start_date = request.args.get('start_date')
-        end_date = request.args.get('end_date')
+        start_date = request.args.get("start_date")
+        end_date = request.args.get("end_date")
         
+        # Validate date parameters if provided
+        if start_date or end_date:
+            from datetime import datetime
+            try:
+                if start_date:
+                    datetime.fromisoformat(start_date.replace('Z', '+00:00'))
+                if end_date:
+                    datetime.fromisoformat(end_date.replace('Z', '+00:00'))
+            except (ValueError, AttributeError):
+                return jsonify({
+                    "success": False, 
+                    "error": "Invalid date format. Use ISO format (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS)",
+                    "_architecture": "new_v2"
+                }), 400
+
         # Use new architecture
         if start_date or end_date:
             metrics_data = metrics_facade.get_dashboard_metrics_with_date_filter(
-                start_date=start_date,
-                end_date=end_date,
-                correlation_id=correlation_id
+                start_date=start_date, end_date=end_date, correlation_id=correlation_id
             )
         else:
-            metrics_data = metrics_facade.get_dashboard_metrics(
-                correlation_id=correlation_id
-            )
-        
+            metrics_data = metrics_facade.get_dashboard_metrics(correlation_id=correlation_id)
+
         # Convert Pydantic model to dict and add architecture info for debugging
-        if hasattr(metrics_data, 'model_dump'):
+        if hasattr(metrics_data, "model_dump"):
             metrics_dict = metrics_data.model_dump()
-        elif hasattr(metrics_data, 'dict'):
+        elif hasattr(metrics_data, "dict"):
             metrics_dict = metrics_data.dict()
         else:
             metrics_dict = metrics_data  # Already a dict
-        
+
         # Add debugging info
         metrics_dict["_architecture"] = "new_v2"
         metrics_dict["_facade"] = "MetricsFacade"
-        
+
         return jsonify(metrics_dict)
-        
+
     except Exception as e:
         logger.error(f"Error in new metrics endpoint: {e}")
-        return jsonify({
-            "success": False,
-            "error": str(e),
-            "_architecture": "new_v2"
-        }), 500
+        return jsonify({"success": False, "error": str(e), "_architecture": "new_v2"}), 500
 
 
 @api_bp.route("/metrics")
@@ -223,14 +240,14 @@ def get_metrics(validated_start_date=None, validated_end_date=None, validated_fi
     observability_logger = ObservabilityLogger("metrics_api")
 
     start_time = time.time()
-    
+
     # Verificar cache usando unified_cache
     cache_key = {
         "start_date": validated_start_date.isoformat() if validated_start_date else None,
         "end_date": validated_end_date.isoformat() if validated_end_date else None,
-        "filters": validated_filters or {}
+        "filters": validated_filters or {},
     }
-    
+
     cached_data = unified_cache.get("api_metrics", cache_key)
     if cached_data:
         # Handle cached data safely
@@ -240,19 +257,15 @@ def get_metrics(validated_start_date=None, validated_end_date=None, validated_fi
             cached_response["correlation_id"] = correlation_id
         else:
             # If cached data is a Pydantic model, convert to dict
-            if hasattr(cached_data, 'model_dump'):
+            if hasattr(cached_data, "model_dump"):
                 cached_response = cached_data.model_dump()
-            elif hasattr(cached_data, 'dict'):
+            elif hasattr(cached_data, "dict"):
                 cached_response = cached_data.dict()
             else:
                 cached_response = {"data": cached_data}
-            
-            cached_response.update({
-                "cached": True,
-                "correlation_id": correlation_id,
-                "success": True
-            })
-        
+
+            cached_response.update({"cached": True, "correlation_id": correlation_id, "success": True})
+
         response_time = (time.time() - start_time) * 1000
         logger.info(f"[{correlation_id}] Métricas retornadas do cache em {response_time:.2f}ms")
         return jsonify(cached_response)
@@ -379,7 +392,7 @@ def get_metrics(validated_start_date=None, validated_end_date=None, validated_fi
 
         # Validar dados com Pydantic (opcional, para garantir estrutura)
         try:
-            if hasattr(metrics_data, 'model_dump') or hasattr(metrics_data, 'dict'):
+            if hasattr(metrics_data, "model_dump") or hasattr(metrics_data, "dict"):
                 # Already a Pydantic model, validation passed
                 pass
             elif isinstance(metrics_data, dict):
@@ -391,22 +404,22 @@ def get_metrics(validated_start_date=None, validated_end_date=None, validated_fi
             logger.warning(f"[{correlation_id}] Dados não seguem o schema esperado: {ve}")
 
         # Convert Pydantic model to dict for proper serialization
-        if hasattr(metrics_data, 'model_dump'):
+        if hasattr(metrics_data, "model_dump"):
             metrics_dict = metrics_data.model_dump()
-        elif hasattr(metrics_data, 'dict'):
+        elif hasattr(metrics_data, "dict"):
             metrics_dict = metrics_data.dict()
         else:
             metrics_dict = metrics_data if isinstance(metrics_data, dict) else {}
-        
+
         # Add metadata to response
         response_data = {
             "success": True,
             "data": metrics_dict,
             "correlation_id": correlation_id,
             "cached": False,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
-        
+
         # Salvar no cache usando unified_cache
         unified_cache.set("api_metrics", cache_key, response_data, ttl_seconds=180)
 
@@ -521,7 +534,7 @@ def get_filtered_metrics(validated_start_date=None, validated_end_date=None, val
 
         # Validar dados com Pydantic (opcional, para garantir estrutura)
         try:
-            if hasattr(metrics_data, 'model_dump') or hasattr(metrics_data, 'dict'):
+            if hasattr(metrics_data, "model_dump") or hasattr(metrics_data, "dict"):
                 # Already a Pydantic model, validation passed
                 pass
             elif isinstance(metrics_data, dict):
@@ -533,20 +546,20 @@ def get_filtered_metrics(validated_start_date=None, validated_end_date=None, val
             logger.warning(f"[{correlation_id}] Dados não seguem o schema esperado: {ve}")
 
         # Convert Pydantic model to dict for proper serialization
-        if hasattr(metrics_data, 'model_dump'):
+        if hasattr(metrics_data, "model_dump"):
             metrics_dict = metrics_data.model_dump()
-        elif hasattr(metrics_data, 'dict'):
+        elif hasattr(metrics_data, "dict"):
             metrics_dict = metrics_data.dict()
         else:
             metrics_dict = metrics_data if isinstance(metrics_data, dict) else {}
-        
+
         # Add metadata to response
         response_data = {
             "success": True,
             "data": metrics_dict,
             "correlation_id": correlation_id,
             "cached": False,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
 
         return jsonify(response_data)
@@ -610,64 +623,60 @@ def get_metrics_simple():
 def get_technicians():
     """Endpoint para obter lista de técnicos com filtros"""
     from utils.observability import ObservabilityLogger
-    
+
     start_time = time.time()
     obs_logger = ObservabilityLogger("get_technicians")
     correlation_id = obs_logger.generate_correlation_id()
-    
+
     try:
         # Obter parâmetros de filtro
         entity_id = request.args.get("entity_id")
         limit = request.args.get("limit", 100)
-        
+
         # Validar limite
         try:
             limit = int(limit)
             limit = max(1, min(limit, 500))
         except (ValueError, TypeError):
             limit = 100
-        
+
         # Validar entity_id
         if entity_id:
             try:
                 entity_id = int(entity_id)
             except (ValueError, TypeError):
                 entity_id = None
-        
+
         # Buscar técnicos usando método correto
         # Service function accepts None values, cast for type safety
-        technician_ids, technician_names = metrics_facade.get_all_technician_ids_and_names(entity_id=cast(int, safe_entity_id(entity_id)))
-        
+        technician_ids, technician_names = metrics_facade.get_all_technician_ids_and_names(
+            entity_id=cast(int, safe_entity_id(entity_id))
+        )
+
         # Converter para formato de lista de dicionários
         technicians = []
         for i, tech_id in enumerate(technician_ids):
             # technician_names is List[str], use positional access
             tech_name = technician_names[i] if i < len(technician_names) else f"Técnico {tech_id}"
-            technicians.append({
-                "id": tech_id,
-                "name": tech_name
-            })
-        
+            technicians.append({"id": tech_id, "name": tech_name})
+
         # Limitar resultados
         if len(technicians) > limit:
             technicians = technicians[:limit]
-        
+
         # Formatar resposta
         response_data = {
             "success": True,
             "technicians": technicians,
             "total_count": len(technicians),
-            "filters_applied": {
-                "entity_id": entity_id,
-                "limit": limit
-            },
+            "filters_applied": {"entity_id": entity_id, "limit": limit},
             "response_time_ms": round((time.time() - start_time) * 1000, 2),
             "correlation_id": correlation_id,
-            "cached": False
+            "cached": False,
         }
-        
+
         return jsonify(response_data)
-        
+
     except Exception as e:
         logger.error(f"Erro ao buscar técnicos: {e}", exc_info=True)
         error_response = ResponseFormatter.format_error_response(f"Erro interno do servidor: {str(e)}", [str(e)])
@@ -714,9 +723,9 @@ def get_technician_ranking(validated_start_date=None, validated_end_date=None, v
             "end_date": end_date,
             "filters": filters,
             "limit": limit,
-            "entity_id": entity_id
+            "entity_id": entity_id,
         }
-        
+
         cached_data = unified_cache.get("technician_ranking", cache_key)
         if cached_data:
             print("[CACHE HIT] Retornando dados do cache para ranking de técnicos")
@@ -727,18 +736,14 @@ def get_technician_ranking(validated_start_date=None, validated_end_date=None, v
                 cached_response["correlation_id"] = correlation_id
             else:
                 # If cached data is a Pydantic model, convert to dict
-                if hasattr(cached_data, 'model_dump'):
+                if hasattr(cached_data, "model_dump"):
                     cached_response = cached_data.model_dump()
-                elif hasattr(cached_data, 'dict'):
+                elif hasattr(cached_data, "dict"):
                     cached_response = cached_data.dict()
                 else:
                     cached_response = {"data": cached_data}
-                
-                cached_response.update({
-                    "cached": True,
-                    "correlation_id": correlation_id,
-                    "success": True
-                })
+
+                cached_response.update({"cached": True, "correlation_id": correlation_id, "success": True})
             return jsonify(cached_response)
 
         # Log início do pipeline
@@ -781,7 +786,9 @@ def get_technician_ranking(validated_start_date=None, validated_end_date=None, v
         obs_logger.log_pipeline_step(correlation_id, "glpi_parameters", glpi_params)
 
         # Buscar ranking com ou sem filtros
-        print(f"[ROUTES DEBUG] Chamando get_technician_ranking_with_filters com start_date={start_date}, end_date={end_date}, entity_id={entity_id}")
+        print(
+            f"[ROUTES DEBUG] Chamando get_technician_ranking_with_filters com start_date={start_date}, end_date={end_date}, entity_id={entity_id}"
+        )
         if any([start_date, end_date, level, entity_id]):
             # Service function accepts None values, cast for type safety
             ranking_data = metrics_facade.get_technician_ranking_with_filters(
@@ -835,17 +842,26 @@ def get_technician_ranking(validated_start_date=None, validated_end_date=None, v
             )
 
         # Log contagem após normalização/agregação
+        # Handle both list (mock data) and dict (real API response) formats
+        if isinstance(ranking_data, list):
+            technician_data = ranking_data
+            final_count = len(ranking_data)
+            sample_data = ranking_data[:3] if len(ranking_data) > 0 else []
+        else:
+            technician_data = ranking_data.get("data", [])
+            final_count = len(technician_data)
+            sample_data = technician_data[:3] if len(technician_data) > 0 else []
+
         obs_logger.log_pipeline_step(
             correlation_id,
             "data_normalization",
             {
-                "final_count": len(ranking_data.get("data", [])),
-                "sample_data": ranking_data.get("data", [])[:3] if len(ranking_data.get("data", [])) > 0 else [],
+                "final_count": final_count,
+                "sample_data": sample_data,
             },
         )
 
         # Verificações de anomalias
-        technician_data = ranking_data.get("data", [])
         obs_logger.check_technician_cardinality(correlation_id, len(technician_data))
         obs_logger.check_technician_names(correlation_id, technician_data)
         obs_logger.check_zero_totals(
@@ -879,10 +895,21 @@ def get_technician_ranking(validated_start_date=None, validated_end_date=None, v
             )
             logger.warning(f"[{correlation_id}] Resposta lenta: {response_time:.2f}ms")
 
+        # Converter objetos Pydantic para dicionários se necessário
+        serializable_data = []
+        for item in ranking_data:
+            if hasattr(item, "model_dump"):  # Pydantic model
+                serializable_data.append(item.model_dump())
+            elif isinstance(item, dict):
+                serializable_data.append(item)
+            else:
+                # Fallback para outros tipos
+                serializable_data.append(dict(item) if hasattr(item, "__dict__") else item)
+
         # Preparar dados de resposta
         response_data = {
             "success": True,
-            "data": ranking_data,
+            "data": serializable_data,
             "response_time_ms": round(response_time, 2),
             "correlation_id": correlation_id,
             "cached": False,
@@ -894,10 +921,10 @@ def get_technician_ranking(validated_start_date=None, validated_end_date=None, v
                 "entity_id": entity_id,
             },
         }
-        
+
         # Salvar no cache usando unified_cache
         unified_cache.set("technician_ranking", cache_key, response_data, ttl_seconds=60)
-        
+
         return jsonify(response_data)
 
     except Exception as e:
@@ -990,10 +1017,24 @@ def get_new_tickets(validated_start_date=None, validated_end_date=None, validate
         if response_time > target_p95:
             logger.warning(f"Resposta lenta: {response_time:.2f}ms")
 
+        # Converter objetos NewTicket para dicionários para serialização JSON
+        tickets_data = []
+        if new_tickets:
+            for ticket in new_tickets:
+                if hasattr(ticket, 'model_dump'):
+                    # Pydantic v2
+                    tickets_data.append(ticket.model_dump())
+                elif hasattr(ticket, 'dict'):
+                    # Pydantic v1
+                    tickets_data.append(ticket.dict())
+                else:
+                    # Fallback para dicionário simples
+                    tickets_data.append(dict(ticket))
+
         return jsonify(
             {
                 "success": True,
-                "data": new_tickets,
+                "data": tickets_data,
                 "response_time_ms": round(response_time, 2),
                 "filters_applied": {
                     "limit": limit,
@@ -1125,7 +1166,7 @@ def get_performance_stats():
         cache_info = {
             "cache_type": "Unified Redis Cache",
             "cache_timeout": 300,  # Default TTL do cache unificado
-            "cache_status": "active" if unified_cache else "disabled"
+            "cache_status": "active" if unified_cache else "disabled",
         }
 
         return jsonify(
@@ -1149,6 +1190,7 @@ def get_performance_stats():
 
 # All status caching now handled by unified_cache from new architecture
 
+
 @api_bp.route("/status")
 def get_status():
     """Endpoint para verificar status do sistema - versão otimizada"""
@@ -1156,11 +1198,11 @@ def get_status():
 
     try:
         current_time_unix = time.time()
-        
+
         # Verificar cache usando unified_cache
         response_cache_key = "status_response"
         status_cache_key = "glpi_status"
-        
+
         cached_response = unified_cache.get("api_status", response_cache_key)
         if cached_response:
             # Atualizar apenas o response_time para refletir a performance atual
@@ -1174,14 +1216,15 @@ def get_status():
             # Verificação simplificada do GLPI (sem autenticação completa)
             try:
                 import requests
+
                 glpi_start = time.time()
                 # Normalizar URL para evitar duplicação de /apirest.php
-                glpi_base_url = active_config.GLPI_URL.rstrip('/')
-                if glpi_base_url.endswith('/apirest.php'):
-                    glpi_base_url = glpi_base_url.rsplit('/apirest.php', 1)[0]
+                glpi_base_url = active_config.GLPI_URL.rstrip("/")
+                if glpi_base_url.endswith("/apirest.php"):
+                    glpi_base_url = glpi_base_url.rsplit("/apirest.php", 1)[0]
                 response = requests.get(f"{glpi_base_url}/apirest.php", timeout=1)
                 glpi_response_time = (time.time() - glpi_start) * 1000
-                
+
                 if response.status_code == 200:
                     glpi_info = {
                         "status": "online",
@@ -1194,14 +1237,14 @@ def get_status():
                         "message": f"GLPI respondeu com status {response.status_code}",
                         "response_time": round(glpi_response_time, 2),
                     }
-                    
+
             except Exception as glpi_error:
                 glpi_info = {
                     "status": "offline",
                     "message": f"GLPI inacessível: {str(glpi_error)}",
                     "response_time": 0,
                 }
-                
+
             # Atualizar cache usando unified_cache
             unified_cache.set("api_status", status_cache_key, glpi_info, ttl_seconds=30)
 
@@ -1229,10 +1272,10 @@ def get_status():
             "overall_status": overall_status,
             "response_time_ms": round(response_time, 2),
         }
-        
+
         # Cache da resposta completa usando unified_cache
         unified_cache.set("api_status", response_cache_key, response_data, ttl_seconds=30)
-        
+
         return jsonify(response_data)
 
     except Exception as e:
@@ -1347,10 +1390,10 @@ def glpi_health_check():
 def swagger_ui():
     """Serve Swagger UI for API documentation"""
     import os
-    
+
     # Caminho para o arquivo HTML do Swagger UI
     docs_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "docs", "api")
-    
+
     swagger_html = """
     <!DOCTYPE html>
     <html>
@@ -1396,9 +1439,10 @@ def swagger_ui():
     </body>
     </html>
     """
-    
+
     from flask import Response
-    return Response(swagger_html, mimetype='text/html')
+
+    return Response(swagger_html, mimetype="text/html")
 
 
 @api_bp.route("/openapi.yaml", methods=["GET"])
@@ -1406,18 +1450,13 @@ def openapi_spec():
     """Serve OpenAPI specification file"""
     import os
     from flask import Response
-    
+
     # Caminho para o arquivo openapi.yaml
-    openapi_path = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 
-        "docs", 
-        "api", 
-        "openapi.yaml"
-    )
-    
+    openapi_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "docs", "api", "openapi.yaml")
+
     if os.path.exists(openapi_path):
-        with open(openapi_path, 'r', encoding='utf-8') as f:
+        with open(openapi_path, "r", encoding="utf-8") as f:
             content = f.read()
-        return Response(content, mimetype='application/x-yaml')
+        return Response(content, mimetype="application/x-yaml")
     else:
         return jsonify({"error": "OpenAPI specification not found"}), 404

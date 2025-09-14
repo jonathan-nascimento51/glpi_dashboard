@@ -3,9 +3,9 @@ import hashlib
 import logging
 import time
 from functools import wraps
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
-from flask import g, request
+from flask import request
 
 from config.settings import active_config
 

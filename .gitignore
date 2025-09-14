@@ -12,6 +12,8 @@ pip-delete-this-directory.txt
 .eggs/
 *.egg-info/
 *.egg
+.local/
+.pytest_cache
 
 # Arquivos de ambiente - NUNCA comite o .env
 .env
@@ -101,3 +103,11 @@ frontend/coverage/
 
 # Nginx configs locais
 nginx/
+.clinerules/byterover-rules.md
+.kilocode/rules/byterover-rules.md
+.roo/rules/byterover-rules.md
+.windsurf/rules/byterover-rules.md
+.cursor/rules/byterover-rules.mdc
+.kiro/steering/byterover-rules.md
+.qoder/rules/byterover-rules.md
+.augment/rules/byterover-rules.md

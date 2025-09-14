@@ -13,7 +13,7 @@ from flask import Flask, g, jsonify, request
 from werkzeug.exceptions import HTTPException
 
 from .alerting_system import alert_manager, record_api_response_time
-from .prometheus_metrics import monitor_api_endpoint, prometheus_metrics
+from .prometheus_metrics import prometheus_metrics
 from .structured_logging import StructuredLogger, api_logger, correlation_id_var, log_api_request, SensitiveDataRedactor
 
 
@@ -55,16 +55,16 @@ class ObservabilityMiddleware:
         # Armazenar dados do request no contexto (com redação)
         g.start_time = time.time()
         g.correlation_id = correlation_id
-        
+
         # Filtrar headers sensíveis
         filtered_headers = self._filter_request_headers()
-        
+
         # Filtrar query parameters sensíveis
         filtered_query_params = self._filter_query_parameters()
-        
+
         # Filtrar dados do corpo da requisição se aplicável
         filtered_form_data = self._filter_request_body()
-        
+
         g.request_data = {
             "method": request.method,
             "endpoint": request.endpoint or "unknown",
@@ -75,7 +75,7 @@ class ObservabilityMiddleware:
             "query_params": filtered_query_params,
             "form_data": filtered_form_data,
             "content_type": request.content_type,
-            "content_length": request.content_length
+            "content_length": request.content_length,
         }
 
         # Log início do request (dados já filtrados)
@@ -88,7 +88,7 @@ class ObservabilityMiddleware:
             remote_addr=request.remote_addr,
             headers_count=len(filtered_headers),
             has_query_params=len(filtered_query_params) > 0,
-            has_form_data=len(filtered_form_data) > 0
+            has_form_data=len(filtered_form_data) > 0,
         )
 
     def _after_request(self, response):
@@ -105,7 +105,7 @@ class ObservabilityMiddleware:
 
         # Filtrar headers de resposta sensíveis
         filtered_response_headers = self._filter_response_headers(response.headers)
-        
+
         # Filtrar dados de resposta se necessário
         filtered_response_data = self._filter_response_data(response)
 
@@ -131,7 +131,7 @@ class ObservabilityMiddleware:
             user_agent=request_data.get("user_agent"),
             request_headers_filtered=len(request_data.get("headers", {})),
             response_headers_filtered=len(filtered_response_headers),
-            response_content_type=response.content_type
+            response_content_type=response.content_type,
         )
 
         # Log fim do request com dados filtrados
@@ -146,13 +146,21 @@ class ObservabilityMiddleware:
             request_summary={
                 "headers_count": len(request_data.get("headers", {})),
                 "query_params_count": len(request_data.get("query_params", {})),
-                "has_form_data": len(request_data.get("form_data", {})) > 0
-            }
+                "has_form_data": len(request_data.get("form_data", {})) > 0,
+            },
         )
 
         # Adicionar headers de observabilidade (não sensíveis)
         response.headers["X-Correlation-ID"] = correlation_id
         response.headers["X-Response-Time"] = f"{duration:.3f}s"
+        
+        # Adicionar headers de segurança
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
 
         return response
 
@@ -212,81 +220,83 @@ class ObservabilityMiddleware:
             correlation_id = api_logger.generate_correlation_id()
 
         return correlation_id
-    
+
     def _filter_request_headers(self) -> Dict[str, str]:
         """Filtra headers sensíveis da requisição."""
-        if not hasattr(request, 'headers'):
+        if not hasattr(request, "headers"):
             return {}
-            
+
         headers_dict = dict(request.headers)
         return SensitiveDataRedactor.redact_http_headers(headers_dict)
-    
+
     def _filter_query_parameters(self) -> Dict[str, Any]:
         """Filtra parâmetros de query sensíveis."""
-        if not hasattr(request, 'args'):
+        if not hasattr(request, "args"):
             return {}
-            
+
         query_params = dict(request.args)
         return SensitiveDataRedactor.redact_query_params(query_params)
-    
+
     def _filter_request_body(self) -> Dict[str, Any]:
         """Filtra dados do corpo da requisição sensíveis."""
         filtered_data = {}
-        
+
         try:
             # Verificar form data
-            if hasattr(request, 'form') and request.form:
+            if hasattr(request, "form") and request.form:
                 form_data = dict(request.form)
-                filtered_data['form'] = SensitiveDataRedactor.redact_data(form_data)
-            
+                filtered_data["form"] = SensitiveDataRedactor.redact_data(form_data)
+
             # Verificar JSON data
-            if hasattr(request, 'json') and request.json:
+            if hasattr(request, "json") and request.json:
                 json_data = request.json
-                filtered_data['json'] = SensitiveDataRedactor.redact_data(json_data)
-            
+                filtered_data["json"] = SensitiveDataRedactor.redact_data(json_data)
+
             # Verificar files
-            if hasattr(request, 'files') and request.files:
-                files_info = {name: {'filename': file.filename, 'content_type': file.content_type} 
-                             for name, file in request.files.items()}
-                filtered_data['files'] = files_info
-                
+            if hasattr(request, "files") and request.files:
+                files_info = {
+                    name: {"filename": file.filename, "content_type": file.content_type}
+                    for name, file in request.files.items()
+                }
+                filtered_data["files"] = files_info
+
         except Exception as e:
             # Em caso de erro, registrar sem expor dados sensíveis
-            filtered_data = {'error': f'Failed to parse request body: {type(e).__name__}'}
-            
+            filtered_data = {"error": f"Failed to parse request body: {type(e).__name__}"}
+
         return filtered_data
-    
+
     def _filter_response_headers(self, headers) -> Dict[str, str]:
         """Filtra headers sensíveis da resposta."""
         if not headers:
             return {}
-            
+
         headers_dict = dict(headers)
         return SensitiveDataRedactor.redact_http_headers(headers_dict)
-    
+
     def _filter_response_data(self, response) -> Dict[str, Any]:
         """Filtra dados sensíveis da resposta."""
         filtered_data = {
-            'content_type': response.content_type,
-            'content_length': len(response.get_data()) if response.get_data() else 0,
-            'status_code': response.status_code
+            "content_type": response.content_type,
+            "content_length": len(response.get_data()) if response.get_data() else 0,
+            "status_code": response.status_code,
         }
-        
+
         # Não logar o conteúdo da resposta por padrão para evitar vazamentos
         # Se necessário para debugging, pode ser habilitado com configuração específica
         try:
-            if response.content_type and 'application/json' in response.content_type:
+            if response.content_type and "application/json" in response.content_type:
                 # Para responses JSON pequenas, podemos logar um resumo filtrado
                 data = response.get_json()
                 if data and len(str(data)) < 1000:  # Limit size
-                    filtered_data['json_summary'] = {
-                        'keys': list(data.keys()) if isinstance(data, dict) else 'non_dict',
-                        'size': len(str(data))
+                    filtered_data["json_summary"] = {
+                        "keys": list(data.keys()) if isinstance(data, dict) else "non_dict",
+                        "size": len(str(data)),
                     }
         except Exception:
             # Falhar silenciosamente para não afetar a resposta
             pass
-            
+
         return filtered_data
 
     def _metrics_endpoint(self):

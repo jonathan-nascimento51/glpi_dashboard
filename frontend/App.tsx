@@ -21,13 +21,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import { useMetrics } from "./hooks/useMetrics";
 import { useRanking } from "./hooks/useRanking";
 import { useTickets } from "./hooks/useTickets";
-import { formatNumber, formatDate, getStatusBgColor } from "./utils/formatters";
+import { formatNumber, formatDate } from "./utils/formatters";
 import { useEffect, useState } from "react";
 
 export default function App() {
-  const { data: metrics, loading: metricsLoading, error: metricsError, refetch: refetchMetrics } = useMetrics();
-  const { data: ranking, loading: rankingLoading, error: rankingError } = useRanking();
-  const { data: tickets, loading: ticketsLoading, error: ticketsError } = useTickets();
+  const { data: metrics, loading: metricsLoading, refetch: refetchMetrics } = useMetrics();
+  const { data: ranking, loading: rankingLoading } = useRanking();
+  const { data: tickets, loading: ticketsLoading } = useTickets();
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // Atualizar horário a cada segundo
@@ -126,7 +126,7 @@ export default function App() {
       <div className="p-6 bg-gray-100 h-[calc(100vh-80px)] overflow-hidden">
         <div className="flex gap-6 h-full">
           {/* Left Column - Dashboard Stats */}
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col max-w-[calc(100%-22rem)]">
             {/* Stats Cards */}
             <div className="grid grid-cols-4 gap-4 mb-4">
               <Card className="bg-white border-l-4 border-l-[#5A9BD4] shadow-sm hover:shadow-md transition-shadow">
@@ -210,7 +210,7 @@ export default function App() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="flex justify-between items-center">
                       <span className="flex items-center gap-1 text-xs text-gray-600">
                         <span className="w-2 h-2 bg-[#5A9BD4] rounded-full"></span>
@@ -495,7 +495,7 @@ export default function App() {
           </div>
 
           {/* Right Column - Tickets */}
-          <div className="w-80">
+          <div className="w-[22rem]">
             <Card className="bg-white shadow-sm border-0 h-full flex flex-col">
               <CardHeader className="pb-3 flex-shrink-0">
                 <div className="flex items-center justify-between">

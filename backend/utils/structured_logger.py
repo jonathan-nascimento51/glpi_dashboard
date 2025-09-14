@@ -10,7 +10,7 @@ import time
 import traceback
 from datetime import datetime, timezone
 from functools import wraps
-from typing import Any, Callable, Dict, Optional, Union
+from typing import Any, Callable, Optional
 
 
 class JSONFormatter(logging.Formatter):

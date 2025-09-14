@@ -6,13 +6,13 @@ from .metrics_contracts import (
     TechnicianServiceContract,
     TicketServiceContract,
     SystemServiceContract,
-    UnifiedGLPIServiceContract
+    UnifiedGLPIServiceContract,
 )
 
 __all__ = [
-    'MetricsServiceContract',
-    'TechnicianServiceContract', 
-    'TicketServiceContract',
-    'SystemServiceContract',
-    'UnifiedGLPIServiceContract'
+    "MetricsServiceContract",
+    "TechnicianServiceContract",
+    "TicketServiceContract",
+    "SystemServiceContract",
+    "UnifiedGLPIServiceContract",
 ]

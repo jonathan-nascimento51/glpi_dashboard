@@ -31,7 +31,7 @@ __all__ = [
     "TechnicianLevel",
     # Consolidated schemas (API boundary models)
     "DashboardMetrics",
-    "TechnicianRanking", 
+    "TechnicianRanking",
     "NewTicket",
     "LevelMetrics",
     "ApiResponse",

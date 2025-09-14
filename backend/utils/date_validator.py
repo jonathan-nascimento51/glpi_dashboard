@@ -164,31 +164,27 @@ class DateValidator:
 
     @classmethod
     def construir_criterios_filtro_data(
-        cls, 
-        start_date: Optional[str], 
-        end_date: Optional[str], 
-        field_id: str = "15",
-        criteria_start_index: int = 0
+        cls, start_date: Optional[str], end_date: Optional[str], field_id: str = "15", criteria_start_index: int = 0
     ) -> Dict[str, str]:
         """Constrói critérios de filtro de data para a API GLPI de forma centralizada.
-        
+
         Esta função implementa os "3 Pilares para Criar Qualquer Métrica no GLPI":
         - O Quê: itemtype (Ticket)
         - Quando: filtro de data (campo 15 - data de criação)
         - Como Agrupar: por critério específico (técnico, categoria, etc.)
-        
+
         Args:
             start_date: Data de início no formato YYYY-MM-DD (opcional)
             end_date: Data de fim no formato YYYY-MM-DD (opcional)
             field_id: ID do campo de data na API GLPI (padrão: "15" para data de criação)
             criteria_start_index: Índice inicial para os critérios (padrão: 0)
-            
+
         Returns:
             Dict com critérios formatados para a API GLPI
-            
+
         Raises:
             DateValidationError: Se as datas forem inválidas
-            
+
         Example:
             >>> criterios = DateValidator.construir_criterios_filtro_data(
             ...     "2024-01-01", "2024-01-31", "15", 0
@@ -196,7 +192,7 @@ class DateValidator:
             >>> print(criterios)
             {
                 "criteria[0][field]": "15",
-                "criteria[0][searchtype]": "morethan", 
+                "criteria[0][searchtype]": "morethan",
                 "criteria[0][value]": "2024-01-01 00:00:00",
                 "criteria[1][link]": "AND",
                 "criteria[1][field]": "15",
@@ -205,49 +201,53 @@ class DateValidator:
             }
         """
         criterios = {}
-        
+
         # Validar datas se fornecidas
         if start_date and not cls.validate_date_format(start_date):
             raise DateValidationError(f"Formato de start_date inválido: {start_date}. Use YYYY-MM-DD")
-            
+
         if end_date and not cls.validate_date_format(end_date):
             raise DateValidationError(f"Formato de end_date inválido: {end_date}. Use YYYY-MM-DD")
-            
+
         if start_date and end_date and not cls.validate_date_range(start_date, end_date):
             raise DateValidationError(f"Range de datas inválido: {start_date} > {end_date}")
-        
+
         current_index = criteria_start_index
-        
+
         # Adicionar critério de data de início (maior que)
         if start_date:
             start_datetime = f"{start_date} 00:00:00"
-            criterios.update({
-                f"criteria[{current_index}][field]": field_id,
-                f"criteria[{current_index}][searchtype]": "morethan",
-                f"criteria[{current_index}][value]": start_datetime
-            })
+            criterios.update(
+                {
+                    f"criteria[{current_index}][field]": field_id,
+                    f"criteria[{current_index}][searchtype]": "morethan",
+                    f"criteria[{current_index}][value]": start_datetime,
+                }
+            )
             current_index += 1
-            
+
         # Adicionar critério de data de fim (menor que)
         if end_date:
             end_datetime = f"{end_date} 23:59:59"
-            
+
             # Se já temos critério de início, adicionar link AND
             if start_date:
                 criterios[f"criteria[{current_index}][link]"] = "AND"
-                
-            criterios.update({
-                f"criteria[{current_index}][field]": field_id,
-                f"criteria[{current_index}][searchtype]": "lessthan",
-                f"criteria[{current_index}][value]": end_datetime
-            })
+
+            criterios.update(
+                {
+                    f"criteria[{current_index}][field]": field_id,
+                    f"criteria[{current_index}][searchtype]": "lessthan",
+                    f"criteria[{current_index}][value]": end_datetime,
+                }
+            )
             current_index += 1
-            
+
         logger.debug(
             f"[FILTER_BUILDER] Critérios construídos: start_date={start_date}, "
             f"end_date={end_date}, field_id={field_id}, total_criterios={len(criterios)//3 if criterios else 0}"
         )
-        
+
         return criterios
 
     @classmethod
